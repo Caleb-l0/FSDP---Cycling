@@ -1,25 +1,40 @@
+require('dotenv').config();
 const express = require('express');
-const path = require('path');
 const app = express();
+const port = process.env.PORT || 3000;
 
+// Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(express.static(__dirname + '/Accounts/views')); // serve HTML/JS
 
-// Serve Accounts views (login/signup)
-app.use('/accounts', express.static(path.join(__dirname, 'Accounts/views')));
+// Login imports
+const { loginUser, getUserById, updateUser, deleteUser } = require('./Accounts/login/loginController');
+const { validateLogin } = require('./Accounts/login/loginValidation');
+const { authenticate } = require('./Accounts/login/authenticate');
 
-// Serve root folder for index.html and other public files
-app.use(express.static(path.join(__dirname)));
+// Signup imports
+const { signupUser } = require('./Accounts/signup/signupController');
+const { validateSignup } = require('./Accounts/signup/signupValidation');
 
-// Example redirect to login (optional)
-app.get('/login', (req, res) => {
-  res.sendFile(path.join(__dirname, 'Accounts/views/login.html'));
+// Routes
+
+// LOGIN
+app.post('/login', validateLogin, loginUser);
+app.get('/user/:id', authenticate, getUserById);
+app.put('/user/:id', authenticate, updateUser);
+app.delete('/user/:id', authenticate, deleteUser);
+
+// SIGNUP
+app.post('/signup', validateSignup, signupUser);
+
+// Serve HTML pages
+app.get('/login', (req, res) => res.sendFile(__dirname + '/Accounts/views/login.html'));
+app.get('/signup', (req, res) => res.sendFile(__dirname + '/Accounts/views/signup.html'));
+
+app.listen(port, () => {
+  console.log(`Server running on http://localhost:${port}`);
 });
 
-app.get('/signup', (req, res) => {
-  res.sendFile(path.join(__dirname, 'Accounts/views/signup.html'));
-});
 
-// Start server
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
+

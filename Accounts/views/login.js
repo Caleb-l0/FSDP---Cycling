@@ -1,25 +1,30 @@
-document.querySelector('#loginForm').addEventListener('submit', login);
-
 async function login(e) {
   e.preventDefault();
 
-  const email = document.querySelector('#email-login').value.trim();
-  const password = document.querySelector('#password-login').value.trim();
+  const email = document.getElementById('email').value.trim();
+  const password = document.getElementById('password').value;
 
-  if (email && password) {
-    const response = await fetch('/api/users/login', {
+  try {
+    const res = await fetch("http://localhost:3000/accounts/login", {
       method: 'POST',
-      body: JSON.stringify({ email, password }),
       headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
     });
 
-    const data = await response.json();
+    const data = await res.json();
 
-    if (response.ok) {
-      alert('Login successful!');
-      window.location.href = '/index.html';
+    if (res.ok) {
+      alert("Login successful!");
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("userId", data.userId);
+      localStorage.setItem("name", data.name);
+      localStorage.setItem("email", data.email);
+      setTimeout(() => (window.location.href = "index.html"), 1000);
     } else {
-      alert(data.message || 'Failed to log in.');
+      alert(data.error || "Login failed");
     }
+  } catch (err) {
+    console.error("Login error:", err);
+    alert("Something went wrong.");
   }
 }

@@ -1,26 +1,28 @@
-document.querySelector('#signupForm').addEventListener('submit', signup);
-
 async function signup(e) {
   e.preventDefault();
 
-  const username = document.querySelector('#username-signup').value.trim();
-  const email = document.querySelector('#email-signup').value.trim();
-  const password = document.querySelector('#password-signup').value.trim();
+  const name = document.getElementById('name').value.trim();
+  const email = document.getElementById('email').value.trim();
+  const password = document.getElementById('password').value;
 
-  if (username && email && password) {
-    const response = await fetch('/api/users/signup', {
+  try {
+    const res = await fetch("http://localhost:3000/accounts/signup", {
       method: 'POST',
-      body: JSON.stringify({ name: username, email, password }),
       headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, email, password })
     });
 
-    const data = await response.json();
+    const data = await res.json();
 
-    if (response.ok) {
-      alert('Signup successful! Please log in.');
-      window.location.href = '/login.html';
+    if (res.ok) {
+      alert("Signup successful!");
+      window.location.href = "login.html";
     } else {
-      alert(data.message || 'Failed to sign up.');
+      alert(data.error || "Signup failed");
     }
+  } catch (err) {
+    console.error("Signup error:", err);
+    alert("Something went wrong.");
   }
 }
+
