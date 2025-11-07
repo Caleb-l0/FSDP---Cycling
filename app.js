@@ -8,10 +8,12 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(__dirname + '/Accounts/views')); // serve HTML/JS
 
-// Login imports
+
+// login imports
 const { loginUser, getUserById, updateUser, deleteUser } = require('./Accounts/login/loginController');
 const { validateLogin } = require('./Accounts/login/loginValidation');
 const { authenticate } = require('./Accounts/login/authenticate');
+
 
 // Signup imports
 const { signupUser } = require('./Accounts/signup/signupController');
