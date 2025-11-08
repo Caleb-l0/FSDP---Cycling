@@ -22,7 +22,7 @@ async function loginUser(req, res) {
       userId: user.id,
       name: user.name,
       email: user.email,
-      profilePicUrl: user.profilePicUrl || null,
+     
     });
   } catch (err) {
     console.error("Login error:", err);
@@ -45,10 +45,10 @@ async function getUserById(req, res) {
 
 async function updateUser(req, res) {
   const userId = req.params.id;
-  const { name, email, profilePicUrl, dateOfBirth } = req.body;
+  const { name, email } = req.body;
 
   try {
-    await loginModel.updateUser(userId, name, email, profilePicUrl, dateOfBirth);
+    await loginModel.updateUser(userId, name, email);
     res.json({ message: "User updated" });
   } catch (err) {
     console.error("Update failed:", err);

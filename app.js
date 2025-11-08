@@ -6,6 +6,9 @@ const port = process.env.PORT || 3000;
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.get("/", (req, res) => {
+  res.sendFile(__dirname + "/Accounts/views/login.html");
+});
 app.use(express.static(__dirname + '/Accounts/views')); // serve HTML/JS
 
 
