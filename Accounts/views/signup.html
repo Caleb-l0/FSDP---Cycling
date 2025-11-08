@@ -30,14 +30,12 @@
           <p>Empowering communities through compassion and collaboration.</p>
         </div>
       </div>
-
       <div class="slide" style="background-image: url('images/IMG3.webp');">
         <div class="hero-content">
           <h1>Make a Difference Today</h1>
           <p>Join us in creating meaningful change across communities.</p>
         </div>
       </div>
-
       <div class="slide" style="background-image: url('images/img5.jpg');">
         <div class="hero-content">
           <h1>Together We Grow Stronger</h1>
@@ -45,7 +43,6 @@
         </div>
       </div>
     </div>
-
     <div class="slider-dots">
       <span class="dot active"></span>
       <span class="dot"></span>
@@ -72,6 +69,21 @@
       </div>
     </div>
   </section>
+
+  <div id="loginModal" class="modal">
+    <span class="close-btn" onclick="closeLogin()">&times;</span>
+    <div class="modal-content">
+      <h2>Login</h2>
+      <form onsubmit="login(event)">
+        <input type="email" id="email" placeholder="Email" required><br>
+        <input type="password" id="password" placeholder="Password" required><br>
+        <button type="submit">Login</button>
+      </form>
+      <p style="margin-top:10px;">
+        Don't have an account? <a href="#" onclick="switchToSignup()">Sign Up</a>
+      </p>
+    </div>
+  </div>
 
   <div id="signupModal" class="modal active">
     <span class="close-btn" onclick="closeSignup()">&times;</span>
@@ -138,13 +150,26 @@
 
     setInterval(nextSlide, 5000);
 
-    function closeSignup() {
-      document.getElementById('signupModal').classList.remove('active');
+    function openLogin() {
+      document.getElementById('loginModal').classList.add('active');
     }
 
-    function switchToLogin() {
-      closeSignup();
-      document.getElementById('loginModal')?.classList.add('active');
+    function closeLogin() {
+      document.getElementById('loginModal').classList.remove('active');
+    }
+
+    function login(event) {
+      event.preventDefault();
+      alert("Login successful! (Demo)");
+      closeLogin();
+    }
+
+    function openSignup() {
+      document.getElementById('signupModal').classList.add('active');
+    }
+
+    function closeSignup() {
+      document.getElementById('signupModal').classList.remove('active');
     }
 
     function signup(event) {
@@ -153,8 +178,14 @@
       closeSignup();
     }
 
-    function openLogin() {
-      document.getElementById('loginModal')?.classList.add('active');
+    function switchToLogin() {
+      closeSignup();
+      openLogin();
+    }
+
+    function switchToSignup() {
+      closeLogin();
+      openSignup();
     }
   </script>
 </body>
