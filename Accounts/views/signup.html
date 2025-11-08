@@ -4,10 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>HappyVolunteer - Sign Up</title>
-  <link rel="stylesheet" href="login.css"> <!-- reuse same CSS -->
+  <link rel="stylesheet" href="login.css">
 </head>
 <body>
-  <!-- Header -->
   <header>
     <div class="container header-content">
       <div class="logo">🌻 HappyVolunteer</div>
@@ -23,7 +22,6 @@
     </div>
   </header>
 
-  <!-- Hero Section -->
   <section class="hero">
     <div class="hero-slider">
       <div class="slide active" style="background-image: url('images/img4.jpg');">
@@ -55,7 +53,6 @@
     </div>
   </section>
 
-  <!-- Info Section -->
   <section class="info-section">
     <div class="container">
       <h2>Why Join HappyVolunteer?</h2>
@@ -76,8 +73,7 @@
     </div>
   </section>
 
-  <!-- Signup Modal -->
-  <div id="signupModal" class="modal active"> <!-- active to open on page load -->
+  <div id="signupModal" class="modal active">
     <span class="close-btn" onclick="closeSignup()">&times;</span>
     <div class="modal-content">
       <h2>Sign Up</h2>
@@ -93,7 +89,6 @@
     </div>
   </div>
 
-  <!-- Footer -->
   <footer>
     <div class="container footer-content">
       <div>
@@ -118,7 +113,6 @@
   </footer>
 
   <script>
-    // Hero Slider
     let currentSlide = 0;
     const slides = document.querySelectorAll('.slide');
     const dots = document.querySelectorAll('.dot');
@@ -144,7 +138,6 @@
 
     setInterval(nextSlide, 5000);
 
-    // Signup Modal Functions
     function closeSignup() {
       document.getElementById('signupModal').classList.remove('active');
     }
@@ -160,7 +153,6 @@
       closeSignup();
     }
 
-    // Optional login modal trigger
     function openLogin() {
       document.getElementById('loginModal')?.classList.add('active');
     }
