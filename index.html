@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>HappyVolunteer - Login</title>
+  <title>HappyVolunteer</title>
   <link rel="stylesheet" href="index.css">
 </head>
 <body>
@@ -128,7 +128,6 @@
   </footer>
 
   <script>
-    // Hero Slider
     let currentSlide = 0;
     const slides = document.querySelectorAll('.slide');
     const dots = document.querySelectorAll('.dot');
@@ -154,29 +153,17 @@
 
     setInterval(nextSlide, 5000);
 
-    // Login/Signup Modals
     function openLogin() {
       document.getElementById('loginModal').classList.add('active');
     }
     function closeLogin() {
       document.getElementById('loginModal').classList.remove('active');
     }
-    function login(event) {
-      event.preventDefault();
-      alert("Login successful! (Demo)");
-      closeLogin();
-    }
-
     function openSignup() {
       document.getElementById('signupModal').classList.add('active');
     }
     function closeSignup() {
       document.getElementById('signupModal').classList.remove('active');
-    }
-    function signup(event) {
-      event.preventDefault();
-      alert("Signup successful! (Demo)");
-      closeSignup();
     }
     function switchToSignup() {
       closeLogin();
@@ -185,6 +172,62 @@
     function switchToLogin() {
       closeSignup();
       openLogin();
+    }
+
+    async function login(event) {
+      event.preventDefault();
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+
+      try {
+        const res = await fetch('/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          alert(data.message || 'Login failed');
+          return;
+        }
+
+        alert('✅ Login successful!');
+        closeLogin();
+      } catch (err) {
+        console.error(err);
+        alert('❌ Error connecting to server');
+      }
+    }
+
+    async function signup(event) {
+      event.preventDefault();
+      const name = document.getElementById('signup-name').value;
+      const email = document.getElementById('signup-email').value;
+      const password = document.getElementById('signup-password').value;
+
+      try {
+        const res = await fetch('/signup', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, email, password })
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          alert(data.message || 'Signup failed');
+          return;
+        }
+
+        alert('🎉 Account created successfully!');
+        closeSignup();
+        openLogin();
+      } catch (err) {
+        console.error(err);
+        alert('❌ Error connecting to server');
+      }
     }
   </script>
 </body>
