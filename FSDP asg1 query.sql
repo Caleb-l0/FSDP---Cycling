@@ -1,13 +1,10 @@
-
-
 CREATE TABLE Users (
-    UserID INT IDENTITY(1,1) PRIMARY KEY,
-    Name NVARCHAR(100) NOT NULL,
-    Email NVARCHAR(100) UNIQUE NOT NULL,
-    Password NVARCHAR(255) NOT NULL,
-    CreatedAt DATETIME DEFAULT GETDATE(),
-    UpdatedAt DATETIME NULL
-);
+  id INT PRIMARY KEY IDENTITY,
+  name VARCHAR(100),
+  email VARCHAR(100) UNIQUE,
+  password VARCHAR(100)
+);    ALTER TABLE Users
+ADD role VARCHAR(50) DEFAULT 'user';
 
 
 CREATE TABLE Organizations (
@@ -45,3 +42,51 @@ CREATE TABLE VolunteerRequests (
 );
 
 
+CREATE TABLE Events (
+    EventID INT PRIMARY KEY IDENTITY,
+    VolunteerRequestID INT NULL,
+    OrganizationID INT NOT NULL,
+    EventName NVARCHAR(100) NOT NULL,
+    EventDate DATETIME NOT NULL,
+    Description NVARCHAR(MAX),
+    RequiredVolunteers INT NOT NULL,
+    Status NVARCHAR(20) DEFAULT 'Upcoming',   -- Upcoming / Ongoing / Completed / Cancelled
+    CreatedAt DATETIME DEFAULT GETDATE(),
+    UpdatedAt DATETIME NULL,
+
+    CONSTRAINT FK_Events_VolunteerRequests FOREIGN KEY (VolunteerRequestID)
+        REFERENCES VolunteerRequests(RequestID),
+
+    CONSTRAINT FK_Events_Organizations FOREIGN KEY (OrganizationID)
+        REFERENCES Organizations(OrganizationID)
+);
+
+
+
+CREATE TABLE EventSignUps (
+    SignUpID INT PRIMARY KEY IDENTITY,
+    EventID INT NOT NULL,
+    UserID INT NOT NULL,
+    SignUpDate DATETIME DEFAULT GETDATE(),
+    Status NVARCHAR(20) DEFAULT 'Active',     -- Active / Cancelled / Completed
+
+    CONSTRAINT FK_EventSignUps_Events FOREIGN KEY (EventID)
+        REFERENCES Events(EventID),
+
+    CONSTRAINT FK_EventSignUps_Users FOREIGN KEY (UserID)
+        REFERENCES Users(id)
+);
+
+
+CREATE TABLE UserEvents (
+    UserEventID INT PRIMARY KEY IDENTITY,
+    UserID INT NOT NULL,
+    EventID INT NOT NULL,
+    SignUpDate DATETIME DEFAULT GETDATE(),
+
+    CONSTRAINT FK_UserEvents_Users FOREIGN KEY (UserID)
+        REFERENCES Users(id),
+
+    CONSTRAINT FK_UserEvents_Events FOREIGN KEY (EventID)
+        REFERENCES Events(EventID)
+);
