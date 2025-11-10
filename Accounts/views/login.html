@@ -1,16 +1,174 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Login Page</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HappyVolunteer - Login</title>
+  <link rel="stylesheet" href="login.css">
 </head>
 <body>
-  <h1>Login</h1>
-  <form action="/login" method="post">
-    <label>Username: <input type="text" name="username" required /></label><br>
-    <label>Password: <input type="password" name="password" required /></label><br>
-    <button type="submit">Log in</button>
-  </form>
-  <p>Don’t have an account? <a href="signup.html">Sign up here</a></p>
-</body>
-</html>
+  <header>
+    <div class="container header-content">
+      <div class="logo">🌻 HappyVolunteer</div>
+      <nav>
+        <ul>
+          <li><a href="#">Home</a></li>
+          <li><a href="#">About</a></li>
+          <li><a href="#">Events</a></li>
+          <li><a href="#">Contact</a></li>
+          <li><a class="btn small" onclick="openLogin()">Login</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
 
+  <section class="hero">
+    <div class="hero-slider">
+      <div class="slide active" style="background-image: url('images/img4.jpg');">
+        <div class="hero-content">
+          <h1>Welcome to HappyVolunteer</h1>
+          <p>Empowering communities through compassion and collaboration.</p>
+        </div>
+      </div>
+
+      <div class="slide" style="background-image: url('images/IMG3.webp');">
+        <div class="hero-content">
+          <h1>Make a Difference Today</h1>
+          <p>Join us in creating meaningful change across communities.</p>
+        </div>
+      </div>
+
+      <div class="slide" style="background-image: url('images/img5.jpg');">
+        <div class="hero-content">
+          <h1>Together We Grow Stronger</h1>
+          <p>Be part of a movement that inspires hope and unity.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="slider-dots">
+      <span class="dot active"></span>
+      <span class="dot"></span>
+      <span class="dot"></span>
+    </div>
+  </section>
+
+  <section class="info-section">
+    <div class="container">
+      <h2>Why Join HappyVolunteer?</h2>
+      <div class="info-grid">
+        <div class="card">
+          <h3>🌱 Grow Your Skills</h3>
+          <p>Gain real-world experience and leadership skills by helping others.</p>
+        </div>
+        <div class="card">
+          <h3>💛 Give Back</h3>
+          <p>Contribute to causes that make a real impact in your community.</p>
+        </div>
+        <div class="card">
+          <h3>🌍 Connect</h3>
+          <p>Meet like-minded individuals who share your passion for service.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+<div id="loginModal" class="modal">
+  <span class="close-btn" onclick="closeLogin()">&times;</span>
+  <div class="modal-content">
+    <h2>Login</h2>
+    <form onsubmit="login(event)">
+      <input type="email" id="email" placeholder="Email" required><br>
+      <input type="password" id="password" placeholder="Password" required><br>
+      <button type="submit">Login</button>
+    </form>
+    <p style="margin-top:10px;">
+      Don't have an account? <a href="signup.html">Sign Up</a>
+    </p>
+  </div>
+</div>
+
+<div id="signupModal" class="modal">
+  <span class="close-btn" onclick="closeSignup()">&times;</span>
+  <div class="modal-content">
+    <h2>Sign Up</h2>
+    <form onsubmit="signup(event)">
+      <input type="text" id="signup-name" placeholder="Name" required><br>
+      <input type="email" id="signup-email" placeholder="Email" required><br>
+      <input type="password" id="signup-password" placeholder="Password" required><br>
+      <button type="submit">Sign Up</button>
+    </form>
+    <p style="margin-top:10px;">Already have an account? 
+      <a href="#" onclick="switchToLogin()">Login</a>
+    </p>
+  </div>
+</div>
+
+  <footer>
+    <div class="container footer-content">
+      <div>
+        <h3>HappyVolunteer</h3>
+        <p>Inspiring change, one act of kindness at a time.</p>
+      </div>
+      <div>
+        <h3>Quick Links</h3>
+        <ul>
+          <li><a href="#">About</a></li>
+          <li><a href="#">Events</a></li>
+          <li><a href="#">Join Us</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Contact</h3>
+        <p>Email: hello@happyvolunteer.org</p>
+        <p>Phone: +65 9876 5432</p>
+      </div>
+    </div>
+    <p>© 2025 HappyVolunteer. All rights reserved.</p>
+  </footer>
+
+  <script>
+    let currentSlide = 0;
+    const slides = document.querySelectorAll('.slide');
+    const dots = document.querySelectorAll('.dot');
+
+    function showSlide(index) {
+      slides.forEach((s, i) => {
+        s.classList.toggle('active', i === index);
+        dots[i].classList.toggle('active', i === index);
+      });
+    }
+
+    function nextSlide() {
+      currentSlide = (currentSlide + 1) % slides.length;
+      showSlide(currentSlide);
+    }
+
+    dots.forEach((dot, i) => {
+      dot.addEventListener('click', () => {
+        currentSlide = i;
+        showSlide(i);
+      });
+    });
+
+    setInterval(nextSlide, 5000);
+
+    function openLogin() {
+      document.getElementById('loginModal').classList.add('active');
+    }
+
+    function closeLogin() {
+      document.getElementById('loginModal').classList.remove('active');
+    }
+
+    function login(event) {
+      event.preventDefault();
+      alert("Login successful! (Demo)");
+      closeLogin();
+    }
+  </script>
+  
+</body>
+
+
+</html>

@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Request Volunteer Event</title>
+  <link rel="stylesheet" href="./homepage.css"> 
+  <style>
+   
+    .form-section {
+      max-width: 700px;
+      margin: 60px auto;
+      background: #FFFDF7;
+      border: 1px solid #E5D3B3;
+      border-radius: 12px;
+      padding: 30px 40px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    }
+
+    .form-section h2 {
+      color: #3E2723;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    form label {
+      display: block;
+      color: #4E342E;
+      font-weight: 600;
+      margin-top: 15px;
+    }
+
+    form input, form textarea {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border-radius: 8px;
+      border: 1px solid #E5D3B3;
+      font-size: 15px;
+      background: #FAF3E0;
+      color: #3E2723;
+      outline: none;
+      transition: box-shadow 0.2s;
+    }
+
+    form input:focus, form textarea:focus {
+      box-shadow: 0 0 5px rgba(230,154,42,0.5);
+    }
+
+    form textarea {
+      resize: vertical;
+      min-height: 120px;
+    }
+
+    .submit-btn {
+      margin-top: 25px;
+      background: #E69A2A;
+      color: #fff;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      width: 100%;
+      transition: background 0.3s;
+    }
+
+    .submit-btn:hover {
+      background: #b57a19;
+    }
+
+    .success-message, .error-message {
+      text-align: center;
+      margin-top: 15px;
+      font-weight: 500;
+    }
+
+    .success-message { color: #2e7d32; }
+    .error-message { color: #c62828; }
+  </style>
+</head>
+<body>
+
+  <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">Happy Volunteer</div>
+                <button class="nav-toggle" id="navToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+
+                <nav id="mainNav">
+                    <ul>
+                       <div class="search-bar">
+  <i class="icon">🔍</i>
+  <input type="text" placeholder="Search..." />
+  <button>Go</button>
+</div>
+                        <li><a href="#">Create Event</a></li>
+                        <li><a href="#">My Community</a></li>
+                        <li><a href="#">Reward</a></li>
+                        <li><a href="#">Profile</a></li>
+                    </ul>
+                </nav>
+
+            </div>
+        </div>
+    </header>
+
+  <section class="form-section">
+    <h2>Request to Host a Volunteer Event</h2>
+    <form id="eventRequestForm">
+      <label for="eventName">Event Name</label>
+      <input type="text" id="eventName" name="eventName" required>
+
+      <label for="eventDate">Event Date & Time</label>
+      <input type="datetime-local" id="eventDate" name="eventDate" required>
+
+      <label for="description">Event Description</label>
+      <textarea id="description" name="description" placeholder="Describe your event..." required></textarea>
+
+      <label for="requiredVolunteers">Number of Volunteers Needed</label>
+      <input type="number" id="requiredVolunteers" name="requiredVolunteers" min="1" required>
+
+      <label for="specialInvite">Special Invite (optional)</label>
+      <input type="text" id="specialInvite" name="specialInvite" placeholder="e.g. VIP guests, partners">
+
+      <button type="submit" class="submit-btn">Submit Request</button>
+
+      <div id="messageBox"></div>
+    </form>
+  </section>
+
+  <footer>
+    <div class="copyright">
+      © 2025 Volunteer Connect. All rights reserved.
+    </div>
+  </footer>
+
+</body>
+</html>
