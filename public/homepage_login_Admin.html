@@ -5,7 +5,84 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cycling Without Age</title>
     <style>
-
+        header {
+            padding: 24px 0;
+            min-height: 90px;
+        }
+        
+        .header-content {
+            gap: 15px;
+            flex-wrap: nowrap;
+        }
+        
+        .logo {
+            white-space: nowrap;
+            flex-shrink: 0;
+            font-size: 1.3rem;
+        }
+        
+        nav ul {
+            flex-wrap: nowrap;
+            gap: 8px;
+            align-items: center;
+        }
+        
+        nav ul li {
+            margin-left: 8px;
+        }
+        
+        nav ul li a {
+            padding: 6px 12px;
+            font-size: 0.9rem;
+            white-space: nowrap;
+        }
+        
+        .search-bar {
+            width: 260px;
+            min-width: 180px;
+            flex-shrink: 1;
+        }
+        
+        .search-bar input {
+            font-size: 13px;
+        }
+        
+        .search-bar input::placeholder {
+            font-size: 13px;
+        }
+        
+        .search-bar button {
+            padding: 4px 8px;
+            font-size: 12px;
+        }
+        
+        nav {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        nav ul {
+            justify-content: flex-end;
+        }
+        
+        @media (max-width: 1400px) {
+            .search-bar {
+                width: 220px;
+            }
+        }
+        
+        @media (max-width: 1200px) {
+            .search-bar {
+                width: 180px;
+            }
+            nav ul li a {
+                padding: 5px 8px;
+                font-size: 0.8rem;
+            }
+            .logo {
+                font-size: 1.2rem;
+            }
+        }
     </style>
     <link rel="stylesheet" href="./homepage.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -65,9 +142,9 @@
        
         
          <section class="switch">
-               <button>.</button>
-                <button>.</button>
-                 <button>.</button>
+               <button class="switch-btn active" data-index="0">.</button>
+                <button class="switch-btn" data-index="1">.</button>
+                 <button class="switch-btn" data-index="2">.</button>
             </section>
 
     </section>
@@ -259,7 +336,7 @@
                 </div>
             </div>
             <div class="copyright">
-                <p>&copy; 2025 Harry Volunteering. Right reserved。</p>
+                <p>&copy; 2025 Harry Volunteering. Right reserved.</p>
             </div>
         </div>
     </footer>
@@ -270,12 +347,60 @@
             document.getElementById('mainNav').classList.toggle('active');
         });
         
-       
+        
         document.querySelectorAll('#mainNav a').forEach(link => {
             link.addEventListener('click', function() {
                 document.getElementById('mainNav').classList.remove('active');
             });
         });
+
+        let currentSlide = 0;
+        const totalSlides = 3;
+        const container0 = document.querySelector('.container0');
+        const switchButtons = document.querySelectorAll('.switch-btn');
+        let autoSlideInterval;
+
+        function goToSlide(index) {
+            currentSlide = index;
+            const translateX = -currentSlide * 100;
+            container0.style.transform = `translateX(${translateX}vw)`;
+            
+            switchButtons.forEach((btn, i) => {
+                if (i === currentSlide) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+        }
+
+        function nextSlide() {
+            currentSlide = (currentSlide + 1) % totalSlides;
+            goToSlide(currentSlide);
+        }
+
+        switchButtons.forEach((btn, index) => {
+            btn.addEventListener('click', function() {
+                goToSlide(index);
+                clearInterval(autoSlideInterval);
+                startAutoSlide();
+            });
+        });
+
+        function startAutoSlide() {
+            autoSlideInterval = setInterval(nextSlide, 4000);
+        }
+
+        function initCarousel() {
+            goToSlide(0);
+            startAutoSlide();
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initCarousel);
+        } else {
+            initCarousel();
+        }
     </script>
 </body>
 </html>
