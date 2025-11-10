@@ -4,7 +4,15 @@ const path = require('path');
 const app = express();
 const port = process.env.PORT || 3000;
 
-// Middleware
+
+
+const cors = require('cors');
+
+
+
+
+app.use(cors());
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -16,6 +24,11 @@ app.use('/Accounts/views', express.static(path.join(__dirname, 'Accounts/views')
 const { loginUser, getUserById, updateUser, deleteUser } = require('./Accounts/login/loginController');
 const { validateLogin } = require('./Accounts/login/loginValidation');
 const { authenticate } = require('./Accounts/login/authenticate');
+
+
+
+// Login route
+const requestController = require('./Controllers/GetRequestController');
 
 app.post('/login', validateLogin, loginUser);
 app.get('/user/:id', authenticate, getUserById);
@@ -32,6 +45,14 @@ app.post('/signup', validateSignup, signupUser);
 app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'index.html')));
 app.get('/login', (req, res) => res.sendFile(path.join(__dirname, 'Accounts/views/login.html')));
 app.get('/signup', (req, res) => res.sendFile(path.join(__dirname, 'Accounts/views/signup.html')));
+
+
+
+
+// ------ REQUEST ROUTES -----
+app.get('admin/applications', requestController.getAllRequests);
+app.get('/requests/organization/:organizationId', requestController.getRequestByOragnization);
+app.get('/requests/history/:date', requestController.getRequestByHistory);
 
 // Start server
 app.listen(port, () => {

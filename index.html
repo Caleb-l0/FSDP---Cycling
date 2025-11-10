@@ -193,7 +193,7 @@
   const role = document.getElementById('role').value; 
       
   try {
-    const res = await fetch('/signup', {
+    const res = await fetch('http://localhost:3000/signup', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ name, email, password, role }) 
@@ -235,43 +235,54 @@ async function login(event) {
   const password = document.getElementById('password').value;
 
   try {
-    const res = await fetch('/login', {
+    const res = await fetch('http://localhost:3000/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password })
     });
 
     const data = await res.json();
-
+    const role = data.role;
     if (!res.ok) {
       alert(data.message || 'Login failed');
       return;
     }
-
+   else{
     alert('✅ Login successful!');
-    closeLogin();
-
-    // Redirect based on role from response
-    const role = data.role;
+   
+  
+     
+    localStorage.setItem("token", data.token);
+    localStorage.setItem("userId", data.userId);
+    localStorage.setItem("name", data.name);
+    localStorage.setItem("email", data.email);
+    
     switch(role) {
       case 'admin':
-        window.location.href = './public/homepage_login_Admin.html';
+      setTimeout(() => ( window.location.href = './public/homepage_login_Admin.html'), 1000)
+       
         break;
       case 'volunteer':
-        window.location.href = './public/homepage_login_volunteer.html';
+         setTimeout(() => ( window.location.href = './public/homepage_login_volunteer.html'), 1000)
         break;
       case 'institution':
-        window.location.href = './public/homepage_login_instituition.html';
+         setTimeout(() => ( window.location.href = './public/homepage_login_instituition.html'),1000)
         break;
-      default:
-        window.location.href = './index.html';
+     
     }
+    
+
+    // Redirect based on role from response
+    
+    
+  }
 
   } catch (err) {
     console.error(err);
     alert('❌ Error connecting to server');
   }
 }
+
 
   </script>
 </body>

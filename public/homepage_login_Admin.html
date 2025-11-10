@@ -87,9 +87,11 @@
     <link rel="stylesheet" href="./homepage.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="./homepage_instituition.css">
+    <link rel="stylesheet" href="./homepage_login_Admin.css">
+
 </head>
 <body>
-   
+  
     <header>
         <div class="container">
             <div class="header-content">
@@ -101,7 +103,7 @@
                 <nav id="mainNav">
                     <ul>
                        <div class="search-bar">
-  <i class="icon">🔍</i>
+                      <i class="icon">🔍</i>
   <input type="text" placeholder="Search..." />
   <button>Go</button>
 </div>
@@ -118,7 +120,6 @@
 
    
     <section class="hero">
-
         <div class="container0">
             <section>
             <h1>Welcome, Admin Mr xxx!</h1>
@@ -136,163 +137,101 @@
             <a href="#" class="btn">Join Us Today !</a>
             </section>
         </div>
-
-      
-             
-       
-        
          <section class="switch">
                <button class="switch-btn active" data-index="0">.</button>
                 <button class="switch-btn" data-index="1">.</button>
                  <button class="switch-btn" data-index="2">.</button>
             </section>
-
     </section>
 
- 
-    <section class="services">
-        <div class="container">
-            <div class="section-title">
-                <h2>Application</h2>
-            </div>
-           <div class="dashboard_big">
-            <div class="dashboard_section">
-
-                <section class="detail">
-                    <img src="./Bali.jpg">
-
-                     <section class="detail2">
-                        <h3>Event Name</h3>
-                        <section>
-                            <p>From:</p>
-                            <p>Yong Shun Institution</p>
-                        </section>
-                            <section>
-                            <p>Location request: </p>
-                            <p>Radin Mas</p>
-                        </section>
-                            <section>
-                            <p>People Needed: </p>
-                            <p>20</p>
-                        </section>
-                     </section>
-                </section>
-                 <section class="detail">
-                    <img src="./Bali.jpg">
-
-                     <section class="detail2">
-                        <h3>Event Name</h3>
-                        <section>
-                            <p>Time: </p>
-                            <p>20:30</p>
-                        </section>
-                            <section>
-                            <p>Location: </p>
-                            <p>Radin Mas</p>
-                        </section>
-                            <section>
-                            <p>People Needed: </p>
-                            <p>20</p>
-                        </section>
-                     </section>
 
 
-                </section>
-                 <section class="detail">
-                    <img src="./Bali.jpg">
-
-                     <section class="detail2">
-                        <h3>Event Name</h3>
-                        <section>
-                            <p>Time: </p>
-                            <p>20:30</p>
-                        </section>
-                            <section>
-                            <p>Location: </p>
-                            <p>Radin Mas</p>
-                        </section>
-                            <section>
-                            <p>People Needed: </p>
-                            <p>20</p>
-                        </section>
-                     </section>
-
-
-                </section>    
-            </div>
-            <section class="section2">
-
-            </section>
-           </div>
-            
-            </div>
-        </div>
-    </section>
-
-  
-    <section class="features">
-        <div class="container" >
-            <div class="section-title">
-                <h2>Your Community</h2>
-                
-              
-            </div>
-            <div class="features-grid">
-              
-                <div class="feature-item">
-                    <i class="fas fa-award"></i>
-                    <h3>Event</h3>
-                    <p>Hi</p>
-                </div>
-                
-                <div class="feature-item">
-                    <i class="fas fa-award"></i>
-                    <h3>Event</h3>
-                    <p>Hi</p>
-                </div>
-                
-                <div class="feature-item">
-                    <i class="fas fa-award"></i>
-                    <h3>Event</h3>
-                    <p>Hi</p>
-                </div>
-
-            </div>
-        </div>
-    </section>
-
-   <section class="features">
-
-     
-
-            
-    <div class="container">
-        <div class="section-title">
-                <h2>Wow</h2>
-            </div>
-        <section class="big_box">
-<div class="small_box">
-
-</div>
-<div class="small_box">
-   
-</div>
-<div class="small_box">
+<section class="dashboard">
+<section class="dashboard_title">
+  <a class="dashboard_title_selected" id="title1">Application</a>
+  <a class="dashboard_title_not_selected" id="title2">Event Created</a>
+  </section>
+  <section id="dashboard1">
+  <div class="search-bar">
     
-</div>
-<div class="small_box">
-   
-</div>
+    <input type="text" placeholder="Search by event or organization..." />
+    <button>Search</button>
+  </div>
 
-        </section>
 
-        
+
+  <div class="filter-group" id="filter-group1">
+    <button class="filter-btn active" id="request_date">Date</button>
+    <button class="filter-btn" id="request_organ">Organization</button>
+    <button class="filter-btn" id="request_approved">Approved</button>
+    <button class="filter-btn" id="request_reject">Rejected</button>
+    <button class="filter-btn" id="request_history">History</button>
+  </div>
+
+  <div class="event-grid">
+    <div class="event-card">
+      <h3>Ngee Ann Polytechnic - Senior Care Fair</h3>
+      <p><strong>Date:</strong> 28 Nov 2025</p>
+      <p><strong>Organization:</strong> Ngee Ann Polytechnic</p>
+      <span class="status-tag status-pending">Pending</span>
     </div>
-    </section>
-    
+
+    <div class="event-card">
+      <h3>Temasek Polytechnic - Community Tech Day</h3>
+      <p><strong>Date:</strong> 5 Dec 2025</p>
+      <p><strong>Organization:</strong> Temasek Polytechnic</p>
+      <span class="status-tag status-approved">Approved</span>
+    </div>
+
+    <div class="event-card">
+      <h3>Republic Polytechnic - Youth Connect</h3>
+      <p><strong>Date:</strong> 12 Dec 2025</p>
+      <p><strong>Organization:</strong> Republic Polytechnic</p>
+      <span class="status-tag status-pending">Pending</span>
+    </div>
+  </div>
+  </section>
+
+  <section id="dashboard2">
+  <div class="search-bar">
+    <input type="text" placeholder="Search my events..." />
+    <button>Search</button>
+  </div>
+  <div class="filter-group" id="filter-group2">
+    <button class="filter-btn active" id="full">Full</button>
+    <button class="filter-btn" id="not full">Not Full</button>
+    <button class="filter-btn" id="event_date">Date</button>
+    <button class="filter-btn" id="event_organization">Organization</button>
+    <button class="filter-btn" id="event_history">History</button>
+  </div>
+
+  <div class="event-grid">
+    <div class="event-card">
+      <h3>Senior Wellness Workshop</h3>
+      <p><strong>Date:</strong> 18 Nov 2025</p>
+      <p><strong>Participants:</strong> 40 / 40</p>
+      <span class="status-tag status-full">Full</span>
+    </div>
+
+    <div class="event-card">
+      <h3>Community Art Day</h3>
+      <p><strong>Date:</strong> 3 Dec 2025</p>
+      <p><strong>Participants:</strong> 20 / 50</p>
+      <span class="status-tag status-open">Open</span>
+    </div>
+
+    <div class="event-card">
+      <h3>Eco-Friendly Workshop</h3>
+      <p><strong>Date:</strong> 10 Dec 2025</p>
+      <p><strong>Participants:</strong> 35 / 40</p>
+      <span class="status-tag status-open">Open</span>
+    </div>
+  </div>
+  </section>
+</section>
 
 
-            </section>
+
 
 
     <footer>
@@ -341,7 +280,8 @@
         </div>
     </footer>
 
-    <script>
+
+    <script src="./homepage_admin.js">
        
         document.getElementById('navToggle').addEventListener('click', function() {
             document.getElementById('mainNav').classList.toggle('active');

@@ -1,5 +1,5 @@
 const sql = require("mssql");
-const db = require("../../dbConfig");
+const db = require("../../dbconfig");
 
 async function findUserByEmail(email) {
   await sql.connect(db);

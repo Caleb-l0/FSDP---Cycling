@@ -1,0 +1,128 @@
+.filter-group {
+    margin-top:2vw;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 25px;
+}
+.filter-btn {
+  border: 1.5px solid #1f1f1e;
+  background: #FFF8E1;
+  color: #4E342E;
+  padding: 8px 18px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s;
+  font-weight: 500;
+}
+.filter-btn:hover {
+  background: #FFF3CC;
+  border-color: #E69A2A;
+}
+.filter-btn.active {
+  background: #E69A2A;
+  color: white;
+  border-color: #E69A2A;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+
+
+.dashboard {
+  margin-top:10vh;
+  background: #FFFFFF;
+  border-radius: 15px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  padding: 30px;
+  margin-bottom: 40px;
+}
+
+#dashboard2{
+    display: none;
+}
+
+
+/* ===== Event Cards ===== */
+.event-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+}
+.event-card {
+  background: #FFFDF7;
+  border: 1px solid #E5D3B3;
+  border-radius: 12px;
+  padding: 18px;
+  transition: transform 0.3s, box-shadow 0.3s;
+  box-shadow: 0 10px 10px rgba(0,0,0,0.05);
+}
+.event-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+.event-card h3 {
+  font-size: 1.2rem;
+  color: #3E2723;
+  margin-bottom: 10px;
+}
+.event-card p {
+  font-size: 0.95rem;
+  color: #4E342E;
+  margin-bottom: 6px;
+}
+.status-tag {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+.status-pending {
+  background: #FFCB66;
+  color: #3E2723;
+}
+.status-approved {
+  background: #6BA368;
+  color: white;
+}
+.status-full {
+  background: #D65C5C;
+  color: white;
+}
+.status-open {
+  background: #5C90C2;
+  color: white;
+}
+
+
+.dashboard_title{
+    display: flex;
+    justify-content: start;
+    align-items: center;
+    gap:2vw;
+    margin-bottom: 20px;
+}
+.dashboard_title_selected{
+    font-size: 1.8rem;
+    color: #3E2723;
+    font-weight: 600;
+      cursor: pointer;
+  transition: all 0.3s ease;
+}
+.dashboard_title_not_selected:hover{
+    opacity: 1;
+    font-size: 1.8rem;
+}
+
+.dashboard_title_not_selected{
+ cursor: pointer;
+  transition: all 0.3s ease;
+  color: #3E2723;
+  opacity: 0.4;
+  font-size: 1.5rem;
+}
+
+@media (max-width: 768px) {
+  body { padding: 1rem; }
+  .search-bar { width: 100%; }
+}
+
