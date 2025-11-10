@@ -212,7 +212,7 @@
     
     switch(role) {
       case 'admin':
-        window.location.href = '/public/homepage_login_Admin.html';
+        window.location.href = './public/homepage_login_Admin.html';
         break;
       case 'volunteer':
         window.location.href = '/public/homepage_login_volunteer.html';
@@ -221,7 +221,7 @@
         window.location.href = '/public/homepage_login_institution.html';
         break;
       default:
-        window.location.href = '/user/home.html';
+        window.location.href = '/index.html';
     }
 
   } catch (err) {
@@ -255,16 +255,16 @@ async function login(event) {
     const role = data.role;
     switch(role) {
       case 'admin':
-        window.location.href = '/admin/dashboard.html';
+        window.location.href = './public/homepage_login_Admin.html';
         break;
       case 'volunteer':
-        window.location.href = '/public/homepage_login_volunteer.html';
+        window.location.href = './public/homepage_login_volunteer.html';
         break;
       case 'institution':
-        window.location.href = '/institution/home.html';
+        window.location.href = './public/homepage_login_instituition.html';
         break;
       default:
-        window.location.href = '/public/homepage_login_volunteer.html';
+        window.location.href = './index.html';
     }
 
   } catch (err) {
