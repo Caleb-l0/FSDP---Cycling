@@ -4,27 +4,22 @@ const signupModel = require("./signupModel");
 
 async function signupUser(req, res) {
   try {
-    console.log("Signup request body:", req.body);  // <-- log request
-    const { name, email, password } = req.body;
-    
-    const existingUser = await signupModel.findUserByEmail(email);
-    console.log("Existing user:", existingUser);
+    const { name, email, password, role } = req.body;
 
-    if (existingUser) {
-      return res.status(409).json({ error: "User already exists" });
-    }
+    const existingUser = await signupModel.findUserByEmail(email);
+    if (existingUser) return res.status(409).json({ error: "User already exists" });
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    console.log("Hashed password:", hashedPassword);
 
-    await signupModel.createUser(name, email, hashedPassword);
+    await signupModel.createUser(name, email, hashedPassword, role); 
 
     res.status(201).json({ message: "User created successfully" });
   } catch (err) {
-    console.error("Signup error full:", err);  // <-- log full error
+    console.error("Signup error full:", err);
     res.status(500).json({ error: "Signup failed" });
   }
 }
+
 
 
 module.exports = { signupUser };
