@@ -110,11 +110,20 @@ nav ul li a {
   color: white;
   text-decoration: none;
   font-weight: 500;
-  transition: opacity 0.3s;
+  transition: all 0.3s;
+  padding: 8px 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 6px;
+  background-color: rgba(255, 255, 255, 0.1);
+  display: inline-block;
 }
 
 nav ul li a:hover {
-  opacity: 0.8;
+  opacity: 0.9;
+  background-color: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.5);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 /* ===============================
