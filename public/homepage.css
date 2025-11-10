@@ -18,7 +18,7 @@ body {
   background: #FFFDF7;
   border: 1px solid #E5D3B3;
   border-radius: 8px;
-  padding: 8px 8px;
+  padding: 14px 12px;
   
   width: 460px;
   transition: box-shadow 0.2s;
@@ -67,12 +67,12 @@ body {
 header {
   background: linear-gradient(135deg, #ceb184, #d09a4a, #E69A2A);
   color: white;
-  padding: 18px 0;
+  padding: 22px 0;
   position: sticky;
   top: 0;
   z-index: 100;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  height:75px;
+  min-height: 85px;
   font-size:1.4rem;
 }
 
@@ -130,6 +130,15 @@ nav ul li a:hover {
    Hero Section
 ================================= */
 
+.hero {
+  color: white;
+  text-align: center;
+  min-height: 380px;
+  position: relative;
+  overflow: hidden;
+  max-width: 100%;
+  padding: 0;
+}
 
 .container {
   
@@ -140,37 +149,57 @@ nav ul li a:hover {
 }
 
 .container0 {
-  
- width: 300vw;
-  margin: 2vw;
+  width: 300vw;
+  margin: 0;
   display: flex;
-  overflow:hidden;
-  flex-shrink:0 ;
-  gap:8vw;
-  
-
+  overflow: hidden;
+  flex-shrink: 0;
+  gap: 0;
+  transition: transform 0.6s ease-in-out;
+  position: relative;
 }
 
 .container0 section {
-  width:92vw;
-}
-
-
-
-.hero {
-  background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
-              url('https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
+  width: 100vw;
+  min-height: 380px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 4rem 1rem;
   background-size: cover;
   background-position: center;
-  color: white;
-  text-align: center;
-  padding: 4rem 1rem;
-  min-height:380px;
-  display: flex;
-  overflow: hidden;
-  max-width: 100%;
- 
-  gap: 2rem;                      
+  background-repeat: no-repeat;
+  position: relative;
+}
+
+.container0 section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6));
+  z-index: 1;
+}
+
+.container0 section > * {
+  position: relative;
+  z-index: 2;
+}
+
+/* 为每个 section 设置不同的背景图片 */
+.container0 section:nth-child(1) {
+  background-image: url('https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
+}
+
+.container0 section:nth-child(2) {
+  background-image: url('https://images.unsplash.com/photo-1529156069898-49953e39b3ac?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
+}
+
+.container0 section:nth-child(3) {
+  background-image: url('https://images.unsplash.com/photo-1559027615-cd4628902d4a?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
 }
 
 .hero h1 {
@@ -204,17 +233,17 @@ nav ul li a:hover {
  
 ================================= */
 .switch {
-  position: sticky;
   position: absolute;
-  margin-top:17em;
+  bottom: 2rem;
   left: 50%;
   transform: translateX(-50%);
   display: flex;
   gap: 1rem;
-  z-index: 3;
+  z-index: 10;
 }
 
-.switch button {
+.switch button,
+.switch .switch-btn {
   width: 1em;
   height: 1em;
   border-radius: 50%;
@@ -225,7 +254,8 @@ nav ul li a:hover {
   transition: opacity 0.3s, background 0.3s;
 }
 
-.switch button.active {
+.switch button.active,
+.switch .switch-btn.active {
   opacity: 1;
   background-color: #E69A2A;
 }
@@ -451,13 +481,17 @@ footer {
     margin: 10px 0;
   }
 
-  .hero {
+    .hero {
     padding: 4rem 1rem;
+    min-height: 55vh;
+  }
+  
+  .container0 section {
     min-height: 55vh;
   }
 
  .switch{
-    margin-top:2rem;
+    bottom: 1rem;
  }
 }
 
@@ -466,7 +500,11 @@ footer {
   .hero {
     padding: 3rem 1rem;
     min-height: 40vh;
-
+  }
+  
+  .container0 section {
+    min-height: 40vh;
+    padding: 3rem 1rem;
   }
 
   .hero h1 {
@@ -482,6 +520,6 @@ footer {
     font-size: 1.5rem;
   }
    .switch{
-    margin-top:30px;
+    bottom: 1rem;
  }
 }
