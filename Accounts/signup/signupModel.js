@@ -7,12 +7,13 @@ async function findUserByEmail(email) {
   return result.recordset[0];
 }
 
-async function createUser(name, email, hashedPassword) {
+async function createUser(name, email, hashedPassword, role) {
   await sql.connect(db);
   await sql.query`
-    INSERT INTO Users (name, email, password)
-    VALUES (${name}, ${email}, ${hashedPassword})
+    INSERT INTO Users (name, email, password, role)
+    VALUES (${name}, ${email}, ${hashedPassword}, ${role})
   `;
 }
+
 
 module.exports = { findUserByEmail, createUser };

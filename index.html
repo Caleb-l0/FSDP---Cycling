@@ -96,6 +96,17 @@
         <input type="text" id="signup-name" placeholder="Name" required><br>
         <input type="email" id="signup-email" placeholder="Email" required><br>
         <input type="password" id="signup-password" placeholder="Password" required><br>
+      
+        <div class="input-field">
+        <label for="role">Role</label>
+        <select id="role" required>
+          <option value="">Select Role</option>
+          <option value="admin">Admin</option>
+          <option value="staff">Staff</option>
+          <option value="volunteer">Volunteer</option>
+         </select>
+      </div>
+
         <button type="submit">Sign Up</button>
       </form>
       <p style="margin-top:10px;">Already have an account? 
@@ -174,61 +185,94 @@
       openLogin();
     }
 
-    async function login(event) {
-      event.preventDefault();
-      const email = document.getElementById('email').value;
-      const password = document.getElementById('password').value;
-
-      try {
-        const res = await fetch('/login', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email, password })
-        });
-
-        const data = await res.json();
-
-        if (!res.ok) {
-          alert(data.message || 'Login failed');
-          return;
-        }
-
-        alert('✅ Login successful!');
-        closeLogin();
-      } catch (err) {
-        console.error(err);
-        alert('❌ Error connecting to server');
-      }
-    }
-
     async function signup(event) {
-      event.preventDefault();
-      const name = document.getElementById('signup-name').value;
-      const email = document.getElementById('signup-email').value;
-      const password = document.getElementById('signup-password').value;
+  event.preventDefault();
+  const name = document.getElementById('signup-name').value;
+  const email = document.getElementById('signup-email').value;
+  const password = document.getElementById('signup-password').value;
+  const role = document.getElementById('role').value; 
+      
+  try {
+    const res = await fetch('/signup', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, email, password, role }) 
+    });
 
-      try {
-        const res = await fetch('/signup', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name, email, password })
-        });
+    const data = await res.json();
 
-        const data = await res.json();
-
-        if (!res.ok) {
-          alert(data.message || 'Signup failed');
-          return;
-        }
-
-        alert('🎉 Account created successfully!');
-        closeSignup();
-        openLogin();
-      } catch (err) {
-        console.error(err);
-        alert('❌ Error connecting to server');
-      }
+    if (!res.ok) {
+      alert(data.message || 'Signup failed');
+      return;
     }
+
+    alert('🎉 Account created successfully!');
+    closeSignup();
+
+    
+    switch(role) {
+      case 'admin':
+        window.location.href = '/public/homepage_login_Admin.html';
+        break;
+      case 'volunteer':
+        window.location.href = '/public/homepage_login_volunteer.html';
+        break;
+      case 'institution':
+        window.location.href = '/public/homepage_login_institution.html';
+        break;
+      default:
+        window.location.href = '/user/home.html';
+    }
+
+  } catch (err) {
+    console.error(err);
+    alert('❌ Error connecting to server');
+  }
+}
+async function login(event) {
+  event.preventDefault();
+  const email = document.getElementById('email').value;
+  const password = document.getElementById('password').value;
+
+  try {
+    const res = await fetch('/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      alert(data.message || 'Login failed');
+      return;
+    }
+
+    alert('✅ Login successful!');
+    closeLogin();
+
+    // Redirect based on role from response
+    const role = data.role;
+    switch(role) {
+      case 'admin':
+        window.location.href = '/admin/dashboard.html';
+        break;
+      case 'volunteer':
+        window.location.href = '/public/homepage_login_volunteer.html';
+        break;
+      case 'institution':
+        window.location.href = '/institution/home.html';
+        break;
+      default:
+        window.location.href = '/public/homepage_login_volunteer.html';
+    }
+
+  } catch (err) {
+    console.error(err);
+    alert('❌ Error connecting to server');
+  }
+}
+
   </script>
 </body>
 </html>
