@@ -10,7 +10,7 @@ async function findUserByEmail(email) {
 async function getUserById(id) {
   await sql.connect(db);
   const result = await sql.query`
-    SELECT id, name, email FROM Users WHERE id = ${id}
+    SELECT id, name, email, role FROM Users WHERE id = ${id}
   `;
   return result.recordset[0];
 }

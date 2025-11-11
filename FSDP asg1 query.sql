@@ -1,10 +1,15 @@
+
+DROP TABLE IF EXISTS VolunteerRequests;
+DROP TABLE IF EXISTS Organizations;
+DROP TABLE IF EXISTS Users;
+
 CREATE TABLE Users (
   id INT PRIMARY KEY IDENTITY,
   name VARCHAR(100),
   email VARCHAR(100) UNIQUE,
-  passwordÂ VARCHAR(100)
+  password VARCHAR(100)
 );    ALTER TABLE Users
-ADD role VARCHAR(50)Â DEFAULTÂ 'user';
+ADD role VARCHAR(50) DEFAULT 'user';
 
 
 CREATE TABLE Organizations (
@@ -26,7 +31,7 @@ CREATE TABLE VolunteerRequests (
     EventDate DATETIME NOT NULL,
     Description NVARCHAR(MAX),
     RequiredVolunteers INT NOT NULL,
-    Status NVARCHAR(20) DEFAULT 'Pending',
+    Status NVARCHAR(20) DEFAULT 'Pending', -- Pending, Approved, Outdated, rejected
     CreatedAt DATETIME DEFAULT GETDATE(),
     UpdatedAt DATETIME NULL,
     ReviewedBy INT NULL,
@@ -38,7 +43,7 @@ CREATE TABLE VolunteerRequests (
         REFERENCES Organizations(OrganizationID),
 
     CONSTRAINT FK_VolunteerRequests_Users FOREIGN KEY (RequesterID)
-        REFERENCES Users(UserID)
+        REFERENCES Users(id)
 );
 
 
