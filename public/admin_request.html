@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Request Details</title>
+  <link rel="stylesheet" href="request_detail.css">
+</head>
+<body>
+
+  <!-- 🔶 Header -->
+  <header>
+    <div class="header-content container">
+      <div class="logo">Volunteer Admin</div>
+      <nav>
+        <ul>
+          <li><a href="#">Dashboard</a></li>
+          <li><a href="#">Requests</a></li>
+          <li><a href="#">Events</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <!-- 🟡 Main Section -->
+  <main class="request-wrapper container">
+    <div class="request-card">
+      <div class="request-img">
+        <img id="req-img" src="https://source.unsplash.com/800x500/?volunteer,event" alt="Event Image">
+      </div>
+
+      <div class="request-info">
+        <h2 id="req-name">Community Cleanup Drive</h2>
+        <div class="info-grid">
+          <p><strong>Date:</strong> <span id="req-date">2025-11-20</span></p>
+          <p><strong>Organization:</strong> <span id="req-org">Green Earth Org</span></p>
+          <p><strong>Created:</strong> <span id="req-created">2025-11-05</span></p>
+          <p><strong>Location:</strong> <span id="req-loc">Jurong Lake Park</span></p>
+          <p><strong>Volunteers Needed:</strong> <span id="req-needed">10</span></p>
+          <p><strong>Signed Up:</strong> <span id="req-signup">6</span></p>
+          <p><strong>Requester:</strong> <span id="req-user">Alex Tan</span></p>
+        </div>
+        <div class="desc">
+          <p><strong>Description:</strong></p>
+          <p id="req-desc">Join us for a meaningful morning of cleaning up Jurong Lake Park and raising environmental awareness.</p>
+        </div>
+        <div class="btn-group">
+          <button class="btn-action btn-create">Create Event</button>
+          <button class="btn-action btn-reject">Reject</button>
+          <button class="btn-action btn-message">Message</button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- 🟤 Footer -->
+  <footer>
+    <p class="copyright">© 2025 Volunteer Management System — All Rights Reserved</p>
+  </footer>
+
+  <script>
+    // Example - load selected request
+    const req = JSON.parse(localStorage.getItem('selectedApplication'));
+    if (req) {
+      document.getElementById('req-name').textContent = req.EventName;
+      document.getElementById('req-date').textContent = req.EventDate;
+      document.getElementById('req-org').textContent = req.OrganizationID;
+      document.getElementById('req-created').textContent = req.CreatedAt || 'N/A';
+      document.getElementById('req-loc').textContent = req.Location || 'Not specified';
+      document.getElementById('req-needed').textContent = req.RequiredVolunteers || 'N/A';
+      document.getElementById('req-signup').textContent = req.PeopleSignUp || '0';
+      document.getElementById('req-user').textContent = req.RequesterName || 'Unknown';
+      document.getElementById('req-desc').textContent = req.Description || 'No description provided.';
+    }
+
+    // Buttons
+    document.querySelector('.btn-create').addEventListener('click', () => alert('✅ Event created!'));
+    document.querySelector('.btn-reject').addEventListener('click', () => alert('❌ Request rejected.'));
+    document.querySelector('.btn-message').addEventListener('click', () => alert('💬 Opening chat...'));
+  </script>
+</body>
+</html>

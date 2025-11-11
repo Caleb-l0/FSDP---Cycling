@@ -26,9 +26,15 @@ const { validateLogin } = require('./Accounts/login/loginValidation');
 const { authenticate } = require('./Accounts/login/authenticate');
 
 
+// ----- REQUEST CONTROLLER -----
+const requestController = require('./Controllers/GetRequestController');
+
+
+// ----- ADMIN EVENT CONTROLLER -----
+const adminEventController = require('./Controllers/Admin_event_Controller');
 
 // Login route
-const requestController = require('./Controllers/GetRequestController');
+
 
 app.post('/login', validateLogin, loginUser);
 app.get('/user/:id', authenticate, getUserById);
@@ -50,9 +56,16 @@ app.get('/signup', (req, res) => res.sendFile(path.join(__dirname, 'Accounts/vie
 
 
 // ------ REQUEST ROUTES -----
-app.get('admin/applications', requestController.getAllRequests);
+app.get('/admin/applications', authenticate,requestController.getAllRequests);
 app.get('/requests/organization/:organizationId', requestController.getRequestByOragnization);
 app.get('/requests/history/:date', requestController.getRequestByHistory);
+
+
+
+
+// ----- ADMIN EVENT ROUTES -----
+app.get('/admin/events', authenticate, adminEventController.getAllEvents);
+
 
 // Start server
 app.listen(port, () => {
