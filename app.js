@@ -46,6 +46,34 @@ app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'index.html')));
 app.get('/login', (req, res) => res.sendFile(path.join(__dirname, 'Accounts/views/login.html')));
 app.get('/signup', (req, res) => res.sendFile(path.join(__dirname, 'Accounts/views/signup.html')));
 
+// ----- PROFILE PAGE -----
+app.get('/api/profile', authenticate, (req, res) => {
+  const user = req.user; // Extracted from JWT token
+  res.json({
+    id: user.id,
+    name: user.name,
+    email: user.email,
+    role: user.role
+  });
+});
+
+app.put('/api/profile', authenticate, (req, res) => {
+  const user = req.user;
+  const { name, email } = req.body;
+
+  updateUser(
+    { id: user.id, name, email },
+    (err) => {
+      if (err) {
+        console.error("Update error:", err);
+        return res.status(500).json({ message: 'Failed to update profile.' });
+      }
+
+      res.json({ message: 'Profile updated successfully!' });
+    }
+  );
+});
+
 
 
 
