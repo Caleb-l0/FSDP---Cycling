@@ -1,8 +1,10 @@
-const token = localStorage.getItem('token');
+const token = localStorage.getItem("token");
+const role = localStorage.getItem("role");
 
-//if (!token) {
-  // If no token is found, redirect to login page
- // window.location.href = '../index.html';}
+  if (!token || role !== "admin") {
+    alert("You must be logged in as an admin to access this page.");
+    window.location.href = "/index.html";
+  }
 
 
 const title = document.getElementById("title1")

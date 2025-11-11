@@ -245,6 +245,7 @@ async function login(event) {
     localStorage.setItem("userId", data.userId);
     localStorage.setItem("name", data.name);
     localStorage.setItem("email", data.email);
+    localStorage.setItem("role", data.role);
     const role = data.role;
     console.log("User role:", role);
     
