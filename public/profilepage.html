@@ -3,65 +3,141 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>HappyVolunteer</title>
+  <title>My Profile | HappyVolunteer</title>
   <link rel="stylesheet" href="index.css">
 </head>
 <body>
-    <header>
-        <div class="container header-content">
-        <div class="logo">🌻 HappyVolunteer</div>
-        <nav>
-            <ul>
-            <li><a href="#">Home</a></li>
-            <li><a href="#">About</a></li>
-            <li><a href="#">Events</a></li>
-            <li><a href="#">Contact</a></li>
-            <li><a class="btn small" onclick="openLogin()">Login</a></li>
-            </ul>
-        </nav>
-        </div>
-    </header>
+
+  <header>
+    <div class="container header-content">
+      <div class="logo">🌻 HappyVolunteer</div>
+      <nav>
+        <ul>
+          <li><a href="homepage.html">Home</a></li>
+          <li><a href="#">Events</a></li>
+          <li><a href="#">Contact</a></li>
+          <li><button class="btn small" id="logoutBtn">Logout</button></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
     
-    <section class="hero">
-        <div class="hero-slider">
-        <div class="slide active" style="background-image: url('images/img4.jpg');">
-            <div class="hero-content">
-            <h1>Welcome to HappyVolunteer</h1>
-            <p>Empowering communities through compassion and collaboration.</p>
-            </div>
-        </div>
-    
-        <div class="slide" style="background-image: url('images/IMG3.webp');">
-            <div class="hero-content">
-            <h1>Make a Difference Today</h1>
-            <p>Join us in creating meaningful change across communities.</p>
-            </div>
-        </div>
-    
-        <div class="slide" style="background-image: url('images/img5.jpg');">
-            <div class="hero-content">
-            <h1>Together We Grow Stronger</h1>
-            <p>Be part of a movement that inspires hope and unity.</p>
-            </div>
-        </div>
-        </div>
-    
-        <div class="slider-dots">
-        <span class="dot active"></span>
-        <span class="dot"></span>
-        <span class="dot"></span>
-        </div>
-    </section>  
-    <section class="info-section">
-        <div class="container">
-        <h2>Why Join HappyVolunteer?</h2>
-        <div class="info-grid">
-            <div class="card">
-            <h3>🌱 Grow Your Skills</h3>
-            <p>Gain real-world experience and leadership skills by helping others.</p>
-            </div>
-            <div class="card">
-            <h3>💛 Give Back</h3>
-            <p>Contribute to causes that make a real impact in your community.</p>
-            </div>
+  <section class="hero">
+    <div class="container">
+      <h2>Your Profile</h2>
+
+      <p><strong>Name:</strong> 
+        <input type="text" id="name" disabled>
+      </p>
+
+      <p><strong>Email:</strong> 
+        <input type="email" id="email" disabled>
+      </p>
+
+      <p><strong>Role:</strong> 
+        <span id="role"></span>
+      </p>
+
+      <button class="btn" id="editBtn">Edit</button>
+      <button class="btn" id="saveBtn" style="display:none;">Save</button>
+    </div>
+  </section>
+
+<script>
+  const token = localStorage.getItem("token");
+
+  if (!token) {
+    alert("You must be logged in to access this page.");
+    window.location.href = "/index.html";
+  }
+
+  //  Get user data from backend using token
+  async function loadProfile() {
+    try {
+      const response = await fetch("http://localhost:3000/api/profile", {
+        method: "GET",
+        headers: {
+          "Authorization": `Bearer ${token}`
+        }
+      });
+
+      if (!response.ok) throw new Error("Unauthorized");
+      const data = await response.json();
+
+      document.getElementById("name").value = data.name;
+      document.getElementById("email").value = data.email;
+      document.getElementById("role").textContent = data.role;
+
+    } catch (err) {
+      console.error(err);
+      alert("Session expired — please log in again.");
+      window.location.href = "/index.html";
+    }
+  }
+
+  loadProfile();
+
+  const nameField = document.getElementById("name");
+  const emailField = document.getElementById("email");
+  const editBtn = document.getElementById("editBtn");
+  const saveBtn = document.getElementById("saveBtn");
+
+  //  Enable editing
+  editBtn.addEventListener("click", () => {
+    nameField.disabled = false;
+    emailField.disabled = false;
+    editBtn.style.display = "none";
+    saveBtn.style.display = "inline-block";
+  });
+
+  //  Save changes to backend
+  saveBtn.addEventListener("click", async () => {
+    const newName = nameField.value;
+    const newEmail = emailField.value;
+
+    try {
+      const response = await fetch("http://localhost:3000/api/profile", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          name: newName,
+          email: newEmail
+        })
+      });
+
+      if (!response.ok) throw new Error("Update failed");
+
+      alert("Profile updated successfully!");
+
+      nameField.disabled = true;
+      emailField.disabled = true;
+      editBtn.style.display = "inline-block";
+      saveBtn.style.display = "none";
+
+    } catch (err) {
+      console.error(err);
+      alert("Error updating profile.");
+    }
+  });
+
+  //  Logout button
+  document.getElementById("logoutBtn").addEventListener("click", () => {
+    localStorage.clear();
+    alert("Logged out successfully!");
+    window.location.href = "/index.html";
+  });
+
+</script>
+
+</body>
 </html>
+
+
+    
+
+        
+        
+ 

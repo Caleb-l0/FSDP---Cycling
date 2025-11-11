@@ -108,7 +108,7 @@
                         <li><a href="#">Create Event</a></li>
                         <li><a href="#">My Community</a></li>
                         <li><a href="#">Reward</a></li>
-                        <li><a href="#">Profile</a></li>
+                        <li><a href="profilepage.html">Profile</a></li>
                     </ul>
                 </nav>
 
@@ -342,6 +342,13 @@
     </footer>
 
     <script>
+        const token = localStorage.getItem("token");
+const role = localStorage.getItem("role");
+
+  if (!token || role !== "institution") {
+    alert("You do not have access to this page.");
+    window.location.href = "/index.html";
+  }
        
         document.getElementById('navToggle').addEventListener('click', function() {
             document.getElementById('mainNav').classList.toggle('active');

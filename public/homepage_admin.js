@@ -1,10 +1,8 @@
-
-
 const token = localStorage.getItem('token');
 
-if (!token) {
-    
- window.location.href = '../index.html';}
+//if (!token) {
+  // If no token is found, redirect to login page
+ // window.location.href = '../index.html';}
 
 
 const title = document.getElementById("title1")

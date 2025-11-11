@@ -102,7 +102,7 @@
         <select id="role" required>
           <option value="">Select Role</option>
           <option value="admin">Admin</option>
-          <option value="staff">Staff</option>
+          <option value="institution">Institution</option>
           <option value="volunteer">Volunteer</option>
          </select>
       </div>
@@ -245,6 +245,7 @@ async function login(event) {
     localStorage.setItem("userId", data.userId);
     localStorage.setItem("name", data.name);
     localStorage.setItem("email", data.email);
+    localStorage.setItem("role", data.role);
     const role = data.role;
     console.log("User role:", role);
     

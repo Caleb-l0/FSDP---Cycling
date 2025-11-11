@@ -12,9 +12,10 @@ async function loginUser(req, res) {
     }
 
     const token = jwt.sign(
-      { id: user.id, email: user.email },
-      process.env.JWT_SECRET
-    );
+  { id: user.id, email: user.email, role: user.role },
+  process.env.JWT_SECRET
+);
+//store all these in the token//
 
     res.status(200).json({
       message: "Login successful",
