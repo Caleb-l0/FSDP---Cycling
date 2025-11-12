@@ -315,3 +315,34 @@ footer p {
     gap: 15px;
   }
 }
+
+#signupModal select#role {
+    width: 90%;                  
+    padding: 10px 15px;         
+    margin: 8px 0;               
+    border: 1px solid #ccc;      
+    border-radius: 6px;          
+    font-size: 16px;            
+    background-color: #fff;      
+    color: #333;               
+    cursor: pointer;
+    appearance: none;           
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20width%3D'12'%20height%3D'7'%20viewBox%3D'0%200%2012%207'%20fill%3D'none'%20xmlns%3D'http://www.w3.org/2000/svg'%3E%3Cpath%20d%3D'M1%201L6%206L11%201'%20stroke%3D'%23666'%20stroke-width%3D'2'%20stroke-linecap%3D'round'%20stroke-linejoin%3D'round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 12px 7px;
+}
+
+#signupModal select#role:focus {
+    border-color: #66afe9;
+    outline: none;
+    box-shadow: 0 0 5px rgba(102, 175, 233, 0.6);
+}
+
+@media (max-width: 480px) {
+    #signupModal select#role {
+        width: 100%;  
+    }
+}
