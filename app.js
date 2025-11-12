@@ -85,9 +85,7 @@ app.put('/api/profile', authenticate, (req, res) => {
 
 // ------ REQUEST ROUTES -----
 app.get('/admin/applications', authenticate,requestController.getAllRequests);
-app.get('/requests/organization/:organizationId', requestController.getRequestByOragnization);
-app.get('/requests/history/:date', requestController.getRequestByHistory);
-
+app.get('/requests/details/:id', authenticate,requestController.getRequestById);
 
 
 

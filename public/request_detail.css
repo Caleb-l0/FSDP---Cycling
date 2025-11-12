@@ -102,21 +102,24 @@ nav ul li a:hover {
   gap: 10px;
 }
 
+
+
+
 .btn-action {
-  flex: 1;
-  min-width: 120px;
-  padding: 10px 16px;
-  border: none;
+  border: 1.5px solid #1f1f1e;
+  background: #FFF8E1;
+  color: #4E342E;
+  min-width: 150px;
+  padding: 8px 18px;
   border-radius: 8px;
-  font-weight: 600;
   cursor: pointer;
-  transition: 0.3s;
-  color: white;
+  transition: all 0.3s;
+  font-weight: 500;
 }
 
-.btn-create { background: #6BA368; }
-.btn-reject { background: #D65C5C; }
-.btn-message { background: #E69A2A; }
+.btn-create { background: #FFCB66 }
+.btn-reject { background: #FFCB66; }
+.btn-message { background: #FFCB66; }
 
 .btn-action:hover {
   opacity: 0.9;

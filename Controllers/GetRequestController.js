@@ -1,6 +1,7 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const RequestModel = require("../Models/GetRequestModel");
+const { get } = require("mongoose");
 
 
 async function getAllRequests(req, res) {
@@ -10,6 +11,16 @@ async function getAllRequests(req, res) {
     } catch (error) {
         res.status(500).json({ message: "Server Error", error: error.message });
     }   
+}
+
+async function getRequestById(req, res) {
+    const { id } = req.params;
+    try {
+        const request = await RequestModel.getRequestById(id);
+        res.status(200).json(request);
+    } catch (error) {
+        res.status(500).json({ message: "Server Error", error: error.message });
+    }
 }
 
 async function getRequestByOragnization(req, res) {
@@ -34,4 +45,4 @@ async function getRequestByHistory(req, res) {
     }
 }
 
-module.exports = { getAllRequests, getRequestByOragnization, getRequestByHistory };
+module.exports = { getAllRequests, getRequestByOragnization, getRequestByHistory,getRequestById };

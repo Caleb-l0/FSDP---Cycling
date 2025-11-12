@@ -1,5 +1,6 @@
 const sql = require("mssql");
 const db = require("../dbconfig");
+const { get } = require("mongoose");
 
 
 async function getAllRequests() {
@@ -9,6 +10,15 @@ async function getAllRequests() {
 
 }
 
+
+async function getRequestById(id) {
+    pool = await sql.connect(db);
+    const request = pool.request();
+     
+    request.input('RequestID', sql.Int, id);
+    const result = await request.query`SELECT * FROM VolunteerRequests WHERE RequestID = @RequestID`;
+    return result.recordset[0];
+}
 
 async function getRequestByOragnization(organizationId) {
     await sql.connect(db);
@@ -32,5 +42,5 @@ async function getRequestByHistory(date) {
 
 }
 
-module.exports = { getAllRequests, getRequestByOragnization, getRequestByApproved,getRequestByHistory};
+module.exports = { getAllRequests, getRequestByOragnization, getRequestByApproved,getRequestByHistory,getRequestById };
 

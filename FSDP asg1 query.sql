@@ -1,7 +1,11 @@
-
+DROP TABLE IF EXISTS UserEvents;
+DROP TABLE IF EXISTS EventSignUps;
+DROP TABLE IF EXISTS Events;
 DROP TABLE IF EXISTS VolunteerRequests;
 DROP TABLE IF EXISTS Organizations;
 DROP TABLE IF EXISTS Users;
+
+
 
 CREATE TABLE Users (
   id INT PRIMARY KEY IDENTITY,
@@ -55,6 +59,7 @@ CREATE TABLE Events (
     EventDate DATETIME NOT NULL,
     Description NVARCHAR(MAX),
     RequiredVolunteers INT NOT NULL,
+	PeopleSignUp INT,
     Status NVARCHAR(20) DEFAULT 'Upcoming',   -- Upcoming / Ongoing / Completed / Cancelled
     CreatedAt DATETIME DEFAULT GETDATE(),
     UpdatedAt DATETIME NULL,

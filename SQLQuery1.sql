@@ -4,6 +4,8 @@ from Users
 select *
 from Users where name = 'jack'
 
+select *
+from Events
 
 select *
 from VolunteerRequests
