@@ -25,11 +25,6 @@
 
                 <nav id="mainNav">
                     <ul>
-                        <div class="search-bar">
-  <i class="icon">🔍</i>
-  <input type="text" placeholder="Search..." />
-  <button>Go</button>
-</div>
                         <li><a href="#">Event</a></li>
                         <li><a href="#">Community</a></li>
                         <li><a href="#">Reward</a></li>
@@ -41,46 +36,38 @@
         </div>
     </header>
 
-   
     <section class="hero">
-
         <div class="container0">
             <section>
-            <h1>Welcome, Jack!</h1>
-            <p>Check what's new today?</p>
-            <a href="#" class="btn">Join Us Today !</a>、
-             <a href="volunteer_signup/volunteer-events.html" class="btn">Browse Events</a>
+                <h1>Welcome, Jack!</h1>
+                <p>Check what's new today?</p>
+                <a href="#" class="btn">Join Us Today!</a>
+                <a href="volunteer_signup/volunteer-events.html" class="btn">Browse Events</a>
             </section>
-             <section>
-            <h1>Welcome !</h1>
-            <p>Join hands, share love, and make every day meaningful.</p>
-            <a href="#" class="btn">Join Us Today !</a>
+            <section>
+                <h1>Welcome!</h1>
+                <p>Join hands, share love, and make every day meaningful.</p>
+                <a href="#" class="btn">Join Us Today!</a>
             </section>
-             <section>
-            <h1>Welcome !</h1>
-            <p>Join hands, share love, and make every day meaningful.</p>
-            <a href="#" class="btn">Join Us Today !</a>
+            <section>
+                <h1>Welcome!</h1>
+                <p>Join hands, share love, and make every day meaningful.</p>
+                <a href="#" class="btn">Join Us Today!</a>
             </section>
         </div>
 
-      
-             
-       
-        
-         <section class="switch">
-               <button class="switch-btn active" data-index="0">.</button>
-                <button class="switch-btn" data-index="1">.</button>
-                 <button class="switch-btn" data-index="2">.</button>
-            </section>
-
+        <section class="switch">
+            <button class="switch-btn active" data-index="0">.</button>
+            <button class="switch-btn" data-index="1">.</button>
+            <button class="switch-btn" data-index="2">.</button>
+        </section>
     </section>
 
- 
     <section class="services">
         <div class="container">
             <div class="section-title">
                 <h2>Latest Event</h2>
-                <p>Join our latest event </p>
+                <p>Join our latest event</p>
             </div>
             <div class="services-grid">
                 <div class="service-card">
@@ -92,7 +79,7 @@
                         <p>Event</p>
                     </div>
                 </div>
-               <div class="service-card">
+                <div class="service-card">
                     <div class="service-icon">
                         <i class="fas fa-hands-helping"></i>
                     </div>
@@ -114,90 +101,58 @@
         </div>
     </section>
 
-  
     <section class="features">
-        <div class="container" >
+        <div class="container">
             <div class="section-title">
                 <h2>You may interest</h2>
-                
-              
             </div>
             <div class="features-grid">
-              
                 <div class="feature-item">
                     <i class="fas fa-award"></i>
                     <h3>Event</h3>
                     <p>Hi</p>
                 </div>
-                
                 <div class="feature-item">
                     <i class="fas fa-award"></i>
                     <h3>Event</h3>
                     <p>Hi</p>
                 </div>
-                
                 <div class="feature-item">
                     <i class="fas fa-award"></i>
                     <h3>Event</h3>
                     <p>Hi</p>
                 </div>
-
             </div>
         </div>
     </section>
 
-   <section class="features">
-     <div class="section-title">
-                <h2>Explore more</h2>
-            </div>
-
-            
-    <div class="container">
-        <section class="big_box">
-<div class="small_box">
-
-</div>
-<div class="small_box">
-   
-</div>
-<div class="small_box">
-    
-</div>
-<div class="small_box">
-   
-</div>
-
-        </section>
-
-        
-    </div>
-    </section>
-    
-<section class="features">
-     <div class="section-title">
-                <h2>People you may know</h2>
-            </div>
-     <div class="container">
-<section class="big_box">
-<div class="small_box">
-
-</div>
-<div class="small_box">
-   
-</div>
-<div class="small_box">
-    
-</div>
-<div class="small_box">
-   
-</div>
-     </div>
-
-
-
-
+    <section class="features">
+        <div class="section-title">
+            <h2>Explore more</h2>
+        </div>
+        <div class="container">
+            <section class="big_box">
+                <div class="small_box"></div>
+                <div class="small_box"></div>
+                <div class="small_box"></div>
+                <div class="small_box"></div>
             </section>
+        </div>
+    </section>
 
+    <section class="features">
+        <div class="section-title">
+            <h2>People you may know</h2>
+        </div>
+        <div class="container">
+            <section class="big_box">
+                <div class="small_box"></div>
+                <div class="small_box"></div>
+                <div class="small_box"></div>
+                <div class="small_box"></div>
+            </section>
+        </div>
+    </section>
 
     <footer>
         <div class="container">
@@ -225,7 +180,7 @@
                     <ul>
                         <li><a href="#">Contact Us</a></li>
                         <li><a href="#">Support</a></li>
-                        <li><a href="#">cooperation</a></li>
+                        <li><a href="#">Cooperation</a></li>
                         <li><a href="#">Feedback</a></li>
                     </ul>
                 </div>
@@ -247,18 +202,17 @@
 
     <script>
         const token = localStorage.getItem("token");
-const role = localStorage.getItem("role");
+        const role = localStorage.getItem("role");
 
-  if (!token || role !== "volunteer") {
-    alert("You do not have access to this page.");
-    window.location.href = "/index.html";
-  }
-       
+        if (!token || role !== "volunteer") {
+            alert("You do not have access to this page.");
+            window.location.href = "/index.html";
+        }
+
         document.getElementById('navToggle').addEventListener('click', function() {
             document.getElementById('mainNav').classList.toggle('active');
         });
-        
-        
+
         document.querySelectorAll('#mainNav a').forEach(link => {
             link.addEventListener('click', function() {
                 document.getElementById('mainNav').classList.remove('active');
@@ -275,13 +229,8 @@ const role = localStorage.getItem("role");
             currentSlide = index;
             const translateX = -currentSlide * 100;
             container0.style.transform = `translateX(${translateX}vw)`;
-
             switchButtons.forEach((btn, i) => {
-                if (i === currentSlide) {
-                    btn.classList.add('active');
-                } else {
-                    btn.classList.remove('active');
-                }
+                btn.classList.toggle('active', i === currentSlide);
             });
         }
 
