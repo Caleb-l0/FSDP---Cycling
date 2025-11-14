@@ -14,38 +14,68 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
+   
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">Happy Volunteer</div>
+                <button class="nav-toggle" id="navToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
 
-    <!-- Header placeholder -->
-    <div id="header-placeholder"></div>
+                <nav id="mainNav">
+                    <ul>
+                        <div class="search-bar">
+  <i class="icon">🔍</i>
+  <input type="text" placeholder="Search..." />
+  <button>Go</button>
+</div>
+                        <li><a href="#">Event</a></li>
+                        <li><a href="#">Community</a></li>
+                        <li><a href="#">Reward</a></li>
+                        <li><a href="profilepage.html">Profile</a></li>
+                    </ul>
+                </nav>
 
-    <!-- Hero Section -->
+            </div>
+        </div>
+    </header>
+
+   
     <section class="hero">
+
         <div class="container0">
             <section>
-                <h1>Welcome, Jack!</h1>
-                <p>Check what's new today?</p>
-                <a href="#" class="btn">Join Us Today !</a>
+            <h1>Welcome, Jack!</h1>
+            <p>Check what's new today?</p>
+            <a href="#" class="btn">Join Us Today !</a>、
+             <a href="volunteer_signup/volunteer-events.html" class="btn">Browse Events</a>
             </section>
-            <section>
-                <h1>Welcome !</h1>
-                <p>Join hands, share love, and make every day meaningful.</p>
-                <a href="#" class="btn">Join Us Today !</a>
+             <section>
+            <h1>Welcome !</h1>
+            <p>Join hands, share love, and make every day meaningful.</p>
+            <a href="#" class="btn">Join Us Today !</a>
             </section>
-            <section>
-                <h1>Welcome !</h1>
-                <p>Join hands, share love, and make every day meaningful.</p>
-                <a href="#" class="btn">Join Us Today !</a>
+             <section>
+            <h1>Welcome !</h1>
+            <p>Join hands, share love, and make every day meaningful.</p>
+            <a href="#" class="btn">Join Us Today !</a>
             </section>
         </div>
 
-        <section class="switch">
-            <button class="switch-btn active" data-index="0">.</button>
-            <button class="switch-btn" data-index="1">.</button>
-            <button class="switch-btn" data-index="2">.</button>
-        </section>
+      
+             
+       
+        
+         <section class="switch">
+               <button class="switch-btn active" data-index="0">.</button>
+                <button class="switch-btn" data-index="1">.</button>
+                 <button class="switch-btn" data-index="2">.</button>
+            </section>
+
     </section>
 
-    <!-- Services Section -->
+ 
     <section class="services">
         <div class="container">
             <div class="section-title">
@@ -62,7 +92,7 @@
                         <p>Event</p>
                     </div>
                 </div>
-                <div class="service-card">
+               <div class="service-card">
                     <div class="service-icon">
                         <i class="fas fa-hands-helping"></i>
                     </div>
@@ -84,63 +114,91 @@
         </div>
     </section>
 
-    <!-- Features Section -->
+  
     <section class="features">
         <div class="container" >
             <div class="section-title">
                 <h2>You may interest</h2>
+                
+              
             </div>
             <div class="features-grid">
+              
                 <div class="feature-item">
                     <i class="fas fa-award"></i>
                     <h3>Event</h3>
                     <p>Hi</p>
                 </div>
+                
                 <div class="feature-item">
                     <i class="fas fa-award"></i>
                     <h3>Event</h3>
                     <p>Hi</p>
                 </div>
+                
                 <div class="feature-item">
                     <i class="fas fa-award"></i>
                     <h3>Event</h3>
                     <p>Hi</p>
                 </div>
+
             </div>
         </div>
     </section>
 
-    <!-- Explore More Section -->
-    <section class="features">
-        <div class="section-title">
-            <h2>Explore more</h2>
-        </div>
-        <div class="container">
-            <section class="big_box">
-                <div class="small_box"></div>
-                <div class="small_box"></div>
-                <div class="small_box"></div>
-                <div class="small_box"></div>
-            </section>
-        </div>
-    </section>
+   <section class="features">
+     <div class="section-title">
+                <h2>Explore more</h2>
+            </div>
 
-    <!-- People You May Know Section -->
-    <section class="features">
-        <div class="section-title">
-            <h2>People you may know</h2>
-        </div>
-        <div class="container">
-            <section class="big_box">
-                <div class="small_box"></div>
-                <div class="small_box"></div>
-                <div class="small_box"></div>
-                <div class="small_box"></div>
-            </section>
-        </div>
-    </section>
+            
+    <div class="container">
+        <section class="big_box">
+<div class="small_box">
 
-    <!-- Footer -->
+</div>
+<div class="small_box">
+   
+</div>
+<div class="small_box">
+    
+</div>
+<div class="small_box">
+   
+</div>
+
+        </section>
+
+        
+    </div>
+    </section>
+    
+<section class="features">
+     <div class="section-title">
+                <h2>People you may know</h2>
+            </div>
+     <div class="container">
+<section class="big_box">
+<div class="small_box">
+
+</div>
+<div class="small_box">
+   
+</div>
+<div class="small_box">
+    
+</div>
+<div class="small_box">
+   
+</div>
+     </div>
+
+
+
+
+            </section>
+
+
     <footer>
         <div class="container">
             <div class="footer-content">
@@ -188,47 +246,25 @@
     </footer>
 
     <script>
-        // Access control
         const token = localStorage.getItem("token");
-        const role = localStorage.getItem("role");
-        if (!token || role !== "volunteer") {
-            alert("You do not have access to this page.");
-            window.location.href = "/index.html";
-        }
+const role = localStorage.getItem("role");
 
-        // Load header.html dynamically
-        fetch('header.html')
-          .then(response => response.text())
-          .then(data => {
-              document.getElementById('header-placeholder').innerHTML = data;
-
-              // Login button event
-              const loginBtn = document.querySelector('#header-placeholder .btn.small');
-              if (loginBtn) {
-                  loginBtn.addEventListener('click', () => {
-                      if (typeof openLogin === 'function') openLogin();
-                  });
-              }
-
-              // Mobile nav toggle
-              const navToggle = document.querySelector('#header-placeholder .nav-toggle');
-              const mainNav = document.querySelector('#header-placeholder nav');
-              if (navToggle && mainNav) {
-                  navToggle.addEventListener('click', () => {
-                      mainNav.classList.toggle('active');
-                  });
-              }
-          });
-
-        // Close mobile nav when clicking a link
-        document.addEventListener('click', (e) => {
-            if (e.target.closest('#header-placeholder nav a')) {
-                const nav = document.querySelector('#header-placeholder nav');
-                if (nav) nav.classList.remove('active');
-            }
+  if (!token || role !== "volunteer") {
+    alert("You do not have access to this page.");
+    window.location.href = "/index.html";
+  }
+       
+        document.getElementById('navToggle').addEventListener('click', function() {
+            document.getElementById('mainNav').classList.toggle('active');
+        });
+        
+        
+        document.querySelectorAll('#mainNav a').forEach(link => {
+            link.addEventListener('click', function() {
+                document.getElementById('mainNav').classList.remove('active');
+            });
         });
 
-        // Hero carousel
         let currentSlide = 0;
         const totalSlides = 3;
         const container0 = document.querySelector('.container0');
@@ -241,7 +277,11 @@
             container0.style.transform = `translateX(${translateX}vw)`;
 
             switchButtons.forEach((btn, i) => {
-                btn.classList.toggle('active', i === currentSlide);
+                if (i === currentSlide) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
             });
         }
 
@@ -251,7 +291,7 @@
         }
 
         switchButtons.forEach((btn, index) => {
-            btn.addEventListener('click', () => {
+            btn.addEventListener('click', function() {
                 goToSlide(index);
                 clearInterval(autoSlideInterval);
                 startAutoSlide();
@@ -273,6 +313,5 @@
             initCarousel();
         }
     </script>
-
 </body>
 </html>
