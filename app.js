@@ -29,10 +29,9 @@ const { validateSignup } = require('./Accounts/signup/signupValidation');
 app.post('/signup', validateSignup, signupUser);
 
 // ----- Event Routes -----
-const { submitEventRequest } = require("./Accounts/events/eventController");
-const { validateEventRequest } = require("./Accounts/events/eventValidation");
+const eventRoutes = require("./Accounts/events/eventRoutes");
 
-app.post("/api/volunteerRequests", validateEventRequest, submitEventRequest);
+app.use("/api", eventRoutes);
 
 // ----- HTML PAGES -----
 app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'index.html')));
@@ -42,37 +41,4 @@ app.get('/signup', (req, res) => res.sendFile(path.join(__dirname, 'Accounts/vie
 // Start server
 app.listen(port, () => {
   console.log(`✅ Server running on http://localhost:${port}`);
-});
-
-// ===== TEMPORARY TEST ROUTE FOR VOLUNTEER REQUESTS =====
-const sql = require("mssql");
-const dbConfig = require("./database"); // adjust path if needed
-
-app.post("/api/volunteerRequests", async (req, res) => {
-  try {
-    const { eventName, eventDate, description, requiredVolunteers, specialInvite } = req.body;
-
-    // Basic validation
-    if (!eventName || !eventDate || !description || !requiredVolunteers) {
-      return res.status(400).json({ message: "Missing required fields." });
-    }
-
-    // Connect and insert into DB
-    const pool = await sql.connect(dbConfig);
-    await pool.request()
-      .input("eventName", sql.NVarChar, eventName)
-      .input("eventDate", sql.Date, eventDate)
-      .input("description", sql.NVarChar, description)
-      .input("requiredVolunteers", sql.Int, requiredVolunteers)
-      .input("specialInvite", sql.NVarChar, specialInvite || "")
-      .query(`
-        INSERT INTO VolunteerRequests (EventName, EventDate, Description, RequiredVolunteers, SpecialInvite)
-        VALUES (@eventName, @eventDate, @description, @requiredVolunteers, @specialInvite)
-      `);
-
-    res.status(201).json({ message: "✅ Event request saved successfully!" });
-  } catch (err) {
-    console.error("❌ Error inserting event request:", err);
-    res.status(500).json({ message: "Database error." });
-  }
 });
