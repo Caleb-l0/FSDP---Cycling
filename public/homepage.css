@@ -1,25 +1,100 @@
-
+/* ====== General Styles ====== */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: 'Poppins', sans-serif;
 }
 
 body {
-  background-color: #FAF3E0;
+  background-color: #fffdf9;
   color: #333;
   line-height: 1.6;
+  overflow-x: hidden;
 }
 
+/* ====== Header ====== */
+header {
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  position: fixed;
+  width: 100%;
+  top: 0;
+  z-index: 1000;
+}
+
+.container {
+  width: 90%;
+  max-width: 1200px;
+  margin: auto;
+}
+
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 0;
+}
+
+.logo {
+  font-size: 1.6em;
+  font-weight: 700;
+  color: #f4a261;
+  text-decoration: none;
+}
+
+.nav-toggle {
+  display: none;
+  background: none;
+  border: none;
+  color: #333;
+  font-size: 1.8rem;
+  cursor: pointer;
+}
+
+nav ul {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 25px;
+}
+
+nav ul li a {
+  text-decoration: none;
+  color: #333;
+  font-weight: 500;
+  padding: 8px 16px;
+  border-radius: 6px;
+  transition: color 0.3s, background 0.3s;
+}
+
+nav ul li a:hover {
+  color: #f4a261;
+  background-color: rgba(244, 162, 97, 0.1);
+}
+
+/* Small button style (optional) */
+.btn.small {
+  background-color: #f4a261;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.btn.small:hover {
+  background-color: #e76f51;
+}
+
+/* ====== Search Bar ====== */
 .search-bar {
   display: flex;
   align-items: center;
-  background: #FFFDF7;
+  background: #fffdf7;
   border: 1px solid #E5D3B3;
   border-radius: 8px;
   padding: 14px 12px;
-  
   width: 460px;
   transition: box-shadow 0.2s;
 }
@@ -62,90 +137,14 @@ body {
   background: #D37E0E;
 }
 
-
-
-header {
-  background: linear-gradient(135deg, #ceb184, #d09a4a, #E69A2A);
-  color: white;
-  padding: 22px 0;
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  min-height: 85px;
-  font-size:1.4rem;
-}
-
-.header-content {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.logo {
-  font-size: 1.5rem;
-  font-weight: bold;
-}
-
-.nav-toggle {
-  display: none;
-  background: none;
-  border: none;
-  color: white;
-  font-size: 1.8rem;
-  cursor: pointer;
-}
-
-nav ul {
-  display: flex;
-  list-style: none;
-  flex-wrap: wrap;
-}
-
-nav ul li {
-  margin-left: 20px;
-}
-
-nav ul li a {
-  color: white;
-  text-decoration: none;
-  font-weight: 500;
-  transition: all 0.3s;
-  padding: 8px 16px;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  border-radius: 6px;
-  background-color: rgba(255, 255, 255, 0.1);
-  display: inline-block;
-}
-
-nav ul li a:hover {
-  opacity: 0.9;
-  background-color: rgba(255, 255, 255, 0.2);
-  border-color: rgba(255, 255, 255, 0.5);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
-
 /* ===============================
    Hero Section
 ================================= */
-
 .hero {
-  color: white;
-  text-align: center;
-  min-height: 380px;
+  margin-top: 80px;
   position: relative;
+  min-height: 380px;
   overflow: hidden;
-  max-width: 100%;
-  padding: 0;
-}
-
-.container {
-  
-  max-width: 1200px;
-  margin: 0 auto;
-  
-   
 }
 
 .container0 {
@@ -189,7 +188,7 @@ nav ul li a:hover {
   z-index: 2;
 }
 
-/* 为每个 section 设置不同的背景图片 */
+/* Section Backgrounds */
 .container0 section:nth-child(1) {
   background-image: url('https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
 }
@@ -229,9 +228,7 @@ nav ul li a:hover {
   background: #b57a19;
 }
 
-/* ===============================
- 
-================================= */
+/* Hero Switch */
 .switch {
   position: absolute;
   bottom: 2rem;
@@ -344,7 +341,6 @@ nav ul li a:hover {
 
 .feature-item i {
   font-size: 2.5rem;
-  
   margin-bottom: 15px;
 }
 
@@ -354,7 +350,6 @@ nav ul li a:hover {
 }
 
 .big_box{
-  
   display: flex;
   width:100%;
   min-height:30vh;
@@ -362,6 +357,7 @@ nav ul li a:hover {
   flex-basis: auto;
   align-content: center;
 }
+
 .small_box{
   border-radius: 1vw;
   width:25%;
@@ -373,66 +369,43 @@ nav ul li a:hover {
    Footer
 ================================= */
 footer {
-  background: #E5D3B3;
-  color: #3E2723;
-  padding: 50px 0 20px;
+  background-color: #264653;
+  color: white;
+  text-align: center;
+  padding: 40px 0 20px;
 }
 
 .footer-content {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
   gap: 30px;
-  margin-bottom: 40px;
-}
-
-.footer-column h3 {
-  font-size: 1.2rem;
   margin-bottom: 20px;
-  position: relative;
-  padding-bottom: 10px;
 }
 
-.footer-column h3::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  bottom: 0;
-  width: 40px;
-  height: 2px;
-  background: #3E2723;
-}
-
-.footer-column ul {
-  list-style: none;
-}
-
-.footer-column ul li {
+.footer-content h3 {
+  color: #f4a261;
   margin-bottom: 10px;
 }
 
-.footer-column ul li a {
-  color: #3E2723;
+.footer-content a {
+  color: white;
   text-decoration: none;
-  transition: color 0.3s;
+  transition: 0.3s;
 }
 
-.footer-column ul li a:hover {
-  color: #3E2723;
+.footer-content a:hover {
+  color: #f4a261;
 }
 
-.copyright {
-  text-align: center;
-  padding-top: 20px;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  color: #3E2723;
-  font-size: 0.9rem;
+footer p {
+  font-size: 0.9em;
+  opacity: 0.8;
 }
 
 /* ===============================
-   响应式设计
+   Responsive
 ================================= */
-
-/* 平板 (<=1024px) */
 @media (max-width: 1024px) {
   .hero {
     padding: 5rem 1.5rem;
@@ -451,8 +424,6 @@ footer {
   }
 }
 
-
-
 @media (max-width: 770px) {
   .nav-toggle {
     display: block;
@@ -463,45 +434,51 @@ footer {
     top: 100%;
     left: 0;
     width: 100%;
-    background: #E69A2A;
+    background: rgba(255, 255, 255, 0.95);
     display: none;
+    flex-direction: column;
+    align-items: center;
+    padding: 15px 0;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
   }
 
   nav.active {
-    display: block;
+    display: flex;
   }
 
   nav ul {
     flex-direction: column;
+    gap: 15px;
+    width: 100%;
     align-items: center;
-    padding: 15px 0;
   }
 
   nav ul li {
-    margin: 10px 0;
+    margin: 0;
+    width: 100%;
+    text-align: center;
   }
 
-    .hero {
+  .hero {
     padding: 4rem 1rem;
     min-height: 55vh;
   }
-  
+
   .container0 section {
     min-height: 55vh;
   }
 
- .switch{
+  .switch {
     bottom: 1rem;
- }
+  }
 }
-
 
 @media (max-width: 480px) {
   .hero {
     padding: 3rem 1rem;
     min-height: 40vh;
   }
-  
+
   .container0 section {
     min-height: 40vh;
     padding: 3rem 1rem;
@@ -519,7 +496,40 @@ footer {
   .section-title h2 {
     font-size: 1.5rem;
   }
-   .switch{
+
+  .switch {
     bottom: 1rem;
- }
+  }
+}
+
+/* ====== Modal & Signup Role Select (unchanged) ====== */
+#signupModal select#role {
+    width: 90%;                  
+    padding: 10px 15px;         
+    margin: 8px 0;               
+    border: 1px solid #ccc;      
+    border-radius: 6px;          
+    font-size: 16px;            
+    background-color: #fff;      
+    color: #333;               
+    cursor: pointer;
+    appearance: none;           
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20width%3D'12'%20height%3D'7'%20viewBox%3D'0%200%2012%207'%20fill%3D'none'%20xmlns%3D'http://www.w3.org/2000/svg'%3E%3Cpath%20d%3D'M1%201L6%206L11%201'%20stroke%3D'%23666'%20stroke-width%3D'2'%20stroke-linecap%3D'round'%20stroke-linejoin%3D'round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 12px 7px;
+}
+
+#signupModal select#role:focus {
+    border-color: #66afe9;
+    outline: none;
+    box-shadow: 0 0 5px rgba(102, 175, 233, 0.6);
+}
+
+@media (max-width: 480px) {
+    #signupModal select#role {
+        width: 100%;  
+    }
 }
