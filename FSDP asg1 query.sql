@@ -11,9 +11,9 @@ CREATE TABLE Users (
   id INT PRIMARY KEY IDENTITY,
   name VARCHAR(100),
   email VARCHAR(100) UNIQUE,
-  password VARCHAR(100)
+  password VARCHAR(100)
 );    ALTER TABLE Users
-ADD role VARCHAR(50) DEFAULT 'user';
+ADD role VARCHAR(50) DEFAULT 'user';
 
 
 CREATE TABLE Organizations (
