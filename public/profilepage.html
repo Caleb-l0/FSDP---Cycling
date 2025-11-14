@@ -5,6 +5,34 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>My Profile | HappyVolunteer</title>
   <link rel="stylesheet" href="index.css">
+  <style>
+    /* Language button styles */
+    .lang-container {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+        margin: 10px 20px;
+    }
+
+    .lang-btn {
+        padding: 6px 14px;
+        background: #4C6EF5;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 14px;
+        transition: 0.2s ease;
+    }
+
+    .lang-btn:hover {
+        background: #3B5CD1;
+    }
+
+    .lang-btn:active {
+        transform: scale(0.97);
+    }
+  </style>
 </head>
 <body>
 
@@ -21,6 +49,14 @@
       </nav>
     </div>
   </header>
+
+  <!-- Language Switcher -->
+  <div class="lang-container">
+    <button class="lang-btn" onclick="translatePage('en')">English</button>
+    <button class="lang-btn" onclick="translatePage('zh-CN')">Chinese</button>
+    <button class="lang-btn" onclick="translatePage('ms')">Malay</button>
+    <button class="lang-btn" onclick="translatePage('ta')">Tamil</button>
+  </div>
     
   <section class="hero">
     <div class="container">
@@ -43,97 +79,115 @@
     </div>
   </section>
 
-<script>
-  const token = localStorage.getItem("token");
+  <!-- Hidden Google Translate element -->
+  <div id="google_translate_element" style="display:none;"></div>
 
-  if (!token) {
-    alert("You must be logged in to access this page.");
-    window.location.href = "/index.html";
-  }
+  <script>
+    function googleTranslateElementInit() {
+        new google.translate.TranslateElement({pageLanguage: 'en'}, 'google_translate_element');
+    }
+  </script>
+  <script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 
-  //  Get user data from backend using token
-  async function loadProfile() {
-    try {
-      const response = await fetch("http://localhost:3000/api/profile", {
-        method: "GET",
-        headers: {
-          "Authorization": `Bearer ${token}`
+  <script>
+    function translatePage(lang) {
+        const combo = document.querySelector(".goog-te-combo");
+        if (combo) {
+            combo.value = lang;
+            combo.dispatchEvent(new Event("change"));
+        } else {
+            console.warn("Google Translate not ready yet.");
         }
-      });
+    }
+  </script>
 
-      if (!response.ok) throw new Error("Unauthorized");
-      const data = await response.json();
+  <script>
+    const token = localStorage.getItem("token");
 
-      document.getElementById("name").value = data.name;
-      document.getElementById("email").value = data.email;
-      document.getElementById("role").textContent = data.role;
-
-    } catch (err) {
-      console.error(err);
-      alert("Session expired — please log in again.");
+    if (!token) {
+      alert("You must be logged in to access this page.");
       window.location.href = "/index.html";
     }
-  }
 
-  loadProfile();
+    async function loadProfile() {
+      try {
+        const response = await fetch("http://localhost:3000/api/profile", {
+          method: "GET",
+          headers: {
+            "Authorization": `Bearer ${token}`
+          }
+        });
 
-  const nameField = document.getElementById("name");
-  const emailField = document.getElementById("email");
-  const editBtn = document.getElementById("editBtn");
-  const saveBtn = document.getElementById("saveBtn");
+        if (!response.ok) throw new Error("Unauthorized");
+        const data = await response.json();
 
-  //  Enable editing
-  editBtn.addEventListener("click", () => {
-    nameField.disabled = false;
-    emailField.disabled = false;
-    editBtn.style.display = "none";
-    saveBtn.style.display = "inline-block";
-  });
+        document.getElementById("name").value = data.name;
+        document.getElementById("email").value = data.email;
+        document.getElementById("role").textContent = data.role;
 
-  //  Save changes to backend
-  saveBtn.addEventListener("click", async () => {
-    const newName = nameField.value;
-    const newEmail = emailField.value;
-
-    try {
-      const response = await fetch("http://localhost:3000/api/profile", {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          name: newName,
-          email: newEmail
-        })
-      });
-
-      if (!response.ok) throw new Error("Update failed");
-
-      alert("Profile updated successfully!");
-
-      nameField.disabled = true;
-      emailField.disabled = true;
-      editBtn.style.display = "inline-block";
-      saveBtn.style.display = "none";
-
-    } catch (err) {
-      console.error(err);
-      alert("Error updating profile.");
+      } catch (err) {
+        console.error(err);
+        alert("Session expired — please log in again.");
+        window.location.href = "/index.html";
+      }
     }
-  });
 
-  //  Logout button
-  document.getElementById("logoutBtn").addEventListener("click", () => {
-    localStorage.clear();
-    alert("Logged out successfully!");
-    window.location.href = "/index.html";
-  });
+    loadProfile();
 
-</script>
+    const nameField = document.getElementById("name");
+    const emailField = document.getElementById("email");
+    const editBtn = document.getElementById("editBtn");
+    const saveBtn = document.getElementById("saveBtn");
+
+    editBtn.addEventListener("click", () => {
+      nameField.disabled = false;
+      emailField.disabled = false;
+      editBtn.style.display = "none";
+      saveBtn.style.display = "inline-block";
+    });
+
+    saveBtn.addEventListener("click", async () => {
+      const newName = nameField.value;
+      const newEmail = emailField.value;
+
+      try {
+        const response = await fetch("http://localhost:3000/api/profile", {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            name: newName,
+            email: newEmail
+          })
+        });
+
+        if (!response.ok) throw new Error("Update failed");
+
+        alert("Profile updated successfully!");
+
+        nameField.disabled = true;
+        emailField.disabled = true;
+        editBtn.style.display = "inline-block";
+        saveBtn.style.display = "none";
+
+      } catch (err) {
+        console.error(err);
+        alert("Error updating profile.");
+      }
+    });
+
+    document.getElementById("logoutBtn").addEventListener("click", () => {
+      localStorage.clear();
+      alert("Logged out successfully!");
+      window.location.href = "/index.html";
+    });
+  </script>
 
 </body>
 </html>
+
 
 
     
