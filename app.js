@@ -1,41 +1,33 @@
 require('dotenv').config();
 const express = require('express');
 const path = require('path');
+const cors = require('cors');
+
 const app = express();
 const port = process.env.PORT || 3000;
 
-
-
-const cors = require('cors');
-
-
-
-
+// ----- MIDDLEWARE -----
 app.use(cors());
-
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Serve static files
-app.use(express.static(__dirname)); // index.html, index.css, images, etc.
+app.use('/public', express.static(path.join(__dirname, 'public'))); // header, images, etc.
 app.use('/Accounts/views', express.static(path.join(__dirname, 'Accounts/views'))); // login.html, signup.html
+app.use(express.static(__dirname)); // index.html, index.css, root images, etc.
 
 // ----- LOGIN ROUTES -----
 const { loginUser, getUserById, updateUser, deleteUser } = require('./Accounts/login/loginController');
 const { validateLogin } = require('./Accounts/login/loginValidation');
 const { authenticate } = require('./Accounts/login/authenticate');
 
-
 // ----- REQUEST CONTROLLER -----
 const requestController = require('./Controllers/GetRequestController');
-
 
 // ----- ADMIN EVENT CONTROLLER -----
 const adminEventController = require('./Controllers/Admin_event_Controller');
 
-// Login route
-
-
+// ----- LOGIN -----
 app.post('/login', validateLogin, loginUser);
 app.get('/user/:id', authenticate, getUserById);
 app.put('/user/:id', authenticate, updateUser);
@@ -54,7 +46,7 @@ app.get('/signup', (req, res) => res.sendFile(path.join(__dirname, 'Accounts/vie
 
 // ----- PROFILE PAGE -----
 app.get('/api/profile', authenticate, (req, res) => {
-  const user = req.user; // Extracted from JWT token
+  const user = req.user; // from JWT
   res.json({
     id: user.id,
     name: user.name,
@@ -67,33 +59,24 @@ app.put('/api/profile', authenticate, (req, res) => {
   const user = req.user;
   const { name, email } = req.body;
 
-  updateUser(
-    { id: user.id, name, email },
-    (err) => {
-      if (err) {
-        console.error("Update error:", err);
-        return res.status(500).json({ message: 'Failed to update profile.' });
-      }
-
-      res.json({ message: 'Profile updated successfully!' });
+  updateUser({ id: user.id, name, email }, (err) => {
+    if (err) {
+      console.error("Update error:", err);
+      return res.status(500).json({ message: 'Failed to update profile.' });
     }
-  );
+    res.json({ message: 'Profile updated successfully!' });
+  });
 });
 
-
-
-
-// ------ REQUEST ROUTES -----
-app.get('/admin/applications', authenticate,requestController.getAllRequests);
-app.get('/requests/details/:id', authenticate,requestController.getRequestById);
-
-
+// ----- REQUEST ROUTES -----
+app.get('/admin/applications', authenticate, requestController.getAllRequests);
+app.get('/requests/details/:id', authenticate, requestController.getRequestById);
 
 // ----- ADMIN EVENT ROUTES -----
 app.get('/admin/events', authenticate, adminEventController.getAllEvents);
-app.post('/admin/create_events',authenticate,adminEventController.createEvent)
+app.post('/admin/create_events', authenticate, adminEventController.createEvent);
 
-// Start server
+// ----- START SERVER -----
 app.listen(port, () => {
   console.log(`✅ Server running on http://localhost:${port}`);
 });
