@@ -5,7 +5,6 @@ async function createEventRequest(data) {
   const pool = await sql.connect(dbConfig);
 
   const result = await pool.request()
-    .input("OrganizationID", sql.Int, data.OrganizationID)
     .input("RequesterID", sql.Int, data.RequesterID)
     .input("EventName", sql.NVarChar, data.EventName)
     .input("EventDate", sql.DateTime, data.EventDate)
@@ -14,9 +13,9 @@ async function createEventRequest(data) {
     .input("SpecialInvite", sql.NVarChar, data.SpecialInvite)
     .query(`
       INSERT INTO VolunteerRequests 
-      (OrganizationID, RequesterID, EventName, EventDate, Description, RequiredVolunteers, Status)
+      (RequesterID, EventName, EventDate, Description, RequiredVolunteers, Status)
       OUTPUT INSERTED.RequestID
-      VALUES (@OrganizationID, @RequesterID, @EventName, @EventDate, @Description, @RequiredVolunteers, 'Pending')
+      VALUES (@RequesterID, @EventName, @EventDate, @Description, @RequiredVolunteers, 'Pending')
     `);
 
   return result.recordset[0].RequestID;
