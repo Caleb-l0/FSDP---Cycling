@@ -21,6 +21,7 @@ async function fetchRequestDetails() {
     }
     const requestData = await response.json();
     displayRequestDetails(requestData);
+    
   } catch (error) {
     console.error('Error fetching request details:', error);
   } 
@@ -28,14 +29,37 @@ async function fetchRequestDetails() {
 
 
 function displayRequestDetails(data) {
-  document.getElementById('requester-name').textContent = data.requesterName;
-  document.getElementById('request-date').textContent = new Date(data.requestDate).toLocaleDateString();
-  document.getElementById('request-description').textContent = data.description;
-  // Populate other fields as necessary
+  document.getElementById('req-name').textContent = data.EventName;
+ 
+  document.getElementById('req-created').textContent = new Date(data.CreatedAt).toLocaleDateString();
+  document.getElementById('req-desc').textContent = data. Description;
+  
+  document.getElementById('req-date').textContent = new Date(data.EventDate).toLocaleDateString();
+  document.getElementById('req-needed').textContent = data.RequiredVolunteers;
+  document.getElementById('req-org').textContent = data.OrganizationID;
+  document.getElementById('req-user').textContent = data.RequestID;
+}
+
+document.querySelector('.btn-create').addEventListener('click', createEvent);
+document.querySelector('.btn-reject').addEventListener('click', rejectEvent);
+document.querySelector('.btn-message').addEventListener('click', ChatWithOrgan);
+
+function createEvent(){
+  
+window.location.href='./createEvent.html'
 }
 
 
+function rejectEvent(){
+
+}
+
+function ChatWithOrgan(){
+
+}
 
 document.addEventListener('DOMContentLoaded', () => {
   fetchRequestDetails();
 });
+
+

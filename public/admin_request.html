@@ -37,7 +37,6 @@
           <p><strong>Created:</strong> <span id="req-created">2025-11-05</span></p>
           <p><strong>Location:</strong> <span id="req-loc">Jurong Lake Park</span></p>
           <p><strong>Volunteers Needed:</strong> <span id="req-needed">10</span></p>
-          <p><strong>Signed Up:</strong> <span id="req-signup">6</span></p>
           <p><strong>Requester:</strong> <span id="req-user">Alex Tan</span></p>
         </div>
         <div class="desc">
@@ -62,24 +61,7 @@
     
   </script>
   <script>
-    // Example - load selected request
-    const req = JSON.parse(localStorage.getItem('selectedApplication'));
-    if (req) {
-      document.getElementById('req-name').textContent = req.EventName;
-      document.getElementById('req-date').textContent = req.EventDate;
-      document.getElementById('req-org').textContent = req.OrganizationID;
-      document.getElementById('req-created').textContent = req.CreatedAt || 'N/A';
-      document.getElementById('req-loc').textContent = req.Location || 'Not specified';
-      document.getElementById('req-needed').textContent = req.RequiredVolunteers || 'N/A';
-      document.getElementById('req-signup').textContent = req.PeopleSignUp || '0';
-      document.getElementById('req-user').textContent = req.RequesterName || 'Unknown';
-      document.getElementById('req-desc').textContent = req.Description || 'No description provided.';
-    }
-
-    // Buttons
-    document.querySelector('.btn-create').addEventListener('click', () => alert('✅ Event created!'));
-    document.querySelector('.btn-reject').addEventListener('click', () => alert('❌ Request rejected.'));
-    document.querySelector('.btn-message').addEventListener('click', () => alert('💬 Opening chat...'));
+  
   </script>
 </body>
 </html>

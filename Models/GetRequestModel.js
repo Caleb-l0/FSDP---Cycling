@@ -20,6 +20,8 @@ async function getRequestById(id) {
     return result.recordset[0];
 }
 
+
+
 async function getRequestByOragnization(organizationId) {
     await sql.connect(db);
     const result = await sql.query`SELECT * FROM VolunteerRequests WHERE organizationId = ${organizationId}`;

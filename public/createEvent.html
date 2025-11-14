@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Create Event</title>
+  <link rel="stylesheet" href="request_detail.css">
+  <link rel="stylesheet" href="./createEvent.css">
+</head>
+
+<body>
+
+<header>Create a New Event</header>
+
+<div class="wrapper">
+
+  <div class="left-panel">
+    <h1>Plan Your Next Event<br>with Ease ✨</h1>
+    <p>
+      Fill in the event details on the right.  
+      This form is specially designed with large fonts, gentle colors, and a clear layout —  
+      perfect for seniors and all screen sizes.
+    </p>
+  </div>
+
+
+  <div class="form-card">
+    <h2>Event Details</h2>
+    <form id="eventForm">
+
+      <label>Event Name</label>
+      <input type="text" id="eventName" required>
+
+      <label>Location</label>
+      <select id="eventLocation" required>
+        <option value="">Choose location</option>
+        <option>Community Hall</option>
+        <option>Beach Park</option>
+        <option>Senior Activity Center</option>
+        <option>Library</option>
+      </select>
+
+      <label>Date & Time</label>
+      <input type="datetime-local" id="eventDate" required>
+
+      <label>Required Volunteers</label>
+      <input type="number" id="volunteers" min="1" max="999" required readonly>
+
+      <label>Organizer</label>
+      <input type="text" id="organizer" required readonly>
+
+      <label>Description</label>
+      <textarea id="description"></textarea>
+
+      <label>Status</label>
+      <select id="status">
+        <option>Upcoming</option>
+        <option>Ongoing</option>
+        <option>Completed</option>
+        <option>Cancelled</option>
+      </select>
+
+      <button type="submit" >Create Event</button>
+
+    </form>
+  </div>
+</div>
+
+<script src="./createEvent.js">
+document.getElementById("eventForm").addEventListener("submit", (e) => {
+  e.preventDefault();
+
+  const eventData = {
+    EventName: eventName.value,
+    Location: eventLocation.value,
+    EventDate: eventDate.value,
+    Volunteers: volunteers.value,
+    Organizer: organizer.value,
+    Description: description.value,
+    Status: status.value
+  };
+
+  console.log("Event Created:", eventData);
+  alert("🎉 Event Created Successfully!");
+});
+</script>
+
+</body>
+</html>

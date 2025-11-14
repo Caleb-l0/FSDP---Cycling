@@ -13,8 +13,29 @@ async function getAllEvents(req, res) {
     }
 }
 
+async function createEvent(req, res) {
+  try {
+    const eventData = req.body;
+
+    if (!eventData.EventName || !eventData.EventDate || !eventData.OrganizationID) {
+      return res.status(400).json({ message: "Missing required fields" });
+    }
+
+    const newEvent = await eventsModel.createEvent(eventData);
+
+    res.status(201).json({
+      message: "Event created successfully",
+      event: newEvent
+    });
+
+  } catch (error) {
+    console.error("Error in createEvent controller:", error);
+    res.status(500).json({ message: "Server error", error });
+  }
+}
 
 
 
 
-module.exports = { getAllEvents };
+
+module.exports = { getAllEvents,createEvent };

@@ -91,7 +91,7 @@ app.get('/requests/details/:id', authenticate,requestController.getRequestById);
 
 // ----- ADMIN EVENT ROUTES -----
 app.get('/admin/events', authenticate, adminEventController.getAllEvents);
-
+app.post('/admin/create_events',authenticate,adminEventController.createEvent)
 
 // Start server
 app.listen(port, () => {

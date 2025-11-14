@@ -23,6 +23,16 @@ async function getRequestById(req, res) {
     }
 }
 
+async function deleteRequest(requestID) {
+  const pool = await sql.connect(db);
+
+  await pool.request()
+    .input("RequestID", sql.Int, requestID)
+    .query(`DELETE FROM VolunteerRequests WHERE RequestID = @RequestID`);
+
+  return true;
+}
+
 async function getRequestByOragnization(req, res) {
     const { organizationId } = req.params;                      
     try {   
@@ -45,4 +55,4 @@ async function getRequestByHistory(req, res) {
     }
 }
 
-module.exports = { getAllRequests, getRequestByOragnization, getRequestByHistory,getRequestById };
+module.exports = { getAllRequests, getRequestByOragnization, getRequestByHistory,getRequestById,deleteRequest };
