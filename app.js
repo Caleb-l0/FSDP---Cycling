@@ -45,28 +45,33 @@ app.get('/login', (req, res) => res.sendFile(path.join(__dirname, 'Accounts/view
 app.get('/signup', (req, res) => res.sendFile(path.join(__dirname, 'Accounts/views/signup.html')));
 
 // ----- PROFILE PAGE -----
-app.get('/api/profile', authenticate, (req, res) => {
-  const user = req.user; // from JWT
+app.get("/api/profile", authenticate, async (req, res) => {
   res.json({
-    id: user.id,
-    name: user.name,
-    email: user.email,
-    role: user.role
+    id: req.user.id,
+    name: req.user.name,
+    email: req.user.email,
+    role: req.user.role
   });
 });
 
-app.put('/api/profile', authenticate, (req, res) => {
-  const user = req.user;
+// UPDATE PROFILE
+app.put("/api/profile", authenticate, async (req, res) => {
   const { name, email } = req.body;
 
-  updateUser({ id: user.id, name, email }, (err) => {
-    if (err) {
-      console.error("Update error:", err);
-      return res.status(500).json({ message: 'Failed to update profile.' });
-    }
-    res.json({ message: 'Profile updated successfully!' });
-  });
+  try {
+    const result = await require("./Accounts/login/loginModel")
+      .updateUser(req.user.id, name, email);
+
+    res.json({ message: "Profile updated successfully!" });
+
+  } catch (err) {
+    console.error("Update error:", err);
+    res.status(500).json({ message: "Failed to update profile." });
+  }
 });
+
+
+
 
 // ----- REQUEST ROUTES -----
 app.get('/admin/applications', authenticate, requestController.getAllRequests);
