@@ -1,0 +1,242 @@
+/* ===========================
+   HEADER (fixed)
+=========================== */
+header {
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  position: fixed;
+  width: 100%;
+  top: 0;
+  left: 0;
+  z-index: 999; /* keeps header above content */
+}
+
+/* Push page content below fixed header */
+body {
+  padding-top: 90px; /* adjust to match header height */
+  margin: 0;
+  font-family: "Segoe UI", sans-serif;
+  background: linear-gradient(135deg, #faefe3, #fff8f1);
+}
+
+/* ===========================
+   CONTAINER
+=========================== */
+.container {
+  width: 90%;
+  max-width: 1200px;
+  margin: auto;
+}
+
+/* ===========================
+   HEADER CONTENT
+=========================== */
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 0;
+  flex-wrap: wrap;
+}
+
+.logo {
+  font-size: 1.6em;
+  font-weight: 700;
+  color: #f4a261;
+  text-decoration: none;
+}
+
+/* ===========================
+   NAV MENU
+=========================== */
+.nav-toggle {
+  display: none;
+  background: none;
+  border: none;
+  color: #333;
+  font-size: 1.8rem;
+  cursor: pointer;
+}
+
+nav ul {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 25px;
+}
+
+nav ul li a {
+  text-decoration: none;
+  color: #333;
+  font-weight: 500;
+  padding: 8px 16px;
+  border-radius: 6px;
+  transition: color 0.3s, background 0.3s;
+}
+
+nav ul li a:hover {
+  color: #f4a261;
+  background-color: rgba(244, 162, 97, 0.1);
+}
+
+/* ===========================
+   BUTTONS
+=========================== */
+.btn.small,
+.lang-btn,
+.profile-card .btn {
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.btn.small {
+  background-color: #f4a261;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 20px;
+}
+
+.btn.small:hover {
+  background-color: #e76f51;
+}
+
+.profile-card .btn {
+  background-color: #f4a261;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 10px;
+  color: white;
+  font-weight: 600;
+  margin: 8px 5px 0;
+  width: 100px;
+}
+
+.profile-card .btn:hover {
+  background-color: #e76f51;
+  transform: translateY(-2px);
+}
+
+.lang-btn {
+  padding: 6px 14px;
+  background: #4C6EF5;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.lang-btn:hover {
+  background: #3B5CD1;
+}
+
+.lang-btn:active {
+  transform: scale(0.97);
+}
+
+/* ===========================
+   HERO & PROFILE CARD
+=========================== */
+.hero {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 120px 0 60px;
+}
+
+.profile-card {
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(12px);
+  width: 100%;
+  max-width: 380px;
+  padding: 30px;
+  border-radius: 18px;
+  box-shadow: 0 6px 22px rgba(0, 0, 0, 0.12);
+  text-align: center;
+  animation: fadeIn 0.3s ease;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+.profile-card:hover {
+  transform: translateY(-3px);
+}
+
+.profile-avatar {
+  width: 85px;
+  height: 85px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 15px;
+  border: 3px solid #fff;
+  box-shadow: 0 3px 12px rgba(0,0,0,0.12);
+}
+
+.profile-card h2 {
+  font-size: 1.4rem;
+  margin-bottom: 18px;
+  color: #333;
+}
+
+.profile-card p {
+  margin-bottom: 14px;
+  text-align: left;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #444;
+}
+
+.profile-card input {
+  width: 93%;
+  padding: 10px 13px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  margin-top: 6px;
+  background-color: #fafafa;
+}
+
+.profile-card input:focus {
+  border-color: #f4a261;
+  box-shadow: 0 0 8px rgba(244, 162, 97, 0.35);
+}
+
+.profile-card input:disabled {
+  background: #f5f5f5;
+  opacity: 0.8;
+}
+
+/* ===========================
+   LANGUAGE BUTTONS CONTAINER
+=========================== */
+.lang-container {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin: 10px 20px 25px;
+}
+
+/* ===========================
+   ANIMATIONS
+=========================== */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ===========================
+   GOOGLE TRANSLATE OVERRIDES
+=========================== */
+.goog-te-banner-frame.skiptranslate,
+iframe.goog-te-banner-frame,
+.goog-tooltip,
+.goog-tooltip:hover,
+.goog-te-balloon-frame {
+  display: none !important;
+}
+
+.goog-text-highlight {
+  background: none !important;
+  box-shadow: none !important;
+}
+
+body {
+  top: 0 !important;
+}
