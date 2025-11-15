@@ -4,51 +4,28 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>My Profile | HappyVolunteer</title>
-  <link rel="stylesheet" href="index.css">
-  <style>
-    /* Language button styles */
-    .lang-container {
-        display: flex;
-        justify-content: flex-end;
-        gap: 10px;
-        margin: 10px 20px;
-    }
-
-    .lang-btn {
-        padding: 6px 14px;
-        background: #4C6EF5;
-        color: white;
-        border: none;
-        border-radius: 6px;
-        cursor: pointer;
-        font-size: 14px;
-        transition: 0.2s ease;
-    }
-
-    .lang-btn:hover {
-        background: #3B5CD1;
-    }
-
-    .lang-btn:active {
-        transform: scale(0.97);
-    }
-  </style>
+  <link rel="stylesheet" href="profilepage.css">
+  
 </head>
 <body>
-
-  <header>
-    <div class="container header-content">
-      <div class="logo">🌻 HappyVolunteer</div>
-      <nav>
-        <ul>
-          <li><a href="homepage.html">Home</a></li>
-          <li><a href="#">Events</a></li>
-          <li><a href="#">Contact</a></li>
-          <li><button class="btn small" id="logoutBtn">Logout</button></li>
-        </ul>
-      </nav>
-    </div>
-  </header>
+<header>
+    <div class="container">
+        <div class="header-content">
+            <a href="homepage.html" class="logo">Happy Volunteer</a>
+            <button class="nav-toggle" id="navToggle">
+                <i class="fas fa-bars"></i>
+            </button>
+                <nav id="mainNav">
+                    <ul>
+                        <li><a href="#">Event</a></li>
+                        <li><a href="#">Community</a></li>
+                        <li><a href="#">Reward</a></li>
+                        <li><a href="profilepage.html">Profile</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
 
   <!-- Language Switcher -->
   <div class="lang-container">
@@ -58,28 +35,33 @@
     <button class="lang-btn" onclick="translatePage('ta')">Tamil</button>
   </div>
     
-  <section class="hero">
-    <div class="container">
-      <h2>Your Profile</h2>
+<section class="hero">
+  <div class="profile-card">
 
-      <p><strong>Name:</strong> 
-        <input type="text" id="name" disabled>
-      </p>
+    <img src="https://cdn-icons-png.flaticon.com/512/847/847969.png" 
+         class="profile-avatar"
+         alt="Profile Picture">
 
-      <p><strong>Email:</strong> 
-        <input type="email" id="email" disabled>
-      </p>
+    <h2>Your Profile</h2>
 
-      <p><strong>Role:</strong> 
-        <span id="role"></span>
-      </p>
+    <p><strong>Name</strong><br>
+      <input type="text" id="name" disabled>
+    </p>
 
-      <button class="btn" id="editBtn">Edit</button>
-      <button class="btn" id="saveBtn" style="display:none;">Save</button>
-    </div>
-  </section>
+    <p><strong>Email</strong><br>
+      <input type="email" id="email" disabled>
+    </p>
 
-  <!-- Hidden Google Translate element -->
+    <p><strong>Role:</strong>
+      <span id="role"></span>
+    </p>
+
+    <button class="btn" id="editBtn">Edit</button>
+    <button class="btn" id="saveBtn" style="display:none;">Save</button>
+
+  </div>
+</section>
+
   <div id="google_translate_element" style="display:none;"></div>
 
   <script>
@@ -184,6 +166,7 @@
       window.location.href = "/index.html";
     });
   </script>
+  
 
 </body>
 </html>
@@ -192,6 +175,3 @@
 
     
 
-        
-        
- 
