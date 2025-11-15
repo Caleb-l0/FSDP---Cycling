@@ -1,38 +1,38 @@
 <!DOCTYPE html>
 <html lang="en">    
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>My Profile | HappyVolunteer</title>
-  <link rel="stylesheet" href="profilepage.css">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>My Profile | HappyVolunteer</title>
+<link rel="stylesheet" href="profilepage.css">
+
 </head>
 <body>
 <header>
-    <div class="container">
-        <div class="header-content">
-            <!-- Updated logo link -->
-            <a href="#" class="logo" id="logoLink">Happy Volunteer</a>
-            <button class="nav-toggle" id="navToggle">
-                <i class="fas fa-bars"></i>
-            </button>
-            <nav id="mainNav">
-                <ul>
-                    <li><a href="#">Event</a></li>
-                    <li><a href="#">Community</a></li>
-                    <li><a href="#">Reward</a></li>
-                    <li><a href="profilepage.html">Profile</a></li>
-                </ul>
-            </nav>
-        </div>
+  <div class="container">
+    <div class="header-content">
+      <a href="homepage.html" class="logo">Happy Volunteer</a>
+      <button class="nav-toggle" id="navToggle">
+        <i class="fas fa-bars"></i>
+      </button>
+      <nav id="mainNav">
+        <ul>
+          <li><a href="#">Event</a></li>
+          <li><a href="#">Community</a></li>
+          <li><a href="#">Reward</a></li>
+          <li><a href="profilepage.html">Profile</a></li>
+        </ul>
+      </nav>
     </div>
+  </div>
 </header>
 
 <!-- Language Switcher -->
 <div class="lang-container">
-    <button class="lang-btn" onclick="translatePage('en')">English</button>
-    <button class="lang-btn" onclick="translatePage('zh-CN')">Chinese</button>
-    <button class="lang-btn" onclick="translatePage('ms')">Malay</button>
-    <button class="lang-btn" onclick="translatePage('ta')">Tamil</button>
+  <button class="lang-btn" onclick="translatePage('en')">English</button>
+  <button class="lang-btn" onclick="translatePage('zh-CN')">Chinese</button>
+  <button class="lang-btn" onclick="translatePage('ms')">Malay</button>
+  <button class="lang-btn" onclick="translatePage('ta')">Tamil</button>
 </div>
 
 <section class="hero">
@@ -58,64 +58,26 @@
 
     <button class="btn" id="editBtn">Edit</button>
     <button class="btn" id="saveBtn" style="display:none;">Save</button>
+    <button class="btn logout-btn" id="logoutBtn">Logout</button>
 
   </div>
 </section>
 
-<div id="google_translate_element" style="display:none;"></div>
-
-<script>
-function googleTranslateElementInit() {
-    new google.translate.TranslateElement({pageLanguage: 'en'}, 'google_translate_element');
-}
-</script>
-<script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
-
-<script>
-function translatePage(lang) {
-    const combo = document.querySelector(".goog-te-combo");
-    if (combo) {
-        combo.value = lang;
-        combo.dispatchEvent(new Event("change"));
-    } else {
-        console.warn("Google Translate not ready yet.");
-    }
-}
-</script>
-
 <script>
 const token = localStorage.getItem("token");
-const role = localStorage.getItem("role");
-
-// Redirect logo based on role
-const logoLink = document.getElementById("logoLink");
-logoLink.addEventListener("click", (e) => {
-    e.preventDefault();
-    if (role === "admin") {
-        window.location.href = "/public/homepage_login_Admin.html";
-    } else if (role === "volunteer") {
-        window.location.href = "/public/homepage_login_volunteer.html";
-    } else if (role === "institution") {
-        window.location.href = "/public/homepage_login_instituition.html";
-    } else {
-        window.location.href = "/index.html"; // fallback
-    }
-});
 
 if (!token) {
   alert("You must be logged in to access this page.");
   window.location.href = "/index.html";
 }
 
+// Load profile
 async function loadProfile() {
   try {
     const response = await fetch("http://localhost:3000/api/profile", {
       method: "GET",
-      headers: {
-        "Authorization": `Bearer ${token}`
-      }
+      headers: { "Authorization": `Bearer ${token}` }
     });
-
     if (!response.ok) throw new Error("Unauthorized");
     const data = await response.json();
 
@@ -129,9 +91,9 @@ async function loadProfile() {
     window.location.href = "/index.html";
   }
 }
-
 loadProfile();
 
+// Edit / Save
 const nameField = document.getElementById("name");
 const emailField = document.getElementById("email");
 const editBtn = document.getElementById("editBtn");
@@ -151,42 +113,28 @@ saveBtn.addEventListener("click", async () => {
   try {
     const response = await fetch("http://localhost:3000/api/profile", {
       method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${token}`
-      },
-      body: JSON.stringify({
-        name: newName,
-        email: newEmail
-      })
+      headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
+      body: JSON.stringify({ name: newName, email: newEmail })
     });
-
     if (!response.ok) throw new Error("Update failed");
-
     alert("Profile updated successfully!");
-
     nameField.disabled = true;
     emailField.disabled = true;
     editBtn.style.display = "inline-block";
     saveBtn.style.display = "none";
-
   } catch (err) {
     console.error(err);
     alert("Error updating profile.");
   }
 });
 
-// Optional: check if logoutBtn exists before adding listener
+// Logout button
 const logoutBtn = document.getElementById("logoutBtn");
-if (logoutBtn) {
-    logoutBtn.addEventListener("click", () => {
-      localStorage.clear();
-      alert("Logged out successfully!");
-      window.location.href = "/index.html";
-    });
-}
+logoutBtn.addEventListener("click", () => {
+  localStorage.clear();
+  alert("Logged out successfully!");
+  window.location.href = "/index.html";
+});
 </script>
-
 </body>
 </html>
-
