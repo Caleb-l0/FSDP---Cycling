@@ -8,10 +8,14 @@
 
 </head>
 <body>
+
 <header>
   <div class="container">
     <div class="header-content">
-      <a href="homepage.html" class="logo">Happy Volunteer</a>
+
+      <!-- ⭐ LOGO — redirects based on ROLE -->
+      <a href="#" id="logoRedirect" class="logo">Happy Volunteer</a>
+
       <button class="nav-toggle" id="navToggle">
         <i class="fas fa-bars"></i>
       </button>
@@ -71,6 +75,8 @@ if (!token) {
   window.location.href = "/index.html";
 }
 
+let userRole = null; // ⭐ Store role for logo redirection
+
 // Load profile
 async function loadProfile() {
   try {
@@ -79,11 +85,14 @@ async function loadProfile() {
       headers: { "Authorization": `Bearer ${token}` }
     });
     if (!response.ok) throw new Error("Unauthorized");
+
     const data = await response.json();
 
     document.getElementById("name").value = data.name;
     document.getElementById("email").value = data.email;
     document.getElementById("role").textContent = data.role;
+
+    userRole = data.role; // ⭐ Store the role
 
   } catch (err) {
     console.error(err);
@@ -92,6 +101,29 @@ async function loadProfile() {
   }
 }
 loadProfile();
+
+
+// ⭐ LOGO REDIRECT BASED ON ROLE
+document.getElementById("logoRedirect").addEventListener("click", function(e) {
+  e.preventDefault();
+
+  if (!userRole) return;
+
+  if (userRole.toLowerCase() === "volunteer") {
+    window.location.href = "homepage_login_volunteer.html";
+  } 
+  else if (userRole.toLowerCase() === "admin") {
+    window.location.href = "homepage_login_admin.html";
+  } 
+  else if (userRole.toLowerCase() === "instituition" || userRole.toLowerCase() === "institution") {
+    window.location.href = "homepage_login_instituition.html";
+  } 
+  else {
+    // fallback
+    window.location.href = "homepage.html";
+  }
+});
+
 
 // Edit / Save
 const nameField = document.getElementById("name");
@@ -116,12 +148,15 @@ saveBtn.addEventListener("click", async () => {
       headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
       body: JSON.stringify({ name: newName, email: newEmail })
     });
+
     if (!response.ok) throw new Error("Update failed");
+
     alert("Profile updated successfully!");
     nameField.disabled = true;
     emailField.disabled = true;
     editBtn.style.display = "inline-block";
     saveBtn.style.display = "none";
+
   } catch (err) {
     console.error(err);
     alert("Error updating profile.");
@@ -136,5 +171,6 @@ logoutBtn.addEventListener("click", () => {
   window.location.href = "/index.html";
 });
 </script>
+
 </body>
 </html>
