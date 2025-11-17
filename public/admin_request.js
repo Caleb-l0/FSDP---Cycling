@@ -46,7 +46,7 @@ document.querySelector('.btn-message').addEventListener('click', ChatWithOrgan);
 
 function createEvent(){
   
-window.location.href='./createEvent.html'
+
 }
 
 

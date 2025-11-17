@@ -1,7 +1,7 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const AdminEventModel = require("../Models/Admin_event_Model");
-
+const requestModel = require('../Models/GetRequestModel')
 
 
 async function getAllEvents(req, res) {
@@ -21,7 +21,8 @@ async function createEvent(req, res) {
       return res.status(400).json({ message: "Missing required fields" });
     }
 
-    const newEvent = await eventsModel.createEvent(eventData);
+    const newEvent = await AdminEventModel.createEvent(eventData);
+    await requestModel.approveRequest(eventData.VolunteerRequestID);
 
     res.status(201).json({
       message: "Event created successfully",

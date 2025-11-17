@@ -8,7 +8,7 @@ const title = document.getElementById("title1")
 const title2 = document.getElementById("title2")
 const dashboard1 = document.getElementById("dashboard1")
 const dashboard2 = document.getElementById("dashboard2")
-
+const createEventbt = document.getElementById('createEvent')
 
 
 
@@ -27,6 +27,10 @@ title.addEventListener("click", function() {
  
 });
 
+
+createEventbt.addEventListener('click',function(){
+     window.location.href='./createEvent.html'
+})
 
 title2.addEventListener("click", function() {
     if (title.classList.contains("dashboard_title_selected")) {
@@ -424,6 +428,87 @@ async function requestAll2(choice) {
     );
 
 
+
+    // 
+const svcEvents = [
+  {
+    name: "Morning Yoga",
+    location: "Community Hall",
+    time: "10:00 AM",
+    date: new Date().toISOString().split("T")[0]  // today
+  },
+  {
+    name: "Health Talk",
+    location: "Senior Center",
+    time: "2:00 PM",
+    date: "2025-12-20"
+  }
+];
+
+/* ------------------ CALENDAR LOGIC ------------------ */
+let svcCurrent = new Date();
+
+function svcLoadCalendar() {
+  const grid = document.getElementById("svc-calendarGrid");
+  const title = document.getElementById("svc-monthYear");
+
+  grid.innerHTML = "";
+
+  const year = svcCurrent.getFullYear();
+  const month = svcCurrent.getMonth();
+
+  title.innerHTML = svcCurrent.toLocaleString("default", { month: "long" }) + " " + year;
+
+  /* Weekday labels */
+  ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"].forEach(d => {
+    grid.innerHTML += `<div class="svc-day-name">${d}</div>`;
+  });
+
+  const firstDay = new Date(year, month, 1).getDay();
+  const numDays = new Date(year, month+1, 0).getDate();
+
+  for (let i = 0; i < firstDay; i++) grid.innerHTML += `<div></div>`;
+
+  const today = new Date().toISOString().split("T")[0];
+
+  for (let d = 1; d <= numDays; d++) {
+    let dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+
+    const daily = svcEvents.filter(e => e.date === dateStr);
+
+    let eventHTML = "";
+    daily.forEach(ev => {
+      eventHTML += `
+        <div class="svc-event-box">
+          <div class="svc-event-title">${ev.name}</div>
+          <div>${ev.location}</div>
+          <div class="svc-event-time">${ev.time}</div>
+        </div>`;
+    });
+
+    grid.innerHTML += `
+      <div class="svc-day ${today === dateStr ? "svc-today" : ""}">
+        <div>${d}</div>
+        ${eventHTML}
+      </div>`;
+  }
+}
+
+function svcPrevMonth() {
+  svcCurrent.setMonth(svcCurrent.getMonth() - 1);
+  svcLoadCalendar();
+}
+
+function svcNextMonth() {
+  svcCurrent.setMonth(svcCurrent.getMonth() + 1);
+  svcLoadCalendar();
+}
+
+svcLoadCalendar();
+
+
+
+    //
 document.addEventListener("DOMContentLoaded", () => {
  
  requestAll("all");

@@ -1,6 +1,7 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const RequestModel = require("../Models/GetRequestModel");
+
 const { get } = require("mongoose");
 
 
@@ -22,16 +23,19 @@ async function getRequestById(req, res) {
         res.status(500).json({ message: "Server Error", error: error.message });
     }
 }
+async function  deleteRequest(req,res) {
+    const {id} = req.params;
+    try{
+    const request = await RequestModel.deleteRequest(eventData.VolunteerRequestID);
+    res.status(200).json(request);
 
-async function deleteRequest(requestID) {
-  const pool = await sql.connect(db);
-
-  await pool.request()
-    .input("RequestID", sql.Int, requestID)
-    .query(`DELETE FROM VolunteerRequests WHERE RequestID = @RequestID`);
-
-  return true;
+    }
+    catch(error){
+res.status(500).json({ message: "Server Error", error: error.message });
+    }
 }
+
+
 
 async function getRequestByOragnization(req, res) {
     const { organizationId } = req.params;                      
@@ -55,4 +59,4 @@ async function getRequestByHistory(req, res) {
     }
 }
 
-module.exports = { getAllRequests, getRequestByOragnization, getRequestByHistory,getRequestById,deleteRequest };
+module.exports = {deleteRequest, getAllRequests, getRequestByOragnization, getRequestByHistory,getRequestById };

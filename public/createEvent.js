@@ -6,16 +6,7 @@ if (!token) {
 }
 
 currentRequest = JSON.parse(localStorage.getItem('currentRequest'));
-const eventData = {
-    VolunteerRequestID: currentRequest.RequestID,
-    OrganizationID: currentRequest.OrganizationID,
-    EventName: document.getElementById("eventName").value,
-    EventDate: document.getElementById("eventDate").value,
-    Description: document.getElementById("description").value,
-    RequiredVolunteers: document.getElementById("volunteers").value,
-    PeopleSignUp: 0,
-    Status: document.getElementById("status").value
-  };
+
 
 
 window.addEventListener("DOMContentLoaded", () => {
@@ -49,8 +40,18 @@ window.addEventListener("DOMContentLoaded", () => {
     currentRequest.Status || "Upcoming";
 }
 );
-as
+
 async function createEvent() {
+  const eventData = {
+    VolunteerRequestID: currentRequest.RequestID,
+    OrganizationID: currentRequest.OrganizationID,
+    EventName: document.getElementById("eventName").value,
+    EventDate: document.getElementById("eventDate").value,
+    Description: document.getElementById("description").value,
+    RequiredVolunteers: document.getElementById("volunteers").value,
+    PeopleSignUp: 0,
+    Status: document.getElementById("status").value
+  };
 
 
   
@@ -67,8 +68,9 @@ async function createEvent() {
     const result = await response.json();
     console.log(result);
     alert("Event created successfully!");
-
     window.location.href='./homepage_login_Admin.html'
+  
+   
 
   } catch (error) {
     console.error("Error creating event:", error);
@@ -79,3 +81,33 @@ document.getElementById("eventForm").addEventListener("submit", function(e) {
   e.preventDefault(); 
   createEvent();      
 });
+
+
+
+
+
+
+//  trash
+async function deleteRequest(id){
+   
+  try {
+    const response = await fetch(`http://localhost:3000/request/delete/${id}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      
+    });
+
+    const result = await response.json();
+    console.log(result);
+    
+    
+
+ 
+
+  } catch (error) {
+    console.error("Error deleting request:", error);
+  }
+}

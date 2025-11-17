@@ -86,7 +86,7 @@ app.put('/api/profile', authenticate, (req, res) => {
 // ------ REQUEST ROUTES -----
 app.get('/admin/applications', authenticate,requestController.getAllRequests);
 app.get('/requests/details/:id', authenticate,requestController.getRequestById);
-
+app.delete('/request/delete/:id',authenticate,requestController.deleteRequest)
 
 
 // ----- ADMIN EVENT ROUTES -----

@@ -20,29 +20,22 @@ async function getRequestById(id) {
     return result.recordset[0];
 }
 
+async function approveRequest(requestID) {
+  const pool = await sql.connect(db);
 
+  await pool.request()
+    .input("RequestID", sql.Int, requestID)
+    .query(`
+      UPDATE VolunteerRequests
+      SET Status = 'Approved'
+      WHERE RequestID = @RequestID
+    `);
 
-async function getRequestByOragnization(organizationId) {
-    await sql.connect(db);
-    const result = await sql.query`SELECT * FROM VolunteerRequests WHERE organizationId = ${organizationId}`;
-    return result.recordset;
+  return true;
 }
 
 
 
-async function getRequestByApproved(status) {
-    await sql.connect(db);
-    const result = await sql.query`SELECT * FROM VolunteerRequests WHERE Status = 'Approved' `;
-    return result.recordset;
-}
 
-
-async function getRequestByHistory(date) {
-    await sql.connect(db);
-    const result = await sql.query`SELECT * FROM VolunteerRequests WHERE EventDate < ${date} `;
-    return result.recordset;
-
-}
-
-module.exports = { getAllRequests, getRequestByOragnization, getRequestByApproved,getRequestByHistory,getRequestById };
+module.exports = { getAllRequests,approveRequest, getRequestByOragnization, getRequestByApproved,getRequestByHistory,getRequestById };
 

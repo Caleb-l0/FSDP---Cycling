@@ -124,7 +124,7 @@
             <section>
             <h1>Welcome, Admin Mr xxx!</h1>
             <p>Manage Your application from now.</p>
-            <a href="#" class="btn">Check application !</a>
+            <a href="#" class="btn" id="createEvent">Start Create Event !</a>
             </section>
              <section>
             <h1>Welcome !</h1>
@@ -144,6 +144,19 @@
             </section>
     </section>
 
+
+
+<div class="svc-calendar-container">
+
+  <div class="svc-month-header">
+    <button class="svc-btn" onclick="svcPrevMonth()">◀</button>
+    <h2 id="svc-monthYear"></h2>
+    <button class="svc-btn" onclick="svcNextMonth()">▶</button>
+  </div>
+
+  <div class="svc-calendar-grid" id="svc-calendarGrid"></div>
+
+</div>
 
 
 <section class="dashboard">

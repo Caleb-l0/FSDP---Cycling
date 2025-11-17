@@ -126,3 +126,163 @@
   .search-bar { width: 100%; }
 }
 
+
+:root {
+  --svc-bg: #FAF3E0;
+  --svc-primary: #E69A2A;
+  --svc-primary-dark: #CE7F18;
+  --svc-secondary: #FFCB66;
+  --svc-dark: #3E2723;
+  --svc-text: #4E342E;
+  --svc-border: #E5D3B3;
+  --svc-card-bg: #FFFDF7;
+}
+
+/* ------------------ GLOBAL ------------------ */
+body {
+  margin: 0;
+  background: var(--svc-bg);
+  color: var(--svc-text);
+  font-family: "Segoe UI", Tahoma, sans-serif;
+}
+
+/* ------------------ HEADER ------------------ */
+.svc-header {
+  background: linear-gradient(135deg, #ceb184, #d09a4a, var(--svc-primary));
+  color: white;
+  padding: 18px;
+  text-align: center;
+  font-size: 1.7rem;
+  font-weight: 700;
+  margin-top:100px;
+}
+
+/* ------------------ MAIN CONTAINER ------------------ */
+.svc-calendar-container {
+ 
+  max-width: 100%;
+  margin: 50px auto;
+  padding: 18px;
+  background: var(--svc-card-bg);
+  border: 1px solid var(--svc-border);
+  border-radius: 14px;
+  box-shadow: 0 8px 16px rgba(78, 52, 46, 0.15);
+}
+
+/* ------------------ MONTH HEADER ------------------ */
+.svc-month-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.svc-month-header h2 {
+  margin: 0;
+  font-size: 1.6rem;
+  color: var(--svc-dark);
+}
+
+/* Buttons */
+.svc-btn {
+  background: var(--svc-primary);
+  color: white;
+  padding: 10px 18px;
+  border-radius: 8px;
+  border: none;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.svc-btn:hover {
+  background: var(--svc-primary-dark);
+  transform: translateY(-2px);
+}
+
+/* ------------------ CALENDAR GRID ------------------ */
+.svc-calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+}
+
+/* Weekday Labels */
+.svc-day-name {
+  text-align: center;
+  font-weight: bold;
+  padding: 6px 0;
+  color: var(--svc-dark);
+}
+
+/* Day cells */
+.svc-day {
+  background: #FFF8E1;
+  border: 1px solid var(--svc-border);
+  border-radius: 10px;
+  padding: 8px;
+  min-height: 55px;
+  position: relative;
+  cursor: pointer;
+  transition: 0.25s;
+  overflow: hidden;
+}
+
+.svc-day:hover {
+  box-shadow: 0 6px 14px rgba(78, 52, 46, 0.2);
+}
+
+/* Today highlight */
+.svc-today {
+  border: 2px solid var(--svc-primary);
+}
+
+/* Event card inside a date */
+.svc-event-box {
+  margin-top: 6px;
+  background: var(--svc-primary);
+  color: white;
+  padding: 6px;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  line-height: 1.1;
+  
+    box-shadow: 0 4px 10px rgba(230, 154, 42, 0.35);
+}
+
+.svc-event-title {
+  font-weight: bold;
+  font-size: 0.82rem;
+}
+
+.svc-event-time {
+  font-size: 0.72rem;
+}
+
+/* ------------------ RESPONSIVE ------------------ */
+
+/* Tablet */
+@media (max-width: 800px) {
+  .svc-calendar-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+  .svc-header {
+    font-size: 1.5rem;
+  }
+}
+
+/* Mobile */
+@media (max-width: 500px) {
+  .svc-calendar-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .svc-day {
+    min-height: 140px;
+    font-size: 1.1rem;
+  }
+  .svc-event-box {
+    font-size: 0.95rem;
+    padding: 8px;
+  }
+}
