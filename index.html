@@ -5,23 +5,19 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>HappyVolunteer</title>
   <link rel="stylesheet" href="index.css">
+  <style>
+    @keyframes pulseGlow {
+      0%, 100% { box-shadow: 0 0 10px 2px rgba(255, 165, 0, 0.6); }
+      50% { box-shadow: 0 0 20px 4px rgba(245, 181, 103, 0.9); }
+    }
+  </style>
 </head>
 <body>
-  <header>
-    <div class="container header-content">
-      <div class="logo">🌻 HappyVolunteer</div>
-      <nav>
-        <ul>
-          <li><a href="#">Home</a></li>
-          <li><a href="#">About</a></li>
-          <li><a href="#">Events</a></li>
-          <li><a href="#">Contact</a></li>
-          <li><a class="btn small" onclick="openLogin()">Login</a></li>
-        </ul>
-      </nav>
-    </div>
-  </header>
 
+  <!-- Header -->
+  <div id="header-placeholder"></div>
+
+  <!-- Hero Slider -->
   <section class="hero">
     <div class="hero-slider">
       <div class="slide active" style="background-image: url('images/img4.jpg');">
@@ -30,14 +26,12 @@
           <p>Empowering communities through compassion and collaboration.</p>
         </div>
       </div>
-
       <div class="slide" style="background-image: url('images/IMG3.webp');">
         <div class="hero-content">
           <h1>Make a Difference Today</h1>
           <p>Join us in creating meaningful change across communities.</p>
         </div>
       </div>
-
       <div class="slide" style="background-image: url('images/img5.jpg');">
         <div class="hero-content">
           <h1>Together We Grow Stronger</h1>
@@ -45,7 +39,6 @@
         </div>
       </div>
     </div>
-
     <div class="slider-dots">
       <span class="dot active"></span>
       <span class="dot"></span>
@@ -53,6 +46,7 @@
     </div>
   </section>
 
+  <!-- Info Section -->
   <section class="info-section">
     <div class="container">
       <h2>Why Join HappyVolunteer?</h2>
@@ -73,6 +67,7 @@
     </div>
   </section>
 
+  <!-- Login Modal -->
   <div id="loginModal" class="modal">
     <span class="close-btn" onclick="closeLogin()">&times;</span>
     <div class="modal-content">
@@ -88,6 +83,7 @@
     </div>
   </div>
 
+  <!-- Signup Modal -->
   <div id="signupModal" class="modal">
     <span class="close-btn" onclick="closeSignup()">&times;</span>
     <div class="modal-content">
@@ -96,25 +92,24 @@
         <input type="text" id="signup-name" placeholder="Name" required><br>
         <input type="email" id="signup-email" placeholder="Email" required><br>
         <input type="password" id="signup-password" placeholder="Password" required><br>
-      
         <div class="input-field">
-        <label for="role">Role</label>
-        <select id="role" required>
-          <option value="">Select Role</option>
-          <option value="admin">Admin</option>
-          <option value="institution">Institution</option>
-          <option value="volunteer">Volunteer</option>
-         </select>
-      </div>
-
+          <label for="role">Role</label>
+          <select id="role" required>
+            <option value="">Select Role</option>
+            <option value="admin">Admin</option>
+            <option value="institution">Institution</option>
+            <option value="volunteer">Volunteer</option>
+          </select>
+        </div>
         <button type="submit">Sign Up</button>
       </form>
-      <p style="margin-top:10px;">Already have an account? 
-        <a href="#" onclick="switchToLogin()">Login</a>
+      <p style="margin-top:10px;">
+        Already have an account? <a href="#" onclick="switchToLogin()">Login</a>
       </p>
     </div>
   </div>
 
+  <!-- Footer -->
   <footer>
     <div class="container footer-content">
       <div>
@@ -138,145 +133,111 @@
     <p>© 2025 HappyVolunteer. All rights reserved.</p>
   </footer>
 
+  <!-- Scripts -->
   <script>
+    // Load header dynamically
+    fetch('/public/header.html')
+      .then(res => res.text())
+      .then(data => document.getElementById('header-placeholder').innerHTML = data);
+
+    // Hero slider
     let currentSlide = 0;
     const slides = document.querySelectorAll('.slide');
     const dots = document.querySelectorAll('.dot');
+    function showSlide(index){ slides.forEach((s,i)=>s.classList.toggle('active',i===index)); dots.forEach((d,i)=>d.classList.toggle('active',i===index)); }
+    function nextSlide(){ currentSlide=(currentSlide+1)%slides.length; showSlide(currentSlide); }
+    dots.forEach((dot,i)=>dot.addEventListener('click',()=>{ currentSlide=i; showSlide(i); }));
+    setInterval(nextSlide,5000);
 
-    function showSlide(index) {
-      slides.forEach((s, i) => {
-        s.classList.toggle('active', i === index);
-        dots[i].classList.toggle('active', i === index);
+    // Modals
+    function openLogin(){document.getElementById('loginModal').classList.add('active');}
+    function closeLogin(){document.getElementById('loginModal').classList.remove('active');}
+    function openSignup(){document.getElementById('signupModal').classList.add('active');}
+    function closeSignup(){document.getElementById('signupModal').classList.remove('active');}
+    function switchToSignup(){ closeLogin(); openSignup(); }
+    function switchToLogin(){ closeSignup(); openLogin(); }
+
+    // Enhanced Toast (centered, modal-like)
+    function createWowToast(message, type='success'){
+      const toast=document.createElement('div');
+      toast.className='toast-message';
+      toast.innerHTML = `<div class="toast-content">${message}</div>`;
+      Object.assign(toast.style,{
+        position:'fixed',
+        top:'50%',
+        left:'50%',
+        transform:'translate(-50%, -50%)',
+        width:'350px',
+        maxWidth:'90%',
+        padding:'25px 30px',
+        fontSize:'18px',
+        fontWeight:'700',
+        fontFamily:"'Quicksand', sans-serif",
+        color:'#fff',
+        textAlign:'center',
+        borderRadius:'15px',
+        background: type==='success' ? 'linear-gradient(135deg, #ffb347, #ffcc33)' : 'linear-gradient(135deg, #ff6b6b, #ff3d3d)',
+        boxShadow:'0 10px 30px rgba(0,0,0,0.3)',
+        opacity:'0',
+        zIndex:'99999',
+        transition:'opacity 0.4s ease, transform 0.4s ease'
       });
+      document.body.appendChild(toast);
+      setTimeout(()=>{ toast.style.opacity='1'; toast.style.transform='translate(-50%, -50%) scale(1)'; },50);
+      setTimeout(()=>{ toast.style.opacity='0'; toast.style.transform='translate(-50%, -50%) scale(0.8)'; toast.addEventListener('transitionend',()=>toast.remove()); },2000);
     }
 
-    function nextSlide() {
-      currentSlide = (currentSlide + 1) % slides.length;
-      showSlide(currentSlide);
+    // Signup
+    async function signup(event){
+      event.preventDefault();
+      const name=document.getElementById('signup-name').value;
+      const email=document.getElementById('signup-email').value;
+      const password=document.getElementById('signup-password').value;
+      const role=document.getElementById('role').value;
+      try{
+        const res=await fetch('http://localhost:3000/signup',{
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({name,email,password,role})
+        });
+        const data=await res.json();
+        if(!res.ok){ createWowToast(data.message||'Signup failed','error'); return; }
+        createWowToast('Account created successfully!','success');
+        closeSignup();
+      }catch(err){ console.error(err); createWowToast('❌ Error connecting to server','error'); }
     }
 
-    dots.forEach((dot, i) => {
-      dot.addEventListener('click', () => {
-        currentSlide = i;
-        showSlide(i);
-      });
-    });
+    // Login
+    async function login(event){
+      event.preventDefault();
+      const email=document.getElementById('email').value;
+      const password=document.getElementById('password').value;
+      try{
+        const res=await fetch('http://localhost:3000/login',{
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({email,password})
+        });
+        const data=await res.json();
+        if(!res.ok){ createWowToast(data.message||'Login failed','error'); return; }
+        createWowToast('Login successful!','success');
+        localStorage.setItem("token",data.token);
+        localStorage.setItem("userId",data.userId);
+        localStorage.setItem("name",data.name);
+        localStorage.setItem("email",data.email);
+        localStorage.setItem("role",data.role);
 
-    setInterval(nextSlide, 5000);
+        setTimeout(()=>{
+          switch(data.role){
+            case 'admin': window.location.href='/public/homepage_login_Admin.html'; break;
+            case 'volunteer': window.location.href='/public/homepage_login_volunteer.html'; break;
+            case 'institution': window.location.href='/public/homepage_login_instituition.html'; break;
+          }
+        },1500);
 
-    function openLogin() {
-      document.getElementById('loginModal').classList.add('active');
+      }catch(err){ console.error(err); createWowToast('❌ Error connecting to server','error'); }
     }
-    function closeLogin() {
-      document.getElementById('loginModal').classList.remove('active');
-    }
-    function openSignup() {
-      document.getElementById('signupModal').classList.add('active');
-    }
-    function closeSignup() {
-      document.getElementById('signupModal').classList.remove('active');
-    }
-    function switchToSignup() {
-      closeLogin();
-      openSignup();
-    }
-    function switchToLogin() {
-      closeSignup();
-      openLogin();
-    }
-
-    async function signup(event) {
-  event.preventDefault();
-  const name = document.getElementById('signup-name').value;
-  const email = document.getElementById('signup-email').value;
-  const password = document.getElementById('signup-password').value;
-  const role = document.getElementById('role').value; 
-      
-  try {
-    const res = await fetch('http://localhost:3000/signup', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, email, password, role }) 
-    });
-
-    const data = await res.json();
-
-    if (!res.ok) {
-      alert(data.message || 'Signup failed');
-      return;
-    }
-
-    alert('🎉 Account created successfully!');
-    closeSignup();
-
-    
-   
-
-  } catch (err) {
-    console.error(err);
-    alert('❌ Error connecting to server');
-  }
-}
-async function login(event) {
-  event.preventDefault();
-  const email = document.getElementById('email').value;
-  const password = document.getElementById('password').value;
-
-  try {
-    const res = await fetch('http://localhost:3000/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password })
-    });
-
-    const data = await res.json();
- 
-
-    if (!res.ok) {
-      alert(data.message || 'Login failed');
-      return;
-    }
-    else{
-    alert('✅ Login successful!');
-   
-  
-     
-    localStorage.setItem("token", data.token);
-    localStorage.setItem("userId", data.userId);
-    localStorage.setItem("name", data.name);
-    localStorage.setItem("email", data.email);
-    localStorage.setItem("role", data.role);
-    const role = data.role;
-    console.log("User role:", role);
-    
-     
-    switch(role) {
-      case 'admin':
-      setTimeout(() => ( window.location.href = './public/homepage_login_Admin.html'), 1000)
-       
-        break;
-      case 'volunteer':
-         setTimeout(() => ( window.location.href = './public/homepage_login_volunteer.html'), 1000)
-        break;
-      case 'institution':
-         setTimeout(() => ( window.location.href = './public/homepage_login_instituition.html'),1000)
-        break;
-     
-    }
-    
-
-    // Redirect based on role from response
-    
-    
-  }
-
-  } catch (err) {
-    console.error(err);
-    alert('❌ Error connecting to server');
-  }
-}
-
-
   </script>
+
 </body>
 </html>
