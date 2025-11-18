@@ -1,0 +1,45 @@
+.signed-event-card {
+  position: relative;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 0.85em;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.status-badge--upcoming {
+  background-color: #4CAF50;
+  color: white;
+}
+
+.status-badge--ongoing {
+  background-color: #2196F3;
+  color: white;
+}
+
+.status-badge--completed {
+  background-color: #9E9E9E;
+  color: white;
+}
+
+.status-badge--cancelled {
+  background-color: #F44336;
+  color: white;
+}
+
+.signup-info {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid #eee;
+  color: #666;
+  font-size: 0.9em;
+}
+
+.event-details h3 {
+  margin-top: 5px;
+}
+

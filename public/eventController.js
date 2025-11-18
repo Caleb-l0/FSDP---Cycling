@@ -1,4 +1,4 @@
-const eventModel = require('../models/eventModel');
+const eventModel = require('./eventModel');
 
 async function getEvents(req, res) {
   try {
@@ -26,5 +26,21 @@ async function signUp(req, res) {
   }
 }
 
-module.exports = { getEvents, signUp };
+async function getSignedUpEvents(req, res) {
+  try {
+    const userId = req.user?.id || req.query.userId;
+    
+    if (!userId) {
+      return res.status(400).json({ message: 'User ID is required' });
+    }
+
+    const events = await eventModel.getSignedUpEvents(userId);
+    res.json(events);
+  } catch (err) {
+    console.error('Error fetching signed up events:', err);
+    res.status(500).json({ message: 'Failed to fetch signed up events.' });
+  }
+}
+
+module.exports = { getEvents, signUp, getSignedUpEvents };
 

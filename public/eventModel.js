@@ -32,5 +32,29 @@ async function signUpForEvent(eventId, userId) {
     .query(insertQuery);
 }
 
-module.exports = { getAllEvents, signUpForEvent };
+async function getSignedUpEvents(userId) {
+  const pool = await poolPromise;
+  const result = await pool.request()
+    .input('UserID', sql.Int, userId)
+    .query(`
+      SELECT 
+        e.EventID,
+        e.EventName,
+        e.EventDate,
+        e.Description,
+        e.Location,
+        e.RequiredVolunteers,
+        e.PeopleSignUp,
+        e.Status,
+        es.SignUpDate,
+        es.Status AS SignUpStatus
+      FROM EventSignUps es
+      INNER JOIN Events e ON es.EventID = e.EventID
+      WHERE es.UserID = @UserID
+      ORDER BY e.EventDate ASC
+    `);
+  return result.recordset;
+}
+
+module.exports = { getAllEvents, signUpForEvent, getSignedUpEvents };
 

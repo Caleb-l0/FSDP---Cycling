@@ -27,6 +27,9 @@ const requestController = require('./Controllers/GetRequestController');
 // ----- ADMIN EVENT CONTROLLER -----
 const adminEventController = require('./Controllers/Admin_event_Controller');
 
+// ----- VOLUNTEER EVENT CONTROLLER -----
+const eventController = require('./public/eventController');
+
 // ----- LOGIN -----
 app.post('/login', validateLogin, loginUser);
 app.get('/user/:id', authenticate, getUserById);
@@ -94,6 +97,10 @@ app.get(
 );
 app.post('/admin/create_events', authenticate, adminEventController.createEvent);
 app.put('/admin/assign_events',authenticate,adminEventController.assignEventToOrgan)
+
+// ----- VOLUNTEER EVENT FEED -----
+app.get('/volunteer/events', adminEventController.getAllEvents);
+app.get('/volunteer/signed-events', authenticate, eventController.getSignedUpEvents);
 
 // ----- START SERVER -----
 app.listen(port, () => {

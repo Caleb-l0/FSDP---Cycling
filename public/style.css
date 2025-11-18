@@ -109,3 +109,21 @@ footer {
   font-size: 0.9em;
 }
 
+.event-message {
+  grid-column: 1 / -1;
+  text-align: center;
+  background-color: #fff;
+  border-radius: 12px;
+  padding: 30px 20px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+  color: #555;
+}
+
+.event-message--loading {
+  color: #ff7f00;
+}
+
+.event-message--error {
+  color: #d62828;
+}
+
