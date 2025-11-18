@@ -21,6 +21,9 @@ const { loginUser, getUserById, updateUser, deleteUser } = require('./Accounts/l
 const { validateLogin } = require('./Accounts/login/loginValidation');
 const { authenticate } = require('./Accounts/login/authenticate');
 
+
+// ------ Event Controller for all event related -------
+const EventController = require("./Controllers/EventController");
 // ----- REQUEST CONTROLLER -----
 const requestController = require('./Controllers/GetRequestController');
 
@@ -77,8 +80,18 @@ app.put("/api/profile", authenticate, async (req, res) => {
 const eventBookingRoutes = require("./Routes/EventBookingRoutes");
 app.use("/organization/events", eventBookingRoutes);
 
+// ------ User--------------
 
+// ------ Event -------------
 
+app.get("/:eventID", authenticate, EventController.getEventById);
+app.get("/events/checkAssigned/:eventID", authenticate, EventController.checkAssigned);
+app.delete("/delete/:eventID", authenticate, EventController.deleteEvent);
+app.post("/signup/:eventID", authenticate, EventController.signup);
+app.delete("/cancel/:eventID", authenticate, EventController.cancel);
+app.get("/isSignedUp", authenticate, EventController.isSignedUp);
+
+app.put("/events/update/:eventID", authenticate, EventController.updateEvent);
 
 // ------ REQUEST ROUTES -----
 app.get('/admin/applications', authenticate,requestController.getAllRequests);

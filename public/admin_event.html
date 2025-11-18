@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Event Details</title>
+  <link rel="stylesheet" href="request_detail.css">
+  <style>
+
+    .btn-action {
+  border: 1.5px solid #1f1f1e;
+  background: #FFF8E1;
+  color: #4E342E;    
+  min-width: 150px;
+  padding: 8px 18px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s;
+  font-weight: 500;
+}
+
+    .btn-create {
+  background: #4CAF50; /* Green */
+  color: white;
+}
+
+.btn-reject {
+  background: #E53935; /* Red */
+  color: white;
+}
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="header-content container">
+      <div class="logo">Volunteer Admin</div>
+      <nav>
+        <ul>
+          <li><a href="#">Dashboard</a></li>
+          <li><a href="#">Requests</a></li>
+          <li><a href="#">Events</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main class="request-wrapper container">
+    <div class="request-card">
+      <div class="request-img">
+        <img id="req-img" src="https://source.unsplash.com/800x500/?volunteer,event" alt="Event Image">
+      </div>
+
+      <div class="request-info">
+        <h2 id="req-name">Event Name</h2>
+        <div class="info-grid">
+          <p><strong>Date:</strong> <span id="req-date">-</span></p>
+          <p><strong>Organization:</strong> <span id="req-org">-</span></p>
+          <p><strong>Created:</strong> <span id="req-created">-</span></p>
+          <p><strong>Location:</strong> <span id="req-loc">-</span></p>
+          <p><strong>Volunteers Needed:</strong> <span id="req-needed">-</span></p>
+          <p><strong>Event ID:</strong> <span id="req-user">-</span></p>
+        </div>
+        <div class="desc">
+          <p><strong>Description:</strong></p>
+          <p id="req-desc">-</p>
+        </div>
+
+        <div class="btn-group">
+          <button id="btn-approve" class="btn-action" style="display:none;">Approve</button>
+          <button id="btn-reject"  class="btn-action" style="display:none;">Reject</button>
+
+          <button id="btn-edit"   class="btn-action" style="display:none;">Edit</button>
+          <button id="btn-delete" class="btn-action" style="display:none;">Delete</button>
+
+          <button id="btn-signup" class="btn-action" style="display:none;">Sign Up</button>
+          <button id="btn-cancel" class="btn-action" style="display:none;">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <p class="copyright">© 2025 Volunteer Management System — All Rights Reserved</p>
+  </footer>
+
+  <script src="./admin_event.js"></script>
+</body>
+</html>

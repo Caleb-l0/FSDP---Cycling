@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Edit Event</title>
+  <link rel="stylesheet" href="request_detail.css">
+</head>
+
+<body>
+<header>
+  <div class="header-content container">
+    <div class="logo">Edit Event</div>
+  </div>
+</header>
+
+<main class="request-wrapper container">
+  <div class="request-card">
+
+    <div class="request-info">
+      <h2>Edit Event Details</h2>
+
+      <div class="info-grid">
+
+        <div>
+          <p><strong>Event Name:</strong></p>
+          <input id="ev-name" class="edit-input" type="text">
+        </div>
+
+        <div>
+          <p><strong>Date:</strong></p>
+          <input id="ev-date" class="edit-input" type="date">
+        </div>
+
+        <div>
+          <p><strong>Location:</strong></p>
+          <input id="ev-loc" class="edit-input" type="text">
+        </div>
+
+        <div>
+          <p><strong>Volunteers Needed:</strong></p>
+          <input id="ev-needed" class="edit-input" type="number" min="1">
+        </div>
+
+      </div>
+
+      <div class="desc">
+        <p><strong>Description:</strong></p>
+        <textarea id="ev-desc" class="edit-input" rows="5"></textarea>
+      </div>
+
+      <div class="btn-group">
+        <button id="btn-save" class="btn-action btn-create">Save Changes</button>
+        <button id="btn-cancel-edit" class="btn-action btn-reject">Cancel</button>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<footer>
+  <p class="copyright">© 2025 Volunteer Management System — All Rights Reserved</p>
+</footer>
+
+<script src="./edit_event.js"></script>
+
+<style>
+  .edit-input {
+    width: 100%;
+    padding: 10px;
+    border: 1.5px solid #9e8f82;
+    border-radius: 8px;
+    background: #FFFDF7;
+    margin-top: 5px;
+    font-size: 1rem;
+    color: #4E342E;
+  }
+
+  textarea.edit-input {
+    resize: none;
+  }
+</style>
+
+</body>
+</html>

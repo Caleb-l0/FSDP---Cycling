@@ -16,7 +16,7 @@ async function createEvent(eventData) {
 
     const result = await pool.request()
       
-      .input("OrganizationID", sql.Int, eventData.OrganizationID)
+      .input("OrganizationID", sql.Int, null)
       .input("EventName", sql.NVarChar(100), eventData.EventName)
       .input("EventDate", sql.DateTime, eventData.EventDate)
       .input("Description", sql.NVarChar(sql.MAX), eventData.Description)
@@ -83,4 +83,71 @@ async function getEventLocation(eventID) {
 }
 
 
-module.exports = { getAllEvents,createEvent, assignEventToOrgan,getEventLocation};
+// ------------------
+
+async function checkAssigned(req, res) {
+  try {
+    const assigned = await EventModel.checkAssigned(req.params.eventID);
+    res.json({ assigned });
+  } catch (error) {
+    res.status(500).json({ message: "Server Error", error: error.message });
+  }
+}
+
+async function deleteEvent(req, res) {
+  try {
+    await EventModel.deleteEvent(req.params.eventID);
+    res.json({ message: "Event deleted" });
+  } catch (error) {
+    res.status(500).json({ message: "Server Error", error: error.message });
+  }
+}
+
+
+async function canDeleteEvent(eventID) {
+  try {
+    const pool = await sql.connect(db);
+
+    const result = await pool.request()
+      .input("EventID", sql.Int, eventID)
+      .query(`
+        SELECT COUNT(*) AS CountBookings
+        FROM EventBookings
+        WHERE EventID = @EventID
+      `);
+
+    const count = result.recordset[0].CountBookings;
+    return count === 0;   
+
+  } catch (err) {
+    console.error("Model canDeleteEvent Error:", err);
+    throw err;
+  }
+}
+
+async function deleteEvent(eventID) {
+  try {
+    const pool = await sql.connect(db);
+
+   
+    const canDelete = await canDeleteEvent(eventID);
+    if (!canDelete) {
+      return { canDelete: false };
+    }
+
+    await pool.request()
+      .input("EventID", sql.Int, eventID)
+      .query(`
+        DELETE FROM Events
+        WHERE EventID = @EventID
+      `);
+
+    return { canDelete: true };
+
+  } catch (err) {
+    console.error("Model deleteEvent Error:", err);
+    throw err;
+  }
+}
+
+module.exports = { getAllEvents,createEvent, assignEventToOrgan,getEventLocation,checkAssigned,deleteEvent,canDeleteEvent,deleteEvent};

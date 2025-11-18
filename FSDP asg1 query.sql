@@ -29,7 +29,7 @@ CREATE TABLE Organizations (
 CREATE TABLE Events (
     EventID INT PRIMARY KEY IDENTITY,
     Location NVARCHAR(MAX),
-    OrganizationID INT NOT NULL,
+    OrganizationID INT,
     EventName NVARCHAR(100) NOT NULL,
     EventDate DATETIME NOT NULL,
     Description NVARCHAR(MAX),

@@ -76,6 +76,43 @@ async function getEventLocation(req, res) {
   }
 }
 
+const AdminEventModel = require("../Models/Admin_event_Model");
+const requestModel = require('../Models/GetRequestModel');
 
 
-module.exports = { getAllEvents,createEvent,assignEventToOrgan,getEventLocation };
+
+async function deleteEvent(req, res) {
+  try {
+    const { eventID } = req.params;
+    const id = parseInt(eventID, 10);
+
+    if (Number.isNaN(id)) {
+      return res.status(400).json({ message: "Invalid eventID" });
+    }
+
+    const result = await AdminEventModel.deleteEvent(id);
+
+    if (!result.canDelete) {
+      return res.status(400).json({
+        canDelete: false,
+        message: "Cannot delete this event because an organisation has already signed up."
+      });
+    }
+
+    return res.status(200).json({
+      canDelete: true,
+      message: "Event deleted successfully"
+    });
+
+  } catch (error) {
+    console.error("Error in deleteEvent controller:", error);
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+}
+
+
+
+
+
+
+module.exports = { getAllEvents,createEvent,assignEventToOrgan,getEventLocation,deleteEvent,canDeleteEvent };
