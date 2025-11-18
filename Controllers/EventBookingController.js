@@ -1,4 +1,4 @@
-const bookingModel = require("./Models/EventBookingModel");
+const bookingModel = require("../Models/EventBookingModel");
 
 exports.bookEvent = async (req, res) => {
     const { eventId } = req.params;

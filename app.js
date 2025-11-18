@@ -71,7 +71,8 @@ app.put("/api/profile", authenticate, async (req, res) => {
 });
 
 // Event Booking Routes (By Organizations)
-app.use("/organization/events", require("/Routes/EventBookingRoutes"));
+const eventBookingRoutes = require("./Routes/EventBookingRoutes");
+app.use("/organization/events", eventBookingRoutes);
 
 
 
