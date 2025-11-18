@@ -35,8 +35,47 @@ async function createEvent(req, res) {
   }
 }
 
+async function assignEventToOrgan(req,res){
+   try {
+    const eventData = req.body;
 
 
 
+    const newEvent = await AdminEventModel.assignEventToOrgan(eventData);
+  
 
-module.exports = { getAllEvents,createEvent };
+    res.status(201).json({
+      message: "Assign Organization to the event succeed!",
+      newEvent,
+    });
+
+  } catch (error) {
+    console.error("Error in Assign event to organisation controller:", error);
+    res.status(500).json({ message: "Server error", error });
+  }
+}
+
+async function getEventLocation(req, res) {
+  try {
+    const { eventID } = req.params;
+
+    const location = await AdminEventModel.getEventLocation(eventID);
+
+    res.json({
+      success: true,
+      data: location  // { Location: "Jurong East Hall" }
+    });
+
+  } catch (error) {
+    console.error("Controller getEventLocation Error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+      error
+    });
+  }
+}
+
+
+
+module.exports = { getAllEvents,createEvent,assignEventToOrgan,getEventLocation };

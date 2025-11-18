@@ -330,15 +330,9 @@
         dots.forEach((d, i) => d.classList.toggle('active', i === index));
     }
 
-<<<<<<< HEAD
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', initCarousel);
-        } else {
-            initCarousel();
-        }
-    </script>
-    <script src="./volunteer.js"></script>
-=======
+
+    
+
     function nextSlide() {
         currentSlide = (currentSlide + 1) % slides.length;
         showSlide(currentSlide);
@@ -353,7 +347,8 @@
 
     setInterval(nextSlide, 5000);
 </script>
->>>>>>> e9a79b2fa6cb4fef2072c8ed55557805f047a6c0
+<script src="./volunteer.js"></script>
+
 
 </body>
 </html>

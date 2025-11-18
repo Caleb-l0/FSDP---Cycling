@@ -25,35 +25,9 @@ CREATE TABLE Organizations (
     CreatedAt DATETIME DEFAULT GETDATE(),
 );
 
-
-
-CREATE TABLE VolunteerRequests (
-    RequestID INT IDENTITY(1,1) PRIMARY KEY,
-    OrganizationID INT NOT NULL,
-    RequesterID INT NULL,
-    EventName NVARCHAR(100) NOT NULL,
-    EventDate DATETIME NOT NULL,
-    Description NVARCHAR(MAX),
-    RequiredVolunteers INT NOT NULL,
-    Status NVARCHAR(20) DEFAULT 'Pending', -- Pending, Approved, Outdated, rejected
-    CreatedAt DATETIME DEFAULT GETDATE(),
-    UpdatedAt DATETIME NULL,
-    ReviewedBy INT NULL,
-    ReviewDate DATETIME NULL,
-    ReviewComments NVARCHAR(500),
-
-    
-    CONSTRAINT FK_VolunteerRequests_Organizations FOREIGN KEY (OrganizationID)
-        REFERENCES Organizations(OrganizationID),
-
-    CONSTRAINT FK_VolunteerRequests_Users FOREIGN KEY (RequesterID)
-        REFERENCES Users(id)
-);
-
-
 CREATE TABLE Events (
     EventID INT PRIMARY KEY IDENTITY,
-    VolunteerRequestID INT NULL,
+    Location NVARCHAR(MAX),
     OrganizationID INT NOT NULL,
     EventName NVARCHAR(100) NOT NULL,
     EventDate DATETIME NOT NULL,
@@ -64,12 +38,40 @@ CREATE TABLE Events (
     CreatedAt DATETIME DEFAULT GETDATE(),
     UpdatedAt DATETIME NULL,
 
-    CONSTRAINT FK_Events_VolunteerRequests FOREIGN KEY (VolunteerRequestID)
-        REFERENCES VolunteerRequests(RequestID),
+
 
     CONSTRAINT FK_Events_Organizations FOREIGN KEY (OrganizationID)
         REFERENCES Organizations(OrganizationID)
 );
+
+
+
+CREATE TABLE VolunteerRequests (
+    RequestID INT IDENTITY(1,1) PRIMARY KEY,
+    OrganizationID INT NOT NULL,
+    RequesterID INT NULL,
+    EventID INT NOT NULL,
+    EventName NVARCHAR(100) NOT NULL,
+    EventDate DATETIME NOT NULL,
+    Description NVARCHAR(MAX),
+    RequiredVolunteers INT NOT NULL,
+    Status NVARCHAR(20) DEFAULT 'Pending', -- Pending, Approved, Outdated, Rejected
+    CreatedAt DATETIME DEFAULT GETDATE(),
+    UpdatedAt DATETIME NULL,
+    ReviewedBy INT NULL,
+    ReviewDate DATETIME NULL,
+    ReviewComments NVARCHAR(500),
+
+    
+    CONSTRAINT FK_VolunteerRequests_Organizations FOREIGN KEY (OrganizationID)
+        REFERENCES Organizations(OrganizationID),
+
+    CONSTRAINT FK_VolunteerRequests_Events FOREIGN KEY (EventID)
+        REFERENCES Events(EventID)
+);
+
+
+
 
 
 

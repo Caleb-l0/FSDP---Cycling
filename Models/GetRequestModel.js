@@ -34,8 +34,42 @@ async function approveRequest(requestID) {
   return true;
 }
 
+async function checkRequestStatus(requestID) {
+  try {
+    const pool = await sql.connect(db);
+
+    const result = await pool.request()
+      .input("RequestID", sql.Int, requestID)
+      .query(`
+        SELECT Status 
+        FROM VolunteerRequests
+        WHERE RequestID = @RequestID
+      `);
+
+    return result.recordset[0]; 
+  } catch (err) {
+    console.error("Error checking request status:", err);
+    throw err;
+  }
+}
+
+
+async function rejectRequest(requestID){
+   const pool = await sql.connect(db);
+
+  await pool.request()
+    .input("RequestID", sql.Int, requestID)
+    .query(`
+      UPDATE VolunteerRequests
+      SET Status = 'Rejected'
+      WHERE RequestID = @RequestID
+    `);
+
+  return true;
+}
 
 
 
-module.exports = { getAllRequests,approveRequest, getRequestByOragnization, getRequestByApproved,getRequestByHistory,getRequestById };
+
+module.exports = { getAllRequests,approveRequest,rejectRequest,getRequestById,checkRequestStatus };
 

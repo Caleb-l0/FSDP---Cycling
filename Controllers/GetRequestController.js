@@ -35,28 +35,42 @@ res.status(500).json({ message: "Server Error", error: error.message });
     }
 }
 
+async function checkRequestStatus(req, res){
+  const { id } = req.params;
+  try {
+    const result = await RequestModel.checkRequestStatus(id);
+
+    res.status(200).json({ status: result.Status });
+
+  } catch (error) {
+    res.status(500).json({ message: "Server Error", error: error.message });
+  }
+};
 
 
-async function getRequestByOragnization(req, res) {
-    const { organizationId } = req.params;                      
-    try {   
-        const requests = await RequestModel.getRequestByOragnization(organizationId);
-        res.status(200).json(requests);
-    } catch (error) {
-        res.status(500).json({ message: "Server Error", error: error.message });
+async function approveRequest(req,res){
+    const {id} = req.params;
+    try{
+    const request = await RequestModel.approveRequest(id);
+    res.status(200).json(request);
+
     }
-}   
-
-
-async function getRequestByHistory(req, res) {
-    const { date } = req.params;    
-    try {
-        const requests = await RequestModel.getRequestByHistory(date);
-        res.status(200).json(requests);
-    }
-    catch (error) {
-        res.status(500).json({ message: "Server Error", error: error.message });
+    catch(error){
+res.status(500).json({ message: "Server Error", error: error.message });
     }
 }
 
-module.exports = {deleteRequest, getAllRequests, getRequestByOragnization, getRequestByHistory,getRequestById };
+
+async function rejectRequest(req,res){
+    const {id} = req.params;
+    try{
+    const request = await RequestModel.rejectRequest(id);
+    res.status(200).json(request);
+
+    }
+    catch(error){
+res.status(500).json({ message: "Server Error", error: error.message });
+    }
+}
+
+module.exports = {deleteRequest, getAllRequests, checkRequestStatus,getRequestById,approveRequest,rejectRequest };
