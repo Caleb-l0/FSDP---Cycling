@@ -80,12 +80,19 @@ app.use("/organization/events", require("/Routes/EventBookingRoutes"));
 app.get('/admin/applications', authenticate,requestController.getAllRequests);
 app.get('/requests/details/:id', authenticate,requestController.getRequestById);
 app.delete('/request/delete/:id',authenticate,requestController.deleteRequest)
-
-
+app.put('/requests/approve/:id',authenticate,requestController.approveRequest)
+app.put('/requests/reject/:id',authenticate,requestController.rejectRequest)
+app.get('/requests/status/:id',authenticate,requestController.checkRequestStatus)
 
 // ----- ADMIN EVENT ROUTES -----
 app.get('/admin/events', authenticate, adminEventController.getAllEvents);
+app.get(
+  "/admin/events/location/:eventID",
+  authenticate,
+  adminEventController.getEventLocation
+);
 app.post('/admin/create_events', authenticate, adminEventController.createEvent);
+app.put('/admin/assign_events',authenticate,adminEventController.assignEventToOrgan)
 
 // ----- START SERVER -----
 app.listen(port, () => {

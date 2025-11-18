@@ -15,7 +15,7 @@ async function createEvent(eventData) {
     const pool = await sql.connect(db);
 
     const result = await pool.request()
-      .input("VolunteerRequestID", sql.Int, eventData.VolunteerRequestID)
+      
       .input("OrganizationID", sql.Int, eventData.OrganizationID)
       .input("EventName", sql.NVarChar(100), eventData.EventName)
       .input("EventDate", sql.DateTime, eventData.EventDate)
@@ -25,11 +25,11 @@ async function createEvent(eventData) {
       .input("Status", sql.NVarChar(20), eventData.Status)
       .query(`
         INSERT INTO Events
-        (VolunteerRequestID, OrganizationID, EventName, EventDate, Description,
+        (OrganizationID, EventName, EventDate, Description,
          RequiredVolunteers, PeopleSignUp, Status)
         OUTPUT inserted.*
         VALUES
-        (@VolunteerRequestID, @OrganizationID, @EventName, @EventDate, @Description,
+        (@OrganizationID, @EventName, @EventDate, @Description,
          @RequiredVolunteers, @PeopleSignUp, @Status)
       `);
 
@@ -41,6 +41,46 @@ async function createEvent(eventData) {
   }
 }
 
+async function assignEventToOrgan(eventData) {
+  try {
+    const pool = await sql.connect(db);
+    
+    const result = await pool.request()
+      .input("EventID", sql.Int, eventData.EventID)
+      .input("OrganizationID", sql.Int, eventData.OrganizationID)
+      .query(`
+        UPDATE Events
+        SET OrganizationID = @OrganizationID,
+            UpdatedAt = GETDATE()
+        WHERE EventID = @EventID
+      `);
+
+    return { message: "Event updated successfully" };
+
+  } catch (err) {
+    console.error("Error updating event:", err);
+    throw err;
+  }
+}
+async function getEventLocation(eventID) {
+  try {
+    const pool = await sql.connect(db);
+
+    const result = await pool.request()
+      .input("EventID", sql.Int, eventID)
+      .query(`
+        SELECT Location
+        FROM Events 
+        WHERE EventID = @EventID
+      `);
+
+    return result.recordset[0]; 
+
+  } catch (err) {
+    console.error("Model getEventLocation Error:", err);
+    throw err;
+  }
+}
 
 
-module.exports = { getAllEvents,createEvent };
+module.exports = { getAllEvents,createEvent, assignEventToOrgan,getEventLocation};

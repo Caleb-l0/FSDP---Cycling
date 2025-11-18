@@ -10,6 +10,12 @@ const dashboard1 = document.getElementById("dashboard1")
 const dashboard2 = document.getElementById("dashboard2")
 const createEventbt = document.getElementById('createEvent')
 
+ const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", 
+                  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+
+
+
 
 
 title.addEventListener("click", function() {
@@ -89,7 +95,31 @@ for (let i = 0; i < filterButtons2.length; i++) {
 const eventGrid1 = document.getElementsByClassName("event-grid")[0];
 const eventGrid2 = document.getElementsByClassName("event-grid")[1];
 
+async function GetLocation(eventID){
+  try{
+    const res = await fetch(`http://localhost:3000/admin/events/location/${eventID}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json', 
+        "Authorization": `Bearer ${token}` 
+      }
+    });
 
+    if (!res.ok) throw new Error('Network response was not ok');
+
+    const result = await res.json(); 
+   
+    return result.data; // { Location: "Jurong East Hall" }
+
+  } catch(error){
+    console.log("error:", error);
+  }
+
+}
+
+
+
+//----------------------------------------------------------------
 // for dashboard 1
 async function requestAll(choice) {
 
@@ -111,97 +141,185 @@ try{
     console.log(data);
 
     if(choice == "all"){
-    data.forEach(application => {
-        const applicationCard = document.createElement('div');
-        applicationCard.className = 'event-card';
-        applicationCard.innerHTML = `
-            <h3>${application.EventName}</h3>
-            <p><strong>Date:</strong> ${application.EventDate}</p>
-            <p><strong>Organization:</strong> ${application.OrganizationID}</p>
-            <span class="status-tag status-pending">${application.Status}</span>
-           
-        `;
-        applicationCard.addEventListener('click', () => {
-        localStorage.setItem('currentRequest', JSON.stringify(application));
-        window.location.href = './admin_request.html';
-});
-        eventGrid1.appendChild(applicationCard);
-    });}
+   for (const application of data) {
+   
+  const locationObj = await GetLocation(parseInt(application.EventID));
+  const locationName = locationObj.Location;
+
+  const date = new Date(application.EventDate);
+  const day = date.getDate();
+  const month = months[date.getMonth()];
+  const year = date.getFullYear();
+      
+        const date2 = new Date(application.CreatedAt);
+         const day2 = date2.getDate();
+           const month2 = months[date2.getMonth()];
+           const year2 = date2.getFullYear();
+
+  const card = document.createElement("div");
+  card.className = "event-card";
+
+  card.innerHTML = `
+    <h3>${application.EventName}</h3>
+    <p><strong>Date:</strong> ${day} ${month} ${year}</p>
+    <p><strong>Location:</strong> ${locationName}</p>
+    <p><strong>Apply on:</strong> ${day2} ${month2} ${year2}</p>
+    <p><strong>Organization:</strong> ${application.OrganizationID}</p>
+    <span class="status-tag status-${application.Status.toLowerCase()}">${application.Status}</span>
+  `;
+
+  card.addEventListener("click", () => {
+    localStorage.setItem("currentRequest", JSON.stringify(application));
+    window.location.href = "./admin_request.html";
+  });
+
+  eventGrid1.appendChild(card);
+}}
     else if (choice === "date") {
+      data.sort((a, b) =>   new Date(a.EventDate)-new Date(b.EventDate));
+        for (const application of data) {
 
-        const sortedData = data.sort((a, b) => new Date(a.CreatedAt) - new Date(b.CreatedAt));
-        sortedData.forEach(application => {
+   
+  const locationObj = await GetLocation(parseInt(application.EventID));
+  const locationName = locationObj.Location;
 
-            const applicationCard = document.createElement('div');
-            applicationCard.className = 'event-card';
-            applicationCard.innerHTML = `
-                <h3>${application.EventName}</h3>
-                <p><strong>Date:</strong> ${application.EventDate}</p>
-                 <p><strong>Apply on:</strong> ${application.CreatedAt}</p>
-                <p><strong>Organization:</strong> ${application.OrganizationID}</p>
-                <span class="status-tag status-pending">${application.Status}</span>
-            `;
-             applicationCard.addEventListener('click', () => {
-        localStorage.setItem('currentRequest', JSON.stringify(application));
-        window.location.href = './admin_request.html';
-});
-            eventGrid1.appendChild(applicationCard);
-        }
-        );
+  const date = new Date(application.EventDate);
+  const day = date.getDate();
+  const month = months[date.getMonth()];
+  const year = date.getFullYear();
+      
+        const date2 = new Date(application.CreatedAt);
+         const day2 = date2.getDate();
+           const month2 = months[date2.getMonth()];
+           const year2 = date2.getFullYear();
+
+  const card = document.createElement("div");
+  card.className = "event-card";
+
+  card.innerHTML = `
+    <h3>${application.EventName}</h3>
+    <p><strong>Date:</strong> ${day} ${month} ${year}</p>
+    <p><strong>Location:</strong> ${locationName}</p>
+    <p><strong>Apply on:</strong> ${day2} ${month2} ${year2}</p>
+    <p><strong>Organization:</strong> ${application.OrganizationID}</p>
+    <span class="status-tag status-${application.Status.toLowerCase()}">${application.Status}</span>
+  `;
+
+  card.addEventListener("click", () => {
+    localStorage.setItem("currentRequest", JSON.stringify(application));
+    window.location.href = "./admin_request.html";
+  });
+
+  eventGrid1.appendChild(card);}
     }
     else if (choice === "approved") {
-        data.filter(app => app.Status === "Approved").forEach(application => {
-            const applicationCard = document.createElement('div');
-            applicationCard.className = 'event-card';
-            applicationCard.innerHTML = `
-                <h3>${application.EventName}</h3>
-                <p><strong>Date:</strong> ${application.EventDate}</p>
-                <p><strong>Organization:</strong> ${application.OrganizationID}</p>
-                <span class="status-tag status-approved">${application.Status}</span>
-            `;
-             applicationCard.addEventListener('click', () => {
-        localStorage.setItem('currentRequest', JSON.stringify(application));
-        window.location.href = './admin_request.html';
-});
-            eventGrid1.appendChild(applicationCard);
-        })}
+       for (const application of data) {
+        if(application.Status="Approved"){
+   
+  const locationObj = await GetLocation(parseInt(application.EventID));
+  const locationName = locationObj.Location;
+
+  const date = new Date(application.EventDate);
+  const day = date.getDate();
+  const month = months[date.getMonth()];
+  const year = date.getFullYear();
+      
+        const date2 = new Date(application.CreatedAt);
+         const day2 = date2.getDate();
+           const month2 = months[date2.getMonth()];
+           const year2 = date2.getFullYear();
+
+  const card = document.createElement("div");
+  card.className = "event-card";
+
+  card.innerHTML = `
+    <h3>${application.EventName}</h3>
+    <p><strong>Date:</strong> ${day} ${month} ${year}</p>
+    <p><strong>Location:</strong> ${locationName}</p>
+    <p><strong>Apply on:</strong> ${day2} ${month2} ${year2}</p>
+    <p><strong>Organization:</strong> ${application.OrganizationID}</p>
+    <span class="status-tag status-${application.Status.toLowerCase()}">${application.Status}</span>
+  `;
+
+  card.addEventListener("click", () => {
+    localStorage.setItem("currentRequest", JSON.stringify(application));
+    window.location.href = "./admin_request.html";
+  });
+
+  eventGrid1.appendChild(card);}}}
 
     else if(choice == "rejected"){
-        data.filter(app => app.Status === "Rejected").forEach(application => {
-            const applicationCard = document.createElement('div');
-            applicationCard.className = 'event-card';
-            applicationCard.innerHTML = `
-                <h3>${application.EventName}</h3>
-                <p><strong>Date:</strong> ${application.EventDate}</p>
-                <p><strong>Organization:</strong> ${application.OrganizationID}</p>
-                <span class="status-tag status-rejected">${application.Status}</span>
-            `;
-             applicationCard.addEventListener('click', () => {
-        localStorage.setItem('currentRequest', JSON.stringify(application));
-        window.location.href = './admin_request.html';
-});
-            eventGrid1.appendChild(applicationCard);
-        } );
-      }
-      else if (choice ==  'history'){
-        data.filter(app => app.Status === "Approved" || app.Status === "Rejected").forEach(application => {
-            const applicationCard = document.createElement('div');
-            applicationCard.className = 'event-card';
-            applicationCard.innerHTML = `
-                <h3>${application.EventName}</h3>
-                <p><strong>Date:</strong> ${application.EventDate}</p>
-                <p><strong>Organization:</strong> ${application.OrganizationID}</p>
-                <span class="status-tag status-${application.Status.toLowerCase()}">${application.Status}</span>
-            `;
-             applicationCard.addEventListener('click', () => {
-        localStorage.setItem('currentRequest', JSON.stringify(application));
-        window.location.href = './admin_request.html';
-});
-            eventGrid1.appendChild(applicationCard);
-        }
-        );
-      }
+       for (const application of data) {
+        if(application.Status = "Rejected"){
+   
+  const locationObj = await GetLocation(parseInt(application.EventID));
+  const locationName = locationObj.Location;
 
+  const date = new Date(application.EventDate);
+  const day = date.getDate();
+  const month = months[date.getMonth()];
+  const year = date.getFullYear();
+      
+        const date2 = new Date(application.CreatedAt);
+         const day2 = date2.getDate();
+           const month2 = months[date2.getMonth()];
+           const year2 = date2.getFullYear();
+
+  const card = document.createElement("div");
+  card.className = "event-card";
+
+  card.innerHTML = `
+    <h3>${application.EventName}</h3>
+    <p><strong>Date:</strong> ${day} ${month} ${year}</p>
+    <p><strong>Location:</strong> ${locationName}</p>
+    <p><strong>Apply on:</strong> ${day2} ${month2} ${year2}</p>
+    <p><strong>Organization:</strong> ${application.OrganizationID}</p>
+    <span class="status-tag status-${application.Status.toLowerCase()}">${application.Status}</span>
+  `;
+
+  card.addEventListener("click", () => {
+    localStorage.setItem("currentRequest", JSON.stringify(application));
+    window.location.href = "./admin_request.html";
+  });
+
+  eventGrid1.appendChild(card);}
+       }}
+      else if (choice ==  'history'){
+       for (const application of data) {
+        if(application.Status === "Approved" || application.Status === "Rejected"){
+   
+  const locationObj = await GetLocation(parseInt(application.EventID));
+  const locationName = locationObj.Location;
+
+  const date = new Date(application.EventDate);
+  const day = date.getDate();
+  const month = months[date.getMonth()];
+  const year = date.getFullYear();
+      
+        const date2 = new Date(application.CreatedAt);
+         const day2 = date2.getDate();
+           const month2 = months[date2.getMonth()];
+           const year2 = date2.getFullYear();
+
+  const card = document.createElement("div");
+  card.className = "event-card";
+
+  card.innerHTML = `
+    <h3>${application.EventName}</h3>
+    <p><strong>Date:</strong> ${day} ${month} ${year}</p>
+    <p><strong>Location:</strong> ${locationName}</p>
+    <p><strong>Apply on:</strong> ${day2} ${month2} ${year2}</p>
+    <p><strong>Organization:</strong> ${application.OrganizationID}</p>
+    <span class="status-tag status-${application.Status.toLowerCase()}">${application.Status}</span>
+  `;
+
+  card.addEventListener("click", () => {
+    localStorage.setItem("currentRequest", JSON.stringify(application));
+    window.location.href = "./admin_request.html";
+  });
+
+  eventGrid1.appendChild(card);
+}}}
 }
 catch(err){
     console.error("Error fetching applications:", err);
@@ -248,6 +366,9 @@ requestHistorybt.addEventListener("click", () => {
 
 
 
+
+
+//----------------------------------------------------------------
 // for dashboard 2
 
 
@@ -273,116 +394,189 @@ async function requestAll2(choice) {
         }
         const data =  await res.json();
         console.log(data);
+
+          // --------------------
+
         if(choice == "all"){
         data.forEach(event => {
+          date = new Date(event.EventDate)
+            const day =date.getDate(); 
+  const month = months[date.getMonth()];
+  const year = date.getFullYear();
             const eventCard = document.createElement('div');
             eventCard.className = 'event-card';
             eventCard.innerHTML = `
                 <h3>${event.EventName}</h3>
-                <p><strong>Date:</strong> ${event.EventDate}</p>
+                <p><strong>Date:</strong> ${day} ${month} ${year}</p>
+                
                 <p><strong>Organization:</strong> ${event.OrganizationID}</p>
-                 <p><strong>Date:</strong> ${event.PeopleSignUp || 'No people Sign Up for this event'}</p>
+                
+                 <p><strong>Participants:</strong> ${event.PeopleSignUp || 'No people Sign Up for this event'} / ${event.RequiredVolunteers}</p>
+                 <p><strong>Location:</strong> ${event.Location}</p>
                 <span class="status-tag status-pending">${event.Status}</span>
 
             `;
              eventCard.addEventListener('click', () => {
-        localStorage.setItem('currentRequest', JSON.stringify(ev));
+        localStorage.setItem('currentRequest', JSON.stringify(event));
         window.location.href = './admin_event.html';
 });
             eventGrid2.appendChild(eventCard);
         });}
+
+
+          // --------------------
+
         else if (choice === "Event date") {
-            const sortedData = data.sort((a, b) => new Date(a.EventDate) - new Date(b.EventDate));
-            sortedData.forEach(event => {
-                const eventCard = document.createElement('div');
-                eventCard.className = 'event-card';
-                eventCard.innerHTML = `
-                      <h3>${event.EventName}</h3>
-                <p><strong>Date:</strong> ${event.EventDate}</p>
-                <p><strong>Organization:</strong> ${event.OrganizationID}</p>
-                 <p><strong>Participant:</strong> ${event.PeopleSignUp || 'No people Sign Up for this event'}</p>
-                <span class="status-tag status-pending">${event.Status}</span>
-                `;
- eventCard.addEventListener('click', () => {
-        localStorage.setItem('currentRequest', JSON.stringify(ev));
-        window.location.href = './admin_event.html';
-});
-                eventGrid2.appendChild(eventCard);
-            }
-            );
-        }
-        else if (choice === "Organization") {
-            const sortedData = data.sort((a, b) => a.OrganizationID.localeCompare(b.OrganizationID));
-            sortedData.forEach(event => {
-                const eventCard = document.createElement('div');
-                eventCard.className = 'event-card';
-                eventCard.innerHTML = `
-                      <h3>${event.EventName}</h3>
-                <p><strong>Date:</strong> ${event.EventDate}</p>
-                <p><strong>Organization:</strong> ${event.OrganizationID}</p>
-                 <p><strong>Participant:</strong> ${event.PeopleSignUp || 'No people Sign Up for this event'}</p>
-                <span class="status-tag status-pending">${event.Status}</span>
-                `;
-                 eventCard.addEventListener('click', () => {
-        localStorage.setItem('currentRequest', JSON.stringify(ev));
-        window.location.href = './admin_event.html';
-});
-                eventGrid2.appendChild(eventCard);
-            } );
-        }
-        else if (choice ==  'full'){
-            data.filter(ev => ev. RequiredVolunteers == ev.PeopleSignUp).forEach(event => {
-                const eventCard = document.createElement('div');
-                eventCard.className = 'event-card';
-                eventCard.innerHTML = `
-                      <h3>${event.EventName}</h3>
-                <p><strong>Date:</strong> ${event.EventDate}</p>
-                <p><strong>Organization:</strong> ${event.OrganizationID}</p>
-                 <p><strong>Participant:</strong> ${event.PeopleSignUp || 'No people Sign Up for this event'}</p>
-                <span class="status-tag status-pending">${event.Status}</span>
-                `;
-                 eventCard.addEventListener('click', () => {
-        localStorage.setItem('currentRequest', JSON.stringify(ev));
-        window.location.href = './admin_event.html';
-});
-                eventGrid2.appendChild(eventCard);
-            } );
-          } 
-        else if (choice ==  'not full'){
-          data.filter(ev => ev.RequiredVolunteers > ev.PeopleSignUp).forEach(event => {
+           data.sort((a, b) =>  new Date(a.EventDate)-new Date(b.EventDate));
+                   data.forEach(event => {
+          date = new Date(event.EventDate)
+            const day =date.getDate(); 
+  const month = months[date.getMonth()];
+  const year = date.getFullYear();
             const eventCard = document.createElement('div');
             eventCard.className = 'event-card';
             eventCard.innerHTML = `
-                  <h3>${event.EventName}</h3>
-            <p><strong>Date:</strong> ${event.EventDate}</p>
-            <p><strong>Organization:</strong> ${event.OrganizationID}</p>
-             <p><strong>Participant:</strong> ${event.PeopleSignUp || 'No people Sign Up for this event'}</p>
-            <span class="status-tag status-pending">${event.Status}</span>
+                <h3>${event.EventName}</h3>
+                <p><strong>Date:</strong> ${day} ${month} ${year}</p>
+                
+                <p><strong>Organization:</strong> ${event.OrganizationID}</p>
+                
+                 <p><strong>Participants:</strong> ${event.PeopleSignUp || 'No people Sign Up for this event'} / ${event.RequiredVolunteers}</p>
+                 <p><strong>Location:</strong> ${event.Location}</p>
+                <span class="status-tag status-pending">${event.Status}</span>
+
             `;
              eventCard.addEventListener('click', () => {
-        localStorage.setItem('currentRequest', JSON.stringify(ev));
+        localStorage.setItem('currentRequest', JSON.stringify(event));
         window.location.href = './admin_event.html';
 });
-            eventGrid2.appendChild(eventCard);} );
-          } 
+            eventGrid2.appendChild(eventCard);
+            }
+            );
+        }
 
-          else if (choice ==  'history'){
-            const currentDate = new Date();
-            data.filter(ev => new Date(ev.EventDate) < currentDate).forEach(event => {
-                const eventCard = document.createElement('div');
-                eventCard.className = 'event-card';
-                eventCard.innerHTML = `
-                      <h3>${event.EventName}</h3>
-                <p><strong>Date:</strong> ${event.EventDate}</p>
+
+          // --------------------
+        else if (choice === "Organization") {
+            const sortedData = data.sort((a, b) => a.OrganizationID - b.OrganizationID);
+                          sortedData.forEach(event => {
+          date = new Date(event.EventDate)
+            const day =date.getDate(); 
+  const month = months[date.getMonth()];
+  const year = date.getFullYear();
+            const eventCard = document.createElement('div');
+            eventCard.className = 'event-card';
+            eventCard.innerHTML = `
+                <h3>${event.EventName}</h3>
+                <p><strong>Date:</strong> ${day} ${month} ${year}</p>
+                
                 <p><strong>Organization:</strong> ${event.OrganizationID}</p>
-                 <p><strong>Participant:</strong> ${event.PeopleSignUp || 'No people Sign Up for this event'}</p>
+                
+                 <p><strong>Participants:</strong> ${event.PeopleSignUp || 'No people Sign Up for this event'} / ${event.RequiredVolunteers}</p>
+                 <p><strong>Location:</strong> ${event.Location}</p>
                 <span class="status-tag status-pending">${event.Status}</span>
-                `;
-                 eventCard.addEventListener('click', () => {
-        localStorage.setItem('currentRequest', JSON.stringify(ev));
+
+            `;
+             eventCard.addEventListener('click', () => {
+        localStorage.setItem('currentRequest', JSON.stringify(event));
         window.location.href = './admin_event.html';
 });
-                eventGrid2.appendChild(eventCard);
+            eventGrid2.appendChild(eventCard);
+            } );
+        }
+
+
+        // --------------------
+
+        else if (choice ==  'full'){
+            const newdata = data.filter(data => data. RequiredVolunteers === data.PeopleSignUp)
+            newdata.forEach(event => {
+          date = new Date(event.EventDate)
+            const day =date.getDate(); 
+  const month = months[date.getMonth()];
+  const year = date.getFullYear();
+            const eventCard = document.createElement('div');
+            eventCard.className = 'event-card';
+            eventCard.innerHTML = `
+                <h3>${event.EventName}</h3>
+                <p><strong>Date:</strong> ${day} ${month} ${year}</p>
+                
+                <p><strong>Organization:</strong> ${event.OrganizationID}</p>
+                
+                 <p><strong>Participants:</strong> ${event.PeopleSignUp || 'No people Sign Up for this event'} / ${event.RequiredVolunteers}</p>
+                 <p><strong>Location:</strong> ${event.Location}</p>
+                <span class="status-tag status-pending">${event.Status}</span>
+
+            `;
+             eventCard.addEventListener('click', () => {
+        localStorage.setItem('currentRequest', JSON.stringify(event));
+        window.location.href = './admin_event.html';
+});
+            eventGrid2.appendChild(eventCard);
+        })}
+
+
+
+        //---------------------------
+
+         else if (choice ==  'not full'){
+            const newdata = data.filter(data => data. RequiredVolunteers > data.PeopleSignUp)
+            newdata.forEach(event => {
+          date = new Date(event.EventDate)
+            const day =date.getDate(); 
+  const month = months[date.getMonth()];
+  const year = date.getFullYear();
+            const eventCard = document.createElement('div');
+            eventCard.className = 'event-card';
+            eventCard.innerHTML = `
+                <h3>${event.EventName}</h3>
+                <p><strong>Date:</strong> ${day} ${month} ${year}</p>
+                
+                <p><strong>Organization:</strong> ${event.OrganizationID}</p>
+                
+                 <p><strong>Participants:</strong> ${event.PeopleSignUp || 'No people Sign Up for this event'} / ${event.RequiredVolunteers}</p>
+                 <p><strong>Location:</strong> ${event.Location}</p>
+                <span class="status-tag status-pending">${event.Status}</span>
+
+            `;
+             eventCard.addEventListener('click', () => {
+        localStorage.setItem('currentRequest', JSON.stringify(event));
+        window.location.href = './admin_event.html';
+});
+            eventGrid2.appendChild(eventCard);
+        })}
+
+
+
+        //---------------------------
+
+          else if (choice ==  'outdated'){
+            const currentDate = new Date();
+         
+                const newdata =  data.filter(ev => new Date(ev.EventDate) < currentDate)
+            newdata.forEach(event => {
+          date = new Date(event.EventDate)
+            const day =date.getDate(); 
+  const month = months[date.getMonth()];
+  const year = date.getFullYear();
+            const eventCard = document.createElement('div');
+            eventCard.className = 'event-card';
+            eventCard.innerHTML = `
+                <h3>${event.EventName}</h3>
+                <p><strong>Date:</strong> ${day} ${month} ${year}</p>
+                
+                <p><strong>Organization:</strong> ${event.OrganizationID}</p>
+                
+                 <p><strong>Participants:</strong> ${event.PeopleSignUp || 'No people Sign Up for this event'} / ${event.RequiredVolunteers}</p>
+                 <p><strong>Location:</strong> ${event.Location}</p>
+                <span class="status-tag status-pending">${event.Status}</span>
+
+            `;
+             eventCard.addEventListener('click', () => {
+        localStorage.setItem('currentRequest', JSON.stringify(event));
+        window.location.href = './admin_event.html';
+});
+            eventGrid2.appendChild(eventCard);
             } );
         
         }
@@ -423,7 +617,7 @@ async function requestAll2(choice) {
     event_history.addEventListener("click", () => {
         eventGrid2.innerHTML = `
         `;
-        requestAll2("history");
+        requestAll2("outdate");
     }
     );
 

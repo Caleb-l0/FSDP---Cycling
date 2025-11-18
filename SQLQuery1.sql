@@ -10,72 +10,40 @@ from Events
 select *
 from VolunteerRequests
 
-
-DELETE FROM EventSignUps;
-DELETE FROM UserEvents;
-DELETE FROM Events;
-DELETE FROM VolunteerRequests;
-DELETE FROM Organizations;
-DELETE FROM Users;
-
-DBCC CHECKIDENT ('Users', RESEED, 0);
-DBCC CHECKIDENT ('Organizations', RESEED, 0);
-DBCC CHECKIDENT ('VolunteerRequests', RESEED, 0);
-DBCC CHECKIDENT ('Events', RESEED, 0);
-DBCC CHECKIDENT ('EventSignUps', RESEED, 0);
-DBCC CHECKIDENT ('UserEvents', RESEED, 0);
+SELECT Status from VolunteerRequests
+      WHERE RequestID = 1
 
 
 
-INSERT INTO Users (name, email, password, role)
-VALUES
-('Alice Tan', 'alice@example.com', 'password123', 'admin'),
-('Ben Wong', 'ben@example.com', 'password456', 'organization'),
-('Cindy Lee', 'cindy@example.com', 'password789', 'volunteer');
+INSERT INTO Users (name, email, password, role) VALUES
+('Alice Tan', 'alice@example.com', 'hashedpassword1', 'user'),
+('Bob Lee', 'bob@example.com', 'hashedpassword2', 'user'),
+('Charlie Admin', 'admin@example.com', 'admin123', 'admin');
+
 
 INSERT INTO Organizations (OrgName, OrgDescription, ContactEmail, ContactPhone)
 VALUES
-('Green Earth SG', 'An environmental NGO focusing on sustainability.', 'contact@greenearth.sg', '+65 6123 4567'),
-('Helping Hands', 'Community support organization providing volunteer opportunities.', 'hello@helpinghands.sg', '+65 6234 7890');
+('Happy Elderly Centre', 'A community centre serving seniors.', 'contact@happyelderly.org', '1234-5678'),
+('Sunshine Volunteers', 'Volunteer group offering community services.', 'hello@sunshine.org', '9876-5432');
 
+INSERT INTO Events (Location, OrganizationID, EventName, EventDate, Description, RequiredVolunteers, PeopleSignUp, Status)
+VALUES
+('Jurong East Hall', 1, 'Elderly Fitness Day', '2025-12-20 10:00:00', 'Morning exercise with seniors.', 10, 2, 'Upcoming'),
+('Bukit Batok Park', 2, 'Park Cleaning Activity', '2025-12-18 09:00:00', 'Cleaning up the community park.', 15, 5, 'Upcoming');
 
 INSERT INTO VolunteerRequests
-(
-    OrganizationID,
-    RequesterID,
-    EventName,
-    EventDate,
-    Description,
-    RequiredVolunteers,
-    Status
-)
+(OrganizationID, RequesterID, EventID, EventName, EventDate, Description, RequiredVolunteers, Status)
 VALUES
-(1, 2, N'Beach Clean-Up', '2025-12-10 09:00:00', N'Join us to clean up East Coast Beach.', 15, N'Approved'),
-(2, 3, N'Food Donation Drive', '2025-11-25 10:00:00', N'Collect food items for needy families.', 8, N'Pending');
+(1, 1, 1, 'Elderly Fitness Day', '2025-12-20 10:00:00', 'Requesting volunteers to support elderly event.', 10, 'Approved'),
 
-
-INSERT INTO Events
-(
-    VolunteerRequestID,
-    OrganizationID,
-    EventName,
-    EventDate,
-    Description,
-    RequiredVolunteers,
-    Status
-)
-VALUES
-(1, 1, N'Beach Clean-Up 2025', '2025-12-10 09:00:00', N'Help keep our beaches clean.', 15, N'Upcoming'),
-(2, 2, N'Food Donation Drive 2025', '2025-11-25 10:00:00', N'Collect food items and pack them for donation.', 8, N'Upcoming');
+(2, 2, 2, 'Park Cleaning Activity', '2025-12-18 09:00:00', 'Need volunteers to keep the park clean.', 15, 'Pending');
 
 
 INSERT INTO EventSignUps (EventID, UserID, Status)
 VALUES
-(1, 3, N'Active'),
-(2, 3, N'Active');
+(1, 1, 'Active'),
+(1, 2, 'Active'),
+(2, 1, 'Active'),
+(2, 3, 'Active');
 
 
-INSERT INTO UserEvents (UserID, EventID)
-VALUES
-(3, 1),
-(3, 2);
