@@ -4,6 +4,7 @@ DROP TABLE IF EXISTS Events;
 DROP TABLE IF EXISTS VolunteerRequests;
 DROP TABLE IF EXISTS Organizations;
 DROP TABLE IF EXISTS Users;
+DROP TABLE IF EXISTS EventBookings;
 
 
 
@@ -99,4 +100,19 @@ CREATE TABLE UserEvents (
 
     CONSTRAINT FK_UserEvents_Events FOREIGN KEY (EventID)
         REFERENCES Events(EventID)
+);
+
+/* Table to track who is booking, how many people are included in the booking and when it was booked for what event*/
+CREATE TABLE EventBookings (
+    BookingID INT PRIMARY KEY IDENTITY,
+    EventID INT NOT NULL,
+    OrganizationID INT NOT NULL,
+    Participants INT NOT NULL,
+    CreatedAt DATETIME DEFAULT GETDATE(),
+
+    CONSTRAINT FK_EventBookings_Events FOREIGN KEY (EventID)
+        REFERENCES Events(EventID),
+
+    CONSTRAINT FK_EventBookings_Organizations FOREIGN KEY (OrganizationID)
+        REFERENCES Organizations(OrganizationID)
 );
