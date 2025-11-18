@@ -37,10 +37,10 @@ res.status(500).json({ message: "Server Error", error: error.message });
 
 
 
-async function getRequestByOragnization(req, res) {
+async function getRequestByOrganization(req, res) {
     const { organizationId } = req.params;                      
     try {   
-        const requests = await RequestModel.getRequestByOragnization(organizationId);
+        const requests = await RequestModel.getRequestByOrganization(organizationId);
         res.status(200).json(requests);
     } catch (error) {
         res.status(500).json({ message: "Server Error", error: error.message });
@@ -59,4 +59,4 @@ async function getRequestByHistory(req, res) {
     }
 }
 
-module.exports = {deleteRequest, getAllRequests, getRequestByOragnization, getRequestByHistory,getRequestById };
+module.exports = {deleteRequest, getAllRequests, getRequestByOrganization, getRequestByHistory,getRequestById };
