@@ -13,44 +13,39 @@ async function getAllEvents() {
 async function createEvent(eventData) {
   let pool;
   try {
-    console.log("Attempting to connect to database...");
     pool = await sql.connect(db);
-    console.log("Database connected successfully");
+    const request = pool.request();
 
+    if (eventData.OrganizationID !== undefined && eventData.OrganizationID !== null) {
+      request.input("OrganizationID", sql.Int, eventData.OrganizationID);
+    } else {
+      request.input("OrganizationID", sql.Int, null);
+    }
 
-    const result = await pool.request()
-      
-      .input("OrganizationID", sql.Int, null)
-      .input("EventName", sql.NVarChar(100), eventData.EventName)
-      .input("EventDate", sql.DateTime, eventData.EventDate)
-      .input("Description", sql.NVarChar(sql.MAX), eventData.Description)
-      .input("RequiredVolunteers", sql.Int, eventData.RequiredVolunteers)
-      .input("PeopleSignUp", sql.Int, eventData.PeopleSignUp)
-      .input("VolunteerSignUp", sql.Int, 0)
-      .input("MaximumParticipant",sql.Int,eventData.MaximumParticipant)
-      .input("Status", sql.NVarChar(20), eventData.Status)
-      .input("Location", sql.NVarChar(20), eventData.Location)
-      .query(`
-        INSERT INTO Events
-        (OrganizationID, Location,EventName, EventDate, Description,
-         RequiredVolunteers,VolunteerSignUp,MaximumParticipant, PeopleSignUp, Status)
-        OUTPUT inserted.*
-        VALUES
-        (@OrganizationID, @Location,@EventName, @EventDate, @Description,
-         @RequiredVolunteers, @VolunteerSignUp,@MaximumParticipant,@PeopleSignUp, @Status)
-      `);
+    request.input("EventName", sql.NVarChar(100), eventData.EventName);
+    request.input("EventDate", sql.DateTime, eventData.EventDate);
+    request.input("Description", sql.NVarChar(sql.MAX), eventData.Description || '');
+    request.input("RequiredVolunteers", sql.Int, eventData.RequiredVolunteers);
+    request.input("Status", sql.NVarChar(20), eventData.Status || 'Upcoming');
 
+    const locationValue = (eventData.EventLocation && eventData.EventLocation.trim() !== '')
+      ? eventData.EventLocation.trim()
+      : null;
+    request.input("EventLocation", sql.NVarChar(sql.MAX), locationValue);
 
+    const query = `
+      INSERT INTO Events
+      (OrganizationID, EventName, EventDate, Description, [EventLocation],
+       RequiredVolunteers, Status)
+      OUTPUT inserted.*
+      VALUES
+      (@OrganizationID, @EventName, @EventDate, @Description, @EventLocation,
+       @RequiredVolunteers, @Status)
+    `;
+    const result = await request.query(query);
     return result.recordset[0];
-
   } catch (err) {
     console.error("Error creating event model:", err);
-    console.error("Error name:", err.name);
-    console.error("Error message:", err.message);
-    console.error("Error code:", err.code);
-    if (err.originalError) {
-      console.error("Original error:", err.originalError);
-    }
     throw err;
   }
 }
@@ -96,17 +91,10 @@ async function checkOrganizationExists(organizationID) {
 async function getEventLocation(eventID) {
   try {
     const pool = await sql.connect(db);
-
     const result = await pool.request()
       .input("EventID", sql.Int, eventID)
-      .query(`
-        SELECT Location
-        FROM Events 
-        WHERE EventID = @EventID
-      `);
-
-    return result.recordset[0]; 
-
+      .query(`SELECT [EventLocation] FROM Events WHERE EventID = @EventID`);
+    return result.recordset[0];
   } catch (err) {
     console.error("Model getEventLocation Error:", err);
     throw err;
