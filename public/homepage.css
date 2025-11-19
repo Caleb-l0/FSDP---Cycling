@@ -1,4 +1,6 @@
-
+/* ===============================
+   RESET + GLOBAL
+================================= */
 * {
   margin: 0;
   padding: 0;
@@ -13,13 +15,15 @@ body {
   overflow-x: hidden;
 }
 
+/* ===============================
+   HEADER
+================================= */
 header {
-  position: sticky;  /* already mentioned above */
+  position: sticky;
   top: 0;
   z-index: 999;
   background-color: #fff;
 }
-
 
 .container {
   width: 90%;
@@ -63,15 +67,15 @@ nav ul li a {
   font-weight: 500;
   padding: 8px 16px;
   border-radius: 6px;
-  transition: color 0.3s, background 0.3s;
+  transition: 0.3s ease;
 }
 
 nav ul li a:hover {
   color: #f4a261;
-  background-color: rgba(244, 162, 97, 0.1);
+  background-color: rgba(244, 162, 97, 0.12);
 }
 
-/* Small button style */
+/* Button */
 .btn.small {
   background-color: #f4a261;
   color: white;
@@ -85,26 +89,29 @@ nav ul li a:hover {
   background-color: #e76f51;
 }
 
-/* ====== Search Bar ====== */
+/* ===============================
+   SEARCH BAR
+================================= */
 .search-bar {
   display: flex;
   align-items: center;
   background: #fffdf7;
   border: 1px solid #E5D3B3;
-  border-radius: 8px;
+  border-radius: 10px;
   padding: 14px 12px;
-  width: 460px;
-  transition: box-shadow 0.2s;
+  width: 100%;
+  max-width: 460px;
+  transition: 0.2s ease;
 }
 
 .search-bar:hover {
-  box-shadow: 0 1px 4px rgba(78, 52, 46, 0.15);
+  box-shadow: 0 2px 5px rgba(78, 52, 46, 0.15);
 }
 
 .search-bar .icon {
   color: #E69A2A;
   font-size: 16px;
-  margin-right: 6px;
+  margin-right: 8px;
 }
 
 .search-bar input {
@@ -122,38 +129,32 @@ nav ul li a:hover {
 
 .search-bar button {
   background: #E69A2A;
-  color: #FFFFFF;
+  color: white;
   border: none;
-  padding: 4px 10px;
+  padding: 6px 12px;
   border-radius: 6px;
   font-size: 14px;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: 0.2s ease;
 }
 
 .search-bar button:hover {
   background: #D37E0E;
 }
 
+/* ===============================
+   HERO SLIDER
+================================= */
 .hero {
-  margin-top: 0px;
   margin-bottom: 25px;
   position: relative;
   min-height: 380px;
   overflow: hidden;
 }
-.slide .hero-content {
-    text-align: center;
-    color: #fff;
-    background: rgba(0, 0, 0, 0.4); /* semi-transparent overlay for readability */
-    padding: 120px 40px;
-    border-radius: 10px;
-}
 
 .container0 {
   width: 300vw;
   display: flex;
-  overflow: hidden;
   transition: transform 0.6s ease-in-out;
 }
 
@@ -173,11 +174,8 @@ nav ul li a:hover {
 .container0 section::before {
   content: '';
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6));
+  inset: 0;
+  background: rgba(0,0,0,0.55);
   z-index: 1;
 }
 
@@ -186,27 +184,17 @@ nav ul li a:hover {
   z-index: 2;
 }
 
-.container0 section:nth-child(1) {
-  background-image: url('https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
-}
-
-.container0 section:nth-child(2) {
-  background-image: url('https://images.unsplash.com/photo-1529156069898-49953e39b3ac?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
-}
-
-.container0 section:nth-child(3) {
-  background-image: url('https://images.unsplash.com/photo-1559027615-cd4628902d4a?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
-}
-
 .hero h1 {
   font-size: clamp(1.8rem, 4vw, 3rem);
   margin-bottom: 1rem;
+  color: #fff;
 }
 
 .hero p {
-  font-size: clamp(1rem, 2vw, 1.2rem);
+  font-size: clamp(1rem, 2vw, 1.25rem);
   max-width: 700px;
   margin: 0 auto 2rem;
+  color: #fff;
 }
 
 .btn {
@@ -217,14 +205,14 @@ nav ul li a:hover {
   border-radius: 8px;
   text-decoration: none;
   font-weight: 600;
-  transition: background 0.3s;
-  font-size: clamp(0.9rem, 2vw, 1.1rem);
+  transition: 0.3s;
 }
 
 .btn:hover {
   background: #b57a19;
 }
 
+/* Slider Dots */
 .switch {
   position: absolute;
   bottom: 2rem;
@@ -236,14 +224,14 @@ nav ul li a:hover {
 }
 
 .switch button {
-  width: 1em;
-  height: 1em;
+  width: 0.9em;
+  height: 0.9em;
   border-radius: 50%;
   background-color: white;
   opacity: 0.5;
   border: none;
   cursor: pointer;
-  transition: opacity 0.3s, background 0.3s;
+  transition: 0.3s;
 }
 
 .switch button.active {
@@ -252,7 +240,7 @@ nav ul li a:hover {
 }
 
 /* ===============================
-   Section Titles
+   SECTION TITLES
 ================================= */
 .section-title {
   text-align: center;
@@ -262,30 +250,28 @@ nav ul li a:hover {
 .section-title h2 {
   font-size: 2rem;
   font-weight: 700;
-  color: #333;
   margin-bottom: 10px;
-  position: relative;
   display: inline-block;
+  position: relative;
 }
 
 .section-title h2::after {
   content: '';
-  display: block;
   width: 60px;
   height: 3px;
   background-color: #ff7f50;
   margin: 8px auto 0;
   border-radius: 2px;
+  display: block;
 }
 
 .section-title p {
   font-size: 1rem;
   color: #666;
-  margin-top: 5px;
 }
 
 /* ===============================
-   Scrollable Cards (Services & Features)
+   SCROLLABLE CARDS
 ================================= */
 .scroll-wrapper {
   position: relative;
@@ -308,21 +294,20 @@ nav ul li a:hover {
 }
 
 .event-box {
-  flex: 0 0 calc(33.333% - 13.33px);
-  box-sizing: border-box;
+  flex: 0 0 calc(33.33% - 15px);
 }
 
 .service-card {
   background: white;
-  border-radius: 10px;
+  border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-  transition: transform 0.3s, box-shadow 0.3s;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+  transition: 0.3s ease;
 }
 
 .service-card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+  box-shadow: 0 12px 25px rgba(0,0,0,0.1);
 }
 
 .service-icon {
@@ -342,31 +327,25 @@ nav ul li a:hover {
   padding: 25px;
 }
 
-/* Scroll buttons */
 .scroll-btn {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  background: rgba(255,255,255,0.9);
+  background: white;
   border: none;
   font-size: 2rem;
   cursor: pointer;
-  z-index: 10;
   padding: 5px 10px;
   border-radius: 50%;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+  z-index: 10;
 }
 
-.scroll-btn.left {
-  left: 0;
-}
-
-.scroll-btn.right {
-  right: 0;
-}
+.scroll-btn.left { left: 0; }
+.scroll-btn.right { right: 0; }
 
 /* ===============================
-   Features Grid
+   FEATURES GRID
 ================================= */
 .features {
   background: #FAF3E0;
@@ -375,47 +354,47 @@ nav ul li a:hover {
 
 .features-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 10px;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 20px;
 }
 
 .feature-item {
   background: white;
   padding: 25px;
-  border-radius: 10px;
-  box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+  border-radius: 12px;
   text-align: center;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
 }
 
 .feature-item i {
-  font-size: 2.5rem;
-  margin-bottom: 15px;
+  font-size: 2.4rem;
+  margin-bottom: 12px;
 }
 
 .feature-item h3 {
   font-size: 1.2rem;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
 }
 
 /* ===============================
-   People you may know
+   PEOPLE YOU MAY KNOW
 ================================= */
 .big_box {
   display: flex;
+  gap: 1vw;
   width: 100%;
   min-height: 30vh;
-  gap: 0.8vw;
-  align-content: center;
 }
 
 .small_box {
+  flex: 1;
+  min-width: 150px;
   border-radius: 1vw;
-  width: 25%;
   background-color: #FFCB66;
 }
 
 /* ===============================
-   Footer
+   FOOTER
 ================================= */
 footer {
   background-color: #264653;
@@ -434,7 +413,6 @@ footer {
 
 .footer-content h3 {
   color: #f4a261;
-  margin-bottom: 10px;
 }
 
 .footer-content a {
@@ -453,80 +431,35 @@ footer p {
 }
 
 /* ===============================
-   Responsive
+   RESPONSIVE
 ================================= */
 @media (max-width: 1024px) {
-  .hero { padding: 5rem 1.5rem; }
-  .header-content { flex-wrap: wrap; }
-  nav ul li { margin-left: 15px; }
-  .btn { width: auto; }
+  .event-box { flex-basis: 45%; }
 }
 
 @media (max-width: 770px) {
   .nav-toggle { display: block; }
+
   nav {
     position: absolute;
     top: 100%;
-    left: 0;
     width: 100%;
-    background: rgba(255,255,255,0.95);
     display: none;
     flex-direction: column;
-    align-items: center;
-    padding: 15px 0;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    background: white;
+    padding: 12px 0;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.12);
   }
+
   nav.active { display: flex; }
-  nav ul { flex-direction: column; gap: 15px; width: 100%; align-items: center; }
-  nav ul li { margin: 0; width: 100%; text-align: center; }
-  .hero { padding: 4rem 1rem; min-height: 55vh; }
-  .container0 section { min-height: 55vh; }
-  .switch { bottom: 1rem; }
+  nav ul { flex-direction: column; gap: 15px; }
+
+  .event-box { flex-basis: 60%; }
 }
 
 @media (max-width: 480px) {
-  .hero { padding: 3rem 1rem; min-height: 40vh; }
-  .container0 section { min-height: 40vh; padding: 3rem 1rem; }
-  .hero h1 { font-size: 1.6rem; }
-  .btn { width: 80%; font-size: 0.9rem; }
-  .section-title h2 { font-size: 1.5rem; }
-  .switch { bottom: 1rem; }
+  .event-box { flex-basis: 85%; }
+
+  .hero { min-height: 45vh; padding: 2.5rem 1rem; }
+  .container0 section { min-height: 45vh; }
 }
-
-
-        .slide {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            background-size: cover;
-            background-position: center;
-            opacity: 0;
-            transition: opacity 1s ease-in-out;
-        }
-
-        .slide.active {
-            opacity: 1;
-        }
-
-
-        /* Dots */
-        .dots-container {
-            position: absolute;
-            bottom: 15px;
-            width: 100%;
-            text-align: center;
-        }
-
-        .dot {
-            display: inline-block;
-            width: 12px;
-            height: 12px;
-            margin: 0 5px;
-            background-color: rgba(255,255,255,0.6);
-            border-radius: 50%;
-            cursor: pointer;
-        }
-
-        .dot.active {
-            background-color: white;
-        }

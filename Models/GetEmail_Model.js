@@ -42,7 +42,7 @@ async function getMemberEmailsByOrganizationID(organizationID) {
 }
 
 
-model.export = {
+module.export = {
     getOrganisationID,
   getMemberEmailsByOrganizationID,
 }

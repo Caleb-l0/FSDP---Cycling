@@ -1,266 +1,277 @@
+/* -------------------------------------------------- */
+/* FILTER BUTTON GROUP */
+/* -------------------------------------------------- */
 .filter-group {
-    margin-top:2vw;
+  margin-top: 2vw;
   display: flex;
-  gap: 10px;
+  gap: 12px;
   flex-wrap: wrap;
   margin-bottom: 25px;
 }
+
 .filter-btn {
   border: 1.5px solid #1f1f1e;
   background: #FFF8E1;
   color: #4E342E;
   padding: 8px 18px;
-  border-radius: 8px;
+  border-radius: 10px;
   cursor: pointer;
-  transition: all 0.3s;
   font-weight: 500;
+  transition: all 0.25s ease;
 }
+
 .filter-btn:hover {
   background: #FFF3CC;
   border-color: #E69A2A;
+  transform: translateY(-2px);
 }
+
 .filter-btn.active {
   background: #E69A2A;
   color: white;
   border-color: #E69A2A;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
 }
 
 
+/* -------------------------------------------------- */
+/* DASHBOARD MAIN CONTAINER */
+/* -------------------------------------------------- */
 .dashboard {
-  margin-top:10vh;
+  margin-top: 10vh;
   background: #FFFFFF;
-  border-radius: 15px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  border-radius: 18px;
   padding: 30px;
   margin-bottom: 40px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.06);
 }
 
-#dashboard2{
-    display: none;
+#dashboard2 {
+  display: none;
 }
 
 
-/* ===== Event Cards ===== */
+/* -------------------------------------------------- */
+/* DASHBOARD TITLES */
+/* -------------------------------------------------- */
+.dashboard_title {
+  display: flex;
+  align-items: center;
+  gap: 2vw;
+  margin-bottom: 20px;
+}
+
+.dashboard_title_selected {
+  font-size: 1.8rem;
+  color: #3E2723;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+.dashboard_title_not_selected {
+  cursor: pointer;
+  color: #3E2723;
+  opacity: 0.45;
+  font-size: 1.5rem;
+  transition: 0.3s ease;
+}
+
+.dashboard_title_not_selected:hover {
+  opacity: 1;
+  font-size: 1.7rem;
+}
+
+
+/* -------------------------------------------------- */
+/* EVENT GRID */
+/* -------------------------------------------------- */
 .event-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 20px;
+  gap: 22px;
 }
+
 .event-card {
   background: #FFFDF7;
   border: 1px solid #E5D3B3;
-  border-radius: 12px;
-  padding: 18px;
-  transition: transform 0.3s, box-shadow 0.3s;
-  box-shadow: 0 10px 10px rgba(0,0,0,0.05);
+  border-radius: 14px;
+  padding: 20px;
+  box-shadow: 0 10px 14px rgba(0,0,0,0.05);
+  transition: all 0.3s ease;
 }
+
 .event-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  transform: translateY(-5px);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.12);
 }
+
 .event-card h3 {
-  font-size: 1.2rem;
+  font-size: 1.25rem;
   color: #3E2723;
-  margin-bottom: 10px;
+  margin-bottom: 12px;
 }
+
 .event-card p {
   font-size: 0.95rem;
+  margin-bottom: 8px;
   color: #4E342E;
-  margin-bottom: 6px;
 }
+
+
+/* STATUS TAGS */
 .status-tag {
   display: inline-block;
-  padding: 3px 10px;
+  padding: 5px 12px;
   border-radius: 8px;
   font-size: 0.85rem;
   font-weight: 600;
 }
+
 .status-pending {
   background: #FFCB66;
   color: #3E2723;
 }
+
 .status-approved {
   background: #6BA368;
   color: white;
 }
+
 .status-full {
   background: #D65C5C;
   color: white;
 }
+
 .status-open {
   background: #5C90C2;
   color: white;
 }
 
 
-.dashboard_title{
-    display: flex;
-    justify-content: start;
-    align-items: center;
-    gap:2vw;
-    margin-bottom: 20px;
-}
-.dashboard_title_selected{
-    font-size: 1.8rem;
-    color: #3E2723;
-    font-weight: 600;
-      cursor: pointer;
-  transition: all 0.3s ease;
-}
-.dashboard_title_not_selected:hover{
-    opacity: 1;
-    font-size: 1.8rem;
-}
-
-.dashboard_title_not_selected{
- cursor: pointer;
-  transition: all 0.3s ease;
-  color: #3E2723;
-  opacity: 0.4;
-  font-size: 1.5rem;
-}
-
-@media (max-width: 768px) {
-  body { padding: 1rem; }
-  .search-bar { width: 100%; }
-}
-
-
-:root {
-  --svc-bg: #FAF3E0;
-  --svc-primary: #E69A2A;
-  --svc-primary-dark: #CE7F18;
-  --svc-secondary: #FFCB66;
-  --svc-dark: #3E2723;
-  --svc-text: #4E342E;
-  --svc-border: #E5D3B3;
-  --svc-card-bg: #FFFDF7;
-}
-
-/* ------------------ GLOBAL ------------------ */
-body {
-  margin: 0;
-  background: var(--svc-bg);
-  color: var(--svc-text);
-  font-family: "Segoe UI", Tahoma, sans-serif;
-}
-
-/* ------------------ HEADER ------------------ */
+/* -------------------------------------------------- */
+/* CALENDAR HEADER */
+/* -------------------------------------------------- */
 .svc-header {
-  background: linear-gradient(135deg, #ceb184, #d09a4a, var(--svc-primary));
+  background: linear-gradient(135deg, #ceb184, #d09a4a, #E69A2A);
   color: white;
-  padding: 18px;
+  padding: 20px;
   text-align: center;
-  font-size: 1.7rem;
+  font-size: 1.8rem;
   font-weight: 700;
-  margin-top:100px;
+  border-radius: 12px;
+  margin-top: 100px;
 }
 
-/* ------------------ MAIN CONTAINER ------------------ */
+
+/* -------------------------------------------------- */
+/* CALENDAR CONTAINER */
+/* -------------------------------------------------- */
 .svc-calendar-container {
- 
   max-width: 100%;
   margin: 50px auto;
-  padding: 18px;
-  background: var(--svc-card-bg);
-  border: 1px solid var(--svc-border);
-  border-radius: 14px;
-  box-shadow: 0 8px 16px rgba(78, 52, 46, 0.15);
+  padding: 20px;
+  background: #FFFDF7;
+  border: 1px solid #E5D3B3;
+  border-radius: 16px;
+  box-shadow: 0 8px 16px rgba(78, 52, 46, 0.12);
 }
 
-/* ------------------ MONTH HEADER ------------------ */
+
+/* -------------------------------------------------- */
+/* MONTH HEADER */
+/* -------------------------------------------------- */
 .svc-month-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 12px;
+  margin-bottom: 15px;
 }
 
 .svc-month-header h2 {
   margin: 0;
   font-size: 1.6rem;
-  color: var(--svc-dark);
+  color: #3E2723;
 }
 
-/* Buttons */
 .svc-btn {
-  background: var(--svc-primary);
+  background: #E69A2A;
   color: white;
   padding: 10px 18px;
-  border-radius: 8px;
+  border-radius: 10px;
   border: none;
   font-size: 1rem;
   font-weight: 700;
   cursor: pointer;
-  transition: 0.2s;
+  transition: 0.25s ease;
 }
 
 .svc-btn:hover {
-  background: var(--svc-primary-dark);
+  background: #CE7F18;
   transform: translateY(-2px);
 }
 
-/* ------------------ CALENDAR GRID ------------------ */
+
+/* -------------------------------------------------- */
+/* CALENDAR GRID */
+/* -------------------------------------------------- */
 .svc-calendar-grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: 6px;
+  gap: 8px;
 }
 
-/* Weekday Labels */
 .svc-day-name {
   text-align: center;
   font-weight: bold;
   padding: 6px 0;
-  color: var(--svc-dark);
+  color: #3E2723;
 }
 
-/* Day cells */
 .svc-day {
   background: #FFF8E1;
-  border: 1px solid var(--svc-border);
-  border-radius: 10px;
-  padding: 8px;
-  min-height: 55px;
+  border: 1px solid #E5D3B3;
+  border-radius: 12px;
+  padding: 10px;
+  min-height: 70px;
   position: relative;
   cursor: pointer;
-  transition: 0.25s;
+  transition: 0.25s ease;
   overflow: hidden;
 }
 
 .svc-day:hover {
-  box-shadow: 0 6px 14px rgba(78, 52, 46, 0.2);
+  box-shadow: 0 6px 14px rgba(78, 52, 46, 0.18);
 }
 
-/* Today highlight */
 .svc-today {
-  border: 2px solid var(--svc-primary);
+  border: 2px solid #E69A2A;
 }
 
-/* Event card inside a date */
 .svc-event-box {
-  margin-top: 6px;
-  background: var(--svc-primary);
+  margin-top: 8px;
+  background: #E69A2A;
   color: white;
-  padding: 6px;
+  padding: 7px;
   border-radius: 8px;
-  font-size: 0.8rem;
+  font-size: 0.82rem;
   line-height: 1.1;
-  
-    box-shadow: 0 4px 10px rgba(230, 154, 42, 0.35);
+  box-shadow: 0 4px 10px rgba(230, 154, 42, 0.35);
 }
 
 .svc-event-title {
   font-weight: bold;
-  font-size: 0.82rem;
+  font-size: 0.85rem;
 }
 
 .svc-event-time {
   font-size: 0.72rem;
 }
 
-/* ------------------ RESPONSIVE ------------------ */
+
+/* -------------------------------------------------- */
+/* RESPONSIVE */
+/* -------------------------------------------------- */
 
 /* Tablet */
 @media (max-width: 800px) {
@@ -268,7 +279,7 @@ body {
     grid-template-columns: repeat(4, 1fr);
   }
   .svc-header {
-    font-size: 1.5rem;
+    font-size: 1.6rem;
   }
 }
 
@@ -278,11 +289,11 @@ body {
     grid-template-columns: repeat(2, 1fr);
   }
   .svc-day {
-    min-height: 140px;
+    min-height: 150px;
     font-size: 1.1rem;
   }
   .svc-event-box {
-    font-size: 0.95rem;
-    padding: 8px;
+    font-size: 1rem;
+    padding: 10px;
   }
 }
