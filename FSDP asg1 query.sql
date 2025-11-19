@@ -1,10 +1,28 @@
-DROP TABLE IF EXISTS UserEvents;
-DROP TABLE IF EXISTS EventSignUps;
-DROP TABLE IF EXISTS Events;
-DROP TABLE IF EXISTS VolunteerRequests;
-DROP TABLE IF EXISTS Organizations;
-DROP TABLE IF EXISTS Users;
-DROP TABLE IF EXISTS EventBookings;
+-- ===========================
+-- 1. DROP ALL FOREIGN KEYS SAFELY
+-- ===========================
+DECLARE @sql NVARCHAR(MAX) = N'';
+
+SELECT @sql = @sql + '
+ALTER TABLE [' + OBJECT_SCHEMA_NAME(parent_object_id) + '].[' + OBJECT_NAME(parent_object_id) + '] 
+DROP CONSTRAINT [' + name + '];'
+FROM sys.foreign_keys;
+
+EXEC sp_executesql @sql;
+
+
+-- ===========================
+-- 2. DROP ALL TABLES SAFELY
+-- ===========================
+SET @sql = N'';
+
+SELECT @sql = @sql + '
+DROP TABLE IF EXISTS [' + TABLE_SCHEMA + '].[' + TABLE_NAME + '];'
+FROM INFORMATION_SCHEMA.TABLES
+WHERE TABLE_TYPE = 'BASE TABLE';
+
+EXEC sp_executesql @sql;
+
 
 
 
@@ -25,6 +43,27 @@ CREATE TABLE Organizations (
     ContactPhone NVARCHAR(20),
     CreatedAt DATETIME DEFAULT GETDATE(),
 );
+
+
+
+CREATE TABLE UserOrganizations (
+    UserOrgID INT IDENTITY(1,1) PRIMARY KEY,    
+    UserID INT NOT NULL,                        
+    OrganizationID INT NOT NULL,                
+    OrgEmail NVARCHAR(100),                      
+    OrgRole NVARCHAR(50) DEFAULT 'member',       
+    JoinedAt DATETIME DEFAULT GETDATE(),         
+
+    CONSTRAINT FK_UserOrganizations_Users
+        FOREIGN KEY (UserID) REFERENCES Users(id)
+        ON DELETE CASCADE,
+
+    CONSTRAINT FK_UserOrganizations_Organizations
+        FOREIGN KEY (OrganizationID) REFERENCES Organizations(OrganizationID)
+        ON DELETE CASCADE
+);
+
+
 
 CREATE TABLE Events (
     EventID INT PRIMARY KEY IDENTITY,

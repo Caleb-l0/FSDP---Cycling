@@ -68,6 +68,9 @@ async function createEvent() {
     const result = await response.json();
     console.log(result);
     alert("Event created successfully!");
+    const OrganID = getOrganisationID();
+    const AllUserEmail = getUserEmail(OrganID);
+    
     window.location.href='./homepage_login_Admin.html'
   
    

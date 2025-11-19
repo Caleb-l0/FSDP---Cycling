@@ -4,6 +4,8 @@ const AdminEventModel = require("../Models/Admin_event_Model");
 const requestModel = require('../Models/GetRequestModel')
 
 
+
+
 async function getAllEvents(req, res) {
     try {
         const events = await AdminEventModel.getAllEvents();
@@ -76,8 +78,7 @@ async function getEventLocation(req, res) {
   }
 }
 
-const AdminEventModel = require("../Models/Admin_event_Model");
-const requestModel = require('../Models/GetRequestModel');
+
 
 
 
@@ -115,4 +116,4 @@ async function deleteEvent(req, res) {
 
 
 
-module.exports = { getAllEvents,createEvent,assignEventToOrgan,getEventLocation,deleteEvent,canDeleteEvent };
+module.exports = { getAllEvents,createEvent,assignEventToOrgan,getEventLocation,deleteEvent };

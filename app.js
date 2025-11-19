@@ -22,6 +22,9 @@ const { validateLogin } = require('./Accounts/login/loginValidation');
 const { authenticate } = require('./Accounts/login/authenticate');
 
 
+// ------- Email Controller
+const EmailController = require("./Controllers/GetEmail_Controller")
+
 // ------ Event Controller for all event related -------
 const EventController = require("./Controllers/EventController");
 // ----- REQUEST CONTROLLER -----
@@ -82,6 +85,11 @@ app.use("/organization/events", eventBookingRoutes);
 
 // ------ User--------------
 
+// -------Email -------------
+
+app.get("/getOrganID",authenticate,EmailController.getOrganisationID)
+app.get("/getUserEmail/:orgID",authenticate,EmailController.getMemberEmailsByOrganizationID)
+app.get("/send-email",authenticate,EmailController.getMemberEmailsByOrganizationID)
 // ------ Event -------------
 
 app.get("/:eventID", authenticate, EventController.getEventById);
