@@ -408,7 +408,7 @@ async function requestAll2(choice) {
                 
                 <p><strong>Organization:</strong> ${event.OrganizationID}</p>
                 
-                 <p><strong>Participants:</strong> ${event.PeopleSignUp || 'No people Sign Up for this event'} </p>
+                 <p><strong>Participants:</strong> ${event.PeopleSignUp || 'No people Sign Up for this event'} / ${event.MaximumParticipant}</p>
                  <p><strong>Location:</strong> ${event.Location}</p>
                 <span class="status-tag status-pending">${event.Status}</span>
 
@@ -438,7 +438,7 @@ async function requestAll2(choice) {
                 
                 <p><strong>Organization:</strong> ${event.OrganizationID}</p>
                 
-                 <p><strong>Participants:</strong> ${event.PeopleSignUp || 'No people Sign Up for this event'} </p>
+                 <p><strong>Participants:</strong> ${event.PeopleSignUp || 'No people Sign Up for this event'} / ${event.MaximumParticipant} </p>
                  <p><strong>Location:</strong> ${event.Location}</p>
                 <span class="status-tag status-pending">${event.Status}</span>
 
@@ -469,7 +469,7 @@ async function requestAll2(choice) {
                 
                 <p><strong>Organization:</strong> ${event.OrganizationID}</p>
                 
-                 <p><strong>Participants:</strong> ${event.PeopleSignUp || 'No people Sign Up for this event'} </p>
+                 <p><strong>Participants:</strong> ${event.PeopleSignUp || 'No people Sign Up for this event'} / ${event.MaximumParticipant}</p>
                  <p><strong>Location:</strong> ${event.Location}</p>
                 <span class="status-tag status-pending">${event.Status}</span>
 
@@ -500,7 +500,7 @@ async function requestAll2(choice) {
                 
                 <p><strong>Organization:</strong> ${event.OrganizationID}</p>
                 
-                 <p><strong>Participants:</strong> ${event.PeopleSignUp || 'No people Sign Up for this event'} </p>
+                 <p><strong>Participants:</strong> ${event.PeopleSignUp || 'No people Sign Up for this event'}/ ${event.MaximumParticipant} </p>
                  <p><strong>Location:</strong> ${event.Location}</p>
                 <span class="status-tag status-pending">${event.Status}</span>
 
@@ -531,7 +531,7 @@ async function requestAll2(choice) {
                 
                 <p><strong>Organization:</strong> ${event.OrganizationID}</p>
                 
-                 <p><strong>Participants:</strong> ${event.PeopleSignUp || 'No people Sign Up for this event'}</p>
+                 <p><strong>Participants:</strong> ${event.PeopleSignUp || 'No people Sign Up for this event'}/ ${event.MaximumParticipant}</p>
                  <p><strong>Location:</strong> ${event.Location}</p>
                 <span class="status-tag status-pending">${event.Status}</span>
 
@@ -564,7 +564,7 @@ async function requestAll2(choice) {
                 
                 <p><strong>Organization:</strong> ${event.OrganizationID}</p>
                 
-                 <p><strong>Participants:</strong> ${event.PeopleSignUp || 'No people Sign Up for this event'} </p>
+                 <p><strong>Participants:</strong> ${event.PeopleSignUp || 'No people Sign Up for this event'}/ ${event.MaximumParticipant}</p>
                  <p><strong>Location:</strong> ${event.Location}</p>
                 <span class="status-tag status-pending">${event.Status}</span>
 

@@ -24,12 +24,12 @@ window.addEventListener("DOMContentLoaded", () => {
   
   document.getElementById("volunteers").value =
     currentRequest.RequiredVolunteers || "";
-  document.getElementById("volunteers").readOnly = true;
+  
 
 
   document.getElementById("organizer").value =
     currentRequest.OrganizationID || "";
-  document.getElementById("organizer").readOnly = true;
+
 
 
   document.getElementById("description").value =
@@ -53,6 +53,7 @@ async function createEvent() {
     EventDate: document.getElementById("eventDate").value,
     Description: document.getElementById("description").value,
     RequiredVolunteers: document.getElementById("volunteers").value,
+    MaximumParticipant: document.getElementById("participant").value,
     PeopleSignUp: 0,
     Status: document.getElementById("status").value
   };

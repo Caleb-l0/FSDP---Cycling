@@ -1,14 +1,112 @@
-.dashboard_big{
 
+/* ===============================
+   RESET + GLOBAL
+================================= */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
+}
 
- 
- max-width:100%;
- min-height:50vh;
- display: flex;
- justify-content: start;
- padding: 5px 5px;
- 
- 
+body {
+  background-color: #fffdf9;
+  color: #333;
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+/* ===============================
+   HEADER
+================================= */
+header {
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  position: fixed;
+  width: 100%;
+  top: 0;
+  left: 0;
+  z-index: 999;
+}
+
+.container {
+  width: 90%;
+  max-width: 1200px;
+  margin: auto;
+}
+
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 0;
+  flex-wrap: wrap;
+}
+
+.logo {
+  font-size: 1.6em;
+  font-weight: 700;
+  color: #f4a261;
+  text-decoration: none;
+}
+
+.nav-toggle {
+  display: none;
+  background: none;
+  border: none;
+  color: #333;
+  font-size: 1.8rem;
+  cursor: pointer;
+}
+
+nav ul {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 25px;
+}
+
+nav ul li a {
+  text-decoration: none;
+  color: #333;
+  font-weight: 500;
+  padding: 8px 16px;
+  border-radius: 6px;
+  transition: 0.3s ease;
+}
+
+nav ul li a:hover {
+  color: #f4a261;
+  background-color: rgba(244, 162, 97, 0.12);
+}
+
+/* Button */
+.btn.small {
+  background-color: #f4a261;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.btn.small:hover {
+  background-color: #e76f51;
+}
+
+/* ===============================
+   DASHBOARD LAYOUT
+================================= */
+.dashboard_big {
+  width: 100%;
+  min-height: 50vh;
+  display: flex;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  gap: 15px;
+  padding: 10px;
+  box-sizing: border-box;
+
 }
 
 .dashboard_section{
@@ -55,9 +153,224 @@ gap:2vw;
 }
 
 
-.section2{
-   border: 1px solid #e0d8cc;
-    border: 1px solid #E5D3B3;
-    width:60%;
-    height:65vh;
+
+.detail2 section {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  padding: 0;
+}
+
+.section2 {
+  flex: 2 1 350px;
+  border: 1px solid #E5D3B3;
+  border-radius: 12px;
+  height: auto;
+  min-height: 50vh;
+  padding: 15px;
+  box-sizing: border-box;
+}
+
+/* ===============================
+   HERO SLIDER
+================================= */
+.hero {
+  margin-bottom: 25px;
+  position: relative;
+  min-height: 80vh; /* taller slider */
+  overflow: hidden;
+}
+
+.hero-content {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  color: #fff;
+  padding: 20px 40px;
+  max-width: 700px;
+  background: rgba(0, 0, 0, 0.40);
+  border-radius: 10px;
+  animation: fadeIn 1s ease-in-out;
+}
+
+.hero-content h1 {
+  font-size: 2.8rem;
+  margin-bottom: 10px;
+  font-weight: 700;
+}
+
+.hero-content p {
+  font-size: 1.2rem;
+  margin-top: 0;
+  line-height: 1.6;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translate(-50%, -45%); }
+  to { opacity: 1; transform: translate(-50%, -50%); }
+}
+
+.container0 {
+  width: 300vw; /* total width for 3 slides */
+  display: flex;
+  transition: transform 0.6s ease-in-out;
+}
+
+.container0 section {
+  width: 100vw;
+  min-height: 80vh; /* match hero height */
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* vertically center content */
+  align-items: center;
+  padding: 4rem 1rem;
+  background-size: cover;
+  background-position: center center; /* keep main part visible */
+  position: relative;
+}
+
+.container0 section::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.55); /* soft overlay */
+  z-index: 1;
+}
+
+.container0 section > * {
+  position: relative;
+  z-index: 2;
+}
+
+.hero h1 {
+  font-size: clamp(1.8rem, 4vw, 3rem);
+  margin-bottom: 1rem;
+  color: #fff;
+}
+
+.hero p {
+  font-size: clamp(1rem, 2vw, 1.25rem);
+  max-width: 700px;
+  margin: 0 auto 2rem;
+  color: #fff;
+}
+
+.btn {
+  display: inline-block;
+  background: #E69A2A;
+  color: white;
+  padding: 12px 25px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: 0.3s;
+}
+
+.btn:hover {
+  background: #b57a19;
+}
+
+.slide {
+  background-size: cover;
+  background-position: center center;
+  height: 80vh; /* match hero */
+  width: 100%;
+  display: none;
+}
+
+.slide.active {
+  display: block;
+}
+
+/* Slider Dots */
+.switch {
+  position: absolute;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 1rem;
+  z-index: 10;
+}
+
+.switch button {
+  width: 0.9em;
+  height: 0.9em;
+  border-radius: 50%;
+  background-color: white;
+  opacity: 0.5;
+  border: none;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.switch button.active {
+  opacity: 1;
+  background-color: #E69A2A;
+}
+
+/* ===============================
+   RESPONSIVE
+================================= */
+@media (max-width: 1024px) {
+  .event-box { flex-basis: 45%; }
+}
+
+@media (max-width: 770px) {
+  .nav-toggle { display: block; }
+
+  nav {
+    position: absolute;
+    top: 100%;
+    width: 100%;
+    display: none;
+    flex-direction: column;
+    background: white;
+    padding: 12px 0;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.12);
+  }
+
+  nav.active { display: flex; }
+  nav ul { flex-direction: column; gap: 15px; }
+
+  .dashboard_section {
+    width: 100%;
+  }
+
+  .detail {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .dashboard_section section img {
+    width: 60%;
+    max-width: 200px;
+  }
+
+  .detail2 {
+    width: 100%;
+  }
+
+  .detail2 section {
+    gap: 10px;
+    flex-direction: column;
+  }
+
+  .section2 {
+    width: 100%;
+    min-height: 40vh;
+    margin-top: 10px;
+  }
+
+  .hero { min-height: 60vh; padding: 2rem 1rem; }
+  .container0 section { min-height: 60vh; }
+}
+
+@media (max-width: 480px) {
+  .event-box { flex-basis: 85%; }
+
+  .hero { min-height: 45vh; padding: 2.5rem 1rem; }
+  .container0 section { min-height: 45vh; }
 }
