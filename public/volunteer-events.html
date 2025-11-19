@@ -6,19 +6,40 @@
   <title>HappyVolunteering | Events</title>
 
   <link rel="stylesheet" href="style.css" />
+
 </head>
 <body>
 
-  <header>
-    <span>HappyVolunteering</span>
-    <div style="display: flex; gap: 10px;">
-      <button class="back-btn" onclick="window.location.href='./volunteer-signed-events.html'">My Signed Events</button>
-      <button class="back-btn" onclick="window.location.href='../homepage_login_volunteer.html'">Back to Home</button>
+<header>
+  <div class="container">
+    <div class="header-content">
+
+      <!-- ⭐ LOGO — redirects based on ROLE -->
+      <a href="#" id="logoRedirect" class="logo">Happy Volunteer</a>
+
+      <button class="nav-toggle" id="navToggle">
+        <i class="fas fa-bars"></i>
+      </button>
+      <nav id="mainNav">
+        <ul>
+          <li><a href="volunteer-events.html">Booking</a></li>
+          <li><a href="#">Community</a></li>
+          <li><a href="#">Reward</a></li>
+          <li><a href="profilepage.html">Profile</a></li>
+        </ul>
+      </nav>
     </div>
-  </header>
+  </div>
+</header>
 
   <div class="container">
+
+    <button class="toggle-btn" onclick="window.location.href='volunteer-signed-events.html'">
+      View My Signed-Up Events
+    </button>
+
     <h2>Upcoming Volunteer Events</h2>
+
     <div class="event-list" id="eventList" aria-live="polite">
     </div>
   </div>
@@ -28,6 +49,6 @@
   </footer>
 
   <script src="script.js"></script>
+
 </body>
 </html>
-
