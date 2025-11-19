@@ -151,6 +151,57 @@ nav ul li a:hover {
   min-height: 380px;
   overflow: hidden;
 }
+.hero-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
+    text-align: center;
+    color: #fff;
+
+    padding: 20px 40px;
+    max-width: 700px;
+
+    background: rgba(0, 0, 0, 0.40); /* soft transparent black */
+    border-radius: 10px;
+
+    animation: fadeIn 1s ease-in-out;
+}
+
+.hero-content h1 {
+    font-size: 2.8rem;
+    margin-bottom: 10px;
+    font-weight: 700;
+}
+
+.hero-content p {
+    font-size: 1.2rem;
+    margin-top: 0;
+    line-height: 1.6;
+}
+
+/* Fade animation */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translate(-50%, -45%); }
+    to { opacity: 1; transform: translate(-50%, -50%); }
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+    .hero-content {
+        padding: 15px 25px;
+        max-width: 90%;
+    }
+
+    .hero-content h1 {
+        font-size: 1.9rem;
+    }
+
+    .hero-content p {
+        font-size: 1rem;
+    }
+}
 
 .container0 {
   width: 300vw;
@@ -211,6 +262,20 @@ nav ul li a:hover {
 .btn:hover {
   background: #b57a19;
 }
+
+.slide {
+    background-size: cover;
+    background-position: center;
+    height: 380px;
+    width: 100%;
+    display: none;
+}
+
+
+.slide.active {
+    display: block;
+}
+
 
 /* Slider Dots */
 .switch {
