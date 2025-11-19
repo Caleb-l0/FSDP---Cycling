@@ -11,8 +11,12 @@ async function getAllEvents() {
 }
 
 async function createEvent(eventData) {
+  let pool;
   try {
-    const pool = await sql.connect(db);
+    console.log("Attempting to connect to database...");
+    pool = await sql.connect(db);
+    console.log("Database connected successfully");
+
 
     const result = await pool.request()
       
@@ -35,10 +39,17 @@ async function createEvent(eventData) {
          @RequiredVolunteers, @VolunteerSignUp,@MaximumParticipant,@PeopleSignUp, @Status)
       `);
 
+
     return result.recordset[0];
 
   } catch (err) {
     console.error("Error creating event model:", err);
+    console.error("Error name:", err.name);
+    console.error("Error message:", err.message);
+    console.error("Error code:", err.code);
+    if (err.originalError) {
+      console.error("Original error:", err.originalError);
+    }
     throw err;
   }
 }
@@ -64,6 +75,23 @@ async function assignEventToOrgan(eventData) {
     throw err;
   }
 }
+async function checkOrganizationExists(organizationID) {
+  try {
+    const pool = await sql.connect(db);
+    const result = await pool.request()
+      .input("OrganizationID", sql.Int, organizationID)
+      .query(`
+        SELECT OrganizationID
+        FROM Organizations
+        WHERE OrganizationID = @OrganizationID
+      `);
+    return result.recordset.length > 0;
+  } catch (err) {
+    console.error("Error checking organization:", err);
+    throw err;
+  }
+}
+
 async function getEventLocation(eventID) {
   try {
     const pool = await sql.connect(db);
@@ -71,7 +99,7 @@ async function getEventLocation(eventID) {
     const result = await pool.request()
       .input("EventID", sql.Int, eventID)
       .query(`
-        SELECT Location
+        SELECT [EventLocation]
         FROM Events 
         WHERE EventID = @EventID
       `);
@@ -152,4 +180,4 @@ async function deleteEvent(eventID) {
   }
 }
 
-module.exports = { getAllEvents,createEvent, assignEventToOrgan,getEventLocation,checkAssigned,deleteEvent,canDeleteEvent,deleteEvent};
+module.exports = { getAllEvents,createEvent, assignEventToOrgan,getEventLocation,checkAssigned,deleteEvent,canDeleteEvent,deleteEvent,checkOrganizationExists};

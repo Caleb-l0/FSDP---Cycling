@@ -19,7 +19,24 @@ async function login(e) {
       localStorage.setItem("userId", data.userId);
       localStorage.setItem("name", data.name);
       localStorage.setItem("email", data.email);
-      setTimeout(() => (window.location.href = "index.html"), 1000);
+      localStorage.setItem("role", data.role);
+      
+      // Redirect based on role
+      setTimeout(() => {
+        switch(data.role) {
+          case 'admin':
+            window.location.href = '/public/homepage_login_Admin.html';
+            break;
+          case 'volunteer':
+            window.location.href = '/public/homepage_login_volunteer.html';
+            break;
+          case 'institution':
+            window.location.href = '/public/homepage_login_instituition.html';
+            break;
+          default:
+            window.location.href = '/';
+        }
+      }, 1000);
     } else {
       alert(data.error || "Login failed");
     }

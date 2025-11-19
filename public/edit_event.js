@@ -13,7 +13,7 @@ async function loadEvent() {
 
   document.getElementById("ev-name").value = data.EventName;
   document.getElementById("ev-date").value = data.EventDate.split("T")[0];
-  document.getElementById("ev-loc").value = data.Location;
+  document.getElementById("ev-loc").value = data.EventLocation;
   document.getElementById("ev-needed").value = data.RequiredVolunteers;
   document.getElementById("ev-desc").value = data.Description;
 
@@ -39,7 +39,7 @@ document.getElementById("btn-save").addEventListener("click", async () => {
   const body = {
     EventName: document.getElementById("ev-name").value,
     EventDate: document.getElementById("ev-date").value,
-    Location: document.getElementById("ev-loc").value,
+    EventLocation: document.getElementById("ev-loc").value,
     RequiredVolunteers: parseInt(document.getElementById("ev-needed").value),
     Description: document.getElementById("ev-desc").value
   };

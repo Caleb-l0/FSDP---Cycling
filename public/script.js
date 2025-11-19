@@ -40,7 +40,7 @@ function renderEvents(events) {
     const title = event.EventName || 'Untitled Event';
     const date = formatDate(event.EventDate);
     const description = event.Description || 'No description available.';
-    const location = event.Location || 'Location TBD';
+    const location = event.EventLocation || 'Location TBD';
     const required = event.RequiredVolunteers ? `Required Volunteers: ${event.RequiredVolunteers}` : '';
 
     const requiredMarkup = required ? `<p>${required}</p>` : '';
@@ -59,7 +59,7 @@ function renderEvents(events) {
     button.classList.add('signup-btn');
     button.type = 'button';
     button.textContent = 'Sign Up';
-    button.addEventListener('click', () => signUp(title));
+    button.addEventListener('click', () => signUp(title, event.EventID));
 
     card.querySelector('.event-details').appendChild(button);
 
@@ -88,7 +88,48 @@ function formatDate(rawDate) {
   });
 }
 
-function signUp(eventTitle) {
-  alert(`🎉 You have successfully signed up for "${eventTitle}"! (Feature in development)`);
+async function signUp(eventTitle, eventId) {
+  const token = localStorage.getItem('token');
+  const userId = localStorage.getItem('userId');
+  
+  if (!token || !userId) {
+    alert('Please login first');
+    window.location.href = '../Accounts/views/login.html';
+    return;
+  }
+
+  if (!eventId) {
+    alert('Event ID is missing. Please refresh the page and try again.');
+    return;
+  }
+
+  try {
+    const response = await fetch(`http://localhost:3000/events/signup/${eventId}`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Failed to sign up');
+    }
+
+    const data = await response.json();
+    alert(`🎉 You have successfully signed up for "${eventTitle}"!`);
+    
+    // Optionally refresh the page or update UI
+    // window.location.reload();
+    
+  } catch (error) {
+    console.error('Error signing up:', error);
+    if (error.message.includes('already signed up')) {
+      alert('You have already signed up for this event.');
+    } else {
+      alert(`Failed to sign up: ${error.message}`);
+    }
+  }
 }
 
