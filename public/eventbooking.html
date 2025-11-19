@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Event Booking | HappyVolunteer</title>
+  <link rel="stylesheet" href="index.css">
+
+  <style>
+    .event-section {
+      margin-top: 120px;
+      text-align: center;
+      padding-bottom: 50px;
+    }
+
+    .event-grid {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 25px;
+      margin-top: 20px;
+    }
+
+    .event-card {
+      width: 330px;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      padding: 20px;
+      text-align: left;
+      transition: transform .3s;
+    }
+    .event-card:hover { transform: translateY(-8px); }
+
+    .event-card h3 { color: #f4a261; margin-bottom: 8px; }
+
+    .event-details { color:#555; font-size: 0.95em; }
+
+    .book-btn {
+      margin-top: 15px;
+      width: 100%;
+      padding: 10px;
+      border-radius: 6px;
+      background: #f4a261;
+      color: white;
+      border: none;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    .book-btn:hover { background:#e76f51; }
+
+    /* Booking modal */
+    #bookingModal input {
+      width: 90%;
+      padding: 10px;
+      margin: 8px 0;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Dynamic Header -->
+  <div id="header-placeholder"></div>
+
+  <section class="event-section">
+    <h1 style="font-size:2.3em;color:#264653;">Book an Event</h1>
+    <p style="color:#555;max-width:600px;margin:auto;">
+      Select an upcoming event and submit your participant count.
+    </p>
+
+    <div class="event-grid" id="eventGrid">
+      <!-- Events loaded here dynamically -->
+    </div>
+  </section>
+
+  <!-- Booking Modal -->
+  <div id="bookingModal" class="modal">
+    <span class="close-btn" onclick="closeBooking()">&times;</span>
+    <div class="modal-content">
+      <h2>Book Event</h2>
+      <p id="selectedEventTitle" style="font-weight:bold;margin-bottom:10px;"></p>
+
+      <input type="number" id="participants" placeholder="Number of Participants" required />
+
+      <button onclick="submitBooking()">Confirm Booking</button>
+    </div>
+  </div>
+
+  <script>
+    let selectedEventId = null;
+
+    // Load header
+    fetch('/public/header.html')
+      .then(res => res.text())
+      .then(data => document.getElementById('header-placeholder').innerHTML = data);
+
+    // Toast (same UI as index.html)
+    function createWowToast(message, type='success'){
+      const toast=document.createElement('div');
+      toast.className='toast-message';
+      toast.innerHTML = `<div class="toast-content">${message}</div>`;
+      Object.assign(toast.style,{
+        position:'fixed',
+        top:'50%',
+        left:'50%',
+        transform:'translate(-50%, -50%)',
+        width:'350px',
+        padding:'25px 30px',
+        background: type==='success'
+          ? 'linear-gradient(135deg,#ffb347,#ffcc33)'
+          : 'linear-gradient(135deg,#ff6b6b,#ff3d3d)',
+        color:'#fff',
+        borderRadius:'15px',
+        opacity:'0',
+        zIndex:'99999',
+        transition:'opacity .4s ease, transform .4s ease'
+      });
+      document.body.appendChild(toast);
+      setTimeout(()=>{ toast.style.opacity='1'; },50);
+      setTimeout(()=>{ toast.style.opacity='0'; toast.addEventListener('transitionend',()=>toast.remove()); },2000);
+    }
+
+    // Fetch Upcoming Events
+    async function loadEvents() {
+      try {
+        const res = await fetch("http://localhost:3000/events/upcoming");
+        const events = await res.json();
+
+        const grid = document.getElementById("eventGrid");
+        grid.innerHTML = "";
+
+        events.forEach(e => {
+          const card = `
+            <div class="event-card">
+              <h3>${e.Title}</h3>
+              <div class="event-details">
+                <p><b>Date:</b> ${e.EventDate}</p>
+                <p><b>Location:</b> ${e.Location}</p>
+                <p><b>Volunteers Needed:</b> ${e.RequiredVolunteers}</p>
+              </div>
+              <button class="book-btn" onclick="openBooking(${e.EventID}, '${e.Title}')">Book Now</button>
+            </div>
+          `;
+          grid.innerHTML += card;
+        });
+
+      } catch (err) {
+        console.error(err);
+        createWowToast("Error loading events", "error");
+      }
+    }
+
+    loadEvents();
+
+    // Modal Logic
+    function openBooking(eventId, title) {
+      selectedEventId = eventId;
+      document.getElementById("selectedEventTitle").innerText = title;
+      document.getElementById("bookingModal").classList.add("active");
+    }
+
+    function closeBooking() {
+      document.getElementById("bookingModal").classList.remove("active");
+      document.getElementById("participants").value = "";
+    }
+
+    // Submit Booking
+    async function submitBooking() {
+      const orgId = localStorage.getItem("userId");
+      const participants = document.getElementById("participants").value;
+
+      if (!participants || participants <= 0)
+        return createWowToast("Enter valid participants", "error");
+
+      const body = { organizationId: orgId, participants: parseInt(participants) };
+
+      try {
+        const res = await fetch(`http://localhost:3000/events/${selectedEventId}/book`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body)
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) return createWowToast(data.message, "error");
+
+        createWowToast("Event booked successfully!", "success");
+        closeBooking();
+
+      } catch (err) {
+        console.error(err);
+        createWowToast("Server error", "error");
+      }
+    }
+  </script>
+
+</body>
+</html>
