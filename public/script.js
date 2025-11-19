@@ -1,5 +1,5 @@
 const eventList = document.getElementById('eventList');
-const EVENTS_ENDPOINT = `${window.location.origin}/volunteer/events`;
+const EVENTS_ENDPOINT = `http://localhost:3000/volunteer/events`;
 
 document.addEventListener('DOMContentLoaded', () => {
   loadEvents();
