@@ -9,11 +9,30 @@
   <link rel="stylesheet" href="signed-events.css" />
 </head>
 <body>
+<header>
+  <div class="container">
+    <div class="header-content">
 
-  <header>
-    <span>HappyVolunteering</span>
-    <button class="back-btn" onclick="window.location.href='./volunteer-events.html'">Back to Events</button>
-  </header>
+      <!-- ⭐ LOGO — redirects based on ROLE -->
+      <a href="#" id="logoRedirect" class="logo">Happy Volunteer</a>
+
+      <button class="nav-toggle" id="navToggle">
+        <i class="fas fa-bars"></i>
+      </button>
+      <nav id="mainNav">
+        <ul>
+          <li><a href="volunteer-events.html">Booking</a></li>
+          <li><a href="#">Community</a></li>
+          <li><a href="#">Reward</a></li>
+          <li><a href="profilepage.html">Profile</a></li>
+        </ul>
+      </nav>
+    </div>
+  </div>
+</header>
+    <button class="toggle-btn" onclick="window.location.href='volunteer-events.html'">
+      View My Signed-Up Events
+    </button>
 
   <div class="container">
     <h2>Events I have signed up for</h2>
