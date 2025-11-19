@@ -51,5 +51,5 @@ setInterval(nextHeroSlide, 5000);
 
 /* Mobile Nav */
 document.getElementById("hvNavToggle").addEventListener("click", () => {
-    document.getElementById("hvNav").classList.toggle("active");
+    document.getElementById("mainNav").classList.toggle("active");
 });
