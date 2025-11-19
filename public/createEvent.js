@@ -13,7 +13,7 @@ window.addEventListener("DOMContentLoaded", () => {
   if (!currentRequest) return;
   document.getElementById("eventName").value = currentRequest.EventName || "";
 
-  document.getElementById("eventLocation").value = currentRequest.EventLocation || "";
+  document.getElementById("eventLocation").value = currentRequest.Location || "";
 
  
   if (currentRequest.EventDate) {
@@ -86,23 +86,20 @@ async function createEvent() {
 
   const eventData = {
 
-    VolunteerRequestID: currentRequest.RequestID,
-    OrganizationID: currentRequest.OrganizationID,
+    OrganizationID: document.getElementById("organizer").value || null,
     EventName: document.getElementById("eventName").value,
     EventDate: document.getElementById("eventDate").value,
     Description: document.getElementById("description").value,
     RequiredVolunteers: document.getElementById("volunteers").value,
     MaximumParticipant: document.getElementById("participant").value,
     PeopleSignUp: 0,
+    Location: document.getElementById("eventLocation").value,
 
     Status: document.getElementById("status").value
   };
 
   // Add EventLocation if provided (optional)
-  const location = document.getElementById("eventLocation").value;
-  if (location && location.trim() !== '') {
-    eventData.EventLocation = location;
-  }
+
 
   // Only include OrganizationID if it's provided
   if (parsedOrgID) {
@@ -140,7 +137,7 @@ async function createEvent() {
     const result = await response.json();
     console.log(result);
     alert("Event created successfully!");
-
+   window.location.href='./homepage_login_Admin.html'
 
   } catch (error) {
     console.error("Error creating event:", error);

@@ -10,51 +10,68 @@
 </head>
 <body>
 
-<header>
-    <div class="container">
-        <div class="header-content">
-            <div class="logo">Happy Volunteer</div>
-            <button class="nav-toggle" id="navToggle">
-                <i class="fas fa-bars"></i>
-            </button>
-            <nav id="mainNav">
-                <ul>
-                    <li><a href="./volunteer-events.html">Booking</a></li>
-                    <li><a href="#">Community</a></li>
-                    <li><a href="#">Reward</a></li>
-                    <li><a href="profilepage.html">Profile</a></li>
-                </ul>
-            </nav>
-        </div>
+<header class="hv-header">
+    <div class="container hv-header-content">
+
+
+        <div class="hv-logo"><a href="./homepage_login_Admin.html" style="  text-decoration: none; 
+    color: inherit; ">Happy Volunteer</a></div>
+
+                <nav id="mainNav">
+                    <ul>
+
+                        <li><a href="./volunteer-events.html">Booking</a></li>
+                        <li><a href="#">My Community</a></li>
+                        <li><a href="#">Reward</a></li>
+                        <li><a href="profilepage.html">Profile</a></li>
+                    </ul>
+                </nav>
+
+
+        <button class="hv-nav-toggle" id="hvNavToggle">
+            <i class="fas fa-bars"></i>
+        </button>
+
+      
+
     </div>
 </header>
 
 <!-- Hero Slider -->
 <section class="hero">
     <div class="hero-slider">
-        <div class="slide active" style="background-image: url('../images/img4.jpg');">
+
+        <div class="hero-slide active" style="background-image: url('../images/img4.jpg');">
             <div class="hero-content">
                 <h1>Welcome to HappyVolunteer</h1>
                 <p>Empowering communities through compassion and collaboration.</p>
+                <a href="./createEvent.html" class="hero-btn" >Sign Up Events</a>
             </div>
         </div>
-        <div class="slide" style="background-image: url('../images/IMG3.webp');">
+
+        <div class="hero-slide" style="background-image: url('../images/IMG3.webp');">
             <div class="hero-content">
                 <h1>Make a Difference Today</h1>
-                <p>Join us in creating meaningful change across communities.</p>
+                <p>Create meaningful change across the community.</p>
+                <a href="#" class="hero-btn">Explore Events</a>
             </div>
         </div>
-        <div class="slide" style="background-image: url('../images/img5.jpg');">
+
+        <div class="hero-slide" style="background-image: url('../images/img5.jpg');">
             <div class="hero-content">
                 <h1>Together We Grow Stronger</h1>
-                <p>Be part of a movement that inspires hope and unity.</p>
+                <p>Be part of a movement that inspires hope.</p>
+                <a href="#" class="hero-btn">Get Started</a>
             </div>
         </div>
+
     </div>
-    <div class="dots-container">
-        <span class="dot active"></span>
-        <span class="dot"></span>
-        <span class="dot"></span>
+
+    <!-- dots -->
+    <div class="hero-dots">
+        <span class="hero-dot active"></span>
+        <span class="hero-dot"></span>
+        <span class="hero-dot"></span>
     </div>
 </section>
 
@@ -252,45 +269,51 @@
 <footer>
     <div class="container">
         <div class="footer-content">
+
             <div class="footer-column">
-                <h3>Happy Volunteering</h3>
+                <h3>Happy Volunteer</h3>
                 <ul>
-                    <li><a href="#">关于我们</a></li>
-                    <li><a href="#">团队</a></li>
-                    <li><a href="#">职业机会</a></li>
-                    <li><a href="#">新闻</a></li>
+                    <li><a href="#">About Us</a></li>
+                    <li><a href="#">Our Team</a></li>
+                    <li><a href="#">Careers</a></li>
+                    <li><a href="#">News & Updates</a></li>
                 </ul>
             </div>
+
             <div class="footer-column">
-                <h3>信息</h3>
+                <h3>Information</h3>
                 <ul>
                     <li><a href="#">FAQ</a></li>
-                    <li><a href="#">博客</a></li>
-                    <li><a href="#">资源</a></li>
-                    <li><a href="#">活动日历</a></li>
+                    <li><a href="#">Blog</a></li>
+                    <li><a href="#">Resources</a></li>
+                    <li><a href="#">Event Calendar</a></li>
                 </ul>
             </div>
+
             <div class="footer-column">
-                <h3>联系</h3>
+                <h3>Contact</h3>
                 <ul>
-                    <li><a href="#">联系我们</a></li>
-                    <li><a href="#">支持中心</a></li>
-                    <li><a href="#">合作伙伴</a></li>
-                    <li><a href="#">反馈</a></li>
+                    <li><a href="#">Contact Us</a></li>
+                    <li><a href="#">Support Center</a></li>
+                    <li><a href="#">Partnerships</a></li>
+                    <li><a href="#">Feedback</a></li>
                 </ul>
             </div>
+
             <div class="footer-column">
-                <h3>法律</h3>
+                <h3>Legal</h3>
                 <ul>
-                    <li><a href="#">隐私政策</a></li>
-                    <li><a href="#">使用条款</a></li>
-                    <li><a href="#">Cookie政策</a></li>
-                    <li><a href="#">免责声明</a></li>
+                    <li><a href="#">Privacy Policy</a></li>
+                    <li><a href="#">Terms of Use</a></li>
+                    <li><a href="#">Cookie Policy</a></li>
+                    <li><a href="#">Disclaimer</a></li>
                 </ul>
             </div>
+
         </div>
+
         <div class="copyright">
-            <p>&copy; 2025 Happy Volunteering. All rights reserved.</p>
+            <p>&copy; 2025 Happy Volunteer. All rights reserved.</p>
         </div>
     </div>
 </footer>

@@ -29,13 +29,14 @@ async function createEvent(eventData) {
       .input("VolunteerSignUp", sql.Int, 0)
       .input("MaximumParticipant",sql.Int,eventData.MaximumParticipant)
       .input("Status", sql.NVarChar(20), eventData.Status)
+      .input("Location", sql.NVarChar(20), eventData.Location)
       .query(`
         INSERT INTO Events
-        (OrganizationID, EventName, EventDate, Description,
+        (OrganizationID, Location,EventName, EventDate, Description,
          RequiredVolunteers,VolunteerSignUp,MaximumParticipant, PeopleSignUp, Status)
         OUTPUT inserted.*
         VALUES
-        (@OrganizationID, @EventName, @EventDate, @Description,
+        (@OrganizationID, @Location,@EventName, @EventDate, @Description,
          @RequiredVolunteers, @VolunteerSignUp,@MaximumParticipant,@PeopleSignUp, @Status)
       `);
 
@@ -99,7 +100,7 @@ async function getEventLocation(eventID) {
     const result = await pool.request()
       .input("EventID", sql.Int, eventID)
       .query(`
-        SELECT [EventLocation]
+        SELECT Location
         FROM Events 
         WHERE EventID = @EventID
       `);
