@@ -25,7 +25,7 @@ header {
   width: 100%;
   top: 0;
   left: 0;
-  z-index: 999; /* keeps header above content */
+  z-index: 999;
 }
 
 .container {
@@ -160,6 +160,146 @@ nav ul li a:hover {
 }
 
 /* ===============================
+   HERO SLIDER
+================================= */
+.hero {
+  margin-bottom: 25px;
+  position: relative;
+  min-height: 80vh; /* taller slider */
+  overflow: hidden;
+}
+
+.hero-content {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  color: #fff;
+  padding: 20px 40px;
+  max-width: 700px;
+  background: rgba(0, 0, 0, 0.40);
+  border-radius: 10px;
+  animation: fadeIn 1s ease-in-out;
+}
+
+.hero-content h1 {
+  font-size: 2.8rem;
+  margin-bottom: 10px;
+  font-weight: 700;
+}
+
+.hero-content p {
+  font-size: 1.2rem;
+  margin-top: 0;
+  line-height: 1.6;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translate(-50%, -45%); }
+  to { opacity: 1; transform: translate(-50%, -50%); }
+}
+
+.container0 {
+  width: 300vw; /* total width for 3 slides */
+  display: flex;
+  transition: transform 0.6s ease-in-out;
+}
+
+.container0 section {
+  width: 100vw;
+  min-height: 80vh; /* match hero height */
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* vertically center content */
+  align-items: center;
+  padding: 4rem 1rem;
+  background-size: cover;
+  background-position: center center; /* keep main part visible */
+  position: relative;
+}
+
+.container0 section::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.55); /* soft overlay */
+  z-index: 1;
+}
+
+.container0 section > * {
+  position: relative;
+  z-index: 2;
+}
+
+.hero h1 {
+  font-size: clamp(1.8rem, 4vw, 3rem);
+  margin-bottom: 1rem;
+  color: #fff;
+}
+
+.hero p {
+  font-size: clamp(1rem, 2vw, 1.25rem);
+  max-width: 700px;
+  margin: 0 auto 2rem;
+  color: #fff;
+}
+
+.btn {
+  display: inline-block;
+  background: #E69A2A;
+  color: white;
+  padding: 12px 25px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: 0.3s;
+}
+
+.btn:hover {
+  background: #b57a19;
+}
+
+.slide {
+  background-size: cover;
+  background-position: center center;
+  height: 80vh; /* match hero */
+  width: 100%;
+  display: none;
+}
+
+.slide.active {
+  display: block;
+}
+
+/* Slider Dots */
+.switch {
+  position: absolute;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 1rem;
+  z-index: 10;
+}
+
+.switch button {
+  width: 0.9em;
+  height: 0.9em;
+  border-radius: 50%;
+  background-color: white;
+  opacity: 0.5;
+  border: none;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.switch button.active {
+  opacity: 1;
+  background-color: #E69A2A;
+}
+
+/* ===============================
    RESPONSIVE
 ================================= */
 @media (max-width: 1024px) {
@@ -211,8 +351,14 @@ nav ul li a:hover {
     min-height: 40vh;
     margin-top: 10px;
   }
+
+  .hero { min-height: 60vh; padding: 2rem 1rem; }
+  .container0 section { min-height: 60vh; }
 }
 
 @media (max-width: 480px) {
   .event-box { flex-basis: 85%; }
+
+  .hero { min-height: 45vh; padding: 2.5rem 1rem; }
+  .container0 section { min-height: 45vh; }
 }
