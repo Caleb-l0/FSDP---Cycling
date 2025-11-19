@@ -1,202 +1,351 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Event Booking | HappyVolunteer</title>
-  <link rel="stylesheet" href="index.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cycling Without Age</title>
 
-  <style>
-    .event-section {
-      margin-top: 120px;
-      text-align: center;
-      padding-bottom: 50px;
-    }
 
-    .event-grid {
-      display: flex;
-      justify-content: center;
-      flex-wrap: wrap;
-      gap: 25px;
-      margin-top: 20px;
-    }
 
-    .event-card {
-      width: 330px;
-      background: white;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-      padding: 20px;
-      text-align: left;
-      transition: transform .3s;
-    }
-    .event-card:hover { transform: translateY(-8px); }
-
-    .event-card h3 { color: #f4a261; margin-bottom: 8px; }
-
-    .event-details { color:#555; font-size: 0.95em; }
-
-    .book-btn {
-      margin-top: 15px;
-      width: 100%;
-      padding: 10px;
-      border-radius: 6px;
-      background: #f4a261;
-      color: white;
-      border: none;
-      cursor: pointer;
-      transition: 0.3s;
-    }
-    .book-btn:hover { background:#e76f51; }
-
-    /* Booking modal */
-    #bookingModal input {
-      width: 90%;
-      padding: 10px;
-      margin: 8px 0;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-    }
-  </style>
+    <link rel="stylesheet" href="./homepage.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="./homepage_instituition.css">
 </head>
-
 <body>
+   
+<header class="hv-header">
+    <div class="container hv-header-content">
 
-  <!-- Dynamic Header -->
-  <div id="header-placeholder"></div>
 
-  <section class="event-section">
-    <h1 style="font-size:2.3em;color:#264653;">Book an Event</h1>
-    <p style="color:#555;max-width:600px;margin:auto;">
-      Select an upcoming event and submit your participant count.
-    </p>
+        <div class="hv-logo"><a href="./homepage_login_Admin.html" style="  text-decoration: none; 
+    color: inherit; ">Happy Volunteer</a></div>
 
-    <div class="event-grid" id="eventGrid">
-      <!-- Events loaded here dynamically -->
+                <nav id="mainNav">
+                    <ul>
+
+                        <li><a href="#">Create Event</a></li>
+                        <li><a href="#">My Community</a></li>
+                        <li><a href="#">Reward</a></li>
+                        <li><a href="profilepage.html">Profile</a></li>
+                    </ul>
+                </nav>
+
+
+        <button class="hv-nav-toggle" id="hvNavToggle">
+            <i class="fas fa-bars"></i>
+        </button>
+
+        <nav class="hv-nav" id="hvNav">
+            <ul>
+                 <li><a href="#">Apply Event</a></li>
+                  <li><a href="#">My Request</a></li>
+                <li><a href="profilepage.html">Profile</a></li>
+            </ul>
+        </nav>
+
     </div>
-  </section>
+</header>
+   
+<section class="hero">
+    <div class="hero-slider">
 
-  <!-- Booking Modal -->
-  <div id="bookingModal" class="modal">
-    <span class="close-btn" onclick="closeBooking()">&times;</span>
-    <div class="modal-content">
-      <h2>Book Event</h2>
-      <p id="selectedEventTitle" style="font-weight:bold;margin-bottom:10px;"></p>
-
-      <input type="number" id="participants" placeholder="Number of Participants" required />
-
-      <button onclick="submitBooking()">Confirm Booking</button>
-    </div>
-  </div>
-
-  <script>
-    let selectedEventId = null;
-
-    // Load header
-    fetch('/public/header.html')
-      .then(res => res.text())
-      .then(data => document.getElementById('header-placeholder').innerHTML = data);
-
-    // Toast (same UI as index.html)
-    function createWowToast(message, type='success'){
-      const toast=document.createElement('div');
-      toast.className='toast-message';
-      toast.innerHTML = `<div class="toast-content">${message}</div>`;
-      Object.assign(toast.style,{
-        position:'fixed',
-        top:'50%',
-        left:'50%',
-        transform:'translate(-50%, -50%)',
-        width:'350px',
-        padding:'25px 30px',
-        background: type==='success'
-          ? 'linear-gradient(135deg,#ffb347,#ffcc33)'
-          : 'linear-gradient(135deg,#ff6b6b,#ff3d3d)',
-        color:'#fff',
-        borderRadius:'15px',
-        opacity:'0',
-        zIndex:'99999',
-        transition:'opacity .4s ease, transform .4s ease'
-      });
-      document.body.appendChild(toast);
-      setTimeout(()=>{ toast.style.opacity='1'; },50);
-      setTimeout(()=>{ toast.style.opacity='0'; toast.addEventListener('transitionend',()=>toast.remove()); },2000);
-    }
-
-    // Fetch Upcoming Events
-    async function loadEvents() {
-      try {
-        const res = await fetch("http://localhost:3000/events/upcoming");
-        const events = await res.json();
-
-        const grid = document.getElementById("eventGrid");
-        grid.innerHTML = "";
-
-        events.forEach(e => {
-          const card = `
-            <div class="event-card">
-              <h3>${e.Title}</h3>
-              <div class="event-details">
-                <p><b>Date:</b> ${e.EventDate}</p>
-                <p><b>Location:</b> ${e.Location}</p>
-                <p><b>Volunteers Needed:</b> ${e.RequiredVolunteers}</p>
-              </div>
-              <button class="book-btn" onclick="openBooking(${e.EventID}, '${e.Title}')">Book Now</button>
+        <div class="hero-slide active" style="background-image: url('../images/img4.jpg');">
+            <div class="hero-content">
+                <h1>Welcome to HappyVolunteer</h1>
+                <p>Empowering communities through compassion and collaboration.</p>
+                <a href="./createEvent.html" class="hero-btn" >Apply Event</a>
             </div>
-          `;
-          grid.innerHTML += card;
+        </div>
+
+        <div class="hero-slide" style="background-image: url('../images/IMG3.webp');">
+            <div class="hero-content">
+                <h1>Make a Difference Today</h1>
+                <p>Create meaningful change across the community.</p>
+                <a href="#" class="hero-btn">Explore Events</a>
+            </div>
+        </div>
+
+        <div class="hero-slide" style="background-image: url('../images/img5.jpg');">
+            <div class="hero-content">
+                <h1>Together We Grow Stronger</h1>
+                <p>Be part of a movement that inspires hope.</p>
+                <a href="#" class="hero-btn">Get Started</a>
+            </div>
+        </div>
+
+    </div>
+
+    <div>
+        
+    </div>
+
+    <!-- dots -->
+    <div class="hero-dots">
+        <span class="hero-dot active"></span>
+        <span class="hero-dot"></span>
+        <span class="hero-dot"></span>
+    </div>
+</section>
+
+ 
+    <section class="services">
+        <div class="container">
+            <div class="section-title">
+                <h2>Your Event Created</h2>
+            </div>
+           <div class="dashboard_big">
+            <div class="dashboard_section">
+
+                <section class="detail">
+                    <img src="./Bali.jpg">
+
+                     <section class="detail2">
+                        <h3>Event Name</h3>
+                        <section>
+                            <p>Time: </p>
+                            <p>20:30</p>
+                        </section>
+                            <section>
+                            <p>Location: </p>
+                            <p>Radin Mas</p>
+                        </section>
+                            <section>
+                            <p>People Needed: </p>
+                            <p>20</p>
+                        </section>
+                     </section>
+                </section>
+                 <section class="detail">
+                    <img src="./Bali.jpg">
+
+                     <section class="detail2">
+                        <h3>Event Name</h3>
+                        <section>
+                            <p>Time: </p>
+                            <p>20:30</p>
+                        </section>
+                            <section>
+                            <p>Location: </p>
+                            <p>Radin Mas</p>
+                        </section>
+                            <section>
+                            <p>People Needed: </p>
+                            <p>20</p>
+                        </section>
+                     </section>
+
+
+                </section>
+                 <section class="detail">
+                    <img src="./Bali.jpg">
+
+                     <section class="detail2">
+                        <h3>Event Name</h3>
+                        <section>
+                            <p>Time: </p>
+                            <p>20:30</p>
+                        </section>
+                            <section>
+                            <p>Location: </p>
+                            <p>Radin Mas</p>
+                        </section>
+                            <section>
+                            <p>People Needed: </p>
+                            <p>20</p>
+                        </section>
+                     </section>
+
+
+                </section>    
+            </div>
+            <section class="section2">
+
+            </section>
+           </div>
+            
+            </div>
+        </div>
+    </section>
+
+  
+    <section class="features">
+        <div class="container" >
+            <div class="section-title">
+                <h2>Your Community</h2>
+                
+              
+            </div>
+            <div class="features-grid">
+              
+                <div class="feature-item">
+                    <i class="fas fa-award"></i>
+                    <h3>Event</h3>
+                    <p>Hi</p>
+                </div>
+                
+                <div class="feature-item">
+                    <i class="fas fa-award"></i>
+                    <h3>Event</h3>
+                    <p>Hi</p>
+                </div>
+                
+                <div class="feature-item">
+                    <i class="fas fa-award"></i>
+                    <h3>Event</h3>
+                    <p>Hi</p>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+   <section class="features">
+
+     
+
+            
+    <div class="container">
+        <div class="section-title">
+                <h2>Wow</h2>
+            </div>
+        <section class="big_box">
+<div class="small_box">
+
+</div>
+<div class="small_box">
+   
+</div>
+<div class="small_box">
+    
+</div>
+<div class="small_box">
+   
+</div>
+
+        </section>
+
+        
+    </div>
+    </section>
+    
+
+
+            </section>
+
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h3>Harry Volunteering</h3>
+                    <ul>
+                        <li><a href="#">About Us</a></li>
+                        <li><a href="#">Our Team</a></li>
+                        <li><a href="#">Opportunity</a></li>
+                        <li><a href="#">Social Media</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Information</h3>
+                    <ul>
+                        <li><a href="#">Problem report</a></li>
+                        <li><a href="#"></a></li>
+                        <li><a href="#">Resource</a></li>
+                        <li><a href="#">Activity</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Contact Us</h3>
+                    <ul>
+                        <li><a href="#">Contact Us</a></li>
+                        <li><a href="#">Support</a></li>
+                        <li><a href="#">cooperation</a></li>
+                        <li><a href="#">Feedback</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Law</h3>
+                    <ul>
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Statement</a></li>
+                        <li><a href="#">Cookie</a></li>
+                        <li><a href="#">Statement</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2025 Harry Volunteering. Right reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        const token = localStorage.getItem("token");
+const role = localStorage.getItem("role");
+
+  if (!token || role !== "institution") {
+    alert("You do not have access to this page.");
+    window.location.href = "/index.html";
+  }
+       
+        document.getElementById('navToggle').addEventListener('click', function() {
+            document.getElementById('mainNav').classList.toggle('active');
+        });
+        
+        
+        document.querySelectorAll('#mainNav a').forEach(link => {
+            link.addEventListener('click', function() {
+                document.getElementById('mainNav').classList.remove('active');
+            });
         });
 
-      } catch (err) {
-        console.error(err);
-        createWowToast("Error loading events", "error");
-      }
-    }
+        let currentSlide = 0;
+        const totalSlides = 3;
+        const container0 = document.querySelector('.container0');
+        const switchButtons = document.querySelectorAll('.switch-btn');
+        let autoSlideInterval;
 
-    loadEvents();
+        function goToSlide(index) {
+            currentSlide = index;
+            const translateX = -currentSlide * 100;
+            container0.style.transform = `translateX(${translateX}vw)`;
 
-    // Modal Logic
-    function openBooking(eventId, title) {
-      selectedEventId = eventId;
-      document.getElementById("selectedEventTitle").innerText = title;
-      document.getElementById("bookingModal").classList.add("active");
-    }
+            switchButtons.forEach((btn, i) => {
+                if (i === currentSlide) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+        }
 
-    function closeBooking() {
-      document.getElementById("bookingModal").classList.remove("active");
-      document.getElementById("participants").value = "";
-    }
+        function nextSlide() {
+            currentSlide = (currentSlide + 1) % totalSlides;
+            goToSlide(currentSlide);
+        }
 
-    // Submit Booking
-    async function submitBooking() {
-      const orgId = localStorage.getItem("userId");
-      const participants = document.getElementById("participants").value;
-
-      if (!participants || participants <= 0)
-        return createWowToast("Enter valid participants", "error");
-
-      const body = { organizationId: orgId, participants: parseInt(participants) };
-
-      try {
-        const res = await fetch(`http://localhost:3000/events/${selectedEventId}/book`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(body)
+        switchButtons.forEach((btn, index) => {
+            btn.addEventListener('click', function() {
+                goToSlide(index);
+                clearInterval(autoSlideInterval);
+                startAutoSlide();
+            });
         });
 
-        const data = await res.json();
+        function startAutoSlide() {
+            autoSlideInterval = setInterval(nextSlide, 4000);
+        }
 
-        if (!res.ok) return createWowToast(data.message, "error");
+        function initCarousel() {
+            goToSlide(0);
+            startAutoSlide();
+        }
 
-        createWowToast("Event booked successfully!", "success");
-        closeBooking();
-
-      } catch (err) {
-        console.error(err);
-        createWowToast("Server error", "error");
-      }
-    }
-  </script>
-
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initCarousel);
+        } else {
+            initCarousel();
+        }
+    </script>
 </body>
 </html>
