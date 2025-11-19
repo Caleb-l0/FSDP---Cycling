@@ -1,16 +1,35 @@
+/* ===============================
+   SIGNED EVENT CARD (container)
+================================= */
 .signed-event-card {
   position: relative;
+  background: #FFFDF7;
+  border: 1px solid #E5D3B3;
+  padding: 18px;
+  border-radius: 14px;
+  box-shadow: 0 6px 14px rgba(0,0,0,0.06);
+  transition: 0.3s ease;
 }
 
+.signed-event-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.09);
+}
+
+/* ===============================
+   STATUS BADGES
+================================= */
 .status-badge {
   display: inline-block;
-  padding: 4px 12px;
+  padding: 5px 14px;
   border-radius: 12px;
-  font-size: 0.85em;
-  font-weight: bold;
-  margin-bottom: 10px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  margin-bottom: 12px;
+  letter-spacing: 0.3px;
 }
 
+/* Keep original colors */
 .status-badge--upcoming {
   background-color: #4CAF50;
   color: white;
@@ -31,15 +50,24 @@
   color: white;
 }
 
+/* ===============================
+   SIGNUP INFO
+================================= */
 .signup-info {
-  margin-top: 10px;
-  padding-top: 10px;
+  margin-top: 14px;
+  padding-top: 12px;
   border-top: 1px solid #eee;
   color: #666;
-  font-size: 0.9em;
+  font-size: 0.92rem;
+  line-height: 1.5;
 }
 
+/* ===============================
+   EVENT DETAILS
+================================= */
 .event-details h3 {
-  margin-top: 5px;
+  margin-top: 6px;
+  font-size: 1.2rem;
+  color: #3E2723;
+  font-weight: 700;
 }
-

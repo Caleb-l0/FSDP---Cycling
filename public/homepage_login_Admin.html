@@ -4,145 +4,76 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cycling Without Age</title>
-    <style>
-        header {
-            padding: 24px 0;
-            min-height: 90px;
-        }
-        
-        .header-content {
-            gap: 15px;
-            flex-wrap: nowrap;
-        }
-        
-        .logo {
-            white-space: nowrap;
-            flex-shrink: 0;
-            font-size: 1.3rem;
-        }
-        
-        nav ul {
-            flex-wrap: nowrap;
-            gap: 8px;
-            align-items: center;
-        }
-        
-        nav ul li {
-            margin-left: 8px;
-        }
-        
-        nav ul li a {
-            padding: 6px 12px;
-            font-size: 0.9rem;
-            white-space: nowrap;
-        }
-        
-        .search-bar {
-            width: 260px;
-            min-width: 180px;
-            flex-shrink: 1;
-        }
-        
-        .search-bar input {
-            font-size: 13px;
-        }
-        
-        .search-bar input::placeholder {
-            font-size: 13px;
-        }
-        
-        .search-bar button {
-            padding: 4px 8px;
-            font-size: 12px;
-        }
-        
-        nav {
-            flex: 1;
-            min-width: 0;
-        }
-        
-        nav ul {
-            justify-content: flex-end;
-        }
-        
-        @media (max-width: 1400px) {
-            .search-bar {
-                width: 220px;
-            }
-        }
-        
-        @media (max-width: 1200px) {
-            .search-bar {
-                width: 180px;
-            }
-            nav ul li a {
-                padding: 5px 8px;
-                font-size: 0.8rem;
-            }
-            .logo {
-                font-size: 1.2rem;
-            }
-        }
-    </style>
+
     <link rel="stylesheet" href="./homepage.css">
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
     <link rel="stylesheet" href="./homepage_instituition.css">
+
     <link rel="stylesheet" href="./homepage_login_Admin.css">
 
 </head>
 <body>
   
-    <header>
-        <div class="container">
-            <div class="header-content">
-                <div class="logo">Happy Volunteer</div>
-                <button class="nav-toggle" id="navToggle">
-                    <i class="fas fa-bars"></i>
-                </button>
+<header class="hv-header">
+    <div class="container hv-header-content">
 
-                <nav id="mainNav">
-                    <ul>
-                       <div class="search-bar">
-                      <i class="icon">🔍</i>
-  <input type="text" placeholder="Search..." />
-  <button>Go</button>
-</div>
-                        <li><a href="#">Manage Application</a></li>
-                        <li><a href="#">Chat</a></li>
-                        <li><a href="#">Reward</a></li>
-                        <li><a href="profilepage.html">Profile</a></li>
-                    </ul>
-                </nav>
+        <div class="hv-logo"><a href="./homepage_login_Admin.html" style="  text-decoration: none; 
+    color: inherit; ">Happy Volunteer</a></div>
 
+        <button class="hv-nav-toggle" id="hvNavToggle">
+            <i class="fas fa-bars"></i>
+        </button>
+
+        <nav class="hv-nav" id="hvNav">
+            <ul>
+                 <li><a href="#">Create Event</a></li>
+                <li><a href="profilepage.html">Profile</a></li>
+            </ul>
+        </nav>
+
+    </div>
+</header>
+
+<section class="hero">
+    <div class="hero-slider">
+
+        <div class="hero-slide active" style="background-image: url('../images/img4.jpg');">
+            <div class="hero-content">
+                <h1>Welcome to HappyVolunteer</h1>
+                <p>Empowering communities through compassion and collaboration.</p>
+                <a href="./createEvent.html" class="hero-btn" >Start Create Event</a>
             </div>
         </div>
-    </header>
+
+        <div class="hero-slide" style="background-image: url('../images/IMG3.webp');">
+            <div class="hero-content">
+                <h1>Make a Difference Today</h1>
+                <p>Create meaningful change across the community.</p>
+                <a href="#" class="hero-btn">Explore Events</a>
+            </div>
+        </div>
+
+        <div class="hero-slide" style="background-image: url('../images/img5.jpg');">
+            <div class="hero-content">
+                <h1>Together We Grow Stronger</h1>
+                <p>Be part of a movement that inspires hope.</p>
+                <a href="#" class="hero-btn">Get Started</a>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- dots -->
+    <div class="hero-dots">
+        <span class="hero-dot active"></span>
+        <span class="hero-dot"></span>
+        <span class="hero-dot"></span>
+    </div>
+</section>
 
    
-    <section class="hero">
-        <div class="container0">
-            <section>
-            <h1>Welcome, Admin Mr xxx!</h1>
-            <p>Manage Your application from now.</p>
-            <a href="#" class="btn" id="createEvent">Start Create Event !</a>
-            </section>
-             <section>
-            <h1>Welcome !</h1>
-            <p>Join hands, share love, and make every day meaningful.</p>
-            <a href="#" class="btn">Join Us Today !</a>
-            </section>
-             <section>
-            <h1>Welcome !</h1>
-            <p>Join hands, share love, and make every day meaningful.</p>
-            <a href="#" class="btn">Join Us Today !</a>
-            </section>
-        </div>
-         <section class="switch">
-               <button class="switch-btn active" data-index="0">.</button>
-                <button class="switch-btn" data-index="1">.</button>
-                 <button class="switch-btn" data-index="2">.</button>
-            </section>
-    </section>
 
 
 
@@ -165,8 +96,7 @@
   <a class="dashboard_title_not_selected" id="title2">Event Created</a>
   </section>
   <section id="dashboard1">
-  <div class="search-bar">
-    
+  <div class="search-bar" style="width:400px">
     <input type="text" placeholder="Search by event or organization..." />
     <button>Search</button>
   </div>
@@ -190,8 +120,8 @@
   </section>
 
   <section id="dashboard2">
-  <div class="search-bar">
-    <input type="text" placeholder="Search my events..." />
+  <div class="search-bar"  style="width:400px">
+    <input type="text" placeholder="Search my events..." /> 
     <button>Search</button>
   </div>
   <div class="filter-group" id="filter-group2">
@@ -278,7 +208,7 @@
         </div>
     </footer>
 
-
+  <script sec="./homepage.js"></script>
     <script src="./homepage_admin.js">
        
         document.getElementById('navToggle').addEventListener('click', function() {

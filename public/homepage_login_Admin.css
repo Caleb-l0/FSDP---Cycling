@@ -285,15 +285,58 @@
 
 /* Mobile */
 @media (max-width: 500px) {
+  /* Make 1 row show 5 small squares */
   .svc-calendar-grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(5, 1fr);
+    gap: 4px;
   }
+
+  /* Reduce size of each calendar cell */
   .svc-day {
-    min-height: 150px;
-    font-size: 1.1rem;
+    min-height: 75px;   /* tighter height */
+    padding: 4px;       /* compact internal padding */
+    font-size: 0.80rem;
   }
+
+  /* Weekday header also compact */
+  .svc-day-name {
+    font-size: 0.75rem;
+    padding: 4px 0;
+  }
+
+  /* Event box inside cell */
   .svc-event-box {
-    font-size: 1rem;
-    padding: 10px;
+    font-size: 0.72rem;
+    padding: 4px;
+    margin-top: 4px;
+    line-height: 1.2;
+  }
+
+  .svc-event-title {
+    font-size: 0.70rem;
+  }
+
+  .svc-event-time {
+    font-size: 0.65rem;
+  }
+
+  /* Calendar container also slimmer */
+  .svc-calendar-container {
+    padding: 12px;
+    border-radius: 12px;
+  }
+
+  /* Month header adjustments */
+  .svc-month-header h2 {
+    font-size: 1.2rem;
+  }
+
+  .svc-btn {
+    padding: 6px 10px;
+    font-size: 0.75rem;
   }
 }
+
+
+
+

@@ -295,58 +295,10 @@
     </div>
 </footer>
 
-<script>
-    // Nav toggle
-    document.getElementById('navToggle').addEventListener('click', function() {
-        document.getElementById('mainNav').classList.toggle('active');
-    });
-    document.querySelectorAll('#mainNav a').forEach(link => {
-        link.addEventListener('click', function() {
-            document.getElementById('mainNav').classList.remove('active');
-        });
-    });
+<script src="./homepage.js">
 
-    // Horizontal scroll buttons
-    document.querySelectorAll('.scroll-wrapper').forEach(wrapper => {
-        const leftBtn = wrapper.querySelector('.left');
-        const rightBtn = wrapper.querySelector('.right');
-        const scrollable = wrapper.querySelector('.scrollable');
-
-        leftBtn.addEventListener('click', () => {
-            scrollable.scrollBy({ left: -300, behavior: 'smooth' });
-        });
-        rightBtn.addEventListener('click', () => {
-            scrollable.scrollBy({ left: 300, behavior: 'smooth' });
-        });
-    });
-
-    // Hero Slider
-    let currentSlide = 0;
-    const slides = document.querySelectorAll('.slide');
-    const dots = document.querySelectorAll('.dot');
-
-    function showSlide(index) {
-        slides.forEach((s, i) => s.classList.toggle('active', i === index));
-        dots.forEach((d, i) => d.classList.toggle('active', i === index));
-    }
-
-
-    
-
-    function nextSlide() {
-        currentSlide = (currentSlide + 1) % slides.length;
-        showSlide(currentSlide);
-    }
-
-    dots.forEach((dot, i) => {
-        dot.addEventListener('click', () => {
-            currentSlide = i;
-            showSlide(i);
-        });
-    });
-
-    setInterval(nextSlide, 5000);
 </script>
+
 <script src="./volunteer.js"></script>
 
 

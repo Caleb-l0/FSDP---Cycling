@@ -35,7 +35,7 @@ function displayRequestDetails(data) {
  
   document.getElementById('req-created').textContent = new Date(data.CreatedAt).toLocaleDateString();
   document.getElementById('req-desc').textContent = data. Description;
-  
+  document.getElementById("req-participant").textContent = data.ParticipantNumber;
   document.getElementById('req-date').textContent = new Date(data.EventDate).toLocaleDateString();
   document.getElementById('req-needed').textContent = data.RequiredVolunteers;
   document.getElementById('req-org').textContent = data.OrganizationID;

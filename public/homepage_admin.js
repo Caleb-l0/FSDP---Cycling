@@ -34,9 +34,6 @@ title.addEventListener("click", function() {
 });
 
 
-createEventbt.addEventListener('click',function(){
-     window.location.href='./createEvent.html'
-})
 
 title2.addEventListener("click", function() {
     if (title.classList.contains("dashboard_title_selected")) {
@@ -411,7 +408,7 @@ async function requestAll2(choice) {
                 
                 <p><strong>Organization:</strong> ${event.OrganizationID}</p>
                 
-                 <p><strong>Participants:</strong> ${event.PeopleSignUp || 'No people Sign Up for this event'} / ${event.RequiredVolunteers}</p>
+                 <p><strong>Participants:</strong> ${event.PeopleSignUp || 'No people Sign Up for this event'} </p>
                  <p><strong>Location:</strong> ${event.Location}</p>
                 <span class="status-tag status-pending">${event.Status}</span>
 
@@ -441,7 +438,7 @@ async function requestAll2(choice) {
                 
                 <p><strong>Organization:</strong> ${event.OrganizationID}</p>
                 
-                 <p><strong>Participants:</strong> ${event.PeopleSignUp || 'No people Sign Up for this event'} / ${event.RequiredVolunteers}</p>
+                 <p><strong>Participants:</strong> ${event.PeopleSignUp || 'No people Sign Up for this event'} </p>
                  <p><strong>Location:</strong> ${event.Location}</p>
                 <span class="status-tag status-pending">${event.Status}</span>
 
@@ -472,7 +469,7 @@ async function requestAll2(choice) {
                 
                 <p><strong>Organization:</strong> ${event.OrganizationID}</p>
                 
-                 <p><strong>Participants:</strong> ${event.PeopleSignUp || 'No people Sign Up for this event'} / ${event.RequiredVolunteers}</p>
+                 <p><strong>Participants:</strong> ${event.PeopleSignUp || 'No people Sign Up for this event'} </p>
                  <p><strong>Location:</strong> ${event.Location}</p>
                 <span class="status-tag status-pending">${event.Status}</span>
 
@@ -503,7 +500,7 @@ async function requestAll2(choice) {
                 
                 <p><strong>Organization:</strong> ${event.OrganizationID}</p>
                 
-                 <p><strong>Participants:</strong> ${event.PeopleSignUp || 'No people Sign Up for this event'} / ${event.RequiredVolunteers}</p>
+                 <p><strong>Participants:</strong> ${event.PeopleSignUp || 'No people Sign Up for this event'} </p>
                  <p><strong>Location:</strong> ${event.Location}</p>
                 <span class="status-tag status-pending">${event.Status}</span>
 
@@ -534,7 +531,7 @@ async function requestAll2(choice) {
                 
                 <p><strong>Organization:</strong> ${event.OrganizationID}</p>
                 
-                 <p><strong>Participants:</strong> ${event.PeopleSignUp || 'No people Sign Up for this event'} / ${event.RequiredVolunteers}</p>
+                 <p><strong>Participants:</strong> ${event.PeopleSignUp || 'No people Sign Up for this event'}</p>
                  <p><strong>Location:</strong> ${event.Location}</p>
                 <span class="status-tag status-pending">${event.Status}</span>
 
@@ -567,7 +564,7 @@ async function requestAll2(choice) {
                 
                 <p><strong>Organization:</strong> ${event.OrganizationID}</p>
                 
-                 <p><strong>Participants:</strong> ${event.PeopleSignUp || 'No people Sign Up for this event'} / ${event.RequiredVolunteers}</p>
+                 <p><strong>Participants:</strong> ${event.PeopleSignUp || 'No people Sign Up for this event'} </p>
                  <p><strong>Location:</strong> ${event.Location}</p>
                 <span class="status-tag status-pending">${event.Status}</span>
 

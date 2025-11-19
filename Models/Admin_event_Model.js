@@ -21,16 +21,18 @@ async function createEvent(eventData) {
       .input("EventDate", sql.DateTime, eventData.EventDate)
       .input("Description", sql.NVarChar(sql.MAX), eventData.Description)
       .input("RequiredVolunteers", sql.Int, eventData.RequiredVolunteers)
-      .input("PeopleSignUp", sql.Int, 0)
+      .input("PeopleSignUp", sql.Int, eventData.PeopleSignUp)
+      .input("VolunteerSignUp", sql.Int, 0)
+      .input("MaximumParticipant",sql.Int,eventData.MaximumParticipant)
       .input("Status", sql.NVarChar(20), eventData.Status)
       .query(`
         INSERT INTO Events
         (OrganizationID, EventName, EventDate, Description,
-         RequiredVolunteers, PeopleSignUp, Status)
+         RequiredVolunteers,VolunteerSignUp,MaximumParticipant, PeopleSignUp, Status)
         OUTPUT inserted.*
         VALUES
         (@OrganizationID, @EventName, @EventDate, @Description,
-         @RequiredVolunteers, @PeopleSignUp, @Status)
+         @RequiredVolunteers, @VolunteerSignUp,@MaximumParticipant,@PeopleSignUp, @Status)
       `);
 
     return result.recordset[0];
