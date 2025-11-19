@@ -13,7 +13,7 @@ window.addEventListener("DOMContentLoaded", () => {
   if (!currentRequest) return;
   document.getElementById("eventName").value = currentRequest.EventName || "";
 
-  document.getElementById("eventLocation").value = currentRequest.Location || "";
+  document.getElementById("eventLocation").value = currentRequest.EventLocation || "";
 
  
   if (currentRequest.EventDate) {
@@ -85,20 +85,17 @@ async function createEvent() {
   }
 
   const eventData = {
-
-    OrganizationID: document.getElementById("organizer").value || null,
-    EventName: document.getElementById("eventName").value,
-    EventDate: document.getElementById("eventDate").value,
-    Description: document.getElementById("description").value,
-    RequiredVolunteers: document.getElementById("volunteers").value,
-    MaximumParticipant: document.getElementById("participant").value,
-    PeopleSignUp: 0,
-    Location: document.getElementById("eventLocation").value,
-
+    EventName: eventName,
+    EventDate: eventDate,
+    Description: document.getElementById("description").value.trim(),
+    RequiredVolunteers: parsedVolunteers,
     Status: document.getElementById("status").value
   };
 
-  // Add EventLocation if provided (optional)
+  const location = document.getElementById("eventLocation").value;
+  if (location && location.trim() !== '') {
+    eventData.EventLocation = location;
+  }
 
 
   // Only include OrganizationID if it's provided
