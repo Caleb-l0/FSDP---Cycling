@@ -1,4 +1,101 @@
-/* ===== Base Layout ===== */
+/* ===============================
+   RESET + GLOBAL
+================================= */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
+}
+
+body {
+  background-color: #fffdf9;
+  color: #333;
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+/* ===============================
+   HEADER
+================================= */
+header {
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  position: fixed;
+  width: 100%;
+  top: 0;
+  left: 0;
+  z-index: 999; /* keeps header above content */
+}
+
+.container {
+  width: 90%;
+  max-width: 1200px;
+  margin: auto;
+}
+
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 0;
+  flex-wrap: wrap;
+}
+
+.logo {
+  font-size: 1.6em;
+  font-weight: 700;
+  color: #f4a261;
+  text-decoration: none;
+}
+
+.nav-toggle {
+  display: none;
+  background: none;
+  border: none;
+  color: #333;
+  font-size: 1.8rem;
+  cursor: pointer;
+}
+
+nav ul {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 25px;
+}
+
+nav ul li a {
+  text-decoration: none;
+  color: #333;
+  font-weight: 500;
+  padding: 8px 16px;
+  border-radius: 6px;
+  transition: 0.3s ease;
+}
+
+nav ul li a:hover {
+  color: #f4a261;
+  background-color: rgba(244, 162, 97, 0.12);
+}
+
+/* Button */
+.btn.small {
+  background-color: #f4a261;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.btn.small:hover {
+  background-color: #e76f51;
+}
+
+/* ===============================
+   DASHBOARD LAYOUT
+================================= */
 .dashboard_big {
   width: 100%;
   min-height: 50vh;
@@ -62,12 +159,29 @@
   box-sizing: border-box;
 }
 
-/* ===== Mobile ===== */
-@media (max-width: 768px) {
-  .dashboard_big {
+/* ===============================
+   RESPONSIVE
+================================= */
+@media (max-width: 1024px) {
+  .event-box { flex-basis: 45%; }
+}
+
+@media (max-width: 770px) {
+  .nav-toggle { display: block; }
+
+  nav {
+    position: absolute;
+    top: 100%;
+    width: 100%;
+    display: none;
     flex-direction: column;
-    padding: 10px;
+    background: white;
+    padding: 12px 0;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.12);
   }
+
+  nav.active { display: flex; }
+  nav ul { flex-direction: column; gap: 15px; }
 
   .dashboard_section {
     width: 100%;
@@ -97,4 +211,8 @@
     min-height: 40vh;
     margin-top: 10px;
   }
+}
+
+@media (max-width: 480px) {
+  .event-box { flex-basis: 85%; }
 }
