@@ -42,15 +42,14 @@ async function getSignedUpEvents(userId) {
         e.EventName,
         e.EventDate,
         e.Description,
-        e.Location,
+        e.[EventLocation],
         e.RequiredVolunteers,
-        e.PeopleSignUp,
         e.Status,
         es.SignUpDate,
         es.Status AS SignUpStatus
       FROM EventSignUps es
       INNER JOIN Events e ON es.EventID = e.EventID
-      WHERE es.UserID = @UserID
+      WHERE es.UserID = @UserID AND es.Status = 'Active'
       ORDER BY e.EventDate ASC
     `);
   return result.recordset;

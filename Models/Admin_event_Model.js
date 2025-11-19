@@ -11,32 +11,68 @@ async function getAllEvents() {
 }
 
 async function createEvent(eventData) {
+  let pool;
   try {
-    const pool = await sql.connect(db);
+    console.log("Attempting to connect to database...");
+    pool = await sql.connect(db);
+    console.log("Database connected successfully");
 
-    const result = await pool.request()
-      
-      .input("OrganizationID", sql.Int, null)
-      .input("EventName", sql.NVarChar(100), eventData.EventName)
-      .input("EventDate", sql.DateTime, eventData.EventDate)
-      .input("Description", sql.NVarChar(sql.MAX), eventData.Description)
-      .input("RequiredVolunteers", sql.Int, eventData.RequiredVolunteers)
-      .input("PeopleSignUp", sql.Int, 0)
-      .input("Status", sql.NVarChar(20), eventData.Status)
-      .query(`
-        INSERT INTO Events
-        (OrganizationID, EventName, EventDate, Description,
-         RequiredVolunteers, PeopleSignUp, Status)
-        OUTPUT inserted.*
-        VALUES
-        (@OrganizationID, @EventName, @EventDate, @Description,
-         @RequiredVolunteers, @PeopleSignUp, @Status)
-      `);
+    const request = pool.request();
+    
+    // Handle OrganizationID - can be null
+    if (eventData.OrganizationID !== undefined && eventData.OrganizationID !== null) {
+      request.input("OrganizationID", sql.Int, eventData.OrganizationID);
+      console.log("OrganizationID:", eventData.OrganizationID);
+    } else {
+      request.input("OrganizationID", sql.Int, null);
+      console.log("OrganizationID: null");
+    }
+
+    request.input("EventName", sql.NVarChar(100), eventData.EventName);
+    request.input("EventDate", sql.DateTime, eventData.EventDate);
+    request.input("Description", sql.NVarChar(sql.MAX), eventData.Description || '');
+    request.input("RequiredVolunteers", sql.Int, eventData.RequiredVolunteers);
+    request.input("Status", sql.NVarChar(20), eventData.Status || 'Upcoming');
+    
+    // Always include EventLocation (can be null) - matches SQL file structure
+    const locationValue = (eventData.EventLocation && eventData.EventLocation.trim() !== '') 
+      ? eventData.EventLocation.trim() 
+      : null;
+    request.input("EventLocation", sql.NVarChar(sql.MAX), locationValue);
+    console.log("EventLocation value:", locationValue);
+
+    console.log("Executing query with data:", {
+      EventName: eventData.EventName,
+      EventDate: eventData.EventDate,
+      RequiredVolunteers: eventData.RequiredVolunteers,
+      OrganizationID: eventData.OrganizationID,
+      EventLocation: locationValue
+    });
+
+    // Always include EventLocation column in query (matches SQL file)
+    const query = `
+      INSERT INTO Events
+      (OrganizationID, EventName, EventDate, Description, [EventLocation],
+       RequiredVolunteers, Status)
+      OUTPUT inserted.*
+      VALUES
+      (@OrganizationID, @EventName, @EventDate, @Description, @EventLocation,
+       @RequiredVolunteers, @Status)
+    `;
+
+    const result = await request.query(query);
+    console.log("Query executed successfully, result:", result.recordset[0]);
 
     return result.recordset[0];
 
   } catch (err) {
     console.error("Error creating event model:", err);
+    console.error("Error name:", err.name);
+    console.error("Error message:", err.message);
+    console.error("Error code:", err.code);
+    if (err.originalError) {
+      console.error("Original error:", err.originalError);
+    }
     throw err;
   }
 }
@@ -62,6 +98,23 @@ async function assignEventToOrgan(eventData) {
     throw err;
   }
 }
+async function checkOrganizationExists(organizationID) {
+  try {
+    const pool = await sql.connect(db);
+    const result = await pool.request()
+      .input("OrganizationID", sql.Int, organizationID)
+      .query(`
+        SELECT OrganizationID
+        FROM Organizations
+        WHERE OrganizationID = @OrganizationID
+      `);
+    return result.recordset.length > 0;
+  } catch (err) {
+    console.error("Error checking organization:", err);
+    throw err;
+  }
+}
+
 async function getEventLocation(eventID) {
   try {
     const pool = await sql.connect(db);
@@ -69,7 +122,7 @@ async function getEventLocation(eventID) {
     const result = await pool.request()
       .input("EventID", sql.Int, eventID)
       .query(`
-        SELECT Location
+        SELECT [EventLocation]
         FROM Events 
         WHERE EventID = @EventID
       `);
@@ -150,4 +203,4 @@ async function deleteEvent(eventID) {
   }
 }
 
-module.exports = { getAllEvents,createEvent, assignEventToOrgan,getEventLocation,checkAssigned,deleteEvent,canDeleteEvent,deleteEvent};
+module.exports = { getAllEvents,createEvent, assignEventToOrgan,getEventLocation,checkAssigned,deleteEvent,canDeleteEvent,deleteEvent,checkOrganizationExists};

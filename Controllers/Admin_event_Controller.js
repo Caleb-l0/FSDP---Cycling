@@ -16,15 +16,44 @@ async function getAllEvents(req, res) {
 }
 
 async function createEvent(req, res) {
+  let eventData;
   try {
-    const eventData = req.body;
+    eventData = req.body;
+    console.log("Received event data:", eventData);
 
-    if (!eventData.EventName || !eventData.EventDate || !eventData.OrganizationID) {
-      return res.status(400).json({ message: "Missing required fields" });
+    if (!eventData.EventName || !eventData.EventDate) {
+      return res.status(400).json({ message: "Missing required fields: EventName and EventDate are required" });
+    }
+
+    // OrganizationID is optional (can be null), but if provided, must be valid and exist
+    if (eventData.OrganizationID !== undefined && eventData.OrganizationID !== null) {
+      const orgID = parseInt(eventData.OrganizationID);
+      if (isNaN(orgID) || orgID <= 0) {
+        return res.status(400).json({ message: "Invalid OrganizationID: must be a positive number" });
+      }
+      
+      // Check if organization exists in database
+      const orgExists = await AdminEventModel.checkOrganizationExists(orgID);
+      if (!orgExists) {
+        return res.status(400).json({ 
+          message: `OrganizationID ${orgID} does not exist in the database. Please provide a valid OrganizationID or leave it empty.` 
+        });
+      }
+      
+      eventData.OrganizationID = orgID;
     }
 
     const newEvent = await AdminEventModel.createEvent(eventData);
-    await requestModel.approveRequest(eventData.VolunteerRequestID);
+    
+    // Only approve request if VolunteerRequestID exists
+    if (eventData.VolunteerRequestID) {
+      try {
+        await requestModel.approveRequest(eventData.VolunteerRequestID);
+      } catch (approveError) {
+        console.warn("Failed to approve request:", approveError);
+        // Don't fail the event creation if request approval fails
+      }
+    }
 
     res.status(201).json({
       message: "Event created successfully",
@@ -33,7 +62,16 @@ async function createEvent(req, res) {
 
   } catch (error) {
     console.error("Error in createEvent controller:", error);
-    res.status(500).json({ message: "Server error", error });
+    console.error("Error details:", {
+      message: error.message,
+      stack: error.stack,
+      eventData: eventData || "Not available"
+    });
+    res.status(500).json({ 
+      message: "Server error", 
+      error: error.message || String(error),
+      details: process.env.NODE_ENV === 'development' ? error.stack : undefined
+    });
   }
 }
 
@@ -65,7 +103,7 @@ async function getEventLocation(req, res) {
 
     res.json({
       success: true,
-      data: location  // { Location: "Jurong East Hall" }
+      data: location  // { EventLocation: "Jurong East Hall" }
     });
 
   } catch (error) {

@@ -37,19 +37,27 @@ async function deleteEvent(eventID) {
 
 async function signup(userID, eventID) {
   const pool = await sql.connect(db);
+  
+  // Check if user already signed up
+  const checkResult = await pool.request()
+    .input("UserID", sql.Int, userID)
+    .input("EventID", sql.Int, eventID)
+    .query(`
+      SELECT * FROM EventSignUps
+      WHERE UserID = @UserID AND EventID = @EventID
+    `);
+
+  if (checkResult.recordset.length > 0) {
+    throw new Error('User already signed up for this event.');
+  }
+
+  // Insert into EventSignUps table
   await pool.request()
     .input("UserID", sql.Int, userID)
     .input("EventID", sql.Int, eventID)
     .query(`
-      INSERT INTO EventVolunteers(UserID, EventID)
+      INSERT INTO EventSignUps(UserID, EventID)
       VALUES(@UserID, @EventID)
-    `);
-
-  await pool.request()
-    .input("EventID", sql.Int, eventID)
-    .query(`
-      UPDATE Events SET PeopleSignUp = PeopleSignUp + 1
-      WHERE EventID = @EventID
     `);
 }
 
@@ -59,15 +67,9 @@ async function cancel(userID, eventID) {
     .input("UserID", sql.Int, userID)
     .input("EventID", sql.Int, eventID)
     .query(`
-      DELETE FROM EventVolunteers
+      UPDATE EventSignUps
+      SET Status = 'Cancelled'
       WHERE UserID = @UserID AND EventID = @EventID
-    `);
-
-  await pool.request()
-    .input("EventID", sql.Int, eventID)
-    .query(`
-      UPDATE Events SET PeopleSignUp = PeopleSignUp - 1
-      WHERE EventID = @EventID
     `);
 }
 
@@ -77,8 +79,8 @@ async function isSignedUp(userID, eventID) {
     .input("UserID", sql.Int, userID)
     .input("EventID", sql.Int, eventID)
     .query(`
-      SELECT * FROM EventVolunteers 
-      WHERE UserID = @UserID AND EventID = @EventID
+      SELECT * FROM EventSignUps 
+      WHERE UserID = @UserID AND EventID = @EventID AND Status = 'Active'
     `);
 
   return result.recordset.length > 0;
@@ -91,14 +93,14 @@ async function updateEvent(eventID, data) {
     .input("EventID", sql.Int, eventID)
     .input("EventName", sql.NVarChar(100), data.EventName)
     .input("EventDate", sql.DateTime, data.EventDate)
-    .input("Location", sql.NVarChar(sql.MAX), data.Location)
+    .input("EventLocation", sql.NVarChar(sql.MAX), data.EventLocation)
     .input("RequiredVolunteers", sql.Int, data.RequiredVolunteers)
     .input("Description", sql.NVarChar(sql.MAX), data.Description)
     .query(`
       UPDATE Events
       SET EventName=@EventName,
           EventDate=@EventDate,
-          Location=@Location,
+          [EventLocation]=@EventLocation,
           RequiredVolunteers=@RequiredVolunteers,
           Description=@Description,
           UpdatedAt = GETDATE()

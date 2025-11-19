@@ -109,7 +109,7 @@ async function GetLocation(eventID){
 
     const result = await res.json(); 
    
-    return result.data; // { Location: "Jurong East Hall" }
+    return result.data; // { EventLocation: "Jurong East Hall" }
 
   } catch(error){
     console.log("error:", error);
@@ -144,7 +144,7 @@ try{
    for (const application of data) {
    
   const locationObj = await GetLocation(parseInt(application.EventID));
-  const locationName = locationObj.Location;
+  const locationName = locationObj.EventLocation;
 
   const date = new Date(application.EventDate);
   const day = date.getDate();
@@ -181,7 +181,7 @@ try{
 
    
   const locationObj = await GetLocation(parseInt(application.EventID));
-  const locationName = locationObj.Location;
+  const locationName = locationObj.EventLocation;
 
   const date = new Date(application.EventDate);
   const day = date.getDate();
@@ -217,7 +217,7 @@ try{
         if(application.Status="Approved"){
    
   const locationObj = await GetLocation(parseInt(application.EventID));
-  const locationName = locationObj.Location;
+  const locationName = locationObj.EventLocation;
 
   const date = new Date(application.EventDate);
   const day = date.getDate();
@@ -253,7 +253,7 @@ try{
         if(application.Status = "Rejected"){
    
   const locationObj = await GetLocation(parseInt(application.EventID));
-  const locationName = locationObj.Location;
+  const locationName = locationObj.EventLocation;
 
   const date = new Date(application.EventDate);
   const day = date.getDate();
@@ -289,7 +289,7 @@ try{
         if(application.Status === "Approved" || application.Status === "Rejected"){
    
   const locationObj = await GetLocation(parseInt(application.EventID));
-  const locationName = locationObj.Location;
+  const locationName = locationObj.EventLocation;
 
   const date = new Date(application.EventDate);
   const day = date.getDate();
@@ -412,7 +412,7 @@ async function requestAll2(choice) {
                 <p><strong>Organization:</strong> ${event.OrganizationID}</p>
                 
                  <p><strong>Participants:</strong> ${event.PeopleSignUp || 'No people Sign Up for this event'} / ${event.RequiredVolunteers}</p>
-                 <p><strong>Location:</strong> ${event.Location}</p>
+                 <p><strong>Location:</strong> ${event.EventLocation}</p>
                 <span class="status-tag status-pending">${event.Status}</span>
 
             `;
@@ -442,7 +442,7 @@ async function requestAll2(choice) {
                 <p><strong>Organization:</strong> ${event.OrganizationID}</p>
                 
                  <p><strong>Participants:</strong> ${event.PeopleSignUp || 'No people Sign Up for this event'} / ${event.RequiredVolunteers}</p>
-                 <p><strong>Location:</strong> ${event.Location}</p>
+                 <p><strong>Location:</strong> ${event.EventLocation}</p>
                 <span class="status-tag status-pending">${event.Status}</span>
 
             `;
@@ -473,7 +473,7 @@ async function requestAll2(choice) {
                 <p><strong>Organization:</strong> ${event.OrganizationID}</p>
                 
                  <p><strong>Participants:</strong> ${event.PeopleSignUp || 'No people Sign Up for this event'} / ${event.RequiredVolunteers}</p>
-                 <p><strong>Location:</strong> ${event.Location}</p>
+                 <p><strong>Location:</strong> ${event.EventLocation}</p>
                 <span class="status-tag status-pending">${event.Status}</span>
 
             `;
@@ -504,7 +504,7 @@ async function requestAll2(choice) {
                 <p><strong>Organization:</strong> ${event.OrganizationID}</p>
                 
                  <p><strong>Participants:</strong> ${event.PeopleSignUp || 'No people Sign Up for this event'} / ${event.RequiredVolunteers}</p>
-                 <p><strong>Location:</strong> ${event.Location}</p>
+                 <p><strong>Location:</strong> ${event.EventLocation}</p>
                 <span class="status-tag status-pending">${event.Status}</span>
 
             `;
@@ -535,7 +535,7 @@ async function requestAll2(choice) {
                 <p><strong>Organization:</strong> ${event.OrganizationID}</p>
                 
                  <p><strong>Participants:</strong> ${event.PeopleSignUp || 'No people Sign Up for this event'} / ${event.RequiredVolunteers}</p>
-                 <p><strong>Location:</strong> ${event.Location}</p>
+                 <p><strong>Location:</strong> ${event.EventLocation}</p>
                 <span class="status-tag status-pending">${event.Status}</span>
 
             `;
@@ -568,7 +568,7 @@ async function requestAll2(choice) {
                 <p><strong>Organization:</strong> ${event.OrganizationID}</p>
                 
                  <p><strong>Participants:</strong> ${event.PeopleSignUp || 'No people Sign Up for this event'} / ${event.RequiredVolunteers}</p>
-                 <p><strong>Location:</strong> ${event.Location}</p>
+                 <p><strong>Location:</strong> ${event.EventLocation}</p>
                 <span class="status-tag status-pending">${event.Status}</span>
 
             `;

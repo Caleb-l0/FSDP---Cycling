@@ -57,7 +57,7 @@ function renderEvents(events) {
     const title = event.EventName || 'Untitled Event';
     const date = formatDate(event.EventDate);
     const description = event.Description || 'No description available.';
-    const location = event.Location || 'Location TBD';
+    const location = event.EventLocation || 'Location TBD';
     const required = event.RequiredVolunteers ? `Required Volunteers: ${event.RequiredVolunteers}` : '';
     const signUpDate = formatDate(event.SignUpDate);
     const eventStatus = event.Status || 'Upcoming';
