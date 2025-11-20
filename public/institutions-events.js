@@ -1,5 +1,5 @@
 const eventList = document.getElementById('eventList');
-const EVENTS_ENDPOINT = `http://localhost:3000/institutions/events`;
+const EVENTS_ENDPOINT = `http://localhost:3000/institution/events/all`;
 
 document.addEventListener('DOMContentLoaded', () => {
   loadEvents();
@@ -57,7 +57,7 @@ function renderEvents(events) {
     const button = document.createElement('button');
     button.classList.add('signup-btn');
     button.type = 'button';
-    button.textContent = 'Sign Up';
+    button.textContent = 'Book Slots';
     button.addEventListener('click', () => signUp(title, event.EventID));
 
     card.querySelector('.event-details').appendChild(button);
