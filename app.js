@@ -139,6 +139,15 @@ app.use((req, res, next) => {
   const isApiRoute = req.path.startsWith('/admin/') || 
                      req.path.startsWith('/volunteer/') || 
                      req.path.startsWith('/api/') ||
+                     req.path.startsWith('/events/') ||
+                     req.path.startsWith('/organization/') ||
+                     req.path.startsWith('/requests/') ||
+                     req.path.startsWith('/request/') ||
+                     req.path.startsWith('/user/') ||
+                     req.path.startsWith('/getOrganID') ||
+                     req.path.startsWith('/getUserEmail/') ||
+                     req.path.startsWith('/send-email') ||
+                     req.path.startsWith('/isSignedUp') ||
                      (req.path.startsWith('/login') && req.method === 'POST') ||
                      (req.path.startsWith('/signup') && req.method === 'POST');
   
@@ -156,12 +165,17 @@ app.use((err, req, res, next) => {
   const isApiRoute = req.path.startsWith('/admin/') || 
                      req.path.startsWith('/volunteer/') || 
                      req.path.startsWith('/api/') ||
+                     req.path.startsWith('/events/') ||
                      req.path.startsWith('/login') ||
                      req.path.startsWith('/signup') ||
                      req.path.startsWith('/user/') ||
                      req.path.startsWith('/organization/') ||
                      req.path.startsWith('/requests/') ||
-                     req.path.startsWith('/request/');
+                     req.path.startsWith('/request/') ||
+                     req.path.startsWith('/getOrganID') ||
+                     req.path.startsWith('/getUserEmail/') ||
+                     req.path.startsWith('/send-email') ||
+                     req.path.startsWith('/isSignedUp');
   
   if (isApiRoute) {
     return res.status(err.status || 500).json({

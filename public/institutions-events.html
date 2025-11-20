@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Events I have signed up for | HappyVolunteering</title>
+  <title>Institution Events | HappyVolunteering</title>
 
   <link rel="stylesheet" href="style.css" />
-  <link rel="stylesheet" href="signed-events.css" />
 </head>
 <body>
+
 <header>
   <div class="container">
     <div class="header-content">
@@ -21,7 +21,7 @@
       </button>
       <nav id="mainNav">
         <ul>
-          <li><a href="volunteer-events.html">Booking</a></li>
+          <li><a href="institutions-events.html">Events</a></li>
           <li><a href="#">Community</a></li>
           <li><a href="#">Reward</a></li>
           <li><a href="profilepage.html">Profile</a></li>
@@ -30,21 +30,25 @@
     </div>
   </div>
 </header>
-    <button class="toggle-btn" onclick="window.location.href='volunteer-events.html'">
-      View My Signed-Up Events
-    </button>
 
-  <div class="container">
-    <h2>Events I have signed up for</h2>
-    <div class="event-list" id="eventList" aria-live="polite">
-    </div>
+<div class="container">
+
+  <!-- ⭐ Toggle Button to view signed-up events -->
+  <button class="toggle-btn" onclick="window.location.href='institutions-signed-events.html'">
+    View Signed-Up Participants
+  </button>
+
+  <h2>Upcoming Institution Events</h2>
+
+  <div class="event-list" id="eventList" aria-live="polite">
+    <!-- Dynamically populated with JS -->
   </div>
+</div>
 
-  <footer>
-    © 2025 HappyVolunteering
-  </footer>
+<footer>
+  © 2025 HappyVolunteering
+</footer>
 
-  <script src="signed-events.js"></script>
+<script src="institutions-events.js"></script>
 </body>
 </html>
-

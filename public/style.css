@@ -3,77 +3,106 @@
 ================================= */
 body {
   font-family: "Segoe UI", sans-serif;
-  background-color: #fffaf5;
-  color: #333;
   margin: 0;
-  padding: 0;
+  padding-top: 90px; /* push content below fixed header */
+  background: linear-gradient(135deg, #faefe3, #fff8f1);
+  color: #333;
   line-height: 1.6;
 }
 
 /* ===============================
-   HEADER
+   FIXED GLASS HEADER
 ================================= */
 header {
-  background-color: #ff7f00;
-  color: white;
-  padding: 16px 30px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 1.5em;
-  font-weight: bold;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-  position: sticky;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(6px);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  position: fixed;
+  width: 100%;
   top: 0;
-  z-index: 50;
-}
-
-.back-btn {
-  background-color: rgba(255, 255, 255, 0.25);
-  color: white;
-  border: 2px solid white;
-  border-radius: 8px;
-  padding: 8px 20px;
-  font-size: 0.85em;
-  cursor: pointer;
-  font-weight: bold;
-  transition: all 0.25s ease;
-}
-
-.back-btn:hover {
-  background-color: rgba(255, 255, 255, 0.35);
-  transform: translateY(-2px);
+  left: 0;
+  z-index: 999;
 }
 
 /* ===============================
-   MAIN CONTAINER
+   CONTAINER
 ================================= */
 .container {
-  max-width: 1000px;
-  margin: 40px auto;
-  padding: 0 20px;
+  width: 90%;
+  max-width: 1200px;
+  margin: auto;
 }
 
+/* ===============================
+   HEADER CONTENT
+================================= */
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 0;
+  flex-wrap: wrap;
+  row-gap: 10px;
+}
+
+.logo {
+  font-size: 1.6em;
+  font-weight: 700;
+  color: #f4a261;
+  text-decoration: none;
+}
+
+/* ===============================
+   NAVIGATION
+================================= */
+.nav-toggle {
+  display: none;
+  background: none;
+  border: none;
+  color: #333;
+  font-size: 1.9rem;
+  cursor: pointer;
+}
+
+nav ul {
+  list-style: none;
+  display: flex;
+  gap: 28px;
+  align-items: center;
+  padding: 0;
+}
+
+nav ul li a {
+  text-decoration: none;
+  color: #333;
+  padding: 8px 16px;
+  font-weight: 500;
+  border-radius: 6px;
+  transition: 0.25s ease;
+}
+
+nav ul li a:hover {
+  color: #f4a261;
+  background: rgba(244,162,97,0.12);
+}
+
+/* ===============================
+   EVENT PAGE
+================================= */
 h2 {
   text-align: center;
-  color: #ff7f00;
+  color: #f4a261;
   margin-bottom: 30px;
   font-size: 1.8rem;
   font-weight: 700;
 }
 
-/* ===============================
-   EVENT GRID LAYOUT
-================================= */
 .event-list {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
   gap: 22px;
 }
 
-/* ===============================
-   EVENT CARD
-================================= */
 .event-card {
   background-color: #fff;
   border-radius: 14px;
@@ -93,46 +122,30 @@ h2 {
   object-fit: cover;
 }
 
-/* ===============================
-   CARD CONTENT
-================================= */
 .event-details {
   padding: 18px 20px;
 }
 
 .event-details h3 {
-  color: #ff7f00;
+  color: #f4a261;
   font-size: 1.25rem;
-  margin: 0 0 10px 0;
-  font-weight: 700;
+  margin-bottom: 10px;
 }
 
-.event-details p {
-  margin: 6px 0;
-  font-size: 0.95em;
-  color: #555;
-  line-height: 1.4;
-}
-
-/* ===============================
-   SIGN UP BUTTON
-================================= */
 .signup-btn {
   display: inline-block;
-  background-color: #ff7f00;
+  background-color: #f4a261;
   color: white;
-  border: none;
-  border-radius: 8px;
   padding: 11px 18px;
+  border-radius: 8px;
   cursor: pointer;
   margin-top: 12px;
   font-weight: 600;
-  font-size: 0.95em;
-  transition: background-color 0.25s ease;
+  transition: 0.25s ease;
 }
 
 .signup-btn:hover {
-  background-color: #e06e00;
+  background-color: #e76f51;
 }
 
 /* ===============================
@@ -147,17 +160,6 @@ h2 {
   box-shadow: 0 6px 14px rgba(0,0,0,0.05);
   color: #555;
   font-size: 1rem;
-  font-weight: 500;
-}
-
-.event-message--loading {
-  color: #ff7f00;
-  font-weight: 600;
-}
-
-.event-message--error {
-  color: #d62828;
-  font-weight: 600;
 }
 
 /* ===============================
@@ -166,7 +168,7 @@ h2 {
 footer {
   text-align: center;
   padding: 18px;
-  background-color: #ff7f00;
+  background-color: #f4a261;
   color: white;
   margin-top: 60px;
   font-size: 0.9em;
@@ -174,25 +176,71 @@ footer {
 }
 
 /* ===============================
-   RESPONSIVE (very subtle mobile adjustments)
+   RESPONSIVE NAV
 ================================= */
-@media (max-width: 480px) {
-  header {
-    font-size: 1.2rem;
-    padding: 12px 18px;
+@media (max-width: 768px) {
+  nav {
+    display: none;
+    width: 100%;
   }
 
-  .back-btn {
-    padding: 7px 14px;
-    font-size: 0.75em;
+  nav ul {
+    flex-direction: column;
+    background: white;
+    padding: 15px 0;
+    width: 100%;
+    border-radius: 8px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.12);
+  }
+
+  .nav-toggle {
+    display: block;
+  }
+}
+
+@media (max-width: 480px) {
+  header {
+    padding: 12px 0;
   }
 
   .event-img {
     height: 150px;
   }
+}
 
-  footer {
-    font-size: 0.85em;
-    padding: 15px;
-  }
+/* ===============================
+   TOGGLE BUTTON
+================================= */
+.toggle-btn {
+  display: inline-block;
+  padding: 10px 20px;
+  background: #f4a261;
+  color: #fff;
+  border-radius: 10px;
+  margin: 15px 0 25px 0;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.25s ease;
+  border: none;
+}
+
+.toggle-btn:hover {
+  background: #e76f51;
+  transform: translateY(-2px);
+}
+.button-wrapper {
+  text-align: center;
+  margin-bottom: 30px;
+}
+.toggle-btn {
+  display: block;           /* make it block */
+  margin: 20px auto;        /* vertical spacing + center horizontally */
+  padding: 10px 25px;       /* slightly bigger padding for balance */
+  background: #f4a261;
+  color: #fff;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.25s ease;
+  border: none;
 }
