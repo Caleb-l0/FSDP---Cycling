@@ -10,6 +10,9 @@
     <link rel="stylesheet" href="./homepage.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="./homepage_instituition.css">
+
+
+    <link rel="stylesheet" href="./for_organ.css">
 </head>
 <body>
    
@@ -17,18 +20,10 @@
     <div class="container hv-header-content">
 
 
-        <div class="hv-logo"><a href="./homepage_login_Admin.html" style="  text-decoration: none; 
+        <div class="hv-logo"><a href="./homepage_login_instituition.html" style="  text-decoration: none; 
     color: inherit; ">Happy Volunteer</a></div>
 
-                <nav id="mainNav">
-                    <ul>
-
-                        <li><a href="#">Create Event</a></li>
-                        <li><a href="#">My Community</a></li>
-                        <li><a href="#">Reward</a></li>
-                        <li><a href="profilepage.html">Profile</a></li>
-                    </ul>
-                </nav>
+              
 
 
         <button class="hv-nav-toggle" id="hvNavToggle">
@@ -37,7 +32,7 @@
 
         <nav class="hv-nav" id="hvNav">
             <ul>
-                 <li><a href="#">Apply Event</a></li>
+                 <li><a href="./organization_apply_event.html">Apply Event</a></li>
                   <li><a href="#">My Request</a></li>
                 <li><a href="profilepage.html">Profile</a></li>
             </ul>
@@ -53,7 +48,7 @@
             <div class="hero-content">
                 <h1>Welcome to HappyVolunteer</h1>
                 <p>Empowering communities through compassion and collaboration.</p>
-                <a href="./createEvent.html" class="hero-btn" >Apply Event</a>
+                <a href="./organization_apply_event.html" class="hero-btn" >Apply Event</a>
             </div>
         </div>
 
@@ -84,149 +79,93 @@
 </section>
 
  
-    <section class="services">
-        <div class="container">
-            <div class="section-title">
-                <h2>Your Event Created</h2>
-            </div>
-           <div class="dashboard_big">
-            <div class="dashboard_section">
-
-                <section class="detail">
-                    <img src="./Bali.jpg">
-
-                     <section class="detail2">
-                        <h3>Event Name</h3>
-                        <section>
-                            <p>Time: </p>
-                            <p>20:30</p>
-                        </section>
-                            <section>
-                            <p>Location: </p>
-                            <p>Radin Mas</p>
-                        </section>
-                            <section>
-                            <p>People Needed: </p>
-                            <p>20</p>
-                        </section>
-                     </section>
-                </section>
-                 <section class="detail">
-                    <img src="./Bali.jpg">
-
-                     <section class="detail2">
-                        <h3>Event Name</h3>
-                        <section>
-                            <p>Time: </p>
-                            <p>20:30</p>
-                        </section>
-                            <section>
-                            <p>Location: </p>
-                            <p>Radin Mas</p>
-                        </section>
-                            <section>
-                            <p>People Needed: </p>
-                            <p>20</p>
-                        </section>
-                     </section>
-
-
-                </section>
-                 <section class="detail">
-                    <img src="./Bali.jpg">
-
-                     <section class="detail2">
-                        <h3>Event Name</h3>
-                        <section>
-                            <p>Time: </p>
-                            <p>20:30</p>
-                        </section>
-                            <section>
-                            <p>Location: </p>
-                            <p>Radin Mas</p>
-                        </section>
-                            <section>
-                            <p>People Needed: </p>
-                            <p>20</p>
-                        </section>
-                     </section>
-
-
-                </section>    
-            </div>
-            <section class="section2">
-
-            </section>
-           </div>
-            
-            </div>
-        </div>
-    </section>
-
-  
-    <section class="features">
-        <div class="container" >
-            <div class="section-title">
-                <h2>Your Community</h2>
-                
-              
-            </div>
-            <div class="features-grid">
-              
-                <div class="feature-item">
-                    <i class="fas fa-award"></i>
-                    <h3>Event</h3>
-                    <p>Hi</p>
-                </div>
-                
-                <div class="feature-item">
-                    <i class="fas fa-award"></i>
-                    <h3>Event</h3>
-                    <p>Hi</p>
-                </div>
-                
-                <div class="feature-item">
-                    <i class="fas fa-award"></i>
-                    <h3>Event</h3>
-                    <p>Hi</p>
-                </div>
-
-            </div>
-        </div>
-    </section>
-
-   <section class="features">
-
-     
-
-            
-    <div class="container">
-        <div class="section-title">
-                <h2>Wow</h2>
-            </div>
-        <section class="big_box">
-<div class="small_box">
-
-</div>
-<div class="small_box">
-   
-</div>
-<div class="small_box">
-    
-</div>
-<div class="small_box">
-   
-</div>
-
-        </section>
-
-        
+    <section class="section section-light">
+  <div class="container">
+    <div class="section-title">
+      <h2>Your Created Events</h2>
+      <p>Events that your organisation has created and published.</p>
     </div>
-    </section>
-    
+
+   <div class="event-grid" id="eventGrid"></div>
 
 
-            </section>
+  </div>
+</section>
+
+
+
+<!-- ===============================
+    COMMUNITY SECTION
+================================= -->
+<section class="section section-yellow">
+  <div class="container">
+    <div class="section-title">
+      <h2>Your Community</h2>
+      <p>People who joined or interacted with your created events.</p>
+    </div>
+
+    <div class="community-grid">
+
+      <div class="community-card">
+        <i class="fas fa-users"></i>
+        <h3>Joined Volunteers</h3>
+        <p>See who participated in your events</p>
+      </div>
+
+      <div class="community-card">
+        <i class="fas fa-comments"></i>
+        <h3>Messages</h3>
+        <p>Communicate with volunteers and partners</p>
+      </div>
+
+      <div class="community-card">
+        <i class="fas fa-handshake"></i>
+        <h3>Collaborations</h3>
+        <p>Manage partner organisations</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+
+<!-- ===============================
+    STATISTICS / ANALYTICS
+================================= -->
+<section class="section section-light">
+  <div class="container">
+    <div class="section-title">
+      <h2>Organisation Overview</h2>
+      <p>Summary of your recent activity and statistics.</p>
+    </div>
+
+    <div class="stats-grid">
+
+      <div class="stat-box">
+        <h3>12</h3>
+        <p>Total Events Created</p>
+      </div>
+
+      <div class="stat-box">
+        <h3>345</h3>
+        <p>Total Sign-ups</p>
+      </div>
+
+      <div class="stat-box">
+        <h3>4.8 ★</h3>
+        <p>Volunteer Rating</p>
+      </div>
+
+      <div class="stat-box">
+        <h3>5</h3>
+        <p>Active Collaborations</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
 
 
     <footer>
@@ -284,64 +223,68 @@ const role = localStorage.getItem("role");
     window.location.href = "/index.html";
   }
        
-        document.getElementById('navToggle').addEventListener('click', function() {
-            document.getElementById('mainNav').classList.toggle('active');
-        });
-        
-        
-        document.querySelectorAll('#mainNav a').forEach(link => {
-            link.addEventListener('click', function() {
-                document.getElementById('mainNav').classList.remove('active');
-            });
-        });
+     
 
-        let currentSlide = 0;
-        const totalSlides = 3;
-        const container0 = document.querySelector('.container0');
-        const switchButtons = document.querySelectorAll('.switch-btn');
-        let autoSlideInterval;
 
-        function goToSlide(index) {
-            currentSlide = index;
-            const translateX = -currentSlide * 100;
-            container0.style.transform = `translateX(${translateX}vw)`;
 
-            switchButtons.forEach((btn, i) => {
-                if (i === currentSlide) {
-                    btn.classList.add('active');
-                } else {
-                    btn.classList.remove('active');
-                }
-            });
-        }
 
-        function nextSlide() {
-            currentSlide = (currentSlide + 1) % totalSlides;
-            goToSlide(currentSlide);
-        }
 
-        switchButtons.forEach((btn, index) => {
-            btn.addEventListener('click', function() {
-                goToSlide(index);
-                clearInterval(autoSlideInterval);
-                startAutoSlide();
-            });
-        });
 
-        function startAutoSlide() {
-            autoSlideInterval = setInterval(nextSlide, 4000);
-        }
+        ///////////
 
-        function initCarousel() {
-            goToSlide(0);
-            startAutoSlide();
-        }
 
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', initCarousel);
-        } else {
-            initCarousel();
-        }
+        document.addEventListener("DOMContentLoaded", loadAllEvents);
+
+async function loadAllEvents() {
+  const grid = document.getElementById("eventGrid");
+
+  try {
+    const response = await fetch("http://localhost:3000/institution/events/all");
+
+    if (!response.ok) {
+      throw new Error("Failed to load events");
+    }
+
+    const events = await response.json();
+    grid.innerHTML = "";
+
+    if (events.length === 0) {
+      grid.innerHTML = `<p style="text-align:center;color:#777;">No events found.</p>`;
+      return;
+    }
+
+    events.forEach(event => {
+      const card = document.createElement("div");
+      card.classList.add("event-card2");
+
+      const formattedDate = new Date(event.EventDate).toLocaleString();
+
+      card.innerHTML = `
+        <img src="./Bali.jpg" class="event-img">
+        <div class="event-info">
+          <h3>${event.EventName}</h3>
+          <p><strong>Time:</strong> ${formattedDate}</p>
+          <p><strong>Location:</strong> ${event.Location}</p>
+          <p><strong>People Needed:</strong> ${event.RequiredVolunteers}</p>
+        </div>
+      `;
+
+    
+      card.addEventListener("click", () => {
+         localStorage.setItem("selectedEvent", JSON.stringify(event));
+
+        window.location.href = `organization_apply_event.html?eventId=${event.EventID}`;
+      });
+
+      grid.appendChild(card);
+    });
+
+  } catch (err) {
+    console.error("Error loading events:", err);
+    grid.innerHTML = `<p style="text-align:center;color:red;">Unable to load events.</p>`;
+  }
+}
+
     </script>
 </body>
 </html>

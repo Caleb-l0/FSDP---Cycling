@@ -120,8 +120,18 @@ app.post('/admin/create_events', authenticate, adminEventController.createEvent)
 app.put('/admin/assign_events',authenticate,adminEventController.assignEventToOrgan)
 
 // ----- VOLUNTEER EVENT FEED -----
+
 app.get('/volunteer/events', adminEventController.getAllEvents);
 app.get('/volunteer/signed-events', authenticate, eventController.getSignedUpEvents);
+app.post('/events/signup', authenticate, eventController.signUp);
+app.get("/institution/events/all", adminEventController.getAllEvents);
+
+
+///----------
+
+const { requestEvent } = require("./Controllers/is.js");
+
+app.post("/request-event", authenticate, requestEvent);
 
 // 404 handler for API routes - must be after static files
 app.use((req, res, next) => {

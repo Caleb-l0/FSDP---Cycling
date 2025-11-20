@@ -40,10 +40,11 @@ function renderEvents(events) {
     const title = event.EventName || 'Untitled Event';
     const date = formatDate(event.EventDate);
     const description = event.Description || 'No description available.';
-    const location = event.EventLocation || 'Location TBD';
-    const required = event.RequiredVolunteers ? `Required Volunteers: ${event.RequiredVolunteers}` : '';
-
-    const requiredMarkup = required ? `<p>${required}</p>` : '';
+    
+    const location = event.Location || 'Location TBD';   // ✅ FIXED HERE
+    const required = event.RequiredVolunteers
+      ? `Required Volunteers: ${event.RequiredVolunteers}`
+      : '';
 
     card.innerHTML = `
       <div class="event-details">
@@ -51,7 +52,7 @@ function renderEvents(events) {
         <p><strong>Date:</strong> ${date}</p>
         <p><strong>Location:</strong> ${location}</p>
         <p>${description}</p>
-        ${requiredMarkup}
+        ${required ? `<p>${required}</p>` : ''}
       </div>
     `;
 
@@ -66,6 +67,7 @@ function renderEvents(events) {
     eventList.appendChild(card);
   });
 }
+
 
 function setStatusMessage(type, message) {
   eventList.innerHTML = `
@@ -90,46 +92,38 @@ function formatDate(rawDate) {
 
 async function signUp(eventTitle, eventId) {
   const token = localStorage.getItem('token');
-  const userId = localStorage.getItem('userId');
   
-  if (!token || !userId) {
+  if (!token) {
     alert('Please login first');
     window.location.href = '../Accounts/views/login.html';
     return;
   }
 
-  if (!eventId) {
-    alert('Event ID is missing. Please refresh the page and try again.');
-    return;
-  }
-
   try {
-    const response = await fetch(`http://localhost:3000/events/signup/${eventId}`, {
+    const response = await fetch(`http://localhost:3000/events/signup`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json'
-      }
+      },
+      body: JSON.stringify({ eventId })  
     });
 
+    const data = await response.json();
+
     if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || 'Failed to sign up');
+      throw new Error(data.message);
     }
 
-    const data = await response.json();
     alert(`🎉 You have successfully signed up for "${eventTitle}"!`);
-    
-    // Optionally refresh the page or update UI
-    // window.location.reload();
-    
+
   } catch (error) {
-    console.error('Error signing up:', error);
-    if (error.message.includes('already signed up')) {
-      alert('You have already signed up for this event.');
-    } else {
-      alert(`Failed to sign up: ${error.message}`);
+    if (error.message.includes('already')) {
+      alert('You already signed up for this event.');
+      return;
     }
+    alert('Failed to sign up.');
   }
 }
+
 

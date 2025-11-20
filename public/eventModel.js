@@ -9,28 +9,29 @@ async function getAllEvents() {
 async function signUpForEvent(eventId, userId) {
   const pool = await poolPromise;
 
-  const checkQuery = `
-    SELECT * FROM EventSignUps
-    WHERE EventID = @EventID AND UserID = @UserID
-  `;
-  const checkResult = await pool.request()
+  // check duplicate
+  const check = await pool.request()
     .input('EventID', sql.Int, eventId)
     .input('UserID', sql.Int, userId)
-    .query(checkQuery);
+    .query(`
+      SELECT * FROM EventSignUps 
+      WHERE EventID = @EventID AND UserID = @UserID
+    `);
 
-  if (checkResult.recordset.length > 0) {
+  if (check.recordset.length > 0) {
     throw new Error('User already signed up for this event.');
   }
 
-  const insertQuery = `
-    INSERT INTO EventSignUps (EventID, UserID)
-    VALUES (@EventID, @UserID)
-  `;
+  // insert
   await pool.request()
     .input('EventID', sql.Int, eventId)
     .input('UserID', sql.Int, userId)
-    .query(insertQuery);
+    .query(`
+      INSERT INTO EventSignUps (EventID, UserID)
+      VALUES (@EventID, @UserID)
+    `);
 }
+
 
 async function getSignedUpEvents(userId) {
   const pool = await poolPromise;
@@ -42,7 +43,7 @@ async function getSignedUpEvents(userId) {
         e.EventName,
         e.EventDate,
         e.Description,
-        e.[EventLocation],
+        e.Location,            -- ✅ FIXED FIELD NAME
         e.RequiredVolunteers,
         e.Status,
         es.SignUpDate,
@@ -54,6 +55,7 @@ async function getSignedUpEvents(userId) {
     `);
   return result.recordset;
 }
+
 
 module.exports = { getAllEvents, signUpForEvent, getSignedUpEvents };
 

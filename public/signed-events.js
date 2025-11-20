@@ -1,5 +1,6 @@
 const eventList = document.getElementById('eventList');
-const SIGNED_EVENTS_ENDPOINT = `${window.location.origin}/volunteer/signed-events`;
+const SIGNED_EVENTS_ENDPOINT = `http://localhost:3000/volunteer/signed-events`;
+
 
 // Get token
 const token = localStorage.getItem('token');

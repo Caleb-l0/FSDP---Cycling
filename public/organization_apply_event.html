@@ -82,31 +82,25 @@
 </head>
 <body>
 
-  <header>
-        <div class="container">
-            <div class="header-content">
-                <div class="logo">Happy Volunteer</div>
-                <button class="nav-toggle" id="navToggle">
-                    <i class="fas fa-bars"></i>
-                </button>
+<header class="hv-header">
+    <div class="container hv-header-content">
 
-                <nav id="mainNav">
-                    <ul>
-                       <div class="search-bar">
-  <i class="icon">🔍</i>
-  <input type="text" placeholder="Search..." />
-  <button>Go</button>
-</div>
-                        <li><a href="#">Create Event</a></li>
-                        <li><a href="#">My Community</a></li>
-                        <li><a href="#">Reward</a></li>
-                        <li><a href="#">Profile</a></li>
-                    </ul>
-                </nav>
 
-            </div>
-        </div>
-    </header>
+        <div class="hv-logo"><a href="./homepage_login_instituition.html" style="  text-decoration: none; 
+    color: inherit; ">Happy Volunteer</a></div>
+
+               
+
+        <nav class="hv-nav" id="hvNav">
+            <ul>
+                 <li><a href="./organization_apply_event.html">Apply Event</a></li>
+                  <li><a href="#">My Request</a></li>
+                <li><a href="profilepage.html">Profile</a></li>
+            </ul>
+        </nav>
+
+    </div>
+</header>
 
   <section class="form-section">
     <h2>Request to Host a Volunteer Event</h2>
@@ -137,6 +131,56 @@
       © 2025 Volunteer Connect. All rights reserved.
     </div>
   </footer>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+  const savedEvent = JSON.parse(localStorage.getItem("selectedEvent"));
+
+  if (!savedEvent) return; 
+
+  document.getElementById("eventName").value = savedEvent.EventName;
+  document.getElementById("eventDate").value = savedEvent.EventDate.split(".")[0]; 
+  document.getElementById("description").value = savedEvent.Description || "";
+  document.getElementById("requiredVolunteers").value = savedEvent.RequiredVolunteers;
+});
+
+document.getElementById("eventRequestForm").addEventListener("submit", async function(e) {
+  e.preventDefault();
+
+  const token = localStorage.getItem("token");
+  const savedEvent = JSON.parse(localStorage.getItem("selectedEvent"));
+  const orgId = localStorage.getItem("organizationId");  // 登录时已经存
+  
+  const payload = {
+    EventID: savedEvent.EventID,
+    OrganizationID: orgId,
+    EventName: document.getElementById("eventName").value,
+    EventDate: document.getElementById("eventDate").value,
+    Description: document.getElementById("description").value,
+    RequiredVolunteers: parseInt(document.getElementById("requiredVolunteers").value)
+  };
+
+  const response = await fetch("http://localhost:3000/request-event", {
+    method: "POST",
+    headers: {
+      "Authorization": `Bearer ${token}`,
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(payload)
+  });
+
+  const data = await response.json();
+
+  if (response.ok) {
+    alert("Request submitted successfully!");
+    localStorage.removeItem("selectedEvent");
+  } else {
+    alert(data.message || "Request failed");
+  }
+});
+
+
+  </script>
 
 </body>
 </html>

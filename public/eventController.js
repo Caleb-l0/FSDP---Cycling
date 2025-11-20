@@ -11,17 +11,22 @@ async function getEvents(req, res) {
 }
 
 async function signUp(req, res) {
-  const { eventId, userId } = req.body;
+  const { eventId } = req.body;
+  const userId = req.user.id; // ✅ 从 token 拿 userId
 
-  if (!eventId || !userId) {
-    return res.status(400).json({ message: 'Missing eventId or userId' });
+  if (!eventId) {
+    return res.status(400).json({ message: 'Missing eventId' });
   }
 
   try {
     await eventModel.signUpForEvent(eventId, userId);
     res.json({ message: 'Sign-up successful!' });
   } catch (err) {
-    console.error('Error signing up for event:', err);
+    if (err.message.includes('already')) {
+      return res.status(400).json({ message: 'You already signed up for this event.' });
+    }
+
+    console.error('Error:', err);
     res.status(500).json({ message: 'Failed to sign up for event.' });
   }
 }
