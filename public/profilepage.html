@@ -4,32 +4,65 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>My Profile | HappyVolunteer</title>
+
+<!-- Default CSS -->
 <link rel="stylesheet" href="profilepage.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+/* ===== Header & Logo Styles ===== */
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 0;
+  flex-wrap: wrap;
+  row-gap: 10px;
+}
+
+.logo {
+  font-size: 1.6em;
+  font-weight: 700;
+  color: #f4a261;
+  text-decoration: none;
+}
+
+
+/* Nav menu styling */
+#mainNav ul, #hvNav ul {
+  display: flex;
+  gap: 20px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* Nav toggle button (for mobile) */
+.nav-toggle, .hv-nav-toggle {
+  display: none; /* will show via media queries for mobile */
+}
+
+/* Optional: small screen mobile nav */
+@media screen and (max-width: 768px) {
+  .nav-toggle, .hv-nav-toggle {
+    display: inline-block;
+    background: none;
+    border: none;
+    font-size: 20px;
+  }
+  #mainNav ul, #hvNav ul {
+    flex-direction: column;
+    display: none;
+  }
+}
+</style>
 
 </head>
+
 <body>
 
-<header>
-  <div class="container">
-    <div class="header-content">
-
-      <!-- ⭐ LOGO — redirects based on ROLE -->
-      <a href="#" id="logoRedirect" class="logo">Happy Volunteer</a>
-
-      <button class="nav-toggle" id="navToggle">
-        <i class="fas fa-bars"></i>
-      </button>
-      <nav id="mainNav">
-        <ul>
-          <li><a href="#">Event</a></li>
-          <li><a href="#">Community</a></li>
-          <li><a href="#">Reward</a></li>
-          <li><a href="profilepage.html">Profile</a></li>
-        </ul>
-      </nav>
-    </div>
-  </div>
-</header>
+<!-- Header will be dynamically replaced -->
+<header id="dynamicHeader"></header>
 
 <!-- Language Switcher -->
 <div class="lang-container">
@@ -69,13 +102,12 @@
 
 <script>
 const token = localStorage.getItem("token");
+let userRole = null;
 
 if (!token) {
   alert("You must be logged in to access this page.");
   window.location.href = "/index.html";
 }
-
-let userRole = null; // ⭐ Store role for logo redirection
 
 // Load profile
 async function loadProfile() {
@@ -87,12 +119,12 @@ async function loadProfile() {
     if (!response.ok) throw new Error("Unauthorized");
 
     const data = await response.json();
-
     document.getElementById("name").value = data.name;
     document.getElementById("email").value = data.email;
     document.getElementById("role").textContent = data.role;
 
-    userRole = data.role; // ⭐ Store the role
+    userRole = data.role.toLowerCase();
+    loadHeaderByRole(userRole);
 
   } catch (err) {
     console.error(err);
@@ -102,28 +134,75 @@ async function loadProfile() {
 }
 loadProfile();
 
+// Dynamic header based on role
+function loadHeaderByRole(role) {
+  const header = document.getElementById("dynamicHeader");
 
-// ⭐ LOGO REDIRECT BASED ON ROLE
-document.getElementById("logoRedirect").addEventListener("click", function(e) {
-  e.preventDefault();
+  const commonLogo = `<a href="#" id="logoRedirect" class="logo">Happy Volunteer</a>`;
 
-  if (!userRole) return;
-
-  if (userRole.toLowerCase() === "volunteer") {
-    window.location.href = "homepage_login_volunteer.html";
-  } 
-  else if (userRole.toLowerCase() === "admin") {
-    window.location.href = "homepage_login_admin.html";
-  } 
-  else if (userRole.toLowerCase() === "instituition" || userRole.toLowerCase() === "institution") {
-    window.location.href = "homepage_login_instituition.html";
-  } 
-  else {
-    // fallback
-    window.location.href = "homepage.html";
+  let navHTML = '';
+  if (role === "volunteer") {
+    navHTML = `
+      <div class="container header-content">
+        ${commonLogo}
+        <button class="nav-toggle" id="navToggle"><i class="fas fa-bars"></i></button>
+        <nav id="mainNav">
+          <ul>
+            <li><a href="#">Event</a></li>
+            <li><a href="#">Community</a></li>
+            <li><a href="#">Reward</a></li>
+            <li><a href="profilepage.html">Profile</a></li>
+          </ul>
+        </nav>
+      </div>`;
+  } else if (role === "institution" || role === "instituition") {
+    navHTML = `
+      <div class="container header-content">
+        ${commonLogo}
+        <nav id="hvNav">
+          <ul>
+            <li><a href="./organization_apply_event.html">Apply Event</a></li>
+            <li><a href="#">My Request</a></li>
+            <li><a href="profilepage.html">Profile</a></li>
+          </ul>
+        </nav>
+      </div>`;
+  } else if (role === "admin") {
+    navHTML = `
+      <div class="container header-content">
+        ${commonLogo}
+        <button class="nav-toggle" id="navToggle"><i class="fas fa-bars"></i></button>
+        <nav id="hvNav">
+          <ul>
+            <li><a href="./createEvent.html">Create Event</a></li>
+            <li><a href="profilepage.html">Profile</a></li>
+          </ul>
+        </nav>
+      </div>`;
+  } else {
+    navHTML = `
+      <div class="container header-content">
+        ${commonLogo}
+      </div>`;
   }
-});
 
+  header.innerHTML = navHTML;
+  attachLogoRedirect(role);
+}
+
+// Logo redirect
+function attachLogoRedirect(role) {
+  const logo = document.getElementById("logoRedirect");
+  if (!logo) return;
+
+  logo.addEventListener("click", function(e) {
+    e.preventDefault();
+    if (role === "volunteer") window.location.href = "homepage_login_volunteer.html";
+    else if (role === "admin") window.location.href = "homepage_login_admin.html";
+    else if (role === "institution" || role === "instituition") window.location.href = "homepage_login_instituition.html";
+    else window.location.href = "homepage.html";
+  });
+}
 
 // Edit / Save
 const nameField = document.getElementById("name");
@@ -164,8 +243,7 @@ saveBtn.addEventListener("click", async () => {
 });
 
 // Logout button
-const logoutBtn = document.getElementById("logoutBtn");
-logoutBtn.addEventListener("click", () => {
+document.getElementById("logoutBtn").addEventListener("click", () => {
   localStorage.clear();
   alert("Logged out successfully!");
   window.location.href = "/index.html";
