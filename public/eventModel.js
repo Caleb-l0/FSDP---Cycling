@@ -43,7 +43,7 @@ async function getSignedUpEvents(userId) {
         e.EventName,
         e.EventDate,
         e.Description,
-        e.Location,            -- ✅ FIXED FIELD NAME
+        e.EventLocation,      -- corrected field name
         e.RequiredVolunteers,
         e.Status,
         es.SignUpDate,
@@ -55,6 +55,7 @@ async function getSignedUpEvents(userId) {
     `);
   return result.recordset;
 }
+
 
 
 module.exports = { getAllEvents, signUpForEvent, getSignedUpEvents };
