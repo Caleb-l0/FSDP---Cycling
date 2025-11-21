@@ -48,7 +48,6 @@
 </footer>
 
 <script>
-  // 1️ Get token
   const token = localStorage.getItem("token");
 
   if (!token) {
@@ -56,7 +55,6 @@
     window.location.href = "login.html";
   }
 
-  // 2️ Get user ID from token
   function decodeToken(token) {
     try {
       const payload = token.split(".")[1];
@@ -74,40 +72,70 @@
     window.location.href = "login.html";
   }
 
-  // Fetch and display rewards
+  const pointsDisplay = document.getElementById("pointsDisplay");
+  const rewardsList = document.getElementById("rewardsList");
+  let currentPoints = 0;
+
+  //  Fetch user total points
   fetch(`/api/rewards/${userId}`, {
-    headers: {
-      "Authorization": `Bearer ${token}`
-    }
+    headers: { "Authorization": `Bearer ${token}` }
   })
-    .then(res => res.json())
-    .then(data => {
-      document.getElementById("pointsDisplay").textContent = data.points ?? 0;
+  .then(res => res.json())
+  .then(data => {
+    currentPoints = data.points ?? 0;
+    pointsDisplay.textContent = currentPoints;
 
-      const container = document.getElementById("rewardsList");
-      container.innerHTML = "";
+    // 2 Display redeemable items
+    const redeemableItems = [
+      { name: "$5 NTUC Voucher", description: "$5 grocery voucher from all NTUC outlets", cost: 50 },
+      { name: "$10 NTUC Voucher", description: "$10 grocery voucher from all NTUC outlets", cost: 100 },
+      { name: "Volunteer T-Shirt", description: "Official HappyVolunteer T-Shirt", cost: 200 }
+    ];
 
-      if (!data.rewards || data.rewards.length === 0) {
-        container.innerHTML = "<p>No rewards available yet.</p>";
-        return;
-      }
+    redeemableItems.forEach(item => {
+      const div = document.createElement("div");
+      div.className = "reward-item";
+      div.innerHTML = `
+        <h3>${item.name}</h3>
+        <p>${item.description}</p>
+        <p>Cost: ${item.cost} points</p>
+        <button ${currentPoints < item.cost ? "disabled" : ""}>Redeem</button>
+      `;
+      rewardsList.appendChild(div);
 
-      data.rewards.forEach(r => {
-        const div = document.createElement("div");
-        div.className = "reward-item";
-        div.innerHTML = `
-          <h3>${r.name}</h3>
-          <p>${r.description}</p>
-          <p>Cost: ${r.cost} points</p>
-        `;
-        container.appendChild(div);
+      const button = div.querySelector("button");
+      button.addEventListener("click", () => {
+        if (currentPoints >= item.cost) {
+          currentPoints -= item.cost;
+          pointsDisplay.textContent = currentPoints;
+          button.disabled = true;
+
+          // send redemption to backend
+          fetch(`/api/rewards/redeem`, {
+            method: "POST",
+            headers: {
+              "Authorization": `Bearer ${token}`,
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ item: item.name, cost: item.cost })
+          })
+          .then(res => res.json())
+          .then(resData => {
+            console.log("Redeemed:", resData);
+          })
+          .catch(err => console.error("Redeem error:", err));
+
+          alert(`You redeemed: ${item.name}`);
+        }
       });
-    })
-    .catch(err => {
-      console.error("Rewards load error:", err);
-      alert("Failed to load rewards.");
     });
+  })
+  .catch(err => {
+    console.error("Rewards load error:", err);
+    alert("Failed to load rewards.");
+  });
 </script>
+
 
 </body>
 </html>
