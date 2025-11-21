@@ -177,7 +177,7 @@ CREATE TABLE ShopItems (
 INSERT INTO ShopItems (Name, Description, Cost) VALUES
 ('$5 NTUC Voucher', '$5 grocery voucher from all NTUC outlets', 50),
 ('$10 NTUC Voucher', '$10 grocery voucher from all NTUC outlets', 100),
-('Volunteer T-Shirt', 'Official HappyVolunteer T-Shirt', 200);
+('Volunteer T-Shirt', 'Official Volunteer T-Shirt', 200);
 
 
 -- ===========================
