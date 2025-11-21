@@ -6,7 +6,6 @@
   <title>Volunteer Rewards | HappyVolunteer</title>
 
   <link rel="stylesheet" href="style.css" />
-  <link rel="stylesheet" href="volunteer_rewards.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
@@ -38,8 +37,9 @@
   <h2>My Rewards</h2>
   <p><strong>Total Points:</strong> <span id="pointsDisplay">0</span></p>
 
+  <h3>Shop</h3>
   <div class="rewards-list" id="rewardsList" aria-live="polite">
-    // Rewards will be loaded here//
+    <!-- Shop items will load here -->
   </div>
 </div>
 
@@ -48,8 +48,8 @@
 </footer>
 
 <script>
+  // get token from localStorage
   const token = localStorage.getItem("token");
-
   if (!token) {
     alert("Session expired, please log in again.");
     window.location.href = "login.html";
@@ -59,14 +59,11 @@
     try {
       const payload = token.split(".")[1];
       return JSON.parse(atob(payload));
-    } catch (e) {
-      return null;
-    }
+    } catch (e) { return null; }
   }
 
   const decoded = decodeToken(token);
   const userId = decoded?.id;
-
   if (!userId) {
     alert("Invalid session. Please log in again.");
     window.location.href = "login.html";
@@ -76,7 +73,7 @@
   const rewardsList = document.getElementById("rewardsList");
   let currentPoints = 0;
 
-  //  Fetch user total points
+  //  Fetch user points + shop items 
   fetch(`/api/rewards/${userId}`, {
     headers: { "Authorization": `Bearer ${token}` }
   })
@@ -85,57 +82,54 @@
     currentPoints = data.points ?? 0;
     pointsDisplay.textContent = currentPoints;
 
-    // 2 Display redeemable items
-    const redeemableItems = [
-      { name: "$5 NTUC Voucher", description: "$5 grocery voucher from all NTUC outlets", cost: 50 },
-      { name: "$10 NTUC Voucher", description: "$10 grocery voucher from all NTUC outlets", cost: 100 },
-      { name: "Volunteer T-Shirt", description: "Official HappyVolunteer T-Shirt", cost: 200 }
-    ];
+    const shopItems = data.shopItems || [];
+    if (shopItems.length === 0) {
+      rewardsList.innerHTML = "<p>No items in shop yet.</p>";
+      return;
+    }
 
-    redeemableItems.forEach(item => {
+    shopItems.forEach(item => {
       const div = document.createElement("div");
       div.className = "reward-item";
       div.innerHTML = `
-        <h3>${item.name}</h3>
-        <p>${item.description}</p>
-        <p>Cost: ${item.cost} points</p>
-        <button ${currentPoints < item.cost ? "disabled" : ""}>Redeem</button>
+        <h4>${item.Name}</h4>
+        <p>${item.Description}</p>
+        <p>Cost: ${item.Cost} points</p>
+        <button ${currentPoints < item.Cost ? "disabled" : ""}>Redeem</button>
       `;
       rewardsList.appendChild(div);
 
       const button = div.querySelector("button");
       button.addEventListener("click", () => {
-        if (currentPoints >= item.cost) {
-          currentPoints -= item.cost;
+        if (currentPoints < item.Cost) return;
+
+        fetch("/api/rewards/redeem", {
+          method: "POST",
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ itemId: item.ItemID })
+        })
+        .then(res => res.json())
+        .then(resData => {
+          alert(resData.message || "Item redeemed!");
+          currentPoints -= item.Cost;
           pointsDisplay.textContent = currentPoints;
           button.disabled = true;
-
-          // send redemption to backend
-          fetch(`/api/rewards/redeem`, {
-            method: "POST",
-            headers: {
-              "Authorization": `Bearer ${token}`,
-              "Content-Type": "application/json"
-            },
-            body: JSON.stringify({ item: item.name, cost: item.cost })
-          })
-          .then(res => res.json())
-          .then(resData => {
-            console.log("Redeemed:", resData);
-          })
-          .catch(err => console.error("Redeem error:", err));
-
-          alert(`You redeemed: ${item.name}`);
-        }
+        })
+        .catch(err => {
+          console.error("Redeem error:", err);
+          alert("Failed to redeem item.");
+        });
       });
     });
   })
   .catch(err => {
-    console.error("Rewards load error:", err);
-    alert("Failed to load rewards.");
+    console.error("Shop load error:", err);
+    rewardsList.innerHTML = "<p>Failed to load shop.</p>";
   });
 </script>
-
 
 </body>
 </html>

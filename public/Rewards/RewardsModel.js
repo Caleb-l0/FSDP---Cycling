@@ -1,32 +1,36 @@
+const sql = require("mssql");
 const db = require("../../dbconfig");
 
-
-async function getRewardsByUser(userId) {
-    await sql.connect(db);
-    const result = await sql.query`
-        SELECT RewardID, Points, Description, DateEarned
-        FROM Rewards
-        WHERE UserID = ${userId}    
-        ORDER BY DateEarned DESC
-    `;
-    return result.recordset;
-}
-async function addReward(userId, points, description) {
-    await sql.connect(db);
-    const result = await sql.query`
-        INSERT INTO Rewards (UserID, Points, Description, DateEarned)
-        VALUES (${userId}, ${points}, ${description}, GETDATE())
-    `;
-    return result;
-}
-async function getTotalPoints(userId) {
+async function getUserPoints(userId) {
     await sql.connect(db);
     const result = await sql.query`
         SELECT SUM(Points) AS TotalPoints
         FROM Rewards
-        WHERE UserID = ${userId}
+        WHERE user_ID = ${userId}
     `;
     return result.recordset[0].TotalPoints || 0;
-}   
+}
 
-module.exports = { getRewardsByUser, addReward, getTotalPoints };
+async function redeemItem(userId, item) {
+    await sql.connect(db);
+    return sql.query`
+        INSERT INTO Rewards (user_id, Points, Description)
+        VALUES (${userId}, ${-item.Cost}, ${'Redeemed: ' + item.Name})
+    `;
+}
+
+async function getAllItems() {
+    await sql.connect(db);
+    const result = await sql.query`SELECT * FROM ShopItems`;
+    return result.recordset;
+}
+
+async function getItemById(itemId) {
+    await sql.connect(db);
+    const result = await sql.query`SELECT * FROM ShopItems WHERE ItemID = ${itemId}`;
+    return result.recordset[0];
+}
+
+module.exports = { getUserPoints, redeemItem, getAllItems, getItemById };
+
+
