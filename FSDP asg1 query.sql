@@ -154,6 +154,32 @@ CREATE TABLE EventBookings (
         REFERENCES Organizations(OrganizationID)
 );
 
+CREATE TABLE Rewards (
+    id INT PRIMARY KEY IDENTITY,
+    user_id INT NOT NULL,
+    points INT NOT NULL,
+    description VARCHAR(255),
+    dateEarned DATETIME DEFAULT GETDATE(),
+    FOREIGN KEY (user_id) REFERENCES Users(id)
+);
+
+INSERT INTO Rewards (user_id, points, description)
+VALUES (11, 100, 'Signup bonus');
+//testing - use your own btw... id 11 happens to be my first volunnteer//
+
+CREATE TABLE ShopItems (
+    ItemID INT PRIMARY KEY IDENTITY,
+    Name VARCHAR(255),
+    Description VARCHAR(255),
+    Cost INT
+);
+
+INSERT INTO ShopItems (Name, Description, Cost) VALUES
+('$5 NTUC Voucher', '$5 grocery voucher from all NTUC outlets', 50),
+('$10 NTUC Voucher', '$10 grocery voucher from all NTUC outlets', 100),
+('Volunteer T-Shirt', 'Official HappyVolunteer T-Shirt', 200);
+
+
 -- ===========================
 -- MIGRATION SCRIPT: Update existing Events table if it exists
 -- ===========================
