@@ -1,3 +1,4 @@
+
 const eventList = document.getElementById('eventList');
 const EVENTS_ENDPOINT = `http://localhost:3000/institutions/events`;
 

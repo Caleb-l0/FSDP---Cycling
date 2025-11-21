@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Volunteer Rewards | HappyVolunteer</title>
+
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="volunteer_rewards.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+<header>
+  <div class="container">
+    <div class="header-content">
+
+      <a href="#" id="logoRedirect" class="logo">Happy Volunteer</a>
+
+      <button class="nav-toggle" id="navToggle">
+        <i class="fas fa-bars"></i>
+      </button>
+
+      <nav id="mainNav">
+        <ul>
+          <li><a href="volunteer-events.html">Booking</a></li>
+          <li><a href="#">Community</a></li>
+          <li><a href="volunteer_rewards.html">Reward</a></li>
+          <li><a href="profilepage.html">Profile</a></li>
+        </ul>
+      </nav>
+
+    </div>
+  </div>
+</header>
+
+<div class="container">
+  <h2>My Rewards</h2>
+  <p><strong>Total Points:</strong> <span id="pointsDisplay">0</span></p>
+
+  <div class="rewards-list" id="rewardsList" aria-live="polite">
+    // Rewards will be loaded here//
+  </div>
+</div>
+
+<footer>
+  © 2025 HappyVolunteering
+</footer>
+
+<script>
+  // 1️ Get token
+  const token = localStorage.getItem("token");
+
+  if (!token) {
+    alert("Session expired, please log in again.");
+    window.location.href = "login.html";
+  }
+
+  // 2️ Get user ID from token
+  function decodeToken(token) {
+    try {
+      const payload = token.split(".")[1];
+      return JSON.parse(atob(payload));
+    } catch (e) {
+      return null;
+    }
+  }
+
+  const decoded = decodeToken(token);
+  const userId = decoded?.id;
+
+  if (!userId) {
+    alert("Invalid session. Please log in again.");
+    window.location.href = "login.html";
+  }
+
+  // Fetch and display rewards
+  fetch(`/api/rewards/${userId}`, {
+    headers: {
+      "Authorization": `Bearer ${token}`
+    }
+  })
+    .then(res => res.json())
+    .then(data => {
+      document.getElementById("pointsDisplay").textContent = data.points ?? 0;
+
+      const container = document.getElementById("rewardsList");
+      container.innerHTML = "";
+
+      if (!data.rewards || data.rewards.length === 0) {
+        container.innerHTML = "<p>No rewards available yet.</p>";
+        return;
+      }
+
+      data.rewards.forEach(r => {
+        const div = document.createElement("div");
+        div.className = "reward-item";
+        div.innerHTML = `
+          <h3>${r.name}</h3>
+          <p>${r.description}</p>
+          <p>Cost: ${r.cost} points</p>
+        `;
+        container.appendChild(div);
+      });
+    })
+    .catch(err => {
+      console.error("Rewards load error:", err);
+      alert("Failed to load rewards.");
+    });
+</script>
+
+</body>
+</html>
