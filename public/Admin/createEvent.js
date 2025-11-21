@@ -51,10 +51,12 @@ async function createEvent() {
   const eventDate = document.getElementById("eventDate").value;
   const organizerValue = document.getElementById("organizer").value.trim();
   const volunteersValue = document.getElementById("volunteers").value;
-  
+  const MaximumParticipant = document.getElementById("participant").value;
+ const Location = document.getElementById("eventLocation").value;
   // Check if currentRequest exists, otherwise get values from form
+
   const organizationID = currentRequest ? currentRequest.OrganizationID : organizerValue;
-  const volunteerRequestID = currentRequest ? currentRequest.RequestID : null;
+ 
 
   // Validate required fields with specific error messages
   const missingFields = [];
@@ -67,15 +69,8 @@ async function createEvent() {
     return;
   }
 
-  // Parse OrganizationID - optional, but if provided must be valid
-  let parsedOrgID = null;
-  if (organizerValue || currentRequest) {
-    parsedOrgID = parseInt(organizationID);
-    if (isNaN(parsedOrgID) || parsedOrgID <= 0) {
-      alert("Organizer must be a valid organization ID (positive number).\n\nIf you don't have an organization ID, you can leave it empty or enter a valid number from the Organizations table.");
-      return;
-    }
-  }
+
+ 
 
   // Parse RequiredVolunteers - must be a valid number
   const parsedVolunteers = parseInt(volunteersValue);
@@ -89,25 +84,18 @@ async function createEvent() {
     EventDate: eventDate,
     Description: document.getElementById("description").value.trim(),
     RequiredVolunteers: parsedVolunteers,
-    Status: document.getElementById("status").value
+    Status: document.getElementById("status").value,
+    MaximumParticipant:   MaximumParticipant,
+    OrganizationID: organizerValue,
+    Location: Location,
+    
+
   };
 
-  const location = document.getElementById("eventLocation").value;
-  if (location && location.trim() !== '') {
-    eventData.EventLocation = location;
-  }
 
 
-  // Only include OrganizationID if it's provided
-  if (parsedOrgID) {
-    eventData.OrganizationID = parsedOrgID;
-  }
 
-  // Only include VolunteerRequestID if it exists
-  if (volunteerRequestID) {
-    eventData.VolunteerRequestID = volunteerRequestID;
-  }
-  
+
   try {
     const response = await fetch("http://localhost:3000/admin/create_events", {
       method: 'POST',

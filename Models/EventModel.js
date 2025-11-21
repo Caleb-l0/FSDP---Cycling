@@ -93,14 +93,14 @@ async function updateEvent(eventID, data) {
     .input("EventID", sql.Int, eventID)
     .input("EventName", sql.NVarChar(100), data.EventName)
     .input("EventDate", sql.DateTime, data.EventDate)
-    .input("EventLocation", sql.NVarChar(sql.MAX), data.EventLocation)
+    .input("Location", sql.NVarChar(sql.MAX), data.EventLocation)
     .input("RequiredVolunteers", sql.Int, data.RequiredVolunteers)
     .input("Description", sql.NVarChar(sql.MAX), data.Description)
     .query(`
       UPDATE Events
       SET EventName=@EventName,
           EventDate=@EventDate,
-          [EventLocation]=@EventLocation,
+          Location=@Location,
           RequiredVolunteers=@RequiredVolunteers,
           Description=@Description,
           UpdatedAt = GETDATE()

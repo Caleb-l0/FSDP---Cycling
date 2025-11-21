@@ -66,7 +66,8 @@ CREATE TABLE UserOrganizations (
 
 CREATE TABLE Events (
     EventID INT PRIMARY KEY IDENTITY,
-    [EventLocation] NVARCHAR(MAX),
+    Location NVARCHAR(MAX),
+    MaximumParticipant INT NOT Null,
     OrganizationID INT,
     EventName NVARCHAR(100) NOT NULL,
     EventDate DATETIME NOT NULL,

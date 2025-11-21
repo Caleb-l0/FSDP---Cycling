@@ -28,9 +28,7 @@ async function createEvent(req, res) {
     // OrganizationID is optional (can be null), but if provided, must be valid and exist
     if (eventData.OrganizationID !== undefined && eventData.OrganizationID !== null) {
       const orgID = parseInt(eventData.OrganizationID);
-      if (isNaN(orgID) || orgID <= 0) {
-        return res.status(400).json({ message: "Invalid OrganizationID: must be a positive number" });
-      }
+      
       
       // Check if organization exists in database
       const orgExists = await AdminEventModel.checkOrganizationExists(orgID);

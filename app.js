@@ -31,6 +31,9 @@ const adminEventController = require('./Controllers/Admin_event_Controller');
 // ----- VOLUNTEER EVENT CONTROLLER -----
 const eventController = require('./public/eventController');
 
+
+// event con
+const EVENT = require('./Controllers/EventController.js')
 // ----- LOGIN & SIGNUP API ROUTES (must be before static files) -----
 app.post('/login', validateLogin, loginUser);
 
@@ -110,12 +113,9 @@ app.put('/requests/reject/:id',authenticate,requestController.rejectRequest)
 app.get('/requests/status/:id',authenticate,requestController.checkRequestStatus)
 
 // ----- ADMIN EVENT ROUTES -----
-app.get('/admin/events', authenticate, adminEventController.getAllEvents);
-app.get(
-  "/admin/events/location/:eventID",
-  authenticate,
-  adminEventController.getEventLocation
-);
+app.get('/:id',authenticate,EVENT.getEventById) 
+app.get('/admin/events', authenticate, adminEventController.getAllEvents); 
+app.get("/admin/events/location/:eventID",authenticate,adminEventController.getEventLocation);
 app.post('/admin/create_events', authenticate, adminEventController.createEvent);
 app.put('/admin/assign_events',authenticate,adminEventController.assignEventToOrgan)
 

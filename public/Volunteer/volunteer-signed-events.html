@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Events I have signed up for | HappyVolunteering</title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="signed-events.css" />
+
+  <!-- Font Awesome for the menu icon -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+<header>
+  <div class="container">
+    <div class="header-content">
+
+      <!-- ⭐ LOGO — redirects to homepage_login_volunteer.html -->
+      <a href="#" id="logoRedirect" class="logo">Happy Volunteer</a>
+
+      <button class="nav-toggle" id="navToggle">
+        <i class="fas fa-bars"></i>
+      </button>
+      <nav id="mainNav">
+        <ul>
+          <li><a href="volunteer-events.html">Booking</a></li>
+          <li><a href="#">Community</a></li>
+          <li><a href="#">Reward</a></li>
+          <li><a href="profilepage.html">Profile</a></li>
+        </ul>
+      </nav>
+    </div>
+  </div>
+</header>
+
+<div class="container">
+  <button class="toggle-btn" onclick="window.location.href='volunteer-events.html'">
+    View Upcoming Events
+  </button>
+
+  <h2>Events I have signed up for</h2>
+  <div class="event-list" id="eventList" aria-live="polite">
+  </div>
+</div>
+
+<footer>
+  © 2025 HappyVolunteering
+</footer>
+
+<script src="signed-events.js"></script>
+
+<script>
+  // Logo redirect
+  const logo = document.getElementById("logoRedirect");
+  logo.addEventListener("click", function(e) {
+    e.preventDefault();
+    window.location.href = "homepage_login_volunteer.html";
+  });
+</script>
+
+</body>
+</html>

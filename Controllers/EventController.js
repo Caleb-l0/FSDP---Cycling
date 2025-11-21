@@ -4,7 +4,7 @@ const EventModel = require("../Models/EventModel");
 
 async function getEventById(req, res) {
   try {
-    const event = await EventModel.getEventById(req.params.eventID);
+    const event = await EventModel.getEventById(req.params.id);
     res.status(200).json(event);
   } catch (error) {
     res.status(500).json({ message: "Server Error", error: error.message });

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Institution Events | HappyVolunteering</title>
+
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<header>
+  <div class="container">
+    <div class="header-content">
+
+      <!-- ⭐ LOGO — redirects based on ROLE -->
+      <a href="#" id="logoRedirect" class="logo">Happy Volunteer</a>
+
+      <button class="nav-toggle" id="navToggle">
+        <i class="fas fa-bars"></i>
+      </button>
+      <nav id="mainNav">
+        <ul>
+          <li><a href="institutions-events.html">Events</a></li>
+          <li><a href="#">Community</a></li>
+          <li><a href="#">Reward</a></li>
+          <li><a href="profilepage.html">Profile</a></li>
+        </ul>
+      </nav>
+    </div>
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- ⭐ Toggle Button to view signed-up events -->
+  <button class="toggle-btn" onclick="window.location.href='institutions-signed-events.html'">
+    View Signed-Up Participants
+  </button>
+
+  <h2>Upcoming Institution Events</h2>
+
+  <div class="event-list" id="eventList" aria-live="polite">
+    <!-- Dynamically populated with JS -->
+  </div>
+</div>
+
+<footer>
+  © 2025 HappyVolunteering
+</footer>
+
+<script src="institutions-events.js"></script>
+</body>
+</html>

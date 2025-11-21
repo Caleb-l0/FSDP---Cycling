@@ -24,23 +24,24 @@ async function createEvent(eventData) {
 
     request.input("EventName", sql.NVarChar(100), eventData.EventName);
     request.input("EventDate", sql.DateTime, eventData.EventDate);
+    request.input("MaximumParticipant", sql.Int, eventData.MaximumParticipant);
     request.input("Description", sql.NVarChar(sql.MAX), eventData.Description || '');
     request.input("RequiredVolunteers", sql.Int, eventData.RequiredVolunteers);
     request.input("Status", sql.NVarChar(20), eventData.Status || 'Upcoming');
 
-    const locationValue = (eventData.EventLocation && eventData.EventLocation.trim() !== '')
-      ? eventData.EventLocation.trim()
+    const locationValue = (eventData.Location && eventData.Location.trim() !== '')
+      ? eventData.Location.trim()
       : null;
-    request.input("EventLocation", sql.NVarChar(sql.MAX), locationValue);
+    request.input("Location", sql.NVarChar(sql.MAX), locationValue);
 
     const query = `
       INSERT INTO Events
-      (OrganizationID, EventName, EventDate, Description, [EventLocation],
-       RequiredVolunteers, Status)
+      (Location,OrganizationID, EventName, EventDate, Description, 
+       RequiredVolunteers, MaximumParticipant,Status)
       OUTPUT inserted.*
       VALUES
-      (@OrganizationID, @EventName, @EventDate, @Description, @EventLocation,
-       @RequiredVolunteers, @Status)
+      ( @Location,@OrganizationID, @EventName, @EventDate, @Description,
+       @RequiredVolunteers, @MaximumParticipant,@Status)
     `;
     const result = await request.query(query);
     return result.recordset[0];
@@ -93,7 +94,7 @@ async function getEventLocation(eventID) {
     const pool = await sql.connect(db);
     const result = await pool.request()
       .input("EventID", sql.Int, eventID)
-      .query(`SELECT [EventLocation] FROM Events WHERE EventID = @EventID`);
+      .query(`SELECT Location FROM Events WHERE EventID = @EventID`);
     return result.recordset[0];
   } catch (err) {
     console.error("Model getEventLocation Error:", err);
