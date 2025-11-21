@@ -2,6 +2,10 @@ const sql = require("mssql");
 const db = require("../dbconfig");
 const EventModel = require("../Models/EventModel");
 
+
+
+
+
 async function getEventById(req, res) {
   try {
     const event = await EventModel.getEventById(req.params.id);
@@ -10,6 +14,8 @@ async function getEventById(req, res) {
     res.status(500).json({ message: "Server Error", error: error.message });
   }
 }
+
+
 
 async function checkAssigned(req, res) {
   try {
@@ -32,6 +38,8 @@ async function deleteEvent(req, res) {
   }
 }
 
+
+// for volunteer
 async function signup(req, res) {
   try {
     await EventModel.signup(req.user.id, req.params.eventID);
@@ -59,6 +67,7 @@ async function isSignedUp(req, res) {
   }
 }
 
+// for admin
 async function updateEvent(req, res) {
   try {
     const result = await EventModel.updateEvent(req.params.eventID, req.body);
@@ -67,6 +76,11 @@ async function updateEvent(req, res) {
     res.status(500).json({ message: "Server error", error: err.message });
   }
 }
+
+
+
+
+
 
 module.exports = {
   getEventById,

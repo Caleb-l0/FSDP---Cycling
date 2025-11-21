@@ -1,6 +1,37 @@
 const sql = require("mssql");
 const db = require("../dbconfig");
 
+
+
+
+// Get all events by location + date (same day)
+async function getEventsByLocation(req, res) {
+  try {
+    const { location, date } = req.query;
+
+    const pool = await sql.connect(db);
+    const result = await pool.request()
+      .input("Location", sql.NVarChar, location)
+      .input("StartOfDay", sql.DateTime, new Date(date + " 00:00"))
+      .input("EndOfDay", sql.DateTime, new Date(date + " 23:59"))
+      .query(`
+        SELECT EventID, EventName, EventDate
+        FROM Events
+        WHERE Location = @Location
+          AND EventDate BETWEEN @StartOfDay AND @EndOfDay
+      `);
+
+    res.json(result.recordset);
+
+  } catch (err) {
+    console.error("getEventsByLocation Error:", err);
+    res.status(500).json({ message: "Server Error" });
+  }
+}
+
+module.exports = { getEventsByLocation };
+
+
 async function getEventById(eventID) {
   const pool = await sql.connect(db);
   const result = await pool.request()

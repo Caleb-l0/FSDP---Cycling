@@ -167,10 +167,10 @@ BEGIN
     END
 
     -- Add EventLocation column if it doesn't exist
-    IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'Events' AND COLUMN_NAME = 'EventLocation')
+    IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'Events' AND COLUMN_NAME = 'Location')
     BEGIN
-        ALTER TABLE Events ADD [EventLocation] NVARCHAR(MAX);
-        PRINT 'EventLocation column added successfully';
+        ALTER TABLE Events ADD Location NVARCHAR(MAX);
+        PRINT 'Location column added successfully';
     END
     ELSE
     BEGIN
