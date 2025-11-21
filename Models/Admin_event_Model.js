@@ -74,6 +74,9 @@ async function assignEventToOrgan(eventData) {
 }
 async function checkOrganizationExists(organizationID) {
   try {
+    if (organizationID === null || organizationID === undefined) {
+      return true;
+    }
     const pool = await sql.connect(db);
     const result = await pool.request()
       .input("OrganizationID", sql.Int, organizationID)
