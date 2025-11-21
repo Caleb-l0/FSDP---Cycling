@@ -153,3 +153,76 @@ CREATE TABLE EventBookings (
     CONSTRAINT FK_EventBookings_Organizations FOREIGN KEY (OrganizationID)
         REFERENCES Organizations(OrganizationID)
 );
+
+
+CREATE TABLE Rewards (
+    id INT PRIMARY KEY IDENTITY,
+    user_id INT NOT NULL,
+    points INT NOT NULL,
+    description VARCHAR(255),
+    dateEarned DATETIME DEFAULT GETDATE(),
+    FOREIGN KEY (user_id) REFERENCES Users(id)
+);
+
+INSERT INTO Rewards (user_id, points, description)
+VALUES (11, 100, 'Signup bonus');
+//testing - use your own btw... id 11 happens to be my first volunnteer//
+
+CREATE TABLE ShopItems (
+    ItemID INT PRIMARY KEY IDENTITY,
+    Name VARCHAR(255),
+    Description VARCHAR(255),
+    Cost INT
+);
+
+INSERT INTO ShopItems (Name, Description, Cost) VALUES
+('$5 NTUC Voucher', '$5 grocery voucher from all NTUC outlets', 50),
+('$10 NTUC Voucher', '$10 grocery voucher from all NTUC outlets', 100),
+('Volunteer T-Shirt', 'Official Volunteer T-Shirt', 200);
+
+
+-- ===========================
+-- MIGRATION SCRIPT: Update existing Events table if it exists
+-- ===========================
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Events')
+BEGIN
+    -- Drop Location column if it exists
+    IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'Events' AND COLUMN_NAME = 'Location')
+    BEGIN
+        ALTER TABLE Events DROP COLUMN Location;
+        PRINT 'Location column dropped successfully';
+    END
+
+    -- Add EventLocation column if it doesn't exist
+    IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'Events' AND COLUMN_NAME = 'Location')
+    BEGIN
+        ALTER TABLE Events ADD Location NVARCHAR(MAX);
+        PRINT 'Location column added successfully';
+    END
+    ELSE
+    BEGIN
+        PRINT 'EventLocation column already exists';
+    END
+
+    -- Drop PeopleSignUp column if it exists
+    IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'Events' AND COLUMN_NAME = 'PeopleSignUp')
+    BEGIN
+        ALTER TABLE Events DROP COLUMN PeopleSignUp;
+        PRINT 'PeopleSignUp column dropped successfully';
+    END
+
+    -- Drop VolunteerSignUp column if it exists
+    IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'Events' AND COLUMN_NAME = 'VolunteerSignUp')
+    BEGIN
+        ALTER TABLE Events DROP COLUMN VolunteerSignUp;
+        PRINT 'VolunteerSignUp column dropped successfully';
+    END
+
+    -- Drop MaximumParticipant column if it exists
+    IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'Events' AND COLUMN_NAME = 'MaximumParticipant')
+    BEGIN
+        ALTER TABLE Events DROP COLUMN MaximumParticipant;
+        PRINT 'MaximumParticipant column dropped successfully';
+    END
+END
+

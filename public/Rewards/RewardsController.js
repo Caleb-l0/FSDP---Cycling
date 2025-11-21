@@ -1,38 +1,37 @@
-const rewardsModel = require("../Rewards/RewardsModel.js");
-
-getRewards = async (req, res) => {
-    try {
-        const rewards = await rewardsModel.getRewardsByUser(req.user.id);
-        res.json(rewards);
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ error: "Failed to get rewards" });
-    }
-};
+const rewardsModel = require("../Rewards/RewardsModel");
 
 
-addReward = async (req, res) => {
-    const { points, description } = req.body;
+async function getRewards(req, res) {
+  try {
+    const points = await rewardsModel.getUserPoints(req.user.id);
+    const shopItems = await shopModel.getAllItems();
+    res.json({ points, shopItems });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to load rewards" });
+  }
+}
 
-    if (!points) return res.status(400).json({ error: "Points required" });
+async function redeem(req, res) {
+  try {
+    const userId = req.user.id;
+    const { itemId } = req.body;
 
-    try {
-        await rewardsModel.addReward(req.user.id, points, description);
-        res.json({ message: "Reward added successfully" });
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ error: "Failed to add reward" });
-    }
-};
+    const item = await shopModel.getItemById(itemId);
+    if (!item) return res.status(404).json({ error: "Item not found" });
 
-getTotalPoints = async (req, res) => {
-    try {
-        const total = await rewardsModel.getTotalPoints(req.user.id);
-        res.json({ points: total });
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ error: "Failed to get total points" });
-    }
-};
+    const points = await rewardsModel.getUserPoints(userId);
+    if (points < item.Cost) return res.status(400).json({ error: "Not enough points" });
 
-module.exports = { getRewards, addReward, getTotalPoints };
+    await rewardsModel.redeemItem(userId, item);
+
+    res.json({ message: `Redeemed ${item.Name}` });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Redemption failed" });
+  }
+}
+
+
+module.exports = { getRewards, redeem };
+
