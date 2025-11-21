@@ -126,6 +126,13 @@ app.get('/volunteer/signed-events', authenticate, eventController.getSignedUpEve
 app.post('/events/signup', authenticate, eventController.signUp);
 app.get("/institution/events/all", adminEventController.getAllEvents);
 
+// ----- REWARDS SYSTEM -----
+const { getRewards, addReward, getTotalPoints } = require('./public/Rewards/RewardsController.js');
+
+app.get('/api/rewards', authenticate, getRewards);        // get list of rewards
+app.post('/api/rewards/add', authenticate, addReward);   // add points manually
+app.get('/api/rewards/total', authenticate, getTotalPoints); // get total points
+
 
 ///----------
 
