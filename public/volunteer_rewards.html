@@ -43,6 +43,9 @@
   </div>
 </div>
 
+<div id="transactionHistory"></div>
+<!--Transection History obv-->
+
 <footer>
   © 2025 HappyVolunteering
 </footer>
@@ -129,6 +132,33 @@
     console.error("Shop load error:", err);
     rewardsList.innerHTML = "<p>Failed to load shop.</p>";
   });
+
+
+    async function loadHistory() {
+  const res = await fetch(`/api/rewards/history/${userId}`);
+  const data = await res.json();
+
+  let html = "<h2>Your Redemption History</h2>";
+
+  if (data.length === 0) {
+    html += "<p>No redemptions yet.</p>";
+  } else {
+    html += "<ul>";
+    data.forEach(item => {
+      html += `
+        <li>
+          ${item.ItemName} — ${item.Points} points
+          <span style="color:#777;">(${new Date(item.RedeemedAt).toLocaleString()})</span>
+        </li>
+      `;
+    });
+    html += "</ul>";
+  }
+
+  document.getElementById("transactionHistory").innerHTML = html;
+}
+
+loadHistory();
 </script>
 
 </body>

@@ -163,6 +163,32 @@ app.post("/api/rewards/redeem", authenticate, async (req, res) => {
   }
 });
 
+// Get redemption history
+const sql = require("mssql");
+const db = require("./dbconfig");
+app.get("/api/rewards/history/:userId", async (req, res) => {
+    const userId = req.params.userId;
+
+    try {
+        await sql.connect(db);
+
+        const result = await sql.query`
+            SELECT 
+                Description AS ItemName, 
+                Points, 
+                DateCreated AS RedeemedAt
+            FROM Rewards
+            WHERE UserID = ${userId}
+            ORDER BY DateCreated DESC
+        `;
+
+        res.json(result.recordset);
+    } catch (err) {
+        console.error("Error loading history:", err);
+        res.status(500).send("Error loading history");
+    }
+});
+
 
 
 
