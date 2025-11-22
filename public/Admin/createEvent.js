@@ -106,6 +106,13 @@ async function createEvent() {
       body: JSON.stringify(eventData)
     });
 
+    const conflict = await checkConflict(Location, eventDate);
+
+if (conflict) {
+  alert("This time slot is unavailable for the selected location.");
+  return;
+}
+
     // Check if response is JSON
     const contentType = response.headers.get("content-type");
     if (!contentType || !contentType.includes("application/json")) {
@@ -163,4 +170,107 @@ async function deleteRequest(id){
   } catch (error) {
     console.error("Error deleting request:", error);
   }
+}
+
+
+
+// calendar logic
+
+async function checkConflict(location, datetime) {
+  const date = datetime.slice(0, 10);
+  const time = datetime.slice(11, 16);
+
+  const response = await fetch(
+    `http://localhost:3000/events/by-location?location=${location}&date=${date}`,
+    { headers: { 'Authorization': `Bearer ${token}` } }
+  );
+
+  let data = await response.json();
+  console.log("DEBUG - Raw API Data:", data);
+
+  // --- Absolute Fix: normalize to array ---
+
+  // Case 1: API returns { recordset: [...] }
+  if (data && Array.isArray(data.recordset)) {
+    data = data.recordset;
+  }
+
+  // Case 2: API returns { events: [...] }
+  if (data && Array.isArray(data.events)) {
+    data = data.events;
+  }
+
+  // Case 3: API returns single object
+  if (data && !Array.isArray(data)) {
+    data = [data];
+  }
+
+  // Now safe to use .some()
+  return data.some(ev => ev.EventDate.slice(11, 16) === time);
+}
+
+
+
+
+document.getElementById("eventLocation").addEventListener("change", loadCalendar);
+document.getElementById("eventDate").addEventListener("change", loadCalendar);
+
+async function loadCalendar() {
+  const location = document.getElementById("eventLocation").value;
+  const datetime = document.getElementById("eventDate").value;
+
+  if (!location || !datetime) {
+    document.getElementById("calendarContent").innerHTML =
+      "<p>Select a location and date.</p>";
+    return;
+  }
+
+  const date = datetime.slice(0, 10);
+
+  try {
+    const response = await fetch(
+      `http://localhost:3000/events/by-location?location=${location}&date=${date}`,
+      { headers: { 'Authorization': `Bearer ${token}` } }
+    );
+
+const raw = await response.text();
+console.log("RAW RESPONSE:", raw);
+
+try {
+  const events = JSON.parse(raw);
+  displayCalendar(events, date);
+} catch (err) {
+  console.error("Response is NOT JSON!");
+  return;
+}
+
+  } catch (err) {
+    console.error("Load calendar error:", err);
+  }
+}
+
+
+function displayCalendar(events, date) {
+  const box = document.getElementById("calendarContent");
+  box.innerHTML = "";
+
+  let html = `<div class="calendar-day">
+                <strong>${date}</strong><br><br>`;
+
+  if (events.length === 0) {
+    html += `<div class="slot">All time slots available ✔</div>`;
+  } else {
+    events.forEach(ev => {
+      const time = ev.EventDate.slice(11, 16); // HH:mm
+      html += `
+        <div class="slot unavailable">
+          ${time} — Unavailable 
+          <br>(${ev.EventName})
+        </div>
+      `;
+    });
+  }
+
+  html += `</div>`;
+  box.innerHTML = html;
 }

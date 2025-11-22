@@ -91,6 +91,8 @@ app.delete("/events/cancel/:eventID", authenticate, EventController.cancel);
 app.get("/events/:eventID", authenticate, EventController.getEventById);
 app.delete("/events/delete/:eventID", authenticate, EventController.deleteEvent);
 app.put("/events/update/:eventID", authenticate, EventController.updateEvent);
+app.get("/events/by-location",authenticate, EventController.getEventsByLocation);
+
 
 // Serve static files (for CSS, JS, images, etc.) - but after API routes
 app.use('/public', express.static(path.join(__dirname, 'public'))); // header, images, etc.

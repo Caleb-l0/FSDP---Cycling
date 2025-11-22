@@ -1,0 +1,30 @@
+.calendar-box {
+  margin-top: 25px;
+  background: #fffceb;
+  padding: 15px;
+  border-radius: 12px;
+  border: 1px solid #f0e3b2;
+}
+
+.calendar-day {
+  margin-top: 12px;
+  padding: 10px;
+  border-radius: 10px;
+  background: #fff;
+  border: 1px solid #ccc;
+}
+
+.slot {
+  padding: 8px;
+  margin-top: 6px;
+  border-radius: 6px;
+  background: #e8ffe8;
+  border: 1px solid #b9e6b9;
+}
+
+.slot.unavailable {
+  background: #ffd6d6;
+  border-color: #ff9b9b;
+  color: #a30000;
+  font-weight: bold;
+}

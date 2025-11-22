@@ -154,6 +154,7 @@ CREATE TABLE EventBookings (
         REFERENCES Organizations(OrganizationID)
 );
 
+
 CREATE TABLE Rewards (
     id INT PRIMARY KEY IDENTITY,
     user_id INT NOT NULL,
@@ -224,3 +225,4 @@ BEGIN
         PRINT 'MaximumParticipant column dropped successfully';
     END
 END
+
