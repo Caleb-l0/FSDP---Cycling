@@ -648,13 +648,27 @@ const svcEvents = [
   }
 ];
 
-/* ------------------ CALENDAR LOGIC ------------------ */
-let svcCurrent = new Date();
+let adminEvents = []; 
+let svcCurrent = new Date(); 
+
+
+async function loadAdminEvents() {
+  try {
+    const res = await fetch("http://localhost:3000/admin/events", {
+      headers: { "Authorization": `Bearer ${token}` }
+    });
+
+    adminEvents = await res.json();
+    svcLoadCalendar();
+  } catch (err) {
+    console.error("Error loading admin events:", err);
+  }
+}
+
 
 function svcLoadCalendar() {
   const grid = document.getElementById("svc-calendarGrid");
   const title = document.getElementById("svc-monthYear");
-
   grid.innerHTML = "";
 
   const year = svcCurrent.getFullYear();
@@ -662,7 +676,7 @@ function svcLoadCalendar() {
 
   title.innerHTML = svcCurrent.toLocaleString("default", { month: "long" }) + " " + year;
 
-  /* Weekday labels */
+  // Weekday labels
   ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"].forEach(d => {
     grid.innerHTML += `<div class="svc-day-name">${d}</div>`;
   });
@@ -672,30 +686,47 @@ function svcLoadCalendar() {
 
   for (let i = 0; i < firstDay; i++) grid.innerHTML += `<div></div>`;
 
-  const today = new Date().toISOString().split("T")[0];
-
   for (let d = 1; d <= numDays; d++) {
-    let dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
 
-    const daily = svcEvents.filter(e => e.date === dateStr);
+    const dailyEvents = adminEvents.filter(ev =>
+      ev.EventDate.slice(0, 10) === dateStr
+    );
 
     let eventHTML = "";
-    daily.forEach(ev => {
+    dailyEvents.forEach(ev => {
+      const time = ev.EventDate.slice(11, 16);
+
       eventHTML += `
-        <div class="svc-event-box">
-          <div class="svc-event-title">${ev.name}</div>
-          <div>${ev.location}</div>
-          <div class="svc-event-time">${ev.time}</div>
+        <div class="svc-event-box svc-event-click"
+          data-event='${JSON.stringify(ev).replace(/'/g, "&apos;")}'>
+
+          <div class="svc-event-title">${ev.EventName}</div>
+          <div>${ev.Location}</div>
+          <div class="svc-event-time">${time}</div>
         </div>`;
     });
 
     grid.innerHTML += `
-      <div class="svc-day ${today === dateStr ? "svc-today" : ""}">
+      <div class="svc-day">
         <div>${d}</div>
         ${eventHTML}
-      </div>`;
+      </div>
+    `;
   }
+
+  document.querySelectorAll(".svc-event-click").forEach(box => {
+    box.addEventListener("click", () => {
+      const eventObj = JSON.parse(box.dataset.event);
+
+      localStorage.setItem("currentRequest", JSON.stringify(eventObj));
+
+     
+      window.location.href = "./admin_event.html";
+    });
+  });
 }
+
 
 function svcPrevMonth() {
   svcCurrent.setMonth(svcCurrent.getMonth() - 1);
@@ -707,7 +738,8 @@ function svcNextMonth() {
   svcLoadCalendar();
 }
 
-svcLoadCalendar();
+
+loadAdminEvents();
 
 
 

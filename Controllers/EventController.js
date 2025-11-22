@@ -12,7 +12,6 @@ async function getEventsByLocation(req, res) {
     const pool = await sql.connect(db);
     const result = await pool.request()
      .input("Location", sql.NVarChar, location || "")
-
       .input("StartOfDay", sql.DateTime, new Date(date + " 00:00:00"))
       .input("EndOfDay", sql.DateTime, new Date(date + " 23:59:59"))
       .query(`

@@ -181,32 +181,24 @@ async function checkConflict(location, datetime) {
   const time = datetime.slice(11, 16);
 
   const response = await fetch(
-    `http://localhost:3000/events/by-location?location=${location}&date=${date}`,
+    `http://localhost:3000/events/by-location?location=${encodeURIComponent(location)}&date=${date}`,
     { headers: { 'Authorization': `Bearer ${token}` } }
   );
 
-  let data = await response.json();
-  console.log("DEBUG - Raw API Data:", data);
-
-  // --- Absolute Fix: normalize to array ---
-
-  // Case 1: API returns { recordset: [...] }
-  if (data && Array.isArray(data.recordset)) {
-    data = data.recordset;
+  if (!response.ok) {
+    
+    console.error("checkConflict error status:", response.status);
+    return false;
   }
 
-  // Case 2: API returns { events: [...] }
-  if (data && Array.isArray(data.events)) {
-    data = data.events;
-  }
-
-  // Case 3: API returns single object
-  if (data && !Array.isArray(data)) {
-    data = [data];
-  }
-
-  // Now safe to use .some()
-  return data.some(ev => ev.EventDate.slice(11, 16) === time);
+  const events = await response.json(); 
+  return events.some(ev => {
+    const evDate = typeof ev.EventDate === 'string'
+      ? ev.EventDate
+      : new Date(ev.EventDate).toISOString();
+    const evTime = evDate.slice(11, 16);
+    return evTime === time;
+  });
 }
 
 

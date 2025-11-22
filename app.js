@@ -88,10 +88,11 @@ app.get("/events/checkAssigned/:eventID", authenticate, EventController.checkAss
 app.get("/isSignedUp", authenticate, EventController.isSignedUp);
 app.post("/events/signup/:eventID", authenticate, EventController.signup);
 app.delete("/events/cancel/:eventID", authenticate, EventController.cancel);
+app.get("/events/by-location",authenticate, EventController.getEventsByLocation);
 app.get("/events/:eventID", authenticate, EventController.getEventById);
 app.delete("/events/delete/:eventID", authenticate, EventController.deleteEvent);
 app.put("/events/update/:eventID", authenticate, EventController.updateEvent);
-app.get("/events/by-location",authenticate, EventController.getEventsByLocation);
+
 
 
 // Serve static files (for CSS, JS, images, etc.) - but after API routes
