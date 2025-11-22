@@ -10,4 +10,7 @@ module.exports = {
     encrypt: false,
     trustServerCertificate: true,
   },
+  //internal links for database//
+  connectionString: process.env.DATABASE_URL,
+
 };
