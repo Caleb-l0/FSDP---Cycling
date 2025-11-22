@@ -1,8 +1,8 @@
-const { poolPromise, sql } = require('./db');
+const { poolPromise, sql } = require('../public/db');
 
 async function getAllEvents() {
   const pool = await poolPromise;
-  const result = await pool.request().query('SELECT * FROM Events');
+  const result = await pool.request().query('SELECT * FROM Events WHERE OrganizationID IS NOT  NULL');
   return result.recordset;
 }
 
@@ -43,7 +43,7 @@ async function getSignedUpEvents(userId) {
         e.EventName,
         e.EventDate,
         e.Description,
-        e.EventLocation,      -- corrected field name
+        e.Location,      
         e.RequiredVolunteers,
         e.Status,
         es.SignUpDate,

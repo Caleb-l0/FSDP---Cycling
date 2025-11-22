@@ -29,7 +29,7 @@ const requestController = require('./Controllers/GetRequestController');
 const adminEventController = require('./Controllers/Admin_event_Controller');
 
 // ----- VOLUNTEER EVENT CONTROLLER -----
-const eventController = require('./public/eventController');
+const eventController = require('./Controllers/VolunteerEventController.js');
 
 
 // event con

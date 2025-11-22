@@ -1,4 +1,4 @@
-const eventModel = require('./eventModel');
+const eventModel = require('../Models/VolunteerEventModel');
 
 async function getEvents(req, res) {
   try {

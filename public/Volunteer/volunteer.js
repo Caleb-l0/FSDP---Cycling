@@ -32,6 +32,7 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 
 //Model//
+
 const sql = require("mssql");
 const db = require("../../dbconfig");
 
