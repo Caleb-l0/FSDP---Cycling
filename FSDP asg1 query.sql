@@ -186,12 +186,21 @@ INSERT INTO ShopItems (Name, Description, Cost) VALUES
 
 --Volunteer Community Posts Table--
 CREATE TABLE CommunityPosts (
-  PostID INT PRIMARY KEY AUTO_INCREMENT,
-  UserID INT NOT NULL,
-  Content TEXT NOT NULL,
-  PhotoURL VARCHAR(255),
-  CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (UserID) REFERENCES Users(UserID)
+    PostID INT PRIMARY KEY IDENTITY,
+    UserID INT NOT NULL,
+    Content NVARCHAR(MAX) NOT NULL,
+    PhotoURL NVARCHAR(255),
+
+    CreatedAt DATETIME DEFAULT GETDATE(),
+
+    Visibility VARCHAR(20) NOT NULL
+        CONSTRAINT CHK_Visibility CHECK (Visibility IN ('public', 'friends', 'private'))
+        DEFAULT 'public',
+
+    TaggedInstitutionID INT NULL,
+
+    FOREIGN KEY (UserID) REFERENCES Users(id),
+    FOREIGN KEY (TaggedInstitutionID) REFERENCES Organizations(OrganizationID)
 );
 
 -- ===========================

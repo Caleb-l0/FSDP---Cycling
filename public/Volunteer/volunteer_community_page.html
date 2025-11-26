@@ -5,10 +5,37 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Volunteer Community | Happy Volunteer</title>
 
-    <link rel="stylesheet" href="./volunteer_community_page.css">
+ 
+      <link rel="stylesheet" href="./community.css">
         <link rel="stylesheet" href="../homepage.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-</head>
+<style>
+  .btn-create-post {
+    background: linear-gradient(135deg, #E69A2A, #D38B1F);
+    color: white;
+    padding: 10px 22px;
+    font-size: 1rem;
+    font-weight: 700;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    transition: 0.25s ease;
+    box-shadow: 0 3px 8px rgba(230, 154, 42, 0.25);
+    white-space: nowrap;
+}
+
+.btn-create-post:hover {
+    background: linear-gradient(135deg, #C97C19, #B56A11);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 14px rgba(230, 154, 42, 0.35);
+}
+
+.btn-create-post:active {
+    transform: scale(0.97);
+}
+
+</style>
+  </head>
 <body>  
 <header class="hv-header">
     <div class="container hv-header-content">
@@ -21,6 +48,7 @@
 
         <nav id="mainNav">
             <ul>
+               <button class="btn-create-post">Create Post</button>
                 <li><a href="./volunteer-events.html">Booking</a></li>
                 <li><a href="#">Community</a></li>
                 <li><a href="./volunteer_rewards.html">Reward</a></li>
@@ -31,11 +59,14 @@
 
 
         <button class="hv-nav-toggle" id="hvNavToggle">
+          
             <i class="fas fa-bars"></i>
         </button>
 
         <nav class="hv-nav" id="hvNav">
+            
             <ul>
+           <button class="create-post-btn" id="openPostForm">Create Post</button>
                 <li><a href="./volunteer-events.html">Booking</a></li>
                 <li><a href="#">Community</a></li>
                 <li><a href="./volunteer_rewards.html">Reward</a></li>
@@ -47,15 +78,128 @@
 
     </div>
 </header>
+<div class="post-form-container" id="postForm">
+    <h3>Create a Post</h3>
 
-<div class="container">
-  <h2>Volunteer Community</h2>
-  <p>Welcome to the Volunteer Community page! Here, you can connect with fellow volunteers, share your experiences, and stay updated on community news and events.</p>
-  
-  <div class="community-posts" id="communityPosts" aria-live="polite">
-    <!-- Community posts will be dynamically loaded here -->
-  </div>
+    <textarea id="postContent"></textarea>
+
+    <select id="postVisibility" class="post-form-select">
+        <option value="public">Public</option>
+        <option value="friends">Friends</option>
+        <option value="private">Private</option>
+    </select>
+
+    <select id="postInstitution" class="post-form-select">
+        <option value="">No Tag</option>
+        <option value="1">CWA</option>
+    </select>
+
+    <button class="post-submit-btn" onclick="submitPost()">Post</button>
 </div>
+
+
+<section class="community-feed">
+
+    <h2 class="section-title">Welcome!  
+      Share your experience in Community!</h2>
+
+    <div class="feed-list">
+
+        <div class="post-card">
+
+            <div class="post-header">
+                <img class="post-avatar" src="user1.jpg">
+                <div>
+                    <h4 class="post-user">Mary Tan</h4>
+                    <p class="post-time">2 hours ago</p>
+                </div>
+            </div>
+
+            <p class="post-text">
+                Had a meaningful morning cycling with John! Seniors were so happy.
+            </p>
+
+            <img class="post-img" src="./event_photo.jpeg">
+
+            <div class="post-actions">
+                <button class="btn-like"><i class="fa-solid fa-heart"></i> Like</button>
+                <button class="btn-comment"><i class="fa-solid fa-comment"></i> Comment</button>
+            </div>
+
+            <div class="comment-box">
+                <input type="text" placeholder="Write a comment...">
+                <button class="btn-small">Post</button>
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<section class="people-section">
+    <h2 class="section-title">People You May Know</h2>
+
+    <div class="people-scroll">
+        
+        <div class="people-card">
+            <img src="./p1.jpg" class="people-avatar">
+            <h4 class="people-name">John Lim</h4>
+            <button class="btn-add">Add Friend</button>
+        </div>
+
+        <div class="people-card">
+            …
+        </div>
+
+    </div>
+</section>
+
+
+<section class="institution-section">
+
+    <div class="insti-header">
+        <h2 class="section-title">Institutions & Events</h2>
+
+        <div class="insti-tabs">
+            <button class="insti-btn active" data-target="cwa">Cycling Without Age</button>
+            <button class="insti-btn" data-target="hca">HCA Hospice</button>
+            <button class="insti-btn" data-target="nparks">National Parks</button>
+        </div>
+    </div>
+
+    <div id="cwa" class="insti-panel active">
+        <div class="insti-bg" style="background-image:url('./cwa.jpg')">
+            <div class="insti-overlay">
+                <h3>Cycling Without Age</h3>
+                <p>Bringing joy to seniors through cycling</p>
+            </div>
+        </div>
+
+        <div class="insti-events">
+            <div class="insti-card">
+                <h4>Morning Ride with Seniors</h4>
+                <p>Date: 22 Jan</p>
+                <button class="btn">Join Event</button>
+            </div>
+
+            <div class="insti-card">
+                <h4>Training Session</h4>
+                <p>Date: 26 Jan</p>
+                <button class="btn">Join Event</button>
+            </div>
+        </div>
+    </div>
+
+
+    <div id="hca" class="insti-panel">
+     
+    </div>
+
+</section>
+
+
 <footer>
     <div class="container">
         <div class="footer-content">
@@ -108,9 +252,10 @@
     </div>
 </footer>
 
-<script>
+<script src="./community.js">
 
 </script>
+
 <script src="../homepage.js"></script>
 
 </body>

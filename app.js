@@ -20,7 +20,12 @@ const { validateLogin } = require('./Accounts/login/loginValidation');
 const { authenticate } = require('./Accounts/login/authenticate');
 
 
-// ------- Email Controller
+// !!!!!!!!!!!!!1!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+// ------- Community Controller ---------
+
+const CommunityController = require("./Controllers/Volunteer_Community_Controller.js")
+// ------- Email Controller ---------------
 const EmailController = require("./Controllers/GetEmail_Controller")
 
 // ------ Event Controller for all event related -------
@@ -36,6 +41,11 @@ const eventController = require('./Controllers/VolunteerEventController.js');
 
 // --------------- translation
 
+// event con
+const EVENT = require('./Controllers/EventController.js')
+
+
+// !!!!!!!!!!!!!1!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 const fetch = require("node-fetch");
 
@@ -63,9 +73,11 @@ app.post("/translate", async (req, res) => {
 });
 
 
-// -------------------------------------------------
-// event con
-const EVENT = require('./Controllers/EventController.js')
+
+
+
+//  ???????????????????????????????????????????????????????
+
 // ----- LOGIN & SIGNUP API ROUTES (must be before static files) -----
 app.post('/login', validateLogin, loginUser);
 
@@ -79,6 +91,8 @@ app.post('/signup', validateSignup, signupUser);
 app.get('/user/:id', authenticate, getUserById);
 app.put('/user/:id', authenticate, updateUser);
 app.delete('/user/:id', authenticate, deleteUser);
+
+
 
 // ----- PROFILE PAGE -----
 app.get("/api/profile", authenticate, async (req, res) => {
@@ -160,6 +174,21 @@ app.get('/volunteer/events', adminEventController.getAllEvents);
 app.get('/volunteer/signed-events', authenticate, eventController.getSignedUpEvents);
 app.post('/events/signup', authenticate, eventController.signUp);
 app.get("/institution/events/all", adminEventController.getAllEvents);
+
+// ----- Community route ----------
+
+app.get("/posts",authenticate, CommunityController.getPosts);
+app.post("/posts", authenticate,  CommunityController.createPost);
+
+app.get("/volunteers",authenticate,  CommunityController.getVolunteers);
+app.get("/institutions", authenticate, CommunityController.getInstitutions);
+
+app.get("/browse/posts", controller.browsePosts);
+app.get("/browse/volunteers", controller.browseVolunteers);
+app.get("/browse/institutions", controller.browseInstitutions);
+
+//  ???????????????????????????????????????????????????????
+
 
 // ----- REWARDS SYSTEM -----
 
