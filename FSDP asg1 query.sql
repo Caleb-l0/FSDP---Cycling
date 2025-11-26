@@ -164,6 +164,10 @@ CREATE TABLE Rewards (
     FOREIGN KEY (user_id) REFERENCES Users(id)
 );
 
+ALTER TABLE Rewards
+ADD VoucherCode VARCHAR(50) NULL;
+
+
 INSERT INTO Rewards (user_id, points, description)
 VALUES (11, 100, 'Signup bonus');
 //testing - use your own btw... id 11 happens to be my first volunnteer//
@@ -180,6 +184,15 @@ INSERT INTO ShopItems (Name, Description, Cost) VALUES
 ('$10 NTUC Voucher', '$10 grocery voucher from all NTUC outlets', 100),
 ('Volunteer T-Shirt', 'Official Volunteer T-Shirt', 200);
 
+--Volunteer Community Posts Table--
+CREATE TABLE CommunityPosts (
+  PostID INT PRIMARY KEY AUTO_INCREMENT,
+  UserID INT NOT NULL,
+  Content TEXT NOT NULL,
+  PhotoURL VARCHAR(255),
+  CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (UserID) REFERENCES Users(UserID)
+);
 
 -- ===========================
 -- MIGRATION SCRIPT: Update existing Events table if it exists

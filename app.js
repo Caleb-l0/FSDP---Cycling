@@ -6,8 +6,6 @@ const cors = require('cors');
 const sql = require("mssql");
 const db = require("./dbconfig");
 
-
-
 const app = express();
 const port = process.env.PORT || 3000;
 
