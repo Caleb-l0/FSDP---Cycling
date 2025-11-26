@@ -29,6 +29,7 @@
             </ul>
         </nav>
 
+
         <button class="hv-nav-toggle" id="hvNavToggle">
             <i class="fas fa-bars"></i>
         </button>
@@ -42,6 +43,7 @@
                 <li><a href="../Profile/profilepage.html">Profile</a></li>
             </ul>
         </nav>
+
 
     </div>
 </header>
@@ -165,6 +167,7 @@
         <li>
           ${item.ItemName} — ${item.Points} points
           <span style="color:#777;">(${new Date(item.RedeemedAt).toLocaleString()})</span>
+          <button>View Details</button>
         </li>
       `;
     });
@@ -172,10 +175,71 @@
   }
 
   document.getElementById("transactionHistory").innerHTML = html;
+  // Attach modal listeners to each "View Details" button
+const historyButtons = document.querySelectorAll("#transactionHistory button");
+
+historyButtons.forEach((btn, index) => {
+  btn.addEventListener("click", () => {
+    const item = data[index];
+
+    // Fill modal
+    document.getElementById("vItem").textContent = item.ItemName;
+    document.getElementById("vPoints").textContent = item.Points;
+    document.getElementById("vDate").textContent = new Date(item.RedeemedAt).toLocaleString();
+    document.getElementById("vCode").textContent = item.VoucherCode ?? "N/A";
+
+    // Create QR
+    const qrContainer = document.getElementById("qrCode");
+    qrContainer.innerHTML = "";
+    new QRCode(qrContainer, item.VoucherCode ?? "N/A");
+
+    // Show modal
+    document.getElementById("voucherModal").style.display = "flex";
+  });
+});
+
 }
 
 loadHistory();
 </script>
+
+<!-- Voucher Modal -->
+<div id="voucherModal" style="
+  display:none;
+  position:fixed;
+  top:0; left:0;
+  width:100%; height:100%;
+  background:rgba(0,0,0,0.6);
+  justify-content:center;
+  align-items:center;
+  z-index:9999;">
+  
+  <div style="
+    background:white;
+    padding:20px;
+    border-radius:10px;
+    width:300px;
+    text-align:center;">
+    
+    <h2>Voucher Details</h2>
+    <p><strong>Item:</strong> <span id="vItem"></span></p>
+    <p><strong>Points:</strong> <span id="vPoints"></span></p>
+    <p><strong>Date:</strong> <span id="vDate"></span></p>
+    <p><strong>Voucher Code:</strong> <span id="vCode"></span></p>
+    <div id="qrCode" style="display:flex; justify-content:center; margin:10px 0;"></div>
+
+
+    
+
+    <button onclick="document.getElementById('voucherModal').style.display='none'">
+      Close
+    </button>
+  </div>
+</div>
+
+<!-- QR generator -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
 <script src="https://cdn.botpress.cloud/webchat/v3.3/inject.js" defer></script>
 <script src="https://files.bpcontent.cloud/2025/11/22/14/20251122142820-IG7UQ29V.js" defer></script>
  <script src="../Translation.js"></script>

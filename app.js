@@ -1,5 +1,11 @@
-const express = require("express");
-const cors = require("cors");
+
+require('dotenv').config();
+const express = require('express');
+const path = require('path');
+const cors = require('cors');
+const sql = require("mssql");
+const db = require("./dbconfig");
+
 
 const path = require("path");
 const app = express();
@@ -195,8 +201,6 @@ app.post("/api/rewards/redeem", authenticate, async (req, res) => {
 });
 
 // Get redemption history
-const sql = require("mssql");
-const db = require("./dbconfig");
 app.get("/api/rewards/history/:userId", async (req, res) => {
     const userId = req.params.userId;
 
@@ -207,10 +211,10 @@ app.get("/api/rewards/history/:userId", async (req, res) => {
             SELECT 
                 Description AS ItemName, 
                 Points, 
-                DateCreated AS RedeemedAt
+                dateEarned AS RedeemedAt
             FROM Rewards
-            WHERE UserID = ${userId}
-            ORDER BY DateCreated DESC
+            WHERE user_id = ${userId}
+            ORDER BY dateEarned DESC
         `;
 
         res.json(result.recordset);
@@ -219,6 +223,7 @@ app.get("/api/rewards/history/:userId", async (req, res) => {
         res.status(500).send("Error loading history");
     }
 });
+
 
 
 
