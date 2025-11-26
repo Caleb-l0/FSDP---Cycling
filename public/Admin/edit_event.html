@@ -1,85 +1,250 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Edit Event</title>
-  <link rel="stylesheet" href="request_detail.css">
-</head>
 
+  <!-- Keep original CSS files -->
+  <link rel="stylesheet" href="request_detail.css">
+  <link rel="stylesheet" href="../homepage.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <style>
+    /* -----------------------------
+       Edit Page Styling Upgrade
+       senior-friendly & consistent
+    --------------------------------*/
+    .edit-wrapper {
+      background: #FFFDF7;
+      padding: 40px;
+      margin: 40px auto;
+      border-radius: 14px;
+      border: 1.5px solid #E5D3B3;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+
+    .edit-title {
+      text-align: center;
+      font-size: 2rem;
+      color: #3E2723;
+      font-weight: 700;
+      margin-bottom: 30px;
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 25px;
+      margin-bottom: 25px;
+    }
+
+    .info-grid p,
+    .desc p {
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: #4E342E;
+      margin-bottom: 8px;
+    }
+
+    .edit-input {
+      width: 100%;
+      padding: 14px 15px;
+      background: #FFF8E1;
+      border-radius: 10px;
+      border: 1.6px solid #E5D3B3;
+      font-size: 1.05rem;
+      color: #3E2723;
+      transition: 0.25s;
+    }
+
+    .edit-input:focus {
+      border-color: #E69A2A;
+      box-shadow: 0 0 0 3px rgba(230,154,42,0.25);
+      outline: none;
+    }
+
+    textarea.edit-input {
+      resize: none;
+      height: 150px;
+    }
+
+    .btn-row {
+      margin-top: 30px;
+      display: flex;
+      justify-content: center;
+      gap: 25px;
+      flex-wrap: wrap;
+    }
+
+    .btn-main {
+      background: #E69A2A;
+      color: white;
+      padding: 14px 28px;
+      border-radius: 10px;
+      font-size: 1.15rem;
+      font-weight: 700;
+      border: none;
+      cursor: pointer;
+      transition: 0.25s;
+    }
+
+    .btn-main:hover {
+      background: #c47a17;
+      transform: translateY(-2px);
+    }
+
+    .btn-cancel {
+      background: #B33A3A;
+      color: white;
+      padding: 14px 28px;
+      border-radius: 10px;
+      font-size: 1.15rem;
+      font-weight: 700;
+      border: none;
+      cursor: pointer;
+      transition: 0.25s;
+    }
+
+    .btn-cancel:hover {
+      background: #8e2d2d;
+      transform: translateY(-2px);
+    }
+
+  </style>
+
+</head>
 <body>
-<header>
-  <div class="header-content container">
-    <div class="logo">Edit Event</div>
+
+<!-- =============================
+     HEADER — from your main CSS
+================================= -->
+<header class="hv-header">
+  <div class="container hv-header-content">
+
+    <div class="hv-logo">
+      <a href="./homepage_login_Admin.html" style="text-decoration:none;color:inherit;">
+        Happy Volunteer
+      </a>
+    </div>
+
+    <nav id="mainNav">
+      <ul>
+        <li><a href="./createEvent.html">Create Event</a></li>
+        <li><a href="#">Notification</a></li>
+        <li><a href="#">History</a></li>
+        <li><a href="../Profile/profilepage.html">Profile</a></li>
+      </ul>
+    </nav>
+
+    <button class="hv-nav-toggle" id="hvNavToggle">
+      <i class="fas fa-bars"></i>
+    </button>
+
+    <nav class="hv-nav" id="hvNav">
+      <ul>
+        <li><a href="./createEvent.html">Create Event</a></li>
+        <li><a href="#">Notification</a></li>
+        <li><a href="#">History</a></li>
+        <li><a href="../Profile/profilepage.html">Profile</a></li>
+      </ul>
+    </nav>
+
   </div>
 </header>
 
-<main class="request-wrapper container">
-  <div class="request-card">
+<!-- =============================
+     Edit Event Form
+================================= -->
+<main class="container">
+  <div class="edit-wrapper">
 
-    <div class="request-info">
-      <h2>Edit Event Details</h2>
+    <h2 class="edit-title">Edit Event Details</h2>
 
-      <div class="info-grid">
-
-        <div>
-          <p><strong>Event Name:</strong></p>
-          <input id="ev-name" class="edit-input" type="text">
-        </div>
-
-        <div>
-          <p><strong>Date:</strong></p>
-          <input id="ev-date" class="edit-input" type="date">
-        </div>
-
-        <div>
-          <p><strong>Location:</strong></p>
-          <input id="ev-loc" class="edit-input" type="text">
-        </div>
-
-        <div>
-          <p><strong>Volunteers Needed:</strong></p>
-          <input id="ev-needed" class="edit-input" type="number" min="1">
-        </div>
-
+    <div class="info-grid">
+      <div>
+        <p>Event Name</p>
+        <input id="ev-name" class="edit-input" type="text">
       </div>
 
-      <div class="desc">
-        <p><strong>Description:</strong></p>
-        <textarea id="ev-desc" class="edit-input" rows="5"></textarea>
+      <div>
+        <p>Date</p>
+        <input id="ev-date" class="edit-input" type="date">
       </div>
 
-      <div class="btn-group">
-        <button id="btn-save" class="btn-action btn-create">Save Changes</button>
-        <button id="btn-cancel-edit" class="btn-action btn-reject">Cancel</button>
+      <div>
+        <p>Location</p>
+        <input id="ev-loc" class="edit-input" type="text">
       </div>
+
+      <div>
+        <p>Volunteers Needed</p>
+        <input id="ev-needed" class="edit-input" type="number" min="1">
+      </div>
+    </div>
+
+    <div class="desc">
+      <p>Description</p>
+      <textarea id="ev-desc" class="edit-input"></textarea>
+    </div>
+
+    <div class="btn-row">
+      <button id="btn-save" class="btn-main">Save Changes</button>
+      <button id="btn-cancel-edit" class="btn-cancel">Cancel</button>
     </div>
 
   </div>
 </main>
 
-<footer>
-  <p class="copyright">© 2025 Volunteer Management System — All Rights Reserved</p>
-</footer>
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h3>Harry Volunteering</h3>
+                    <ul>
+                        <li><a href="#">About Us</a></li>
+                        <li><a href="#">Our Team</a></li>
+                        <li><a href="#">Opportunity</a></li>
+                        <li><a href="#">Social Media</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Information</h3>
+                    <ul>
+                        <li><a href="#">Problem report</a></li>
+                        <li><a href="#"></a></li>
+                        <li><a href="#">Resource</a></li>
+                        <li><a href="#">Activity</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Contact Us</h3>
+                    <ul>
+                        <li><a href="#">Contact Us</a></li>
+                        <li><a href="#">Support</a></li>
+                        <li><a href="#">cooperation</a></li>
+                        <li><a href="#">Feedback</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Law</h3>
+                    <ul>
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Statement</a></li>
+                        <li><a href="#">Cookie</a></li>
+                        <li><a href="#">Statement</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2025 Harry Volunteering. Right reserved.</p>
+            </div>
+        </div>
+    </footer>
 
 <script src="./edit_event.js"></script>
-
-<style>
-  .edit-input {
-    width: 100%;
-    padding: 10px;
-    border: 1.5px solid #9e8f82;
-    border-radius: 8px;
-    background: #FFFDF7;
-    margin-top: 5px;
-    font-size: 1rem;
-    color: #4E342E;
-  }
-
-  textarea.edit-input {
-    resize: none;
-  }
-</style>
+<script src="../homepage.js"></script>
+<script src="../Translation.js"></script>
 
 </body>
 </html>

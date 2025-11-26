@@ -7,7 +7,7 @@
 
 
 
-    <link rel="stylesheet" href="./homepage.css">
+    <link rel="stylesheet" href="../homepage.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="./homepage_instituition.css">
 
@@ -17,27 +17,27 @@
 <body>
    
 <header class="hv-header">
-    <div class="container hv-header-content">
+  <div class="container">
+    <div class="header-content">
 
+      <a href="./homepage_login_instituition.html" id="logoRedirect" class="logo">Cycling Without Age</a>
 
-        <div class="hv-logo"><a href="./homepage_login_instituition.html" style="  text-decoration: none; 
-    color: inherit; ">Happy Volunteer</a></div>
+      <button class="nav-toggle" id="navToggle">
+        <i class="fas fa-bars"></i>
+      </button>
 
-
-
-
-
-
-        <nav class="hv-nav" id="hvNav">
-            <ul>
-                 <li><a href="./organization_apply_event.html">Apply Event</a></li>
-                  <li><a href="#">My Request</a></li>
-                <li><a href="profilepage.html">Profile</a></li>
-            </ul>
-        </nav>
+      <nav id="mainNav">
+         <ul>
+          <li><a href="./organization_apply_event.html">Apply Event</a></li>
+          <li><a href="">Community</a></li>
+          <li><a href="">Notification</a></li>
+          <li><a href="">History</a></li>
+          <li><a href="../Profile/profilepage.html">Profile</a></li>
+        </ul>
+      </nav>
 
     </div>
-
+  </div>
 </header>
    
 <section class="hero">
@@ -293,5 +293,6 @@ async function loadAllEvents() {
 }
 
     </script>
+     <script src="../Translation.js"></script>
 </body>
 </html>

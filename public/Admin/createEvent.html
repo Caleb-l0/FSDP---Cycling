@@ -4,9 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Create Event</title>
+ <link rel="stylesheet" href="../homepage.css">
   <link rel="stylesheet" href="request_detail.css">
   <link rel="stylesheet" href="./createEvent.css">
- <link rel="stylesheet" href="../homepage.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="./calendar.css">
   
 </head>
@@ -16,19 +17,41 @@
 <header class="hv-header">
     <div class="container hv-header-content">
 
-        <div class="hv-logo"><a href="./homepage_login_Admin.html" style="  text-decoration: none; 
-    color: inherit; ">Happy Volunteer</a></div>
+        <!-- LOGO -->
+        <div class="hv-logo">
+            <a href="./homepage_login_Admin.html" style="text-decoration: none; color: inherit;">
+                Happy Volunteer
+            </a>
+        </div>
 
-        <button class="hv-nav-toggle" id="hvNavToggle">
-            <i class="fas fa-bars"></i>
-        </button>
-
-        <nav class="hv-nav" id="hvNav">
+        <!-- Desktop Navigation -->
+        <nav id="mainNav">
             <ul>
-                 <li><a href="./createEvent.html">Create Event</a></li>
+                <li><a href="./createEvent.html">Create Event</a></li>
+                <li><a href="#">Notification</a></li>
+                <li><a href="#">History</a></li>
                 <li><a href="../Profile/profilepage.html">Profile</a></li>
             </ul>
         </nav>
+
+        <button class="hv-nav-toggle" id="hvNavToggle">
+    <i class="fas fa-bars"></i>
+</button>
+
+<!-- Mobile Navigation -->
+<nav class="hv-nav" id="hvNav">
+    <ul>
+        <li><a href="./createEvent.html">Create Event</a></li>
+        <li><a href="#">Notification</a></li>
+        <li><a href="#">History</a></li>
+        <li><a href="../Profile/profilepage.html">Profile</a></li>
+    </ul>
+</nav>
+
+       
+        
+             
+           
 
     </div>
 </header>
@@ -97,17 +120,64 @@
         <option>Cancelled</option>
       </select>
 
-      <button type="submit" >Create Event</button>
+      <button class="buttonMain"  type="submit" >Create Event</button>
 
     </form>
   </div>
 </div>
 
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h3>Harry Volunteering</h3>
+                    <ul>
+                        <li><a href="#">About Us</a></li>
+                        <li><a href="#">Our Team</a></li>
+                        <li><a href="#">Opportunity</a></li>
+                        <li><a href="#">Social Media</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Information</h3>
+                    <ul>
+                        <li><a href="#">Problem report</a></li>
+                        <li><a href="#"></a></li>
+                        <li><a href="#">Resource</a></li>
+                        <li><a href="#">Activity</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Contact Us</h3>
+                    <ul>
+                        <li><a href="#">Contact Us</a></li>
+                        <li><a href="#">Support</a></li>
+                        <li><a href="#">cooperation</a></li>
+                        <li><a href="#">Feedback</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Law</h3>
+                    <ul>
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Statement</a></li>
+                        <li><a href="#">Cookie</a></li>
+                        <li><a href="#">Statement</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2025 Harry Volunteering. Right reserved.</p>
+            </div>
+        </div>
+    </footer>
 
 
+<script src="../homepage.js"></script>
 <script src="./createEvent.js">
 
 </script>
+ <script src="../Translation.js"></script>
 
 
 </body>

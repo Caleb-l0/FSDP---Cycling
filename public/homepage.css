@@ -42,13 +42,16 @@ body {
     white-space: nowrap;
 }
 
-.hv-nav ul {
+
+.hv-nav{
+
     list-style: none;
-    display: flex;
+    display: none;
     gap: 20px;
 }
 
 .hv-nav ul li a {
+  
     text-decoration: none;
     color: #333;
     padding: 8px 14px;
@@ -72,10 +75,11 @@ body {
 
 /* Mobile Nav */
 @media (max-width: 800px) {
-    .hv-nav-toggle { display: block; }
+    .hv-nav-toggle{ display: block; }
 
+  
     .hv-nav {
-        display: none;
+        display:none;
         position: absolute;
         top: 100%;
         width: 100%;
@@ -816,4 +820,20 @@ header {
   top: 0;
   left: 0;
   z-index: 999;
+}
+
+
+
+.buttonMain {
+  width: 100%;
+  margin-top: 26px;
+  padding: 15px;
+  font-size: 1.25rem;
+  font-weight: 700;
+  border: none;
+  border-radius: 12px;
+  color: white;
+  background: linear-gradient(135deg, #e6a542, var(--primary));
+  cursor: pointer;
+  transition: 0.3s ease;
 }

@@ -1,0 +1,179 @@
+const token = localStorage.getItem("token");
+let userRole = null;
+
+if (!token) {
+  alert("You must be logged in to access this page.");
+  window.location.href = "/index.html";
+}
+
+
+// Translate page
+
+
+// Load profile
+async function loadProfile() {
+  try {
+    const response = await fetch("http://localhost:3000/api/profile", {
+      method: "GET",
+      headers: { "Authorization": `Bearer ${token}` }
+    });
+    if (!response.ok) throw new Error("Unauthorized");
+
+    const data = await response.json();
+    document.getElementById("name").value = data.name;
+    document.getElementById("email").value = data.email;
+    document.getElementById("role").textContent = data.role;
+
+    userRole = data.role.toLowerCase();
+    loadHeaderByRole();
+
+  } catch (err) {
+    console.error(err);
+    alert("Session expired — please log in again.");
+    window.location.href='../../index.html'
+  }
+}
+loadProfile();
+
+// Dynamic header based on role
+
+
+// Logo redirect
+function attachLogoRedirect(role) {
+  const logo = document.getElementById("logoRedirect");
+  if (!logo) return;
+
+  logo.addEventListener("click", function(e) {
+    e.preventDefault();
+    if (role === "volunteer") window.location.href = "homepage_login_volunteer.html";
+    else if (role === "admin") window.location.href = "homepage_login_admin.html";
+    else if (role === "institution" || role === "instituition") window.location.href = "homepage_login_instituition.html";
+    else window.location.href = "homepage.html";
+  });
+}
+
+// Edit / Save
+const nameField = document.getElementById("name");
+const emailField = document.getElementById("email");
+const editBtn = document.getElementById("editBtn");
+const saveBtn = document.getElementById("saveBtn");
+const translate = document.getElementById("translate")
+
+
+editBtn.addEventListener("click", () => {
+  nameField.disabled = false;
+  emailField.disabled = false;
+  editBtn.style.display = "none";
+  saveBtn.style.display = "inline-block";
+});
+
+saveBtn.addEventListener("click", async () => {
+  const newName = nameField.value;
+  const newEmail = emailField.value;
+
+  try {
+    const response = await fetch("http://localhost:3000/api/profile", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
+      body: JSON.stringify({ name: newName, email: newEmail })
+    });
+
+    if (!response.ok) throw new Error("Update failed");
+
+    alert("Profile updated successfully!");
+    nameField.disabled = true;
+    emailField.disabled = true;
+    editBtn.style.display = "inline-block";
+    saveBtn.style.display = "none";
+
+  } catch (err) {
+    console.error(err);
+    alert("Error updating profile.");
+  }
+});
+
+// Logout button
+document.getElementById("logoutBtn").addEventListener("click", () => {
+  localStorage.clear();
+  alert("Logged out successfully!");
+  window.location.href = "/index.html";
+});
+
+
+
+
+
+
+
+
+
+// --- nav bar section 
+function getUserRoleFromToken() {
+  const token = localStorage.getItem("token");
+  if (!token) return null;
+
+  const payload = token.split(".")[1];
+  const decoded = JSON.parse(atob(payload));
+
+  return decoded.role;   
+}
+
+
+
+
+
+function loadHeaderByRole() {
+
+  const mainNav = document.getElementById("mainNav");   // Desktop
+  const mobileNav = document.getElementById("hvNav");   // Mobile
+  const logo = document.getElementById("logoRedirect");
+  const role = getUserRoleFromToken();
+
+  let navHTML = "";
+  let logoHref = "";
+
+  // ADMIN
+  if (role === "admin") {
+    navHTML = `
+      <ul>
+        <li><a href="../Admin/createEvent.html">Create Event</a></li>
+        <li><a href="#">Notification</a></li>
+        <li><a href="#">History</a></li>
+        <li><a href="./profilepage.html">Profile</a></li>
+      </ul>`;
+    logoHref = "../Admin/homepage_login_Admin.html";
+  }
+
+  // VOLUNTEER
+  if (role === "volunteer") {
+    navHTML = `
+      <ul>
+        <li><a href="../Volunteer/volunteer-events.html">Booking</a></li>
+        <li><a href="#">Community</a></li>
+        <li><a href="../Volunteer/volunteer_rewards.html">Reward</a></li>
+        <li><a href="#">Friends</a></li>
+        <li><a href="./profilepage.html">Profile</a></li>
+      </ul>`;
+    logoHref = "../Volunteer/homepage_login_volunteer.html";
+  }
+
+  // INSTITUTION
+  if (role === "institution") {
+    navHTML = `
+      <ul>
+        <li><a href="../Instituition/organization_apply_event.html">Apply Event</a></li>
+        <li><a href="#">Community</a></li>
+        <li><a href="#">Notification</a></li>
+        <li><a href="#">History</a></li>
+        <li><a href="./profilepage.html">Profile</a></li>
+      </ul>`;
+    logoHref = "../Instituition/homepage_login_instituition.html";
+  }
+
+ 
+  mainNav.innerHTML = navHTML;
+  mobileNav.innerHTML = navHTML;
+
+
+  logo.href = logoHref;
+}

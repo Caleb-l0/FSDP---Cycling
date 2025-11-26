@@ -1,8 +1,7 @@
-require('dotenv').config();
-const express = require('express');
-const path = require('path');
-const cors = require('cors');
+const express = require("express");
+const cors = require("cors");
 
+const path = require("path");
 const app = express();
 const port = process.env.PORT || 3000;
 
@@ -31,7 +30,36 @@ const adminEventController = require('./Controllers/Admin_event_Controller');
 // ----- VOLUNTEER EVENT CONTROLLER -----
 const eventController = require('./Controllers/VolunteerEventController.js');
 
+// --------------- translation
 
+
+const fetch = require("node-fetch");
+
+
+
+
+app.post("/translate", async (req, res) => {
+  const { q, from, to } = req.body;
+
+  try {
+    // Lingva Translate endpoint
+    const url = `https://lingva.ml/api/v1/${from}/${to}/${encodeURIComponent(q)}`;
+
+    const response = await fetch(url);
+    const data = await response.json();
+
+    return res.json({
+      translatedText: data.translation
+    });
+
+  } catch (err) {
+    console.error("Lingva Error:", err);
+    return res.status(500).json({ error: "Translation failed" });
+  }
+});
+
+
+// -------------------------------------------------
 // event con
 const EVENT = require('./Controllers/EventController.js')
 // ----- LOGIN & SIGNUP API ROUTES (must be before static files) -----
@@ -253,6 +281,28 @@ app.use((err, req, res, next) => {
   // For non-API routes, you might want to render an error page
   res.status(err.status || 500).send('Internal Server Error');
 });
+
+
+
+
+app.post("/translate", async (req, res) => {
+  try {
+    const response = await fetch("http://localhost:5000/translate", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(req.body)
+    });
+
+    const data = await response.json();
+    res.json(data);
+  } catch (err) {
+    console.error("Translate error:", err);
+    res.status(500).json({ error: "Translation failed" });
+  }
+});
+
+
+
 
 // Handle unhandled promise rejections
 process.on('unhandledRejection', (err) => {

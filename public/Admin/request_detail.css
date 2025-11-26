@@ -1,4 +1,6 @@
-/* 基础设定 */
+
+
+
 * {
   margin: 0;
   padding: 0;
@@ -19,38 +21,19 @@ body {
 }
 
 /* Header */
-header {
-  background: linear-gradient(135deg, #ceb184, #d09a4a, #E69A2A);
-  color: white;
-  padding: 18px 0;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-}
-.header-content {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-.logo { font-size: 1.4rem; font-weight: bold; }
-nav ul {
-  display: flex; list-style: none;
-}
-nav ul li { margin-left: 20px; }
-nav ul li a {
-  color: white; text-decoration: none;
-  background-color: rgba(255,255,255,0.15);
-  padding: 8px 14px; border-radius: 6px;
-  transition: 0.3s;
-}
-nav ul li a:hover {
-  background: rgba(255,255,255,0.3);
-}
+
+
+
 
 /* Request Details */
 .request-wrapper {
   margin: 3rem auto;
+  height:450px;
+
 }
 
 .request-card {
+  
   display: flex;
   flex-wrap: wrap;
   background: #FFFFFF;
@@ -108,7 +91,7 @@ nav ul li a:hover {
 .btn-action {
   border: 1.5px solid #1f1f1e;
   background: #FFF8E1;
-  color: #FFFFFF;
+  color: white;
   min-width: 150px;
   padding: 8px 18px;
   border-radius: 8px;
@@ -123,6 +106,8 @@ nav ul li a:hover {
 
 .btn-create { background: #4CAF50 }
 .btn-reject { background: #E53935 }
+
+
 
 
 button:disabled {
@@ -148,16 +133,8 @@ button:disabled {
 
 
 
-/* Footer */
-footer {
-  background: #E5D3B3;
-  color: #3E2723;
-  text-align: center;
-  padding: 20px;
-  font-size: 0.95rem;
-}
 
-/* 📱 Responsive */
+
 @media (max-width: 768px) {
   .request-card {
     flex-direction: column;

@@ -1,3 +1,12 @@
+   const hvNavToggle = document.getElementById("hvNavToggle");
+const hvNav = document.getElementById("hvNav");
+
+// Toggle mobile navigation
+hvNavToggle.addEventListener("click", () => {
+    hvNav.classList.toggle("active");
+});
+
+
 let heroIndex = 0;
 const heroSlides = document.querySelectorAll(".hero-slide");
 const heroDots = document.querySelectorAll(".hero-dot");
@@ -23,14 +32,7 @@ setInterval(nextHeroSlide, 5000);
 
 
     // Nav toggle
-    document.getElementById('navToggle').addEventListener('click', function() {
-        document.getElementById('mainNav').classList.toggle('active');
-    });
-    document.querySelectorAll('#mainNav a').forEach(link => {
-        link.addEventListener('click', function() {
-            document.getElementById('mainNav').classList.remove('active');
-        });
-    });
+
 
     // Horizontal scroll buttons
     document.querySelectorAll('.scroll-wrapper').forEach(wrapper => {

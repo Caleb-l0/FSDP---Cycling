@@ -6,89 +6,74 @@
 <title>My Profile | HappyVolunteer</title>
 
 <!-- Default CSS -->
-<link rel="stylesheet" href="profilepage.css">
+<link rel="stylesheet" href="./profilepage.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-<style>
-/* ===== Header & Logo Styles ===== */
-.header-content {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 16px 0;
-  flex-wrap: wrap;
-  row-gap: 10px;
-}
-
-.logo {
-  font-size: 1.6em;
-  font-weight: 700;
-  color: #f4a261;
-  text-decoration: none;
-}
-
-/* Nav menu styling */
-#mainNav ul, #hvNav ul {
-  display: flex;
-  gap: 20px;
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-
-/* Nav toggle button (for mobile) */
-.nav-toggle, .hv-nav-toggle {
-  display: none; /* will show via media queries for mobile */
-}
-
-/* Optional: small screen mobile nav */
-@media screen and (max-width: 768px) {
-  .nav-toggle, .hv-nav-toggle {
-    display: inline-block;
-    background: none;
-    border: none;
-    font-size: 20px;
-  }
-  #mainNav ul, #hvNav ul {
-    flex-direction: column;
-    display: none;
-  }
-}
-
-/* Language Switcher */
-.lang-container {
-  margin: 15px 0;
-}
-.lang-btn {
-  background-color: #f4a261;
-  color: white;
-  border: none;
-  padding: 5px 10px;
-  margin-right: 5px;
-  cursor: pointer;
-  border-radius: 5px;
-}
-.lang-btn:hover {
-  background-color: #e07b39;
-}
-</style>
+<link rel="stylesheet" href="../homepage.css">
 
 </head>
 
 <body>
 
-<!-- Header will be dynamically replaced -->
-<header id="dynamicHeader"></header>
+<script src="https://elfsightcdn.com/platform.js" async></script>
+
+
+<!-- <div class="elfsight-app-9684f9ea-ad71-41d5-a845-ffeb32b1b5fb" data-elfsight-app-lazy></div>-->
+
+<div id="translate">
+
 
 <!-- Language Switcher -->
 <div class="lang-container">
-  <button class="lang-btn" onclick="translatePage('en')">English</button>
-  <button class="lang-btn" onclick="translatePage('zh-CN')">Chinese</button>
-  <button class="lang-btn" onclick="translatePage('ms')">Malay</button>
-  <button class="lang-btn" onclick="translatePage('ta')">Tamil</button>
+  
+<button onclick="translatePage('zh')">Chinese</button>
+<button onclick="translatePage('ms')">Malay</button>
+<button onclick="translatePage('ta')">Tamil</button>
+
 </div>
 
-<section class="hero">
+<header class="hv-header">
+    <div class="container hv-header-content">
+
+        <!-- LOGO -->
+        <div class="hv-logo">
+            <a href="./homepage_login_Admin.html" style="text-decoration: none; color: inherit;" id="logoRedirect">
+                Happy Volunteer
+            </a>
+        </div>
+
+        <!-- Desktop Navigation -->
+        <nav id="mainNav">
+            <ul>
+                <li><a href="./createEvent.html">Create Event</a></li>
+                <li><a href="#">Notification</a></li>
+                <li><a href="#">History</a></li>
+                <li><a href="../Profile/profilepage.html">Profile</a></li>
+            </ul>
+        </nav>
+
+        <button class="hv-nav-toggle" id="hvNavToggle">
+    <i class="fas fa-bars"></i>
+</button>
+
+<!-- Mobile Navigation -->
+<nav class="hv-nav" id="hvNav">
+    <ul>
+        <li><a href="./createEvent.html">Create Event</a></li>
+        <li><a href="#">Notification</a></li>
+        <li><a href="#">History</a></li>
+        <li><a href="../Profile/profilepage.html">Profile</a></li>
+    </ul>
+</nav>
+
+       
+        
+             
+           
+
+    </div>
+</header>
+
+<section class="hero" style="height:680px">
   <div class="profile-card">
 
     <img src="https://cdn-icons-png.flaticon.com/512/847/847969.png" 
@@ -116,201 +101,17 @@
   </div>
 </section>
 
-<script>
-const token = localStorage.getItem("token");
-let userRole = null;
+</div>
 
-if (!token) {
-  alert("You must be logged in to access this page.");
-  window.location.href = "/index.html";
-}
+<script src="../Translation.js"></script>
+<script src="./profile.js">
 
-// Language dictionary
-const translations = {
-  "en": {
-    profileTitle: "Your Profile",
-    labelName: "Name",
-    labelEmail: "Email",
-    labelRole: "Role:",
-    editBtn: "Edit",
-    saveBtn: "Save",
-    logoutBtn: "Logout"
-  },
-  "zh-CN": {
-    profileTitle: "您的资料",
-    labelName: "姓名",
-    labelEmail: "电子邮箱",
-    labelRole: "角色:",
-    editBtn: "编辑",
-    saveBtn: "保存",
-    logoutBtn: "登出"
-  },
-  "ms": {
-    profileTitle: "Profil Anda",
-    labelName: "Nama",
-    labelEmail: "Emel",
-    labelRole: "Peranan:",
-    editBtn: "Edit",
-    saveBtn: "Simpan",
-    logoutBtn: "Log Keluar"
-  },
-  "ta": {
-    profileTitle: "உங்கள் சுயவிவரம்",
-    labelName: "பெயர்",
-    labelEmail: "மின்னஞ்சல்",
-    labelRole: "பங்கை:",
-    editBtn: "திருத்தவும்",
-    saveBtn: "சேமிக்கவும்",
-    logoutBtn: "வெளியேறு"
-  }
-};
-
-// Translate page
-function translatePage(lang) {
-  if(!translations[lang]) return;
-
-  document.getElementById("profileTitle").textContent = translations[lang].profileTitle;
-  document.getElementById("labelName").textContent = translations[lang].labelName;
-  document.getElementById("labelEmail").textContent = translations[lang].labelEmail;
-  document.getElementById("labelRole").textContent = translations[lang].labelRole;
-  document.getElementById("editBtn").textContent = translations[lang].editBtn;
-  document.getElementById("saveBtn").textContent = translations[lang].saveBtn;
-  document.getElementById("logoutBtn").textContent = translations[lang].logoutBtn;
-}
-
-// Load profile
-async function loadProfile() {
-  try {
-    const response = await fetch("http://localhost:3000/api/profile", {
-      method: "GET",
-      headers: { "Authorization": `Bearer ${token}` }
-    });
-    if (!response.ok) throw new Error("Unauthorized");
-
-    const data = await response.json();
-    document.getElementById("name").value = data.name;
-    document.getElementById("email").value = data.email;
-    document.getElementById("role").textContent = data.role;
-
-    userRole = data.role.toLowerCase();
-    loadHeaderByRole(userRole);
-
-  } catch (err) {
-    console.error(err);
-    alert("Session expired — please log in again.");
-    window.location.href = "/index.html";
-  }
-}
-loadProfile();
-
-// Dynamic header based on role
-function loadHeaderByRole(role) {
-  const header = document.getElementById("dynamicHeader");
-  const commonLogo = `<a href="#" id="logoRedirect" class="logo">Happy Volunteer</a>`;
-  let navHTML = '';
-
-  if (role === "volunteer") {
-    navHTML = `<div class="container header-content">
-        ${commonLogo}
-        <button class="nav-toggle" id="navToggle"><i class="fas fa-bars"></i></button>
-        <nav id="mainNav">
-          <ul>
-            <li><a href="#">Booking</a></li>
-            <li><a href="#">Community</a></li>
-            <li><a href="#">Reward</a></li>
-            <li><a href="profilepage.html">Profile</a></li>
-          </ul>
-        </nav>
-      </div>`;
-  } else if (role === "institution" || role === "instituition") {
-    navHTML = `<div class="container header-content">
-        ${commonLogo}
-        <nav id="hvNav">
-          <ul>
-            <li><a href="./organization_apply_event.html">Apply Event</a></li>
-            <li><a href="#">My Request</a></li>
-            <li><a href="profilepage.html">Profile</a></li>
-          </ul>
-        </nav>
-      </div>`;
-  } else if (role === "admin") {
-    navHTML = `<div class="container header-content">
-        ${commonLogo}
-        <button class="nav-toggle" id="navToggle"><i class="fas fa-bars"></i></button>
-        <nav id="hvNav">
-          <ul>
-            <li><a href="./createEvent.html">Create Event</a></li>
-            <li><a href="profilepage.html">Profile</a></li>
-          </ul>
-        </nav>
-      </div>`;
-  } else {
-    navHTML = `<div class="container header-content">${commonLogo}</div>`;
-  }
-
-  header.innerHTML = navHTML;
-  attachLogoRedirect(role);
-}
-
-// Logo redirect
-function attachLogoRedirect(role) {
-  const logo = document.getElementById("logoRedirect");
-  if (!logo) return;
-
-  logo.addEventListener("click", function(e) {
-    e.preventDefault();
-    if (role === "volunteer") window.location.href = "homepage_login_volunteer.html";
-    else if (role === "admin") window.location.href = "homepage_login_admin.html";
-    else if (role === "institution" || role === "instituition") window.location.href = "homepage_login_instituition.html";
-    else window.location.href = "homepage.html";
-  });
-}
-
-// Edit / Save
-const nameField = document.getElementById("name");
-const emailField = document.getElementById("email");
-const editBtn = document.getElementById("editBtn");
-const saveBtn = document.getElementById("saveBtn");
-
-editBtn.addEventListener("click", () => {
-  nameField.disabled = false;
-  emailField.disabled = false;
-  editBtn.style.display = "none";
-  saveBtn.style.display = "inline-block";
-});
-
-saveBtn.addEventListener("click", async () => {
-  const newName = nameField.value;
-  const newEmail = emailField.value;
-
-  try {
-    const response = await fetch("http://localhost:3000/api/profile", {
-      method: "PUT",
-      headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
-      body: JSON.stringify({ name: newName, email: newEmail })
-    });
-
-    if (!response.ok) throw new Error("Update failed");
-
-    alert("Profile updated successfully!");
-    nameField.disabled = true;
-    emailField.disabled = true;
-    editBtn.style.display = "inline-block";
-    saveBtn.style.display = "none";
-
-  } catch (err) {
-    console.error(err);
-    alert("Error updating profile.");
-  }
-});
-
-// Logout button
-document.getElementById("logoutBtn").addEventListener("click", () => {
-  localStorage.clear();
-  alert("Logged out successfully!");
-  window.location.href = "/index.html";
-});
 </script>
+<script src="../homepage.js"></script>
+
+
+
+
 
 </body>
 </html>
