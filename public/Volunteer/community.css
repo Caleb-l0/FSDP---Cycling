@@ -340,6 +340,16 @@ body {
     background: #c77a10;
 }
 
+#postImage {
+    width: 100%;
+    background: #FFF8E1;
+    padding: 12px 14px;
+    border-radius: 10px;
+    border: 1.5px solid #E5D3B3;
+    font-size: 1rem;
+    margin-bottom: 15px;
+    color: #4E342E;
+}
 
 
 @media (max-width: 768px) {

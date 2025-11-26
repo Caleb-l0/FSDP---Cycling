@@ -1,4 +1,4 @@
-const model = require("../models/communityModel");
+const model = require("../Models/Volunteer_Community_Model");
 
 async function createPost(req, res) {
     try {
@@ -25,23 +25,9 @@ async function createPost(req, res) {
     }
 }
 
-async function getPosts(req, res) {
-    try {
-        const data = await model.getAllPosts();
-        res.json(data.recordset);
-    } catch {
-        res.status(500).json({ message: "Failed to load posts" });
-    }
-}
 
-async function getVolunteers(req, res) {
-    try {
-        const data = await model.getAllVolunteers();
-        res.json(data.recordset);
-    } catch {
-        res.status(500).json({ message: "Failed to load volunteers" });
-    }
-}
+
+
 
 async function getInstitutions(req, res) {
     try {
@@ -77,23 +63,14 @@ async function browseVolunteers(req, res) {
     }
 }
 
-async function browseInstitutions(req, res) {
-    try {
-        const data = await model.getInstitutionsWithEvents();
-        res.json(data);
-    } catch (err) {
-        res.status(500).json({ message: "Failed to load institutions" });
-    }
-}
+
+
 
 
 
 module.exports = {
     createPost,
-    getPosts,
-    getVolunteers,
-    getInstitutions,
        browsePosts,
     browseVolunteers,
-    browseInstitutions
+    getInstitutions,
 };

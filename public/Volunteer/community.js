@@ -1,13 +1,14 @@
 const token = localStorage.getItem("token")
-if(!token){
-alert("Please log in first")
-window.location.href='../../index.html'
+if (!token) {
+    alert("Please log in first")
+    window.location.href = '../../index.html'
 }
 
-
-document.getElementById("create").addEventListener("click", () => {
-    const form = document.getElementById("postForm");
-    form.style.display = form.style.display === "block" ? "none" : "block";
+document.querySelectorAll(".btn-create-post, #openPostForm").forEach(btn => {
+    btn.addEventListener("click", () => {
+        const form = document.getElementById("postForm");
+        form.style.display = form.style.display === "block" ? "none" : "block";
+    });
 });
 
 
@@ -25,7 +26,7 @@ async function submitPost() {
     const res = await fetch("http://localhost:3000/community/posts", {
         method: "POST",
         headers: {
-            "Authorization": `Bearer ${token}`,
+            "Authorization": `Bearer ${token}`,   // ADDED
             "Content-Type": "application/json"
         },
         body: JSON.stringify(body)
@@ -39,7 +40,13 @@ async function submitPost() {
 
 
 async function loadPosts() {
-    const res = await fetch("http://localhost:3000/community/browse/posts");
+    const res = await fetch("http://localhost:3000/community/browse/posts", {
+        method: "GET",
+        headers: {
+            "Authorization": `Bearer ${token}`   // ADDED
+        }
+    });
+
     const posts = await res.json();
 
     const container = document.querySelector(".feed-list");
@@ -78,7 +85,13 @@ async function loadPosts() {
 
 
 async function loadVolunteers() {
-    const res = await fetch("http://localhost:3000/community/browse/volunteers");
+    const res = await fetch("http://localhost:3000/community/browse/volunteers", {
+        method: "GET",
+        headers: {
+            "Authorization": `Bearer ${token}`   // ADDED
+        }
+    });
+
     const list = await res.json();
 
     const container = document.querySelector(".people-scroll");
@@ -97,12 +110,17 @@ async function loadVolunteers() {
 
 
 async function loadInstitutions() {
-    const res = await fetch("http://localhost:3000/community/browse/institutions");
+    const res = await fetch("http://localhost:3000/community/browse/institutions", {
+        method: "GET",
+        headers: {
+            "Authorization": `Bearer ${token}`   // ADDED
+        }
+    });
+
     const data = await res.json();
 
     data.forEach(org => {
         const panel = document.getElementById(org.OrganizationID);
-
         if (!panel) return;
 
         panel.innerHTML = `

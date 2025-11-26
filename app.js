@@ -177,15 +177,13 @@ app.get("/institution/events/all", adminEventController.getAllEvents);
 
 // ----- Community route ----------
 
-app.get("/posts",authenticate, CommunityController.getPosts);
-app.post("/posts", authenticate,  CommunityController.createPost);
+app.get("/community/browse/posts",authenticate, CommunityController.browsePosts);
+app.post("/community/posts", authenticate,  CommunityController.createPost);
 
-app.get("/volunteers",authenticate,  CommunityController.getVolunteers);
+app.get("/community/browse/volunteers",authenticate,  CommunityController.browseVolunteers);
 app.get("/institutions", authenticate, CommunityController.getInstitutions);
 
-app.get("/browse/posts", controller.browsePosts);
-app.get("/browse/volunteers", controller.browseVolunteers);
-app.get("/browse/institutions", controller.browseInstitutions);
+
 
 //  ???????????????????????????????????????????????????????
 

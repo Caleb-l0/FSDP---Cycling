@@ -32,10 +32,7 @@ async function getAllPosts() {
     `);
 }
 
-async function getAllVolunteers() {
-    const pool = await sql.connect(db);
-    return pool.request().query(`SELECT id, name FROM Users WHERE role='user' ORDER BY name`);
-}
+
 
 async function getAllInstitutions() {
     const pool = await sql.connect(db);
@@ -55,22 +52,10 @@ async function getAllInstitutions() {
 }
 
 
-async function getAllPosts() {
-    const pool = await sql.connect(db);
-    const result = await pool.request().query(`
-        SELECT CP.PostID, CP.Content, CP.PhotoURL, CP.CreatedAt,
-               U.id AS UserID, U.name AS UserName
-        FROM CommunityPosts CP
-        JOIN Users U ON CP.UserID = U.id
-        ORDER BY CP.CreatedAt DESC
-    `);
-    return result.recordset;
-}
-
 async function getAllVolunteers() {
     const pool = await sql.connect(db);
     const result = await pool.request().query(`
-        SELECT id, name FROM Users WHERE role='user' ORDER BY name
+        SELECT id, name FROM Users WHERE role='Volunteer' ORDER BY name
     `);
     return result.recordset;
 }
@@ -100,7 +85,7 @@ async function getInstitutionsWithEvents() {
 module.exports = {
     createPost,
     getAllPosts,
-    getAllVolunteers,
+    
     getAllInstitutions,
     getAllPosts,
     getAllVolunteers,
