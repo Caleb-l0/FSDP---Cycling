@@ -59,10 +59,27 @@ body {
     transition: 0.3s;
 }
 
-.hv-nav ul li a:hover {
-    color: #f4a261;
-    background: rgba(244,162,97,0.12);
+#mainNav ul li a:hover {
+     color: #fff;
+  background: linear-gradient(135deg, #f4a261, #e76f51);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
+
+
+
+
+
+
+
+/* ===============================
+   NAVIGATION
+================================= */
+
+
+
+
+
+
 
 /* Mobile Menu Button */
 .hv-nav-toggle {
@@ -72,6 +89,14 @@ body {
     font-size: 1.8rem;
     cursor: pointer;
 }
+
+  .hv-nav ul li a:hover {
+  color: #fff;
+  background: linear-gradient(135deg, #f4a261, #e76f51);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+
 
 /* Mobile Nav */
 @media (max-width: 800px) {
@@ -90,6 +115,8 @@ body {
         padding: 15px 0;
     }
 
+  
+
     .hv-nav.active { display: block; }
 
     .hv-nav ul {
@@ -97,6 +124,9 @@ body {
         gap: 15px;
         text-align: center;
     }
+
+    
+    
 }
 
 /* Create space below header */

@@ -5,32 +5,52 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Volunteer Rewards | HappyVolunteer</title>
 
-  <link rel="stylesheet" href="./style.css" />
+   <link rel="stylesheet" href="../homepage.css">
+  <link rel="stylesheet" href="./style.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
 
-<header>
-  <div class="container">
-    <div class="header-content">
+<header class="hv-header">
+    <div class="container hv-header-content">
 
-      <a href="#" id="logoRedirect" class="logo">Happy Volunteer</a>
+        <div class="hv-logo">
+                <a href="./homepage_login_volunteer.html" style="text-decoration: none; color: inherit;">
+                Happy Volunteer
+            </a>
+        </div>
 
-      <button class="nav-toggle" id="navToggle">
-        <i class="fas fa-bars"></i>
-      </button>
+        <nav id="mainNav">
+            <ul>
+               
+                <li><a href="./volunteer-events.html">Booking</a></li>
+                <li><a href="#">Community</a></li>
+                <li><a href="./volunteer_rewards.html">Reward</a></li>
+                <li><a href="#">Friends</a></li>
+                <li><a href="../Profile/profilepage.html">Profile</a></li>
+            </ul>
+        </nav>
 
-      <nav id="mainNav">
-        <ul>
-          <li><a href="./volunteer-events.html">Booking</a></li>
-          <li><a href="./volunteer_community_page.html">Community</a></li>
-          <li><a href="./volunteer_rewards.html">Reward</a></li>
-          <li><a href="../Profile/profilepage.html">Profile</a></li>
-        </ul>
-      </nav>
+
+        <button class="hv-nav-toggle" id="hvNavToggle">
+          
+            <i class="fas fa-bars"></i>
+        </button>
+
+        <nav class="hv-nav" id="hvNav">
+            
+            <ul>
+           
+                <li><a href="./volunteer-events.html">Booking</a></li>
+                <li><a href="#">Community</a></li>
+                <li><a href="./volunteer_rewards.html">Reward</a></li>
+                <li><a href="#">Friends</a></li>
+                <li><a href="../Profile/profilepage.html">Profile</a></li>
+            </ul>
+        </nav>
+
 
     </div>
-  </div>
 </header>
 
 <div class="container">
@@ -52,9 +72,12 @@
 
 
 
-
+<script src="../homepage.js">
+  
+</script>
 <script>
   // get token from localStorage
+
   const token = localStorage.getItem("token");
   if (!token) {
     alert("Session expired, please log in again.");
@@ -80,7 +103,7 @@
   let currentPoints = 0;
 
   //  Fetch user points + shop items 
-  fetch(`/api/rewards/${userId}`, {
+  fetch(`http://localhost:3000/rewards/${userId}`, {
     headers: { "Authorization": `Bearer ${token}` }
   })
   .then(res => res.json())
@@ -109,7 +132,7 @@
       button.addEventListener("click", () => {
         if (currentPoints < item.Cost) return;
 
-        fetch("/api/rewards/redeem", {
+        fetch("http://localhost:3000/rewards/redeem", {
           method: "POST",
           headers: {
             "Authorization": `Bearer ${token}`,
@@ -138,7 +161,12 @@
 
 
     async function loadHistory() {
-  const res = await fetch(`/api/rewards/history/${userId}`);
+  const res = await fetch(`http://localhost:3000/rewards/history/${userId}`, {
+  headers: {
+    "Authorization": `Bearer ${token}`
+  }
+});
+
   const data = await res.json();
 
   let html = "<h2>Your Redemption History</h2>";
@@ -227,6 +255,7 @@ loadHistory();
 
 <script src="https://cdn.botpress.cloud/webchat/v3.3/inject.js" defer></script>
 <script src="https://files.bpcontent.cloud/2025/11/22/14/20251122142820-IG7UQ29V.js" defer></script>
+
 
 </body>
 </html>

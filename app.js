@@ -184,8 +184,12 @@ app.get("/community/browse/posts",authenticate, CommunityController.browsePosts)
 app.post("/community/posts", authenticate,  CommunityController.createPost);
 
 app.get("/community/browse/volunteers",authenticate,  CommunityController.browseVolunteers);
-app.get("/institutions", authenticate, CommunityController.getInstitutions);
+app.get("/community/browse/institutions", authenticate, CommunityController.getInstitutions);
+app.post("/community/posts/:postId/like", authenticate, CommunityController.toggleLike);
 
+app.post("/community/posts/:postId/comments", authenticate, CommunityController.createComment);
+
+app.get("/community/posts/:postId/comments", authenticate, CommunityController.getComments);
 
 
 //  ???????????????????????????????????????????????????????
@@ -195,7 +199,7 @@ app.get("/institutions", authenticate, CommunityController.getInstitutions);
 
 const rewardsModel = require("./public/Rewards/RewardsModel");
 // Get user points + shop items
-app.get("/api/rewards/:userId", authenticate, async (req, res) => {
+app.get("/rewards/:userId", authenticate, async (req, res) => {
   try {
     const userId = req.user.id;
     const points = await rewardsModel.getUserPoints(userId);
@@ -208,7 +212,7 @@ app.get("/api/rewards/:userId", authenticate, async (req, res) => {
 });
 
 // Redeem an item
-app.post("/api/rewards/redeem", authenticate, async (req, res) => {
+app.post("/rewards/redeem", authenticate, async (req, res) => {
   try {
     const userId = req.user.id;
     const { itemId } = req.body;
@@ -229,7 +233,7 @@ app.post("/api/rewards/redeem", authenticate, async (req, res) => {
 });
 
 // Get redemption history
-app.get("/api/rewards/history/:userId", async (req, res) => {
+app.get("/rewards/history/:userId",authenticate, async (req, res) => {
     const userId = req.params.userId;
 
     try {

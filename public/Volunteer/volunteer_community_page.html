@@ -10,7 +10,9 @@
         <link rel="stylesheet" href="../homepage.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
-  .btn-create-post {
+    
+
+      .btn_post2 {
     background: linear-gradient(135deg, #E69A2A, #D38B1F);
     color: white;
     padding: 10px 22px;
@@ -24,13 +26,46 @@
     white-space: nowrap;
 }
 
-.btn-create-post:hover {
+
+
+
+
+.btn_post2:hover {
     background: linear-gradient(135deg, #C97C19, #B56A11);
     transform: translateY(-2px);
     box-shadow: 0 6px 14px rgba(230, 154, 42, 0.35);
 }
 
-.btn-create-post:active {
+.btn_post2:active {
+    transform: scale(0.97);
+}
+
+
+  .btn_post {
+    background: linear-gradient(135deg, #E69A2A, #D38B1F);
+    color: white;
+    padding: 10px 22px;
+    font-size: 1rem;
+    font-weight: 700;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    transition: 0.25s ease;
+    box-shadow: 0 3px 8px rgba(230, 154, 42, 0.25);
+    white-space: nowrap;
+}
+
+
+
+
+
+.btn_post:hover {
+    background: linear-gradient(135deg, #C97C19, #B56A11);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 14px rgba(230, 154, 42, 0.35);
+}
+
+.btn_post:active {
     transform: scale(0.97);
 }
 
@@ -48,7 +83,7 @@
 
         <nav id="mainNav">
             <ul>
-               <button class="btn-create-post">Create Post</button>
+               <button class="btn_post">Create Post</button>
                 <li><a href="./volunteer-events.html">Booking</a></li>
                 <li><a href="#">Community</a></li>
                 <li><a href="./volunteer_rewards.html">Reward</a></li>
@@ -66,7 +101,7 @@
         <nav class="hv-nav" id="hvNav">
             
             <ul>
-           <button class="create-post-btn" id="openPostForm">Create Post</button>
+           <button class="btn_post2" id="openPostForm">Create Post</button>
                 <li><a href="./volunteer-events.html">Booking</a></li>
                 <li><a href="#">Community</a></li>
                 <li><a href="./volunteer_rewards.html">Reward</a></li>
@@ -127,16 +162,32 @@
                 <button class="btn-comment"><i class="fa-solid fa-comment"></i> Comment</button>
             </div>
 
-            <div class="comment-box">
-                <input type="text" placeholder="Write a comment...">
-                <button class="btn-small">Post</button>
-            </div>
+           <div id="commentPanel" class="comment-panel">
+    <div class="comment-title-row">
+        <h3>Write a Comment</h3>
+        <button class="comment-close" id="closeComment">×</button>
+    </div>
+
+    <textarea id="commentInput" class="comment-input" placeholder="Write something..."></textarea>
+
+    <button class="comment-send-btn">Post Comment</button>
+</div>
+
 
         </div>
 
     </div>
 
 </section>
+
+
+
+
+
+
+
+
+
 
 
 <section class="people-section">
@@ -161,44 +212,28 @@
 <section class="institution-section">
 
     <div class="insti-header">
-        <h2 class="section-title">Institutions & Events</h2>
+        <h2 class="section-title">Institutions</h2>
 
-        <div class="insti-tabs">
-            <button class="insti-btn active" data-target="cwa">Cycling Without Age</button>
-            <button class="insti-btn" data-target="hca">HCA Hospice</button>
-            <button class="insti-btn" data-target="nparks">National Parks</button>
-        </div>
+        <div class="insti-tabs" id="instiTabs"></div>
     </div>
 
-    <div id="cwa" class="insti-panel active">
-        <div class="insti-bg" style="background-image:url('./cwa.jpg')">
-            <div class="insti-overlay">
-                <h3>Cycling Without Age</h3>
-                <p>Bringing joy to seniors through cycling</p>
-            </div>
-        </div>
-
-        <div class="insti-events">
-            <div class="insti-card">
-                <h4>Morning Ride with Seniors</h4>
-                <p>Date: 22 Jan</p>
-                <button class="btn">Join Event</button>
-            </div>
-
-            <div class="insti-card">
-                <h4>Training Session</h4>
-                <p>Date: 26 Jan</p>
-                <button class="btn">Join Event</button>
-            </div>
-        </div>
-    </div>
-
-
-    <div id="hca" class="insti-panel">
-     
-    </div>
+    <div id="instiPanelsContainer"></div>
 
 </section>
+
+<!-- GLOBAL COMMENT INPUT PANEL -->
+<div id="globalCommentOverlay" class="comment-overlay"></div>
+
+<div id="globalCommentPanel" class="comment-panel">
+    <div class="comment-panel-header">
+        <h4>Write a Comment</h4>
+        <button id="closeGlobalComment" class="comment-close-btn">×</button>
+    </div>
+
+    <textarea id="globalCommentInput" class="comment-input" placeholder="Write something..."></textarea>
+
+    <button id="globalCommentSend" class="comment-send-btn">Post</button>
+</div>
 
 
 <footer>
@@ -256,7 +291,7 @@
 <script src="./community.js">
 
 </script>
-
+<script src="../Translation.js"></script>
 <script src="../homepage.js"></script>
 
 </body>
