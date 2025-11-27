@@ -1,361 +1,718 @@
+/* =========================================================
+   GLOBAL RESET + BASE STYLE
+========================================================= */
 * {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: 'Poppins', sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Poppins", sans-serif;
 }
 
 body {
-  background-color: #fffdf9;
-  color: #333;
-  line-height: 1.6;
-  overflow-x: hidden;
+    background: #FAF7F2;
+    color: #3E2723;
+    overflow-x: hidden;
+    line-height: 1.6;
 }
 
-.community-feed,
-.people-section,
-.institution-section {
-  width: 95%;
-  max-width: 1200px;
-  margin: 140px auto 50px;
-}
-
+/* =========================================================
+   SECTION TITLES
+========================================================= */
 .section-title {
-  text-align: center;
-  font-size: 1.9rem;
-  font-weight: 700;
-  margin-bottom: 25px;
-  color: #E69A2A;
+    text-align: center;
+    font-size: 2rem;
+    font-weight: 700;
+    color: #D3881F;
+    margin-bottom: 30px;
 }
 
+/* =========================================================
+   POST LIST (FEED)
+========================================================= */
 .feed-list {
-  width: 100%;
-  max-width: 900px;
-  margin: auto;
+    max-width: 1000px;
+    margin: auto;
 }
 
+/* =========================================================
+   POST CARD
+========================================================= */
 .post-card {
-  background: white;
-  border-radius: 16px;
-  padding: 22px;
-  margin-bottom: 30px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    background: white;
+    border-radius: 18px;
+    padding: 24px;
+    margin-bottom: 30px;
+    border: 1px solid #f1e3d3;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    transition: 0.2s ease;
+    width:100%;
 }
 
+.post-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 25px rgba(0,0,0,0.12);
+}
+
+/* HEADER */
 .post-header {
-  display: flex;
-  gap: 15px;
-  align-items: center;
-  margin-bottom: 15px;
+    display: flex;
+    gap: 16px;
+    align-items: center;
 }
 
 .post-avatar {
-  width: 55px;
-  height: 55px;
-  border-radius: 50%;
-  object-fit: cover;
+    width: 55px;
+    height: 55px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #E6A542;
 }
 
 .post-user {
-  font-size: 1.2rem;
-  font-weight: 700;
-  color: #3E2723;
-}
-
-.post-time {
-  font-size: 0.85rem;
-  opacity: 0.7;
-}
-
-.post-text {
-  font-size: 1rem;
-  margin: 12px 0;
-  color: #4E342E;
-}
-
-.post-img {
-  width: 100%;
-  border-radius: 12px;
-  margin: 15px 0;
-}
-
-.post-actions {
-  display: flex;
-  justify-content: space-between;
-  margin: 10px 0 15px;
-}
-
-.btn-like,
-.btn-comment {
-  border: none;
-  background: #FFCB66;
-  color: #3E2723;
-  padding: 8px 20px;
-  border-radius: 20px;
-  font-weight: 600;
-  font-size: 0.95rem;
-  cursor: pointer;
-  transition: 0.3s;
-}
-
-.btn-like:hover,
-.btn-comment:hover {
-  background: #E6A542;
-}
-
-.comment-box {
-  display: flex;
-  gap: 10px;
-  align-items: center;
-}
-
-.comment-box input {
-  flex: 1;
-  padding: 10px;
-  border: 1px solid #E5D3B3;
-  background: #FFFDF7;
-  border-radius: 8px;
-  font-size: 1rem;
-}
-
-.btn-small {
-  background: #E69A2A;
-  color: white;
-  padding: 8px 16px;
-  border-radius: 8px;
-  border: none;
-  cursor: pointer;
-}
-
-.people-scroll {
-  width: 100%;
-  max-width: 900px;
-  margin: auto;
-  display: flex;
-  gap: 20px;
-  overflow-x: auto;
-  scroll-behavior: smooth;
-  padding-bottom: 15px;
-}
-
-.people-card {
-  flex: 0 0 180px;
-  background: white;
-  border-radius: 14px;
-  padding: 20px 15px;
-  text-align: center;
-  box-shadow: 0 3px 10px rgba(0,0,0,0.08);
-}
-
-.people-avatar {
-  width: 85px;
-  height: 85px;
-  border-radius: 50%;
-  object-fit: cover;
-}
-
-.people-name {
-  margin: 10px 0;
-  font-weight: 600;
-}
-
-.btn-add {
-  background: #E69A2A;
-  color: white;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 6px;
-  cursor: pointer;
-}
-
-.insti-header {
-  text-align: center;
-  margin-bottom: 20px;
-}
-
-.insti-tabs {
-  display: flex;
-  justify-content: center;
-  gap: 15px;
-  flex-wrap: wrap;
-  margin-bottom: 25px;
-}
-
-.insti-btn {
-  background: #FFCB66;
-  color: #3E2723;
-  border: none;
-  padding: 10px 22px;
-  border-radius: 20px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: 0.3s;
-}
-
-.insti-btn:hover {
-  background: #E6A542;
-}
-
-.insti-btn.active {
-  background: #E69A2A;
-  color: white;
-}
-
-.insti-panel {
-  display: none;
-}
-
-.insti-panel.active {
-  display: block;
-}
-
-.insti-bg {
-  width: 100%;
-  height: 220px;
-  background-size: cover;
-  background-position: center;
-  border-radius: 14px;
-  position: relative;
-}
-
-.insti-overlay {
-  position: absolute;
-  bottom: 0;
-  width: 100%;
-  padding: 20px;
-  background: linear-gradient(to top, rgba(0,0,0,0.55), transparent);
-  color: white;
-  border-radius: 14px;
-}
-
-.insti-events {
-  width: 100%;
-  max-width: 900px;
-  margin: 25px auto 0;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 20px;
-}
-
-.insti-card {
-  flex: 1 1 45%;
-  background: white;
-  padding: 18px;
-  border-radius: 12px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-}
-
-.insti-card h4 {
-  font-size: 1.1rem;
-  margin-bottom: 8px;
-}
-
-.btn {
-  background: #E69A2A;
-  color: white;
-  border: none;
-  padding: 10px 16px;
-  border-radius: 10px;
-  cursor: pointer;
-  margin-top: 10px;
-  font-weight: 600;
-}
-
-.btn:hover {
-  background: #b57a19;
-}
-
-.post-form-container {
-    width: 95%;
-    max-width: 800px;
-    margin: 20px auto;
-    background: #FFFDF7;
-    padding: 20px 25px;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
-    border: 1.5px solid #E5D3B3;
-    display: none;
-}
-
-.post-form-container h3 {
-    font-size: 1.4rem;
-    color: #4E342E;
-    text-align: center;
-    margin-bottom: 15px;
+    font-size: 1.15rem;
     font-weight: 700;
 }
 
-#postContent {
-    width: 100%;
-    height: 140px;
-    padding: 12px 14px;
-    resize: none;
-    background: #FFF8E1;
-    border: 1.5px solid #E5D3B3;
-    border-radius: 10px;
-    font-size: 1rem;
-    color: #4E342E;
-    margin-bottom: 15px;
-    transition: 0.2s;
+.post-time {
+    font-size: 0.85rem;
+    color: #8e796c;
 }
 
-#postContent:focus {
-    border-color: #E69A2A;
-    box-shadow: 0 0 0 3px rgba(230,154,42,0.25);
+/* TEXT + IMAGE */
+.post-text {
+    margin-top: 15px;
+}
+
+.post-img {
+    width: 100%;
+    border-radius: 14px;
+    margin: 15px 0;
+    box-shadow: 0 3px 12px rgba(0,0,0,0.09);
+}
+
+/* =========================================================
+   ACTION BUTTONS
+========================================================= */
+.post-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 12px;
+}
+
+.btn-like,
+.btn-open-comments {
+    padding: 10px 22px;
+    background: #FFD488;
+    border: none;
+    border-radius: 18px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-like:hover,
+.btn-open-comments:hover {
+    background: #E6A542;
+}
+
+.btn-like.liked {
+    background: #E06A4A;
+    color: white;
+}
+
+/* Like Counter */
+.like-count {
+    font-weight: 700;
+    color: #4E342E;
+}
+
+/* =========================================================
+   COMMENTS (SHOWN UNDER POST)
+========================================================= */
+/* ===== COMMENT OVERLAY ===== */
+.comment-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.35);
+    display: none;
+    z-index: 9998;
+}
+
+/* ===== GLOBAL COMMENT PANEL ===== */
+.comment-panel {
+    position: fixed;
+    left: 0;
+    bottom: -100%;
+    width: 100%;
+    background: #ffffff;
+    padding: 25px;
+    border-radius: 20px 20px 0 0;
+    box-shadow: 0 -5px 25px rgba(0,0,0,0.15);
+    transition: bottom 0.35s ease-in-out;
+    z-index: 9999;
+}
+
+.comment-panel.show {
+    bottom: 0;
+}
+
+.comment-panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.comment-close-btn {
+    border: none;
+    background: #B33A3A;
+    color: white;
+    font-size: 1.3rem;
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+#globalCommentInput {
+    width: 100%;
+    height: 90px;
+    resize: none;
+    margin-top: 15px;
+    margin-bottom: 15px;
+    padding: 12px;
+    border-radius: 12px;
+    border: 1px solid #e2c8a6;
+    background: #FFF8E1;
+    font-size: 1rem;
+}
+
+.comment-send-btn {
+    width: 100%;
+    padding: 12px 0;
+    background: #E69A2A;
+    border: none;
+    border-radius: 12px;
+    color: white;
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+/* =========================================================
+   COMMENT PANEL (SLIDING UP)
+/* ================================
+      COMMENT LIST UNDER EACH POST
+=================================== */
+
+.post-comments {
+    margin-top: 14px;
+    border-left: 3px solid #f0ad4e;
+    padding-left: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* Each comment bubble */
+.comment-item {
+    background: #fff8e6;
+    padding: 10px 14px;
+    border-radius: 10px;
+    border: 1px solid #f3d19c;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    font-size: 0.9rem;
+    line-height: 1.3;
+}
+
+/* Username */
+.comment-item strong {
+    color: #d48a1e;
+    font-weight: 700;
+}
+
+/* Comment text */
+.comment-item span {
+    color: #444;
+    margin-left: 4px;
+}
+
+/* Time */
+.comment-time {
+    font-size: 0.75rem;
+    color: #777;
+    margin-top: 4px;
+}
+
+/* ================================
+         GLOBAL COMMENT PANEL
+=================================== */
+
+.comment-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.35);
+    display: none;
+    z-index: 700;
+}
+
+/* Slide-up comment panel */
+.comment-panel {
+    position: fixed;
+    bottom: -260px;
+    left: 0;
+    width: 100%;
+    background: white;
+    padding: 15px;
+    box-shadow: 0 -4px 12px rgba(0,0,0,0.2);
+    border-radius: 14px 14px 0 0;
+    transition: bottom 0.35s ease;
+    z-index: 999;
+}
+
+/* When opened */
+.comment-panel.show {
+    bottom: 0;
+}
+
+/* Panel Header */
+.comment-panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.comment-panel-header h4 {
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #d48a1e;
+}
+
+/* Close button */
+.comment-close-btn {
+    border: none;
+    background: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #999;
+}
+
+.comment-close-btn:hover {
+    color: #666;
+}
+
+/* Textarea */
+.comment-input {
+    width: 100%;
+    height: 90px;
+    border: 1px solid #f3d19c;
+    border-radius: 10px;
+    padding: 10px;
+    resize: none;
+    font-size: 0.95rem;
     outline: none;
 }
 
+.comment-input:focus {
+    border-color: #e69a2a;
+    box-shadow: 0 0 0 3px rgba(230, 154, 42, 0.2);
+}
+
+/* Submit button */
+.comment-send-btn {
+    display: block;
+    width: 100%;
+    margin-top: 12px;
+    background: linear-gradient(135deg, #E69A2A, #D38B1F);
+    color: white;
+    padding: 12px;
+    font-size: 1rem;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: 0.2s ease;
+    font-weight: 700;
+}
+
+.comment-send-btn:hover {
+    transform: translateY(-2px);
+    background: linear-gradient(135deg, #C97C19, #B56A11);
+}
+
+/* =========================================================
+   CREATE POST PANEL
+========================================================= */
+.post-form-container {
+    max-width: 850px;
+    margin: 20px auto;
+    padding: 22px;
+    background: white;
+    border-radius: 14px;
+    border: 1.5px solid #E5D3B3;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    display: none;
+}
+
+#postContent,
+#postImage,
 .post-form-select {
     width: 100%;
-    padding: 12px 14px;
-    border-radius: 10px;
+    padding: 14px;
+    border-radius: 12px;
     border: 1.5px solid #E5D3B3;
     background: #FFF8E1;
-    color: #4E342E;
-    font-size: 1rem;
     margin-bottom: 15px;
-    transition: 0.2s;
-}
-
-.post-form-select:focus {
-    border-color: #E69A2A;
-    box-shadow: 0 0 0 3px rgba(230,154,42,0.25);
-    outline: none;
 }
 
 .post-submit-btn {
     width: 100%;
+    padding: 12px;
+    background: #E69A2A;
+    border: none;
+    border-radius: 12px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: white;
+    cursor: pointer;
+}
+
+/* =========================================================
+   PEOPLE YOU MAY KNOW
+========================================================= */
+.people-scroll {
+  margin-left:7vw;
+  justify-content: center;
+   width:86vw;
+    display: flex;
+    height:300px;
+    align-items: center;
+    gap: 20px;
+    overflow-x: hidden;
+    padding-bottom: 10px;
+}
+
+.people-card {
+  width:200px;
+    flex: 0 0 170px;
+    background: white;
+    border-radius: 14px;
+    padding: 18px;
+    height:250px;
+    
+    text-align: center;
+    border: 1px solid #E5D3B3;
+    box-shadow: 0 3px 12px rgba(0,0,0,0.06);
+}
+
+.people-avatar {
+    width: 80px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.btn-add {
+    margin-top: 10px;
+    padding: 8px 16px;
+    background: #E69A2A;
+    border: none;
+    color: white;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-top: 20px;
+}
+
+
+
+
+/********************************************
+ *  INSTITUTION MAIN SECTION
+ ********************************************/
+.institution-section {
+    padding: 20px;
+    margin-top: 20px;
+}
+
+/********************************************
+ *  HEADER & TABS
+ ********************************************/
+.insti-header {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 20px;
+}
+
+#instiTabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.insti-btn {
+    padding: 8px 14px;
+    border: none;
+    background: #f0f0f0;
+    color: #444;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: 0.25s ease;
+}
+
+.insti-btn:hover {
+    background: #e0e0e0;
+}
+
+.insti-btn.active {
     background: #E69A2A;
     color: white;
-    padding: 12px 0;
-    border-radius: 10px;
-    border: none;
-    font-size: 1.15rem;
-    font-weight: 700;
-    cursor: pointer;
-    transition: 0.3s;
+    box-shadow: 0 3px 8px rgba(230,154,42,0.35);
 }
 
-.post-submit-btn:hover {
-    background: #c77a10;
+/********************************************
+ *  PANELS
+ ********************************************/
+.insti-panel {
+    display: none;
+    animation: fadeIn 0.25s ease;
 }
 
-#postImage {
+.insti-panel.active {
+    display: block;
+}
+
+/********************************************
+ *  OVERVIEW SCREEN
+ ********************************************/
+.insti-overview {
+    display: none;
+}
+
+.insti-overview.active {
+    display: block;
+    animation: slideUp 0.3s ease;
+}
+
+/********************************************
+ *  BANNER
+ ********************************************/
+.insti-banner {
+    position: relative;
+    height: 180px;
+    border-radius: 16px;
+    overflow: hidden;
+    margin-bottom: 16px;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+}
+
+.insti-banner-img {
     width: 100%;
-    background: #FFF8E1;
-    padding: 12px 14px;
-    border-radius: 10px;
-    border: 1.5px solid #E5D3B3;
+    height: 100%;
+    object-fit: cover;
+}
+
+.insti-banner-overlay {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    padding: 20px;
+    background: linear-gradient(transparent, rgba(0,0,0,0.7));
+    color: white;
+}
+
+.insti-banner-overlay h3 {
+    margin: 0;
+    font-size: 1.4rem;
+}
+
+/********************************************
+ *  DESCRIPTION
+ ********************************************/
+.insti-description {
+    margin-bottom: 14px;
+}
+
+.insti-description p {
+    line-height: 1.55;
+    color: #555;
+}
+
+/********************************************
+ *  STAT CARDS
+ ********************************************/
+.insti-stats {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 18px;
+}
+
+.stat-box {
+    flex: 1;
+    padding: 14px;
+    background: #fff3dd;
+    border-radius: 12px;
+    text-align: center;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+}
+
+.stat-box span {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #E69A2A;
+}
+
+.stat-box label {
+    display: block;
+    margin-top: 4px;
+    font-size: 0.9rem;
+    color: #666;
+}
+
+/********************************************
+ *  VIEW EVENTS BUTTON
+ ********************************************/
+.insti-view-events-btn {
+    width: 100%;
+    padding: 14px;
+    background: #E69A2A;
+    color: white;
+    font-weight: 700;
+    border-radius: 12px;
+    border: none;
+    cursor: pointer;
     font-size: 1rem;
-    margin-bottom: 15px;
-    color: #4E342E;
+    box-shadow: 0 3px 8px rgba(230,154,42,0.25);
+    transition: 0.25s ease;
 }
 
+.insti-view-events-btn:hover {
+    background: #C97C19;
+    transform: translateY(-2px);
+}
 
+/********************************************
+ *  EVENTS SCREEN
+ ********************************************/
+.insti-events-screen {
+    display: none;
+}
+
+.insti-events-screen.active {
+    display: block;
+    animation: slideUp 0.3s ease;
+}
+
+/* Back button */
+.back-btn {
+    background: none;
+    border: none;
+    color: #E69A2A;
+    font-size: 1rem;
+    margin-bottom: 12px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.events-title {
+    margin-bottom: 16px;
+    color: #444;
+    font-size: 1.2rem;
+}
+
+/********************************************
+ *  EVENT CARDS
+ ********************************************/
+.insti-events-list {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.event-card {
+    padding: 14px;
+    background: #fff;
+    border-radius: 14px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.event-card h4 {
+    margin: 0;
+    font-size: 1.1rem;
+}
+
+.event-card p {
+    margin: 6px 0 10px;
+    color: #777;
+}
+
+.event-card .btn {
+    background: #E69A2A;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 10px;
+    color: white;
+    cursor: pointer;
+    font-weight: 700;
+    transition: 0.2s ease;
+}
+
+.event-card .btn:hover {
+    background: #C97C19;
+}
+
+/********************************************
+ *  ANIMATIONS
+ ********************************************/
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(15px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/********************************************
+ *  RESPONSIVE
+ ********************************************/
 @media (max-width: 768px) {
-  .insti-card {
-    flex: 1 1 100%;
-  }
+    .insti-banner {
+        height: 150px;
+    }
+
+    .insti-stats {
+        flex-direction: column;
+    }
 }
 
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+@media (max-width: 700px) {
+    .post-actions {
+        flex-direction: column;
+        gap: 10px;
+    }
 
+    .btn-like,
+    .btn-open-comments {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .comment-panel {
+        padding: 20px;
+    }
+}

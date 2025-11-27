@@ -16,3 +16,12 @@ SELECT Status from VolunteerRequests
 
 Select *
 from  UserOrganizations
+
+
+
+select *
+from Rewards
+
+select *
+from CommunityPosts
+

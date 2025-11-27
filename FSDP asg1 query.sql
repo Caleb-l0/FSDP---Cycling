@@ -169,8 +169,8 @@ ADD VoucherCode VARCHAR(50) NULL;
 
 
 INSERT INTO Rewards (user_id, points, description)
-VALUES (11, 100, 'Signup bonus');
-//testing - use your own btw... id 11 happens to be my first volunnteer//
+VALUES (8, 100, 'Signup bonus');
+
 
 CREATE TABLE ShopItems (
     ItemID INT PRIMARY KEY IDENTITY,
@@ -203,48 +203,48 @@ CREATE TABLE CommunityPosts (
     FOREIGN KEY (TaggedInstitutionID) REFERENCES Organizations(OrganizationID)
 );
 
--- ===========================
--- MIGRATION SCRIPT: Update existing Events table if it exists
--- ===========================
-IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Events')
-BEGIN
-    -- Drop Location column if it exists
-    IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'Events' AND COLUMN_NAME = 'Location')
-    BEGIN
-        ALTER TABLE Events DROP COLUMN Location;
-        PRINT 'Location column dropped successfully';
-    END
+ALTER TABLE CommunityPosts
+ADD LikeCount INT NOT NULL DEFAULT 0;
 
-    -- Add EventLocation column if it doesn't exist
-    IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'Events' AND COLUMN_NAME = 'Location')
-    BEGIN
-        ALTER TABLE Events ADD Location NVARCHAR(MAX);
-        PRINT 'Location column added successfully';
-    END
-    ELSE
-    BEGIN
-        PRINT 'EventLocation column already exists';
-    END
+--- like
 
-    -- Drop PeopleSignUp column if it exists
-    IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'Events' AND COLUMN_NAME = 'PeopleSignUp')
-    BEGIN
-        ALTER TABLE Events DROP COLUMN PeopleSignUp;
-        PRINT 'PeopleSignUp column dropped successfully';
-    END
+CREATE TABLE CommunityLikes (
+    LikeID INT PRIMARY KEY IDENTITY,
+    PostID INT NOT NULL,
+    UserID INT NOT NULL,
+    LikedAt DATETIME DEFAULT GETDATE(),
 
-    -- Drop VolunteerSignUp column if it exists
-    IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'Events' AND COLUMN_NAME = 'VolunteerSignUp')
-    BEGIN
-        ALTER TABLE Events DROP COLUMN VolunteerSignUp;
-        PRINT 'VolunteerSignUp column dropped successfully';
-    END
+    CONSTRAINT FK_CommunityLikes_Posts
+        FOREIGN KEY (PostID) REFERENCES CommunityPosts(PostID)
+        ON DELETE CASCADE,
 
-    -- Drop MaximumParticipant column if it exists
-    IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'Events' AND COLUMN_NAME = 'MaximumParticipant')
-    BEGIN
-        ALTER TABLE Events DROP COLUMN MaximumParticipant;
-        PRINT 'MaximumParticipant column dropped successfully';
-    END
-END
+    CONSTRAINT FK_CommunityLikes_Users
+        FOREIGN KEY (UserID) REFERENCES Users(id)
+        ON DELETE CASCADE,
 
+    -- Ensure 1 user can like each post only once
+    CONSTRAINT UQ_Post_User UNIQUE(PostID, UserID)
+);
+
+
+
+
+
+CREATE TABLE CommunityComments (
+    CommentID INT PRIMARY KEY IDENTITY,         -- Unique Comment ID
+
+    PostID INT NOT NULL,                        -- Which post this comment belongs to
+    UserID INT NOT NULL,                        -- Who wrote the comment
+
+    CommentText NVARCHAR(MAX) NOT NULL,         -- Content of the comment
+    CreatedAt DATETIME DEFAULT GETDATE(),       -- When the comment was created
+
+    -- Foreign keys
+    CONSTRAINT FK_CommunityComments_Posts
+        FOREIGN KEY (PostID) REFERENCES CommunityPosts(PostID)
+        ON DELETE CASCADE,                     -- Delete comment if post is deleted
+
+    CONSTRAINT FK_CommunityComments_Users
+        FOREIGN KEY (UserID) REFERENCES Users(id)
+        ON DELETE CASCADE                      -- Delete comment if user account deleted
+);
