@@ -203,6 +203,53 @@ nav ul li a:hover {
 }
 
 /* ===============================
+   TEXT SIZE CONTROLS
+================================= */
+.text-size-section {
+  margin: 24px 0;
+  text-align: center;
+}
+
+.text-size-section p {
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin-bottom: 12px;
+  color: #333;
+}
+
+.text-size-section small {
+  display: block;
+  margin-top: 8px;
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.text-size-options {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+}
+
+.text-size-option {
+  background: #fff;
+  border: 2px solid #f4a261;
+  color: #f4a261;
+  padding: 10px 18px;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.25s ease, color 0.25s ease, transform 0.25s ease;
+}
+
+.text-size-option[aria-pressed="true"],
+.text-size-option.active {
+  background: #f4a261;
+  color: #fff;
+  transform: translateY(-2px);
+}
+
+/* ===============================
    ANIMATION
 ================================= */
 @keyframes fadeIn {

@@ -11,12 +11,15 @@ async function loginUser(req, res) {
       return res.status(401).json({ error: "Invalid credentials" });
     }
 
+    const textSizePreference = user.textSizePreference || 'normal';
+
     const token = jwt.sign(
   { 
     id: user.id, 
     name: user.name,   
     email: user.email, 
-    role: user.role 
+    role: user.role,
+    textSizePreference
   },
   process.env.JWT_SECRET,
   { expiresIn: "2h" }
@@ -30,6 +33,7 @@ async function loginUser(req, res) {
       name: user.name,
       email: user.email,
       role: user.role,
+      textSizePreference,
      
     });
   } catch (err) {
@@ -53,10 +57,10 @@ async function getUserById(req, res) {
 
 async function updateUser(req, res) {
   const userId = req.params.id;
-  const { name, email } = req.body;
+  const { name, email, textSizePreference } = req.body;
 
   try {
-    await loginModel.updateUser(userId, name, email);
+    await loginModel.updateUser(userId, name, email, textSizePreference);
     res.json({ message: "User updated" });
   } catch (err) {
     console.error("Update failed:", err);

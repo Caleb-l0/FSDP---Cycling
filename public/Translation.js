@@ -1,5 +1,52 @@
 let translateController = null;
 let translationInProgress = false;
+const TEXT_SIZE_KEY = "happyVolunteerTextSize";
+const DEFAULT_TEXT_SIZE = "normal";
+
+function normalizeTextSizeValue(value) {
+    if (typeof value !== "string") return DEFAULT_TEXT_SIZE;
+    return value === "large" ? "large" : "normal";
+}
+
+function getTextSizePreference() {
+    try {
+        return normalizeTextSizeValue(localStorage.getItem(TEXT_SIZE_KEY));
+    } catch (error) {
+        console.warn("Text size preference read blocked:", error);
+        return DEFAULT_TEXT_SIZE;
+    }
+}
+
+function applyTextSizePreference(mode) {
+    const normalized = normalizeTextSizeValue(mode);
+    if (typeof document !== "undefined") {
+        if (document.body) {
+            document.body.classList.toggle("large-text-mode", normalized === "large");
+        }
+        document.documentElement.style.fontSize = normalized === "large" ? "115%" : "";
+        document.documentElement.setAttribute("data-text-size", normalized);
+    }
+    return normalized;
+}
+
+function setTextSizePreference(mode) {
+    const normalized = applyTextSizePreference(mode);
+    try {
+        localStorage.setItem(TEXT_SIZE_KEY, normalized);
+    } catch (error) {
+        console.warn("Text size preference save blocked:", error);
+    }
+    return normalized;
+}
+
+window.textSizeController = {
+    get: getTextSizePreference,
+    set: setTextSizePreference,
+    apply: applyTextSizePreference
+};
+
+window.setTextSizePreference = setTextSizePreference;
+window.getTextSizePreference = getTextSizePreference;
 
 async function translatePage(targetLang) {
     if (translationInProgress) {
@@ -83,6 +130,7 @@ function changeLanguage(newLang) {
 }
 
 document.addEventListener("DOMContentLoaded", function () {
+    applyTextSizePreference(getTextSizePreference());
     const lang = localStorage.getItem("targetLanguage");
     if (lang) translatePage(lang);
 });

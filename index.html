@@ -17,6 +17,12 @@
   <!-- Header -->
   <div id="header-placeholder"></div>
 
+  <!-- Text size control for senior-friendly mode -->
+  <div class="text-size-toggle" role="group" aria-label="Text size controls">
+    <button id="normalTextBtn" class="text-size-btn" type="button" aria-pressed="true">Normal text</button>
+    <button id="largeTextBtn" class="text-size-btn" type="button" aria-pressed="false">Large text</button>
+  </div>
+
   <!-- Hero Slider -->
   <section class="hero">
     <div class="hero-slider">
@@ -226,6 +232,9 @@
         localStorage.setItem("name",data.name);
         localStorage.setItem("email",data.email);
         localStorage.setItem("role",data.role);
+      const preference = data.textSizePreference || localStorage.getItem(TEXT_SIZE_KEY) || 'normal';
+      localStorage.setItem(TEXT_SIZE_KEY, preference);
+      applyTextSize(preference);
 
         setTimeout(()=>{
           switch(data.role){
@@ -237,6 +246,29 @@
 
       }catch(err){ console.error(err); createWowToast('❌ Error connecting to server','error'); }
     }
+
+    // Text size toggle (senior-friendly control)
+    const TEXT_SIZE_KEY = 'happyVolunteerTextSize';
+    const normalTextBtn = document.getElementById('normalTextBtn');
+    const largeTextBtn = document.getElementById('largeTextBtn');
+
+    function applyTextSize(mode) {
+      const useLarge = mode === 'large';
+      const normalized = useLarge ? 'large' : 'normal';
+      document.body.classList.toggle('large-text-mode', useLarge);
+      normalTextBtn.setAttribute('aria-pressed', String(!useLarge));
+      largeTextBtn.setAttribute('aria-pressed', String(useLarge));
+      if (window.setTextSizePreference) {
+        window.setTextSizePreference(normalized);
+      } else {
+        localStorage.setItem(TEXT_SIZE_KEY, normalized);
+      }
+    }
+
+    normalTextBtn.addEventListener('click', () => applyTextSize('normal'));
+    largeTextBtn.addEventListener('click', () => applyTextSize('large'));
+
+    applyTextSize(localStorage.getItem(TEXT_SIZE_KEY) || 'normal');
   </script>
    <script src="../Translation.js"></script>
 </body>

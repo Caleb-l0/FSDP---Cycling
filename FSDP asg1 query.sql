@@ -30,8 +30,11 @@ CREATE TABLE Users (
   id INT PRIMARY KEY IDENTITY,
   name VARCHAR(100),
   email VARCHAR(100) UNIQUE,
-  password VARCHAR(100)
-);    ALTER TABLE Users
+  password VARCHAR(100),
+  textSizePreference NVARCHAR(20) DEFAULT 'normal'
+);
+
+ALTER TABLE Users
 ADD role VARCHAR(50) DEFAULT 'user';
 
 
@@ -168,9 +171,12 @@ ALTER TABLE Rewards
 ADD VoucherCode VARCHAR(50) NULL;
 
 
-INSERT INTO Rewards (user_id, points, description)
-VALUES (11, 100, 'Signup bonus');
-//testing - use your own btw... id 11 happens to be my first volunnteer//
+IF EXISTS (SELECT 1 FROM Users WHERE id = 11)
+BEGIN
+    INSERT INTO Rewards (user_id, points, description)
+    VALUES (11, 100, 'Signup bonus');
+END
+-- testing - use your own btw... id 11 happens to be my first volunteer
 
 CREATE TABLE ShopItems (
     ItemID INT PRIMARY KEY IDENTITY,
@@ -245,6 +251,16 @@ BEGIN
     BEGIN
         ALTER TABLE Events DROP COLUMN MaximumParticipant;
         PRINT 'MaximumParticipant column dropped successfully';
+    END
+END
+
+-- Ensure Users table stores text size preference
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Users')
+BEGIN
+    IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'Users' AND COLUMN_NAME = 'textSizePreference')
+    BEGIN
+        ALTER TABLE Users ADD textSizePreference NVARCHAR(20) DEFAULT 'normal';
+        PRINT 'textSizePreference column added to Users table';
     END
 END
 

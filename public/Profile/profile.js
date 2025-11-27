@@ -1,5 +1,7 @@
 const token = localStorage.getItem("token");
 let userRole = null;
+const textSizeButtons = document.querySelectorAll('[data-text-size]');
+let selectedTextSize = (window.getTextSizePreference ? window.getTextSizePreference() : localStorage.getItem("happyVolunteerTextSize")) || "normal";
 
 if (!token) {
   alert("You must be logged in to access this page.");
@@ -23,6 +25,14 @@ async function loadProfile() {
     document.getElementById("name").value = data.name;
     document.getElementById("email").value = data.email;
     document.getElementById("role").textContent = data.role;
+
+    selectedTextSize = data.textSizePreference || selectedTextSize;
+    updateTextSizeButtons(selectedTextSize);
+    if (window.setTextSizePreference) {
+      window.setTextSizePreference(selectedTextSize);
+    } else {
+      localStorage.setItem("happyVolunteerTextSize", selectedTextSize);
+    }
 
     userRole = data.role.toLowerCase();
     loadHeaderByRole();
@@ -59,6 +69,42 @@ const editBtn = document.getElementById("editBtn");
 const saveBtn = document.getElementById("saveBtn");
 const translate = document.getElementById("translate")
 
+function updateTextSizeButtons(mode) {
+  textSizeButtons.forEach((button) => {
+    const isSelected = button.dataset.textSize === mode;
+    button.setAttribute("aria-pressed", String(isSelected));
+    button.classList.toggle("active", isSelected);
+  });
+}
+
+async function handleTextSizeChange(mode) {
+  if (!mode || mode === selectedTextSize) return;
+  try {
+    const response = await fetch("http://localhost:3000/api/profile", {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`
+      },
+      body: JSON.stringify({ textSizePreference: mode })
+    });
+
+    if (!response.ok) throw new Error("Text size update failed");
+
+    selectedTextSize = mode;
+    updateTextSizeButtons(mode);
+    if (window.setTextSizePreference) {
+      window.setTextSizePreference(mode);
+    } else {
+      localStorage.setItem("happyVolunteerTextSize", mode);
+    }
+    alert("Text size updated across the site.");
+  } catch (err) {
+    console.error(err);
+    alert("Unable to update text size.");
+  }
+}
+
 
 editBtn.addEventListener("click", () => {
   nameField.disabled = false;
@@ -75,7 +121,7 @@ saveBtn.addEventListener("click", async () => {
     const response = await fetch("http://localhost:3000/api/profile", {
       method: "PUT",
       headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
-      body: JSON.stringify({ name: newName, email: newEmail })
+      body: JSON.stringify({ name: newName, email: newEmail, textSizePreference: selectedTextSize })
     });
 
     if (!response.ok) throw new Error("Update failed");
@@ -106,6 +152,12 @@ document.getElementById("logoutBtn").addEventListener("click", () => {
 
 
 
+
+textSizeButtons.forEach((button) =>
+  button.addEventListener("click", () => handleTextSizeChange(button.dataset.textSize))
+);
+
+updateTextSizeButtons(selectedTextSize);
 
 // --- nav bar section 
 function getUserRoleFromToken() {

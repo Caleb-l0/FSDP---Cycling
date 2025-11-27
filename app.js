@@ -39,6 +39,9 @@ const adminEventController = require('./Controllers/Admin_event_Controller');
 // ----- VOLUNTEER EVENT CONTROLLER -----
 const eventController = require('./Controllers/VolunteerEventController.js');
 
+// ----- LOGIN MODEL (for text size updates) -----
+const loginModel = require('./Accounts/login/loginModel');
+
 // --------------- translation
 
 // event con
@@ -100,17 +103,17 @@ app.get("/api/profile", authenticate, async (req, res) => {
     id: req.user.id,
     name: req.user.name,
     email: req.user.email,
-    role: req.user.role
+    role: req.user.role,
+    textSizePreference: req.user.textSizePreference || 'normal'
   });
 });
 
 // UPDATE PROFILE
 app.put("/api/profile", authenticate, async (req, res) => {
-  const { name, email } = req.body;
+  const { name, email, textSizePreference } = req.body;
 
   try {
-    const result = await require("./Accounts/login/loginModel")
-      .updateUser(req.user.id, name, email);
+    await loginModel.updateUser(req.user.id, name, email, textSizePreference);
 
     res.json({ message: "Profile updated successfully!" });
 
