@@ -1,4 +1,9 @@
+const token = localStorage.getItem("token");
 
+if (!token) {
+    alert("Please log in first");
+    window.location.href = "/index.html";   
+}
 // Function to handle volunteer form submission
 function handleVolunteerFormSubmit(event) {
     event.preventDefault();
@@ -31,56 +36,99 @@ document.addEventListener("DOMContentLoaded", function() {
     fetchVolunteerOpportunities();
 });
 
-//Model//
 
-const sql = require("mssql");
-const db = require("../../dbconfig");
 
-async function findForm(email) {
-  await sql.connect(db);
-  const result = await sql.query`SELECT * FROM forms WHERE id = ${id}`;
-  return result.recordset[0];
-}
 
-async function getFormById(id) {
-  await sql.connect(db);
-  const result = await sql.query`
-    SELECT id, title, dedscription, datetime FROM forms WHERE id = ${id}
-  `;
-  return result.recordset[0];
-}
 
-async function updateForm(id, name, email) {
-  let updates = [];
-    if (name) updates.push(`title='${title}'`);
-    if (email) updates.push(`description='${description}'`);
-    if (datetime) updates.push(`datetime='${datetime}'`);
-    if (updates.length === 0) return;
-    const query = `UPDATE forms SET ${updates.join(", ")} WHERE id=${id}`;
-    await sql.query(query);
-}
-
-async function deleteForm(id) {
-  await sql.connect(db);
-  await sql.query`DELETE FROM forms WHERE id = ${id}`;
-}
-
-module.exports = { findForm, getFormById, updateForm, deleteForm };
-
-//Controller//
-const formModel = require("../Models/formModel");
-async function submitForm(req, res) {
-  const { title, description, datetime } = req.body;
-    res.status(200).json({ message: "Form submitted successfully" });
-}
-
-module.exports = { submitForm };
-
-//Validation//
-const Joi = require("joi");
-
-const formSchema = Joi.object({
-    title: Joi.string().required(),
-    description: Joi.string().required(),
-    datetime: Joi.date().required(),
+document.addEventListener("DOMContentLoaded", () => {
+    loadHomepageEvents();
 });
+
+async function loadHomepageEvents() {
+    const container = document.querySelector(".scrollable");
+    if (!container) return;
+
+     const res = await fetch("http://localhost:3000/volunteer/events", {
+        headers: { "Authorization": `Bearer ${token}` }
+    });
+
+    const events = await res.json();
+
+    container.innerHTML = "";
+
+    events.forEach(e => {
+        container.innerHTML += `
+            <div class="event-box">
+                <div class="service-card event-item"
+                    onclick="goToEventDetail(${e.EventID})">
+
+                    <div class="service-icon"><i class="fas fa-calendar"></i></div>
+
+                    <div class="service-content">
+                        <h3>${e.EventName}</h3>
+                        <p>${new Date(e.EventDate).toLocaleDateString()}</p>
+                        <p>${e.Location}</p>
+                    </div>
+                </div>
+            </div>
+        `;
+    });
+}
+
+function goToEventDetail(id) {
+    window.location.href = `./volunteer_event_detail.html?eventId=${id}`;
+}
+
+
+document.addEventListener("DOMContentLoaded", () => {
+    loadVolunteersHomepage();
+});
+
+async function loadVolunteersHomepage() {
+    const container = document.querySelector("#homepage-volunteers");
+    if (!container) return;
+
+    const token = localStorage.getItem("token");
+
+    try {
+        const res = await fetch("http://localhost:3000/community/browse/volunteers", {
+            method: "GET",
+            headers: { "Authorization": `Bearer ${token}` }
+        });
+
+        const volunteers = await res.json();
+
+        container.innerHTML = "";
+
+        volunteers.forEach(v => {
+            container.innerHTML += `
+                <div class="event-box">
+                    <div class="service-card volunteer-card"
+                         onclick="openVolunteerProfile('${v.id}')">
+
+                        <div class="service-icon">
+                            <i class="fas fa-user"></i>
+                        </div>
+
+                        <div class="service-content">
+                            <h3>${v.name}</h3>
+                            <p>Active Volunteer</p>
+                        </div>
+
+                    </div>
+                </div>
+            `;
+        });
+
+    } catch (err) {
+        console.error("Failed to load volunteers:", err);
+    }
+}
+
+function openVolunteerProfile(id) {
+    window.location.href = `../Profile/profilepage.html?userId=${id}`;
+}
+
+
+
+

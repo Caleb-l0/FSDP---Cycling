@@ -135,7 +135,10 @@ app.get("/send-email",authenticate,EmailController.getMemberEmailsByOrganization
 // ------ Event API Routes (must be before static files) -------------
 app.get("/events/checkAssigned/:eventID", authenticate, EventController.checkAssigned);
 app.get("/isSignedUp", authenticate, EventController.isSignedUp);
+
 app.post("/events/signup/:eventID", authenticate, EventController.signup);
+
+
 app.delete("/events/cancel/:eventID", authenticate, EventController.cancel);
 app.get("/events/by-location",authenticate, EventController.getEventsByLocation);
 app.get("/events/:eventID", authenticate, EventController.getEventById);

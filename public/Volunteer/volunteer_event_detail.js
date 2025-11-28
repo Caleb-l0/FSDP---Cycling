@@ -4,6 +4,8 @@ if (!token) {
     window.location.href = "../../index.html";
 }
 
+
+// Get eventId from URL
 const urlParams = new URLSearchParams(window.location.search);
 const eventId = urlParams.get("eventId");
 
@@ -16,6 +18,10 @@ document.addEventListener("DOMContentLoaded", () => {
     loadEventDetails(eventId);
 });
 
+
+// ============================
+//  LOAD EVENT DETAILS
+// ============================
 async function loadEventDetails(id) {
     try {
         const res = await fetch(`http://localhost:3000/${id}`, {
@@ -24,13 +30,13 @@ async function loadEventDetails(id) {
         });
 
         const data = await res.json();
-        console.log(data);
 
         if (!res.ok) {
             alert(data.message || "Failed to load event details");
             return;
         }
 
+        // Fill page
         document.getElementById("req-name").textContent = data.EventName;
         document.getElementById("req-date").textContent = new Date(data.EventDate).toLocaleString();
         document.getElementById("req-org").textContent = data.OrganizationName || "-";
@@ -40,7 +46,6 @@ async function loadEventDetails(id) {
         document.getElementById("req-user").textContent = data.EventID;
         document.getElementById("req-desc").textContent = data.Description || "-";
 
-     
         displayButtons(data);
 
     } catch (err) {
@@ -51,16 +56,19 @@ async function loadEventDetails(id) {
 
 
 
+// ============================
+//  SHOW BUTTONS BASED ON ROLE
+// ============================
 function displayButtons(eventData) {
-    const role = localStorage.getItem("role"); 
+    const role = localStorage.getItem("role");  // make sure this exists in login
+    
     const btnSignup = document.getElementById("btn-signup");
     const btnCancel = document.getElementById("btn-cancel");
     const btnEdit = document.getElementById("btn-edit");
     const btnDelete = document.getElementById("btn-delete");
 
-    // Volunteer 
+    // Volunteer logic
     if (role === "Volunteer") {
-
         if (eventData.UserSignedUp) {
             btnCancel.style.display = "inline-block";
             btnSignup.style.display = "none";
@@ -68,81 +76,81 @@ function displayButtons(eventData) {
             btnSignup.style.display = "inline-block";
             btnCancel.style.display = "none";
         }
+
+        // Bind signup
+        btnSignup.onclick = () => signUp(eventData.EventName, eventData.EventID);
     }
 
-    // Admin 
+    // Admin logic
     if (role === "Admin" || role === "OrganizationAdmin") {
         btnEdit.style.display = "inline-block";
         btnDelete.style.display = "inline-block";
     }
-
- 
 
     // Cancel
     btnCancel.onclick = () => cancelSignUp(eventData.EventID);
 }
 
 
+
+// ============================
+//  SIGN UP FOR EVENT
+// ============================
 async function signUp(eventTitle, eventId) {
-  const token = localStorage.getItem('token');
-  
-  if (!token) {
-    alert('Please login first');
-    window.location.href = '../../index.html';
-    return;
-  }
+    try {
+        const response = await fetch(`http://localhost:3000/events/signup/${eventId}`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        });
 
-  try {
-    const response = await fetch(`http://localhost:3000/events/signup`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ eventId })  
-    });
+        const data = await response.json();
 
-    const data = await response.json();
-
-    if (!response.ok) {
-      throw new Error(data.message);
-    }
-
-    alert(`🎉 You have successfully signed up for "${eventTitle}"!`);
-
-    setTimeout(() => {
-      location.reload();
-    }, 500);
-
-  } catch (error) {
-    if (error.message.includes('already')) {
-      alert('⚠ You already signed up for this event.');
-      return;
-    }
-
-    alert('❌ Failed to sign up.');
-  }
-}
-
-
-
-async function cancelSignUp(eventId) {
-    const res = await fetch(`http://localhost:3000/events/${eventId}/signup`, {
-        method: "DELETE",
-        headers: {
-            "Authorization": `Bearer ${token}`,
-            "Content-Type": "application/json"
+        if (!response.ok) {
+            throw new Error(data.message);
         }
-    });
 
-    const data = await res.json();
+        alert(`🎉 You have successfully signed up for "${eventTitle}"!`);
 
-    if (!res.ok) {
-        alert(data.message || "Failed to cancel");
-        return;
+        setTimeout(() => location.reload(), 500);
+
+    } catch (error) {
+        if (error.message.includes('already')) {
+            alert('⚠ You already signed up for this event.');
+            return;
+        }
+        alert('❌ Failed to sign up.');
     }
-
-    alert("You have cancelled your sign-up.");
-    location.reload();
 }
 
+
+
+// ============================
+//  CANCEL SIGN UP
+// ============================
+async function cancelSignUp(eventId) {
+    try {
+        const res = await fetch(`http://localhost:3000/events/signup/${eventId}`, {
+            method: "DELETE",
+            headers: {
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json"
+            }
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+            alert(data.message || "Failed to cancel");
+            return;
+        }
+
+        alert("You have cancelled your sign-up.");
+        location.reload();
+
+    } catch (err) {
+        alert("❌ Failed to cancel sign up.");
+    }
+}
