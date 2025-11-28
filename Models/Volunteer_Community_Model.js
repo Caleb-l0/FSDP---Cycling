@@ -92,8 +92,12 @@ async function getAllInstitutions() {
     `);
 
     const events = await pool.request().query(`
-        SELECT EventID, EventName, EventDate, OrganizationID
-        FROM Events ORDER BY EventDate
+        SELECT 
+            EventID, EventName, EventDate, 
+            OrganizationID, Location, Description,
+             RequiredVolunteers
+        FROM Events 
+        ORDER BY EventDate
     `);
 
     return { institutions: institutions.recordset, events: events.recordset };
@@ -117,7 +121,7 @@ async function getInstitutionsWithEvents() {
     `);
 
     const events = await pool.request().query(`
-        SELECT EventID, EventName, EventDate, OrganizationID
+        SELECT EventID, EventName, EventDate, OrganizationID,Location,RequiredVolunteers 
         FROM Events ORDER BY EventDate DESC
     `);
 

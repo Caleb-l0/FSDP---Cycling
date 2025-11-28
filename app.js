@@ -166,6 +166,10 @@ app.get('/requests/status/:id',authenticate,requestController.checkRequestStatus
 
 // ----- ADMIN EVENT ROUTES -----
 app.get('/:id',authenticate,EVENT.getEventById) 
+
+
+
+
 app.get('/admin/events', authenticate, adminEventController.getAllEvents); 
 app.get("/admin/events/location/:eventID",authenticate,adminEventController.getEventLocation);
 app.post('/admin/create_events', authenticate, adminEventController.createEvent);
@@ -177,6 +181,9 @@ app.get('/volunteer/events', adminEventController.getAllEvents);
 app.get('/volunteer/signed-events', authenticate, eventController.getSignedUpEvents);
 app.post('/events/signup', authenticate, eventController.signUp);
 app.get("/institution/events/all", adminEventController.getAllEvents);
+
+
+
 
 // ----- Community route ----------
 

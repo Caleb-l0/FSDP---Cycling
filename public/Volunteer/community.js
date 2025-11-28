@@ -11,7 +11,10 @@ document.querySelectorAll(".btn-create-post, #openPostForm").forEach(btn => {
         if (!form) return;
         form.style.display = form.style.display === "block" ? "none" : "block";
     });
+    
 });
+
+
 
 async function submitPost() {
     const contentEl = document.getElementById("postContent");
@@ -322,9 +325,11 @@ async function loadInstitutions() {
                             org.Events.length === 0 ? 
                             `<p class="no-events">No events available</p>` 
                             : org.Events.map(e => `
-                                <div class="event-card">
+                                <div class="event-card" onclick="openEventDetail(${e.EventID})">
                                     <h4>${e.EventName}</h4>
                                     <p>${new Date(e.EventDate).toLocaleDateString()}</p>
+                                    <p>${e.Location}</p>
+                                    <p>Number of Volunteer Required: ${e.RequiredVolunteers}</p>
                                     <button class="btn">Join Event</button>
                                 </div>
                             `).join("")
@@ -338,6 +343,10 @@ async function loadInstitutions() {
     });
 
     attachInstitutionTabEvents();
+}
+
+function openEventDetail(eventId) {
+    window.location.href = `./volunteer_event_detail.html?eventId=${eventId}`;
 }
 
 

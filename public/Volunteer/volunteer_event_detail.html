@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Event Details</title>
+  <link rel="stylesheet" href="../Admin/request_detail.css">
+  
+   <link rel="stylesheet" href='../homepage.css'>
+   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <style>
+
+    .btn-action {
+  border: 1.5px solid #1f1f1e;
+  background: #FFF8E1;
+  color: #4E342E;    
+  min-width: 150px;
+  padding: 8px 18px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s;
+  font-weight: 500;
+}
+
+    .btn-create {
+  background: #4CAF50; /* Green */
+  color: white;
+}
+
+.btn-reject {
+  background: #E53935; /* Red */
+  color: white;
+}
+  </style>
+</head>
+<body>
+
+<header class="hv-header">
+    <div class="container hv-header-content">
+
+        <div class="hv-logo">
+                <a href="./homepage_login_volunteer.html" style="text-decoration: none; color: inherit;">
+                Happy Volunteer
+            </a>
+        </div>
+
+        <nav id="mainNav">
+            <ul>
+    
+                <li><a href="./volunteer-events.html">Booking</a></li>
+                <li><a href="#">Community</a></li>
+                <li><a href="./volunteer_rewards.html">Reward</a></li>
+                <li><a href="#">Friends</a></li>
+                <li><a href="../Profile/profilepage.html">Profile</a></li>
+            </ul>
+        </nav>
+
+
+        <button class="hv-nav-toggle" id="hvNavToggle">
+          
+            <i class="fas fa-bars"></i>
+        </button>
+
+        <nav class="hv-nav" id="hvNav">
+            
+            <ul>
+          
+                <li><a href="./volunteer-events.html">Booking</a></li>
+                <li><a href="#">Community</a></li>
+                <li><a href="./volunteer_rewards.html">Reward</a></li>
+                <li><a href="#">Friends</a></li>
+                <li><a href="../Profile/profilepage.html">Profile</a></li>
+            </ul>
+        </nav>
+
+
+    </div>
+</header>
+
+  <main class="request-wrapper container">
+    <div class="request-card">
+      <div class="request-img">
+        <img id="req-img" src="https://source.unsplash.com/800x500/?volunteer,event" alt="Event Image">
+      </div>
+
+      <div class="request-info">
+        <h2 id="req-name">Event Name</h2>
+        <div class="info-grid">
+          <p><strong>Date:</strong> <span id="req-date">-</span></p>
+          <p><strong>Organization:</strong> <span id="req-org">-</span></p>
+          <p><strong>Created:</strong> <span id="req-created">-</span></p>
+          <p><strong>Location:</strong> <span id="req-loc">-</span></p>
+          <p><strong>Volunteers Needed:</strong> <span id="req-needed">-</span></p>
+          <p><strong>Event ID:</strong> <span id="req-user">-</span></p>
+        </div>
+        <div class="desc">
+          <p><strong>Description:</strong></p>
+          <p id="req-desc">-</p>
+        </div>
+
+        <div class="btn-group">
+         
+          <button id="btn-signup" class="btn-action" onclick="signUp(document.getElementById('req-name').textContent, eventId)">Sign Up</button>
+          <button id="btn-cancel" class="btn-action" >Cancel</button>
+        </div>
+      </div>
+    </div>
+  </main>
+  
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h3>Harry Volunteering</h3>
+                    <ul>
+                        <li><a href="#">About Us</a></li>
+                        <li><a href="#">Our Team</a></li>
+                        <li><a href="#">Opportunity</a></li>
+                        <li><a href="#">Social Media</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Information</h3>
+                    <ul>
+                        <li><a href="#">Problem report</a></li>
+                        <li><a href="#"></a></li>
+                        <li><a href="#">Resource</a></li>
+                        <li><a href="#">Activity</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Contact Us</h3>
+                    <ul>
+                        <li><a href="#">Contact Us</a></li>
+                        <li><a href="#">Support</a></li>
+                        <li><a href="#">cooperation</a></li>
+                        <li><a href="#">Feedback</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Law</h3>
+                    <ul>
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Statement</a></li>
+                        <li><a href="#">Cookie</a></li>
+                        <li><a href="#">Statement</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2025 Harry Volunteering. Right reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+  <script src="./volunteer_event_detail.js"></script>
+  <script src="../Translation.js"></script>
+  <script src="../homepage.js"></script>
+</body>
+</html>
