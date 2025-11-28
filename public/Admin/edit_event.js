@@ -13,7 +13,7 @@ async function loadEvent() {
 
   document.getElementById("ev-name").value = data.EventName;
   document.getElementById("ev-date").value = data.EventDate.split("T")[0];
-  document.getElementById("ev-loc").value = data.EventLocation;
+  document.getElementById("ev-loc").value = data.Location;
   document.getElementById("ev-needed").value = data.RequiredVolunteers;
   document.getElementById("ev-desc").value = data.Description;
 

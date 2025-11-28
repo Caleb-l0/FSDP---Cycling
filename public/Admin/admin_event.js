@@ -95,7 +95,7 @@ async function fetchEventDetails() {
     createdEl.textContent = event.CreatedAt
       ? new Date(event.CreatedAt).toLocaleDateString()
       : '-';
-    locEl.textContent     = event.EventLocation || '-';
+    locEl.textContent     = event.Location || '-';
     neededEl.textContent  = event.RequiredVolunteers;
     idEl.textContent      = event.EventID;
     descEl.textContent    = event.Description || 'No description';

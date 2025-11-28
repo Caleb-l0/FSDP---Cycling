@@ -5,14 +5,159 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>HappyVolunteer</title>
   <link rel="stylesheet" href="index.css">
+  <link rel="stylesheet" href="./pop-up.css">
   <style>
     @keyframes pulseGlow {
       0%, 100% { box-shadow: 0 0 10px 2px rgba(255, 165, 0, 0.6); }
       50% { box-shadow: 0 0 20px 4px rgba(245, 181, 103, 0.9); }
     }
+    
+    /* GLOBAL */
+.hvw-section { padding: 70px 20px; background: #fff7e6; }
+.hvw-container { max-width: 1100px; margin: auto; }
+
+.hvw-title {
+  text-align: center;
+  font-size: 32px;
+  color: #d17b00;
+  margin-bottom: 10px;
+  font-weight: 800;
+}
+
+.hvw-subtitle {
+  text-align: center;
+  font-size: 19px;
+  color: #5a4a42;
+  margin-bottom: 40px;
+}
+
+
+/* STORIES */
+.hvw-story-grid {
+  display: grid;
+  gap: 30px;
+  grid-template-columns: repeat(auto-fit, minmax(300px,1fr));
+}
+
+.hvw-story {
+  background: #ffffff;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+}
+
+.hvw-story-img {
+  height: 200px;
+  width: 100%;
+  object-fit: cover;
+}
+
+.hvw-story-text {
+  padding: 20px;
+  color: #514d48;
+}
+
+
+/* HELP CARDS */
+.hvw-help-grid {
+  display: grid;
+  gap: 25px;
+  grid-template-columns: repeat(auto-fit, minmax(250px,1fr));
+}
+
+.hvw-help-card {
+  background: #fff;
+  padding: 25px;
+  border-radius: 14px;
+  color: #4a4744;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.07);
+}
+
+
+/* COMMUNITY VOICES */
+.hvw-voice-grid {
+  display: grid;
+  gap: 30px;
+  grid-template-columns: repeat(auto-fit, minmax(300px,1fr));
+}
+
+.hvw-voice {
+  background: #fff;
+  padding: 25px;
+  border-radius: 14px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.09);
+  color: #4f4946;
+}
+
+.hvw-voice-text { font-size: 18px; margin-bottom: 10px; font-style: italic; }
+.hvw-voice-author { font-size: 16px; color: #7a6a5e; }
+
+
+/* SENIORS */
+.hvw-senior-grid {
+  display: grid;
+  gap: 25px;
+  grid-template-columns: repeat(auto-fit, minmax(260px,1fr));
+}
+
+.hvw-senior-card {
+  background: #fff;
+  border-left: 6px solid #f0a232;
+  padding: 25px;
+  border-radius: 10px;
+  color: #4e453e;
+}
+
+
+/* CTA */
+.hvw-cta {
+  text-align: center;
+  padding: 70px 20px;
+  background: linear-gradient(135deg, #f7a137, #ffcc66);
+  color: #fff;
+  border-radius: 15px;
+  margin-top: 50px;
+}
+
+.hvw-cta-btn {
+  margin-top: 20px;
+  background: #fff;
+  color: #d27a00;
+  padding: 15px 30px;
+  border-radius: 12px;
+  border: none;
+  font-size: 20px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.hvw-cta-btn:hover {
+  transform: scale(1.05);
+  background: #fff6e6;
+}
+
   </style>
+
 </head>
 <body>
+
+  <!-- Language Preference Popup -->
+<div id="languagePopup" class="lang-popup">
+  <div class="lang-popup-content">
+    <h2>Select Your Preferred Language</h2>
+    <p>Please choose a language for easier reading.</p>
+
+    <div class="lang-buttons">
+      <button class="lang-btn" data-lang="en">English</button>
+      <button class="lang-btn" data-lang="zh">中文</button>
+      <button class="lang-btn" data-lang="ms">Malay</button>
+      <button class="lang-btn" data-lang="ta">Tamil</button>
+    </div>
+  </div>
+</div>
+
+
 
   <!-- Header -->
   <div id="header-placeholder"></div>
@@ -115,6 +260,173 @@
     </div>
   </div>
 
+
+  <!--Main -->
+  <!-- ===============================
+     OUR MISSION (温暖 + 信任)
+================================ -->
+<section class="hvw-section hvw-mission">
+  <div class="hvw-container">
+    <h2 class="hvw-title">We Build a Community of Care</h2>
+    <p class="hvw-subtitle">
+      HappyVolunteer connects seniors, volunteers, institutions, and administrators
+      in a supportive and joyful ecosystem where every act of kindness matters.
+    </p>
+  </div>
+</section>
+
+
+<!-- ===============================
+     STORIES OF KINDNESS (故事驱动)
+================================ -->
+<section class="hvw-section hvw-stories">
+  <div class="hvw-container">
+
+    <h2 class="hvw-title">Stories of Kindness</h2>
+    <p class="hvw-subtitle">Real people. Real smiles. Real moments of connection.</p>
+
+    <div class="hvw-story-grid">
+
+      <div class="hvw-story">
+        <img src="images/vol1.jpg" class="hvw-story-img">
+        <div class="hvw-story-text">
+          <h3>“A ride that made her whole week.”</h3>
+          <p>Mei Ling shares how a simple cycling session brought joy to a senior who rarely goes outdoors.</p>
+        </div>
+      </div>
+
+      <div class="hvw-story">
+        <img src="images/vol2.jpg" class="hvw-story-img">
+        <div class="hvw-story-text">
+          <h3>“Growing together in the garden.”</h3>
+          <p>David recalls how gardening united volunteers and seniors through nature.</p>
+        </div>
+      </div>
+
+      <div class="hvw-story">
+        <img src="images/vol3.jpg" class="hvw-story-img">
+        <div class="hvw-story-text">
+          <h3>“A new confidence with technology.”</h3>
+          <p>Aishah helped seniors learn smartphone basics—opening a door to confidence and connection.</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- ===============================
+     HOW WE HELP (结构 + 专业感)
+================================ -->
+<section class="hvw-section hvw-help">
+  <div class="hvw-container">
+    
+    <h2 class="hvw-title">How HappyVolunteer Helps</h2>
+
+    <div class="hvw-help-grid">
+
+      <div class="hvw-help-card">
+        <h4>For Volunteers</h4>
+        <p>Discover meaningful activities, join events easily, and share your journey with others.</p>
+      </div>
+
+      <div class="hvw-help-card">
+        <h4>For Seniors</h4>
+        <p>Enjoy simplified navigation, larger text options, and warm community interactions.</p>
+      </div>
+
+      <div class="hvw-help-card">
+        <h4>For Institutions</h4>
+        <p>Manage events, track sign-ups, and collaborate with volunteers smoothly and efficiently.</p>
+      </div>
+
+      <div class="hvw-help-card">
+        <h4>For Administrators</h4>
+        <p>Access a powerful dashboard to review requests, oversee operations, and support the community.</p>
+      </div>
+
+    </div>
+
+  </div>
+</section>
+
+
+<!-- ===============================
+     COMMUNITY VOICES (评价 + 温度)
+================================ -->
+<section class="hvw-section hvw-voices">
+  <div class="hvw-container">
+    
+    <h2 class="hvw-title">Voices From Our Community</h2>
+
+    <div class="hvw-voice-grid">
+
+      <div class="hvw-voice">
+        <p class="hvw-voice-text">“HappyVolunteer helped us reach seniors who needed companionship and support.”</p>
+        <span class="hvw-voice-author">— Local Community Centre</span>
+      </div>
+
+      <div class="hvw-voice">
+        <p class="hvw-voice-text">“A platform built with heart. The senior-friendly design is especially meaningful.”</p>
+        <span class="hvw-voice-author">— Eldercare Home Admin</span>
+      </div>
+
+      <div class="hvw-voice">
+        <p class="hvw-voice-text">“I made new friends while helping others. It feels like a family here.”</p>
+        <span class="hvw-voice-author">— Volunteer</span>
+      </div>
+
+    </div>
+
+  </div>
+</section>
+
+
+<!-- ===============================
+     SENIOR FRIENDLY (老人友好)
+================================ -->
+<section class="hvw-section hvw-seniors">
+  <div class="hvw-container">
+
+    <h2 class="hvw-title">Designed with Seniors in Mind</h2>
+
+    <div class="hvw-senior-grid">
+
+      <div class="hvw-senior-card">
+        <h3>🟡 Clear and Simple Interface</h3>
+        <p>Large buttons, clean layouts, and easy navigation reduce confusion for elderly users.</p>
+      </div>
+
+      <div class="hvw-senior-card">
+        <h3>🟡 Adjustable Text Size</h3>
+        <p>Switch instantly between normal and large text for better visibility.</p>
+      </div>
+
+      <div class="hvw-senior-card">
+        <h3>🟡 Multilingual Support</h3>
+        <p>Choose English, Chinese, Malay, or Tamil — accessible to all seniors in Singapore.</p>
+      </div>
+
+    </div>
+
+  </div>
+</section>
+
+
+<!-- ===============================
+     CTA (温暖邀请加入)
+================================ -->
+<section class="hvw-section hvw-cta">
+  <div class="hvw-container">
+    <h2>Join Our Caring Community</h2>
+    <p>Together, we bring joy, connection, and meaning to every senior.</p>
+    <button onclick="openSignup()" class="hvw-cta-btn">Become a Volunteer Today</button>
+  </div>
+</section>
+
+
+
   <!-- Footer -->
   <footer>
     <div class="container footer-content">
@@ -138,7 +450,7 @@
     </div>
     <p>© 2025 HappyVolunteer. All rights reserved.</p>
   </footer>
-
+ <script src="./public/Translation.js"></script>
   <!-- Scripts -->
   <script>
     // Load header dynamically
@@ -248,7 +560,7 @@
     }
 
     // Text size toggle (senior-friendly control)
-    const TEXT_SIZE_KEY = 'happyVolunteerTextSize';
+   
     const normalTextBtn = document.getElementById('normalTextBtn');
     const largeTextBtn = document.getElementById('largeTextBtn');
 
@@ -270,6 +582,55 @@
 
     applyTextSize(localStorage.getItem(TEXT_SIZE_KEY) || 'normal');
   </script>
-   <script src="../Translation.js"></script>
+
+
+
+
+  <!--Pop UP -->
+  <script>
+
+
+  function showLanguagePopup() {
+    document.getElementById("languagePopup").classList.add("active");
+  }
+
+  function hideLanguagePopup() {
+    document.getElementById("languagePopup").classList.remove("active");
+  }
+
+  // Run on first load
+  document.addEventListener("DOMContentLoaded", () => {
+    
+    const savedLang = localStorage.getItem("targetLanguage");
+
+    if (!savedLang) {
+      // No language saved → show popup
+      showLanguagePopup();
+    } else {
+      // Already have language → translate immediately
+      if (typeof translatePage === "function") {
+        translatePage(savedLang);
+      }
+    }
+  });
+
+  // Handle language selection
+  document.querySelectorAll(".lang-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const chosenLang = btn.dataset.lang;
+      localStorage.setItem("targetLanguage", chosenLang);
+
+      hideLanguagePopup();
+
+      if (typeof translatePage === "function") {
+        translatePage(chosenLang);
+      }
+    });
+  });
+  </script>
+  
+
+
+
 </body>
 </html>
