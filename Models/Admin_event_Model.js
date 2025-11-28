@@ -74,9 +74,15 @@ async function assignEventToOrgan(eventData) {
 }
 async function checkOrganizationExists(organizationID) {
   try {
-    if (organizationID === null || organizationID === undefined || organizationID === NaN ) {
+    // If empty or invalid → treat as valid (no organization needed)
+    if (
+      organizationID === null || 
+      organizationID === undefined || 
+      Number.isNaN(organizationID)
+    ) {
       return true;
     }
+
     const pool = await sql.connect(db);
     const result = await pool.request()
       .input("OrganizationID", sql.Int, organizationID)
@@ -85,7 +91,9 @@ async function checkOrganizationExists(organizationID) {
         FROM Organizations
         WHERE OrganizationID = @OrganizationID
       `);
+
     return result.recordset.length > 0;
+
   } catch (err) {
     console.error("Error checking organization:", err);
     throw err;
