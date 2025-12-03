@@ -60,7 +60,7 @@ async function submitPost() {
 }
 
 async function loadPosts() {
-    const res = await fetch("http://localhost:3000/community/browse/posts", {
+    const res = await fetch("https://fsdp-cycling-ltey.onrender.com/community/browse/posts", {
         method: "GET",
         headers: { "Authorization": `Bearer ${token}` }
     });
@@ -117,7 +117,7 @@ function attachLikeEvents() {
         const postId = card.getAttribute("data-post-id");
 
         likeBtn.addEventListener("click", async () => {
-            const res = await fetch(`http://localhost:3000/community/posts/${postId}/like`, {
+            const res = await fetch(`https://fsdp-cycling-ltey.onrender.com/community/posts/${postId}/like`, {
                 method: "POST",
                 headers: { "Authorization": `Bearer ${token}` }
             });
@@ -176,7 +176,7 @@ document.getElementById("globalCommentSend").addEventListener("click", async () 
     const text = document.getElementById("globalCommentInput").value.trim();
     if (!text || !currentPostId) return;
 
-    await fetch(`http://localhost:3000/community/posts/${currentPostId}/comments`, {
+    await fetch(`https://fsdp-cycling-ltey.onrender.com/community/posts/${currentPostId}/comments`, {
         method: "POST",
         headers: {
             "Authorization": `Bearer ${token}`,
@@ -201,7 +201,7 @@ document.getElementById("globalCommentSend").addEventListener("click", async () 
 async function loadComments(postId, container) {
     if (!container) return;
 
-    const res = await fetch(`http://localhost:3000/community/posts/${postId}/comments`, {
+    const res = await fetch(`https://fsdp-cycling-ltey.onrender.com/community/posts/${postId}/comments`, {
         headers: { "Authorization": `Bearer ${token}` }
     });
 
@@ -228,7 +228,7 @@ async function loadComments(postId, container) {
 
 
 async function loadVolunteers() {
-    const res = await fetch("http://localhost:3000/community/browse/volunteers", {
+    const res = await fetch("https://fsdp-cycling-ltey.onrender.com/community/browse/volunteers", {
         method: "GET",
         headers: { "Authorization": `Bearer ${token}` }
     });
@@ -252,7 +252,7 @@ async function loadVolunteers() {
 
 
 async function loadInstitutions() {
-    const res = await fetch("http://localhost:3000/community/browse/institutions", {
+    const res = await fetch("https://fsdp-cycling-ltey.onrender.com/community/browse/institutions", {
         method: "GET",
         headers: { "Authorization": `Bearer ${token}` }
     });
