@@ -25,3 +25,13 @@ from Rewards
 select *
 from CommunityPosts
 
+
+select *
+from Events
+
+select *
+from Organizations
+
+
+select *
+from EventSignUps

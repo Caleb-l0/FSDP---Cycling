@@ -1,3 +1,7 @@
+INSERT INTO Rewards (user_id, points, description)
+VALUES (2, 100000000000000, 'Signup bonus');
+
+
 INSERT INTO Users (name, email, password, role)
 VALUES
 ('Alice Tan', 'alice@example.com', '123456', 'admin'),
@@ -62,3 +66,29 @@ VALUES
 (1, 1, 5),
 (2, 1, 3),
 (3, 2, 4);
+
+
+INSERT INTO Organizations (OrgName, OrgDescription, ContactEmail, ContactPhone)
+VALUES
+-- 1. Cycling Without Age Singapore
+('Cycling Without Age Singapore',
+ 'A non-profit that provides trishaw rides to seniors, allowing them to stay connected with the community and enjoy outdoor activities.',
+ 'contact@cyclingwithoutage.sg',
+ '+65 6123 4567'),
+
+-- 2. Lions Befrienders
+('Lions Befrienders',
+ 'An organization dedicated to supporting seniors through befriending services, home visits, and wellness programmes.',
+ 'enquiries@lionsbefrienders.org.sg',
+ '+65 6100 1234'),
+
+-- 3. TOUCH Community Services
+('TOUCH Community Services',
+ 'A multi-service organization offering support to seniors, families, youth, and persons with special needs.',
+ 'info@touch.org.sg',
+ '+65 6377 0123')
+
+
+ 
+
+

@@ -1,4 +1,23 @@
-const sql = require("mssql");
+const pool = require("../Postgres_config");
+
+async function getRole(id) {
+  const result = await pool.query(
+    `
+      SELECT role 
+      FROM users
+      WHERE id = $1
+    `,
+    [id]
+  );
+
+  return result.rows[0] || null;
+}
+
+module.exports = { getRole };
+
+
+
+/*const sql = require("mssql");
 const db = require("../dbconfig");
 const { get } = require("mongoose");
 
@@ -19,3 +38,4 @@ async function getRole(id){
 
 
 module.exports = {getRole}
+*/

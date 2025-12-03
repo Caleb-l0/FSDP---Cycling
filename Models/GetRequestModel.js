@@ -1,4 +1,100 @@
-const sql = require("mssql");
+const pool = require("../Postgres_config");
+
+
+// ======================================================
+// 1. Get All Requests
+// ======================================================
+async function getAllRequests() {
+  const result = await pool.query(`
+    SELECT * FROM volunteerrequests
+    ORDER BY requestid ASC
+  `);
+
+  return result.rows;
+}
+
+
+
+// ======================================================
+// 2. Get Request By ID
+// ======================================================
+async function getRequestById(id) {
+  const result = await pool.query(
+    `SELECT * FROM volunteerrequests WHERE requestid = $1`,
+    [id]
+  );
+
+  return result.rows[0] || null;
+}
+
+
+
+// ======================================================
+// 3. Approve Request
+// ======================================================
+async function approveRequest(requestID) {
+  await pool.query(
+    `
+    UPDATE volunteerrequests
+    SET status = 'Approved'
+    WHERE requestid = $1
+    `,
+    [requestID]
+  );
+
+  return true;
+}
+
+
+
+// ======================================================
+// 4. Check Request Status
+// ======================================================
+async function checkRequestStatus(requestID) {
+  const result = await pool.query(
+    `
+    SELECT status
+    FROM volunteerrequests
+    WHERE requestid = $1
+    `,
+    [requestID]
+  );
+
+  return result.rows[0] || null;
+}
+
+
+
+// ======================================================
+// 5. Reject Request
+// ======================================================
+async function rejectRequest(requestID) {
+  await pool.query(
+    `
+    UPDATE volunteerrequests
+    SET status = 'Rejected'
+    WHERE requestid = $1
+    `,
+    [requestID]
+  );
+
+  return true;
+}
+
+
+
+// ======================================================
+module.exports = {
+  getAllRequests,
+  approveRequest,
+  rejectRequest,
+  getRequestById,
+  checkRequestStatus
+};
+
+
+
+/*const sql = require("mssql");
 const db = require("../dbconfig");
 const { get } = require("mongoose");
 
@@ -72,4 +168,4 @@ async function rejectRequest(requestID){
 
 
 module.exports = { getAllRequests,approveRequest,rejectRequest,getRequestById,checkRequestStatus };
-
+*/

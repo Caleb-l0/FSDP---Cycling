@@ -1,4 +1,73 @@
-const sql = require("mssql");
+const pool = require("../Postgres_config");
+
+/* ------------------------------
+   1. Get Upcoming Event
+------------------------------ */
+async function getUpcomingEvent(eventId) {
+  const result = await pool.query(
+    `
+    SELECT *
+    FROM events
+    WHERE eventid = $1 AND status = 'Upcoming'
+    `,
+    [eventId]
+  );
+
+  return result.rows[0] || null;
+}
+
+/* ------------------------------
+   2. Create Booking
+------------------------------ */
+async function createBooking(eventId, organizationId, participants) {
+  await pool.query(
+    `
+    INSERT INTO eventbookings (eventid, organizationid, participants)
+    VALUES ($1, $2, $3)
+    `,
+    [eventId, organizationId, participants]
+  );
+}
+
+/* ------------------------------
+   3. Update People Sign Up
+------------------------------ */
+async function updatePeopleSignUp(eventId, participants) {
+  await pool.query(
+    `
+    UPDATE events
+    SET peoplecount = COALESCE(peoplecount, 0) + $2
+    WHERE eventid = $1
+    `,
+    [eventId, participants]
+  );
+}
+
+/* ------------------------------
+   4. Update Volunteers Needed
+------------------------------ */
+async function updateVolunteers(eventId, volunteersNeeded) {
+  await pool.query(
+    `
+    UPDATE events
+    SET requiredvolunteers = requiredvolunteers + $2,
+        updatedat = NOW()
+    WHERE eventid = $1
+    `,
+    [eventId, volunteersNeeded]
+  );
+}
+
+module.exports = {
+  getUpcomingEvent,
+  createBooking,
+  updatePeopleSignUp,
+  updateVolunteers
+};
+
+
+
+/* const sql = require("mssql");
 
 async function getUpcomingEvent(eventId) {
     const pool = await sql.connect();
@@ -59,3 +128,4 @@ module.exports = {
     updatePeopleSignUp,
     updateVolunteers
 };
+*/

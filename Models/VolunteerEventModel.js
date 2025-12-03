@@ -1,3 +1,91 @@
+const pool = require("../Postgres_config");
+
+
+// ======================================================
+// 1. Get all events (OrganizationID NOT NULL)
+// ======================================================
+async function getAllEvents() {
+  const result = await pool.query(`
+      SELECT *
+      FROM events
+      WHERE organizationid IS NOT NULL
+  `);
+
+  return result.rows;
+}
+
+
+
+// ======================================================
+// 2. Sign Up For Event (avoid duplicate sign-up)
+// ======================================================
+async function signUpForEvent(eventId, userId) {
+
+  // 1. check duplicate
+  const check = await pool.query(
+    `
+      SELECT *
+      FROM eventsignups
+      WHERE eventid = $1 AND userid = $2
+    `,
+    [eventId, userId]
+  );
+
+  if (check.rows.length > 0) {
+    throw new Error("User already signed up for this event.");
+  }
+
+  // 2. insert sign-up
+  await pool.query(
+    `
+      INSERT INTO eventsignups (eventid, userid)
+      VALUES ($1, $2)
+    `,
+    [eventId, userId]
+  );
+}
+
+
+
+// ======================================================
+// 3. Get all signed-up events for a user
+// ======================================================
+async function getSignedUpEvents(userId) {
+
+  const result = await pool.query(
+    `
+      SELECT 
+        e.eventid,
+        e.eventname,
+        e.eventdate,
+        e.description,
+        e.location,      
+        e.requiredvolunteers,
+        e.status,
+        es.signupdate,
+        es.status AS signupstatus
+      FROM eventsignups es
+      INNER JOIN events e ON es.eventid = e.eventid
+      WHERE es.userid = $1 AND es.status = 'Active'
+      ORDER BY e.eventdate ASC
+    `,
+    [userId]
+  );
+
+  return result.rows;
+}
+
+
+
+module.exports = {
+  getAllEvents,
+  signUpForEvent,
+  getSignedUpEvents
+};
+
+
+
+/*
 const { poolPromise, sql } = require('../public/db');
 
 async function getAllEvents() {
@@ -60,3 +148,4 @@ async function getSignedUpEvents(userId) {
 
 module.exports = { getAllEvents, signUpForEvent, getSignedUpEvents };
 
+*/

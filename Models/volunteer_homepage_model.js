@@ -1,4 +1,104 @@
+const pool = require("../Postgres_config");
 
+
+// ======================================
+// 1. Find Form by Email
+// ======================================
+async function findForm(email) {
+  const result = await pool.query(
+    `
+      SELECT *
+      FROM forms
+      WHERE email = $1
+    `,
+    [email]
+  );
+
+  return result.rows[0] || null;
+}
+
+
+
+// ======================================
+// 2. Get Form by ID
+// ======================================
+async function getFormById(id) {
+  const result = await pool.query(
+    `
+      SELECT id, title, description, datetime
+      FROM forms
+      WHERE id = $1
+    `,
+    [id]
+  );
+
+  return result.rows[0] || null;
+}
+
+
+
+// ======================================
+// 3. Update Form (Dynamic Update)
+// ======================================
+async function updateForm(id, title, description, datetime) {
+  const updates = [];
+  const values = [];
+  let index = 1;
+
+  if (title) {
+    updates.push(`title = $${index++}`);
+    values.push(title);
+  }
+
+  if (description) {
+    updates.push(`description = $${index++}`);
+    values.push(description);
+  }
+
+  if (datetime) {
+    updates.push(`datetime = $${index++}`);
+    values.push(datetime);
+  }
+
+  if (updates.length === 0) return;
+
+  values.push(id);
+
+  const query = `
+    UPDATE forms
+    SET ${updates.join(", ")}
+    WHERE id = $${index}
+  `;
+
+  await pool.query(query, values);
+}
+
+
+
+// ======================================
+// 4. Delete Form
+// ======================================
+async function deleteForm(id) {
+  await pool.query(
+    `
+      DELETE FROM forms
+      WHERE id = $1
+    `,
+    [id]
+  );
+}
+
+
+
+module.exports = {
+  findForm,
+  getFormById,
+  updateForm,
+  deleteForm
+};
+
+
+/*
 const sql = require("mssql");
 const db = require("../../dbconfig");
 
@@ -33,3 +133,4 @@ async function deleteForm(id) {
 
 
 module.exports = { findForm, getFormById, updateForm, deleteForm };
+*/

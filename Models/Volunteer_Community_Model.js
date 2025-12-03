@@ -1,179 +1,233 @@
-const sql = require("mssql");
-const db = require("../dbconfig");
+const pool = require("../Postgres_config");
 
+
+// ===================================================
+// 1. Create Post
+// ===================================================
 async function createPost(postData) {
-    const pool = await sql.connect(db);
-    const request = pool.request();
 
-    request.input("UserID", sql.Int, postData.UserID);
-    request.input("Content", sql.NVarChar(sql.MAX), postData.Content);
-    request.input("PhotoURL", sql.NVarChar(255), postData.PhotoURL || null);
-    
-    request.input("Visibility", sql.VarChar(20), postData.Visibility || "public");
-    request.input("TaggedInstitutionID", sql.Int, postData.TaggedInstitutionID || null);
+  const result = await pool.query(
+    `
+      INSERT INTO communityposts
+      (userid, content, photourl, visibility, taggedinstitutionid)
+      VALUES ($1, $2, $3, $4, $5)
+      RETURNING *
+    `,
+    [
+      postData.userid,
+      postData.content,
+      postData.photourl || null,
+      postData.visibility || "public",
+      postData.taggedinstitutionid || null
+    ]
+  );
 
-    const result = await request.query(`
-        INSERT INTO CommunityPosts
-        (UserID, Content, PhotoURL, Visibility, TaggedInstitutionID)
-        OUTPUT inserted.*
-        VALUES
-        (@UserID, @Content, @PhotoURL, @Visibility, @TaggedInstitutionID)
-    `);
-
-    return result.recordset[0];
+  return result.rows[0];
 }
 
+
+
+// ===================================================
+// 2. Get All Posts + Username
+// ===================================================
 async function getAllPosts() {
-    const pool = await sql.connect(db);
-    return pool.request().query(`
-        SELECT CP.*, U.name AS UserName
-        FROM CommunityPosts CP
-        INNER JOIN Users U ON CP.UserID = U.id
-        ORDER BY CP.CreatedAt DESC
-    `);
+  const result = await pool.query(`
+      SELECT cp.*, u.name AS username
+      FROM communityposts cp
+      INNER JOIN users u ON cp.userid = u.id
+      ORDER BY cp.createdat DESC
+  `);
+
+  return result.rows;
 }
 
+
+
+// ===================================================
+// 3. Check if user liked post
+// ===================================================
 async function hasLiked(postId, userId) {
-    const pool = await sql.connect(db);
-    const result = await pool.request()
-        .input("PostID", sql.Int, postId)
-        .input("UserID", sql.Int, userId)
-        .query(`
-            SELECT 1 FROM CommunityLikes
-            WHERE PostID = @PostID AND UserID = @UserID
-        `);
+  const result = await pool.query(
+    `
+      SELECT 1 
+      FROM communitylikes
+      WHERE postid = $1 AND userid = $2
+    `,
+    [postId, userId]
+  );
 
-    return result.recordset.length > 0;
+  return result.rows.length > 0;
 }
 
 
 
-
+// ===================================================
+// 4. Like Post (must run 2 queries)
+// ===================================================
 async function likePost(postId, userId) {
-    const pool = await sql.connect(db);
-    await pool.request()
-        .input("PostID", sql.Int, postId)
-        .input("UserID", sql.Int, userId)
-        .query(`
-            INSERT INTO CommunityLikes(PostID, UserID)
-            VALUES(@PostID, @UserID);
 
-            UPDATE CommunityPosts
-            SET LikeCount = LikeCount + 1
-            WHERE PostID = @PostID;
-        `);
+  await pool.query(
+    `
+      INSERT INTO communitylikes(postid, userid)
+      VALUES ($1, $2)
+    `,
+    [postId, userId]
+  );
+
+  await pool.query(
+    `
+      UPDATE communityposts
+      SET likecount = COALESCE(likecount, 0) + 1
+      WHERE postid = $1
+    `,
+    [postId]
+  );
 }
 
 
+
+// ===================================================
+// 5. Unlike Post
+// ===================================================
 async function unlikePost(postId, userId) {
-    const pool = await sql.connect(db);
-    await pool.request()
-        .input("PostID", sql.Int, postId)
-        .input("UserID", sql.Int, userId)
-        .query(`
-            DELETE FROM CommunityLikes
-            WHERE PostID = @PostID AND UserID = @UserID;
 
-            UPDATE CommunityPosts
-            SET LikeCount = LikeCount - 1
-            WHERE PostID = @PostID;
-        `);
+  await pool.query(
+    `
+      DELETE FROM communitylikes
+      WHERE postid = $1 AND userid = $2
+    `,
+    [postId, userId]
+  );
+
+  await pool.query(
+    `
+      UPDATE communityposts
+      SET likecount = COALESCE(likecount, 0) - 1
+      WHERE postid = $1
+    `,
+    [postId]
+  );
 }
 
 
 
+// ===================================================
+// 6. Get All Institutions + All Events
+// ===================================================
 async function getAllInstitutions() {
-    const pool = await sql.connect(db);
+  const institutions = await pool.query(`
+      SELECT organizationid, orgname, orgdescription
+      FROM organizations
+      ORDER BY orgname
+  `);
 
-    const institutions = await pool.request().query(`
-        SELECT OrganizationID, OrgName, OrgDescription
-        FROM Organizations
-        ORDER BY OrgName
-    `);
+  const events = await pool.query(`
+      SELECT 
+        eventid, eventname, eventdate,
+        organizationid, location, description,
+        requiredvolunteers
+      FROM events
+      ORDER BY eventdate
+  `);
 
-    const events = await pool.request().query(`
-        SELECT 
-            EventID, EventName, EventDate, 
-            OrganizationID, Location, Description,
-             RequiredVolunteers
-        FROM Events 
-        ORDER BY EventDate
-    `);
-
-    return { institutions: institutions.recordset, events: events.recordset };
+  return {
+    institutions: institutions.rows,
+    events: events.rows
+  };
 }
 
 
+
+// ===================================================
+// 7. Get All Volunteers
+// ===================================================
 async function getAllVolunteers() {
-    const pool = await sql.connect(db);
-    const result = await pool.request().query(`
-        SELECT id, name FROM Users WHERE role='Volunteer' ORDER BY name
-    `);
-    return result.recordset;
+  const result = await pool.query(`
+      SELECT id, name
+      FROM users
+      WHERE role = 'volunteer'
+      ORDER BY name
+  `);
+
+  return result.rows;
 }
 
+
+
+// ===================================================
+// 8. Institutions with their Events
+// ===================================================
 async function getInstitutionsWithEvents() {
-    const pool = await sql.connect(db);
 
-    const institutions = await pool.request().query(`
-        SELECT OrganizationID, OrgName, OrgDescription 
-        FROM Organizations ORDER BY OrgName
-    `);
+  const institutions = await pool.query(`
+      SELECT organizationid, orgname, orgdescription
+      FROM organizations
+      ORDER BY orgname
+  `);
 
-    const events = await pool.request().query(`
-        SELECT EventID, EventName, EventDate, OrganizationID,Location,RequiredVolunteers 
-        FROM Events ORDER BY EventDate DESC
-    `);
+  const events = await pool.query(`
+      SELECT eventid, eventname, eventdate, organizationid, location, requiredvolunteers
+      FROM events
+      ORDER BY eventdate DESC
+  `);
 
-    const grouped = institutions.recordset.map(org => ({
-        ...org,
-        Events: events.recordset.filter(e => e.OrganizationID === org.OrganizationID)
-    }));
-
-    return grouped;
+  return institutions.rows.map(org => ({
+    ...org,
+    events: events.rows.filter(e => e.organizationid === org.organizationid)
+  }));
 }
 
+
+
+// ===================================================
+// 9. Create Comment
+// ===================================================
 async function createComment(postId, userId, text) {
-    const pool = await sql.connect(db);
-    const result = await pool.request()
-        .input("PostID", sql.Int, postId)
-        .input("UserID", sql.Int, userId)
-        .input("CommentText", sql.NVarChar(sql.MAX), text)
-        .query(`
-            INSERT INTO CommunityComments(PostID, UserID, CommentText)
-            OUTPUT inserted.*
-            VALUES(@PostID, @UserID, @CommentText)
-        `);
 
-    return result.recordset[0];
+  const result = await pool.query(
+    `
+      INSERT INTO communitycomments (postid, userid, commenttext)
+      VALUES ($1, $2, $3)
+      RETURNING *
+    `,
+    [postId, userId, text]
+  );
+
+  return result.rows[0];
 }
 
 
+
+// ===================================================
+// 10. Get All Comments for a Post
+// ===================================================
 async function getCommentsForPost(postId) {
-    const pool = await sql.connect(db);
-    const result = await pool.request()
-        .input("PostID", sql.Int, postId)
-        .query(`
-            SELECT C.*, U.name AS UserName
-            FROM CommunityComments C
-            INNER JOIN Users U ON U.id = C.UserID
-            WHERE C.PostID = @PostID
-            ORDER BY C.CreatedAt ASC
-        `);
-    return result.recordset;
+
+  const result = await pool.query(
+    `
+      SELECT c.*, u.name AS username
+      FROM communitycomments c
+      INNER JOIN users u ON u.id = c.userid
+      WHERE c.postid = $1
+      ORDER BY c.createdat ASC
+    `,
+    [postId]
+  );
+
+  return result.rows;
 }
 
 
 
 module.exports = {
-    createPost,
-    getAllPosts,
-    getAllInstitutions,
-    getAllVolunteers,
-    getInstitutionsWithEvents,
-     likePost,
-    unlikePost,
-    hasLiked,
-    createComment,
-    getCommentsForPost,
+  createPost,
+  getAllPosts,
+  getAllInstitutions,
+  getAllVolunteers,
+  getInstitutionsWithEvents,
+  likePost,
+  unlikePost,
+  hasLiked,
+  createComment,
+  getCommentsForPost
 };

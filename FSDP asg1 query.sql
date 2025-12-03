@@ -171,8 +171,6 @@ ALTER TABLE Rewards
 ADD VoucherCode VARCHAR(50) NULL;
 
 
-INSERT INTO Rewards (user_id, points, description)
-VALUES (11, 100, 'Signup bonus');
 
 CREATE TABLE ShopItems (
     ItemID INT PRIMARY KEY IDENTITY,

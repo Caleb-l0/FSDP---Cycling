@@ -1,4 +1,182 @@
-const sql = require("mssql");
+
+
+
+const pool = require("../Postgres_config");
+
+// ----------------------------
+// 1. Get All Events
+// ----------------------------
+async function getAllEvents() {
+  const result = await pool.query(`SELECT * FROM events ORDER BY eventid ASC`);
+  return result.rows;
+}
+
+// ----------------------------
+// 2. Create Event
+// ----------------------------
+async function createEvent(eventData) {
+  try {
+    const query = `
+      INSERT INTO events (
+        location, organizationid, eventname, eventdate, description,
+        requiredvolunteers, maximumparticipant, status
+      )
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+      RETURNING *
+    `;
+
+    const values = [
+      eventData.Location || null,
+      eventData.OrganizationID || null,
+      eventData.EventName,
+      eventData.EventDate,
+      eventData.Description || "",
+      eventData.RequiredVolunteers,
+      eventData.MaximumParticipant,
+      eventData.Status || "Upcoming",
+    ];
+
+    const result = await pool.query(query, values);
+    return result.rows[0];
+
+  } catch (err) {
+    console.error("Error creating event model:", err);
+    throw err;
+  }
+}
+
+// ----------------------------
+// 3. Assign Event to Organization
+// ----------------------------
+async function assignEventToOrgan(eventData) {
+  try {
+    const query = `
+      UPDATE events
+      SET organizationid = $1,
+          updatedat = NOW()
+      WHERE eventid = $2
+      RETURNING *
+    `;
+
+    const values = [
+      eventData.OrganizationID,
+      eventData.EventID
+    ];
+
+    const result = await pool.query(query, values);
+    return result.rows[0];
+
+  } catch (err) {
+    console.error("Error updating event:", err);
+    throw err;
+  }
+}
+
+// ----------------------------
+// 4. Check if Organization Exists
+// ----------------------------
+async function checkOrganizationExists(organizationID) {
+  try {
+    if (
+      organizationID === null ||
+      organizationID === undefined ||
+      Number.isNaN(organizationID)
+    ) {
+      return true;
+    }
+
+    const result = await pool.query(
+      `SELECT organizationid FROM organizations WHERE organizationid = $1`,
+      [organizationID]
+    );
+
+    return result.rowCount > 0;
+
+  } catch (err) {
+    console.error("Error checking organization:", err);
+    throw err;
+  }
+}
+
+// ----------------------------
+// 5. Get Event Location
+// ----------------------------
+async function getEventLocation(eventID) {
+  try {
+    const result = await pool.query(
+      `SELECT location FROM events WHERE eventid = $1`,
+      [eventID]
+    );
+    return result.rows[0] || null;
+
+  } catch (err) {
+    console.error("Model getEventLocation Error:", err);
+    throw err;
+  }
+}
+
+// ----------------------------
+// 6. Check if Event Has Bookings
+// ----------------------------
+async function canDeleteEvent(eventID) {
+  try {
+    const result = await pool.query(
+      `SELECT COUNT(*) AS countbookings
+       FROM eventbookings
+       WHERE eventid = $1`,
+      [eventID]
+    );
+
+    const count = Number(result.rows[0].countbookings);
+    return count === 0;
+
+  } catch (err) {
+    console.error("Model canDeleteEvent Error:", err);
+    throw err;
+  }
+}
+
+// ----------------------------
+// 7. Delete Event
+// ----------------------------
+async function deleteEvent(eventID) {
+  try {
+    const canDelete = await canDeleteEvent(eventID);
+    if (!canDelete) {
+      return { canDelete: false };
+    }
+
+    await pool.query(
+      `DELETE FROM events WHERE eventid = $1`,
+      [eventID]
+    );
+
+    return { canDelete: true };
+
+  } catch (err) {
+    console.error("Model deleteEvent Error:", err);
+    throw err;
+  }
+}
+
+// ----------------------------
+module.exports = {
+  getAllEvents,
+  createEvent,
+  assignEventToOrgan,
+  getEventLocation,
+  checkOrganizationExists,
+  canDeleteEvent,
+  deleteEvent,
+};
+
+
+
+
+
+
+
+/* const sql = require("mssql");
 const db = require("../dbconfig");
 
 
@@ -182,3 +360,4 @@ async function deleteEvent(eventID) {
 }
 
 module.exports = { getAllEvents,createEvent, assignEventToOrgan,getEventLocation,checkAssigned,deleteEvent,canDeleteEvent,deleteEvent,checkOrganizationExists};
+*/

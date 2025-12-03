@@ -55,25 +55,7 @@ const fetch = require("node-fetch");
 
 
 
-app.post("/translate", async (req, res) => {
-  const { q, from, to } = req.body;
 
-  try {
-    // Lingva Translate endpoint
-    const url = `https://lingva.ml/api/v1/${from}/${to}/${encodeURIComponent(q)}`;
-
-    const response = await fetch(url);
-    const data = await response.json();
-
-    return res.json({
-      translatedText: data.translation
-    });
-
-  } catch (err) {
-    console.error("Lingva Error:", err);
-    return res.status(500).json({ error: "Translation failed" });
-  }
-});
 
 
 
@@ -207,66 +189,10 @@ app.get("/community/posts/:postId/comments", authenticate, CommunityController.g
 
 // ----- REWARDS SYSTEM -----
 
-const rewardsModel = require("./public/Rewards/RewardsModel");
-// Get user points + shop items
-app.get("/rewards/:userId", authenticate, async (req, res) => {
-  try {
-    const userId = req.user.id;
-    const points = await rewardsModel.getUserPoints(userId);
-    const shopItems = await rewardsModel.getAllItems();
-    res.json({ points, shopItems });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Failed to load rewards" });
-  }
-});
-
-// Redeem an item
-app.post("/rewards/redeem", authenticate, async (req, res) => {
-  try {
-    const userId = req.user.id;
-    const { itemId } = req.body;
-
-    const item = await rewardsModel.getItemById(itemId);
-    if (!item) return res.status(404).json({ error: "Item not found" });
-
-    const points = await rewardsModel.getUserPoints(userId);
-    if (points < item.Cost) return res.status(400).json({ error: "Not enough points" });
-
-    await rewardsModel.redeemItem(userId, item);
-    res.json({ message: `Redeemed ${item.Name}` });
-
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Redemption failed" });
-  }
-});
-
-// Get redemption history
-app.get("/rewards/history/:userId",authenticate, async (req, res) => {
-    const userId = req.params.userId;
-
-    try {
-        await sql.connect(db);
-
-        const result = await sql.query`
-            SELECT 
-                Description AS ItemName, 
-                Points, 
-                dateEarned AS RedeemedAt
-            FROM Rewards
-            WHERE user_id = ${userId}
-            ORDER BY dateEarned DESC
-        `;
-
-        res.json(result.recordset);
-    } catch (err) {
-        console.error("Error loading history:", err);
-        res.status(500).send("Error loading history");
-    }
-});
-
-
+const rewardsController = require("./Controllers/reward_controller.js");
+app.get("/:userId", authenticate, rewardsController.getRewards);
+app.post("/redeem", authenticate, rewardsController.redeemItem);
+app.get("/history/:userId", authenticate, rewardsController.getHistory);
 
 
 
