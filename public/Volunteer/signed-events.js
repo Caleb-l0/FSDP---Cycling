@@ -1,12 +1,12 @@
 const eventList = document.getElementById('eventList');
-const SIGNED_EVENTS_ENDPOINT = `http://localhost:3000/volunteer/signed-events`;
+const SIGNED_EVENTS_ENDPOINT = `https://fsdp-cycling-ltey.onrender.com/volunteer/signed-events`;
 
 
 // Get token
 const token = localStorage.getItem('token');
 
 if (!token) {
-  window.location.href = '../Accounts/views/login.html';
+  window.location.href = '../../index.html';
 }
 
 document.addEventListener('DOMContentLoaded', () => {

@@ -1,10 +1,10 @@
 const token = localStorage.getItem("token");
 const eventID = JSON.parse(localStorage.getItem("currentRequest")).EventID;
 
-if (!token || !eventID) window.location.href = "login.html";
+if (!token || !eventID) window.location.href = "../../index.html";
 
 async function loadEvent() {
-  const res = await fetch(`http://localhost:3000/${eventID}`, {
+  const res = await fetch(`https://fsdp-cycling-ltey.onrender.com/${eventID}`, {
     method: "GET",
     headers: { "Authorization": `Bearer ${token}` }
   });
@@ -17,7 +17,7 @@ async function loadEvent() {
   document.getElementById("ev-needed").value = data.RequiredVolunteers;
   document.getElementById("ev-desc").value = data.Description;
 
-  const assignedCheck = await fetch(`http://localhost:3000/events/checkAssigned/${eventID}`, {
+  const assignedCheck = await fetch(`https://fsdp-cycling-ltey.onrender.com/events/checkAssigned/${eventID}`, {
     method: "GET",
     headers: { "Authorization": `Bearer ${token}` }
   });
@@ -44,7 +44,7 @@ document.getElementById("btn-save").addEventListener("click", async () => {
     Description: document.getElementById("ev-desc").value
   };
 
-  const res = await fetch(`http://localhost:3000/events/update/${eventID}`, {
+  const res = await fetch(`https://fsdp-cycling-ltey.onrender.com/events/update/${eventID}`, {
     method: "PUT",
     headers: {
       "Authorization": `Bearer ${token}`,

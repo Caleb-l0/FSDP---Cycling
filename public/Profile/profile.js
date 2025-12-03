@@ -5,7 +5,7 @@ let selectedTextSize = (window.getTextSizePreference ? window.getTextSizePrefere
 
 if (!token) {
   alert("You must be logged in to access this page.");
-  window.location.href = "/index.html";
+  window.location.href = "../../index.html";
 }
 
 
@@ -15,7 +15,7 @@ if (!token) {
 // Load profile
 async function loadProfile() {
   try {
-    const response = await fetch("http://localhost:3000/api/profile", {
+    const response = await fetch("https://fsdp-cycling-ltey.onrender.com/profile", {
       method: "GET",
       headers: { "Authorization": `Bearer ${token}` }
     });
@@ -80,7 +80,7 @@ function updateTextSizeButtons(mode) {
 async function handleTextSizeChange(mode) {
   if (!mode || mode === selectedTextSize) return;
   try {
-    const response = await fetch("http://localhost:3000/api/profile", {
+    const response = await fetch("https://fsdp-cycling-ltey.onrender.com/profile", {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -118,7 +118,7 @@ saveBtn.addEventListener("click", async () => {
   const newEmail = emailField.value;
 
   try {
-    const response = await fetch("http://localhost:3000/api/profile", {
+    const response = await fetch("https://fsdp-cycling-ltey.onrender.com/profile", {
       method: "PUT",
       headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
       body: JSON.stringify({ name: newName, email: newEmail, textSizePreference: selectedTextSize })

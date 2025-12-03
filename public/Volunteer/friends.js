@@ -1,5 +1,5 @@
 async function loadVolunteers() {
-    const res = await fetch("http://localhost:3000/community/browse/volunteers", {
+    const res = await fetch("https://fsdp-cycling-ltey.onrender.com/community/browse/volunteers", {
         method: "GET",
         headers: {
             "Authorization": `Bearer ${token}`   // ADDED

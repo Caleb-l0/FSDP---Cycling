@@ -48,7 +48,7 @@ async function loadHomepageEvents() {
     const container = document.querySelector(".scrollable");
     if (!container) return;
 
-     const res = await fetch("http://localhost:3000/volunteer/events", {
+     const res = await fetch("https://fsdp-cycling-ltey.onrender.com/volunteer/events", {
         headers: { "Authorization": `Bearer ${token}` }
     });
 
@@ -91,7 +91,7 @@ async function loadVolunteersHomepage() {
     const token = localStorage.getItem("token");
 
     try {
-        const res = await fetch("http://localhost:3000/community/browse/volunteers", {
+        const res = await fetch("https://fsdp-cycling-ltey.onrender.com/community/browse/volunteers", {
             method: "GET",
             headers: { "Authorization": `Bearer ${token}` }
         });

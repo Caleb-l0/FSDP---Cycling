@@ -97,7 +97,7 @@ async function createEvent() {
 
 
   try {
-    const response = await fetch("http://localhost:3000/admin/create_events", {
+    const response = await fetch("https://fsdp-cycling-ltey.onrender.com/admin/create_events", {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -151,7 +151,7 @@ document.getElementById("eventForm").addEventListener("submit", function(e) {
 async function deleteRequest(id){
    
   try {
-    const response = await fetch(`http://localhost:3000/request/delete/${id}`, {
+    const response = await fetch(`https://fsdp-cycling-ltey.onrender.com/request/delete/${id}`, {
       method: 'DELETE',
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -181,7 +181,7 @@ async function checkConflict(location, datetime) {
   const time = datetime.slice(11, 16);
 
   const response = await fetch(
-    `http://localhost:3000/events/by-location?location=${encodeURIComponent(location)}&date=${date}`,
+    `https://fsdp-cycling-ltey.onrender.com/events/by-location?location=${encodeURIComponent(location)}&date=${date}`,
     { headers: { 'Authorization': `Bearer ${token}` } }
   );
 
@@ -221,7 +221,7 @@ async function loadCalendar() {
 
   try {
     const response = await fetch(
-      `http://localhost:3000/events/by-location?location=${location}&date=${date}`,
+      `https://fsdp-cycling-ltey.onrender.com/events/by-location?location=${location}&date=${date}`,
       { headers: { 'Authorization': `Bearer ${token}` } }
     );
 

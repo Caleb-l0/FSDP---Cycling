@@ -1,5 +1,5 @@
 const eventList = document.getElementById('eventList');
-const EVENTS_ENDPOINT = `http://localhost:3000/volunteer/events`;
+const EVENTS_ENDPOINT = `https://fsdp-cycling-ltey.onrender.com/volunteer/events`;
 
 document.addEventListener('DOMContentLoaded', () => {
   loadEvents();
@@ -95,12 +95,12 @@ async function signUp(eventTitle, eventId) {
   
   if (!token) {
     alert('Please login first');
-    window.location.href = '../Accounts/views/login.html';
+    window.location.href = '../../index.html';
     return;
   }
 
   try {
-    const response = await fetch(`http://localhost:3000/events/signup`, {
+    const response = await fetch(`https://fsdp-cycling-ltey.onrender.com/events/signup`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`,

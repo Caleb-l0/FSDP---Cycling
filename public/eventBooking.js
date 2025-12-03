@@ -36,7 +36,7 @@ submitBookingBtn.addEventListener("click", async () => {
         return;
     }
 
-    const response = await fetch(`/api/events/${selectedEventId}/book`, {
+    const response = await fetch(`/https://fsdp-cycling-ltey.onrender.com/events/${selectedEventId}/book`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",

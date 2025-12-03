@@ -1,7 +1,7 @@
 const token = localStorage.getItem('token');
 if (!token) {
 
- window.location.href = '../index.html';}
+ window.location.href = '../../index.html';}
 
 
 const title = document.getElementById("title1")
@@ -94,7 +94,7 @@ const eventGrid2 = document.getElementsByClassName("event-grid")[1];
 
 async function GetLocation(eventID){
   try{
-    const res = await fetch(`http://localhost:3000/admin/events/location/${eventID}`, {
+    const res = await fetch(`https://fsdp-cycling-ltey.onrender.com/admin/events/location/${eventID}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json', 
@@ -121,7 +121,7 @@ async function GetLocation(eventID){
 async function requestAll(choice) {
 
 try{
-    const res = await fetch('http://localhost:3000/admin/applications', {
+    const res = await fetch('https://fsdp-cycling-ltey.onrender.com/admin/applications', {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json', 
@@ -379,7 +379,7 @@ const event_history = document.getElementById("event_history");
 async function requestAll2(choice) {
 
     try{
-        const res = await fetch('http://localhost:3000/admin/events', {
+        const res = await fetch('https://fsdp-cycling-ltey.onrender.com/admin/events', {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json', 
@@ -654,7 +654,7 @@ let svcCurrent = new Date();
 
 async function loadAdminEvents() {
   try {
-    const res = await fetch("http://localhost:3000/admin/events", {
+    const res = await fetch("https://fsdp-cycling-ltey.onrender.com/admin/events", {
       headers: { "Authorization": `Bearer ${token}` }
     });
 

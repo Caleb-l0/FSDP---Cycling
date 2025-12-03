@@ -1,6 +1,6 @@
 const token = localStorage.getItem('token');
 if (!token) {
-  window.location.href = 'index.html';
+  window.location.href = '../../index.html';
 }
 
 const currentEventId = JSON.parse(localStorage.getItem('currentRequest')).EventID;
@@ -8,7 +8,7 @@ const eventID = JSON.parse(localStorage.getItem('currentRequest')).EventID;
 if (!currentEventId) {
   alert('No event selected');
   
-  window.location.href = 'homepage_login_Admin.html';
+  window.location.href = './homepage_login_Admin.html';
 }
 
 function getUserFromToken() {
@@ -75,7 +75,7 @@ function setupButtonsByRole(role) {
 
 async function fetchEventDetails() {
   try {
-    const response = await fetch(`http://localhost:3000/events/${currentEventId}`, {
+    const response = await fetch(`https://fsdp-cycling-ltey.onrender.com/events/${currentEventId}`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -116,7 +116,7 @@ function initButtonHandlers() {
 
   if (btnDelete) {
     document.getElementById("btn-delete").addEventListener("click", async function () {
-  const check = await fetch(`http://localhost:3000/events/checkAssigned/${eventID}`, {
+  const check = await fetch(`https://fsdp-cycling-ltey.onrender.com/events/checkAssigned/${eventID}`, {
     method: "GET",
     headers: { "Authorization": `Bearer ${token}` }
   });
@@ -130,7 +130,7 @@ function initButtonHandlers() {
   const ok = confirm("Are you sure you want to delete this event?");
   if (!ok) return;
 
-  const res = await fetch(`http://localhost:3000/events/delete/${eventID}`, {
+  const res = await fetch(`https://fsdp-cycling-ltey.onrender.com/events/delete/${eventID}`, {
     method: "DELETE",
     headers: { "Authorization": `Bearer ${token}` }
   });
@@ -144,7 +144,7 @@ function initButtonHandlers() {
   if (btnSignup) {
     btnSignup.addEventListener('click', async () => {
       try {
-        const res = await fetch(`http://localhost:3000/events/${currentEventId}/signup`, {
+        const res = await fetch(`https://fsdp-cycling-ltey.onrender.com/events/${currentEventId}/signup`, {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -169,7 +169,7 @@ function initButtonHandlers() {
   if (btnCancel) {
     btnCancel.addEventListener('click', async () => {
       try {
-        const res = await fetch(`http://localhost:3000/events/${currentEventId}/signup`, {
+        const res = await fetch(`https://fsdp-cycling-ltey.onrender.com/events/${currentEventId}/signup`, {
           method: 'DELETE',
           headers: {
             'Authorization': `Bearer ${token}`,

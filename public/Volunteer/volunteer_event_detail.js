@@ -24,7 +24,7 @@ document.addEventListener("DOMContentLoaded", () => {
 // ============================
 async function loadEventDetails(id) {
     try {
-        const res = await fetch(`http://localhost:3000/${id}`, {
+        const res = await fetch(`https://fsdp-cycling-ltey.onrender.com/${id}`, {
             method: "GET",
             headers: { "Authorization": `Bearer ${token}` }
         });
@@ -98,7 +98,7 @@ function displayButtons(eventData) {
 // ============================
 async function signUp(eventTitle, eventId) {
     try {
-        const response = await fetch(`http://localhost:3000/events/signup/${eventId}`, {
+        const response = await fetch(`https://fsdp-cycling-ltey.onrender.com/events/signup/${eventId}`, {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -132,7 +132,7 @@ async function signUp(eventTitle, eventId) {
 // ============================
 async function cancelSignUp(eventId) {
     try {
-        const res = await fetch(`http://localhost:3000/events/signup/${eventId}`, {
+        const res = await fetch(`https://fsdp-cycling-ltey.onrender.com/events/signup/${eventId}`, {
             method: "DELETE",
             headers: {
                 "Authorization": `Bearer ${token}`,

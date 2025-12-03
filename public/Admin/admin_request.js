@@ -4,14 +4,14 @@ token = localStorage.getItem('token');
 
 if (!token) {
   // Redirect to login page if not authenticated
-  window.location.href = 'login.html';
+  window.location.href = '../../index.html';
 }
 
 
 currentRequest = JSON.parse(localStorage.getItem('currentRequest'));
 async function fetchRequestDetails() {
   try {
-    const response = await fetch(`http://localhost:3000/requests/details/${currentRequest.RequestID}`, {
+    const response = await fetch(`https://fsdp-cycling-ltey.onrender.com/requests/details/${currentRequest.RequestID}`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -51,7 +51,7 @@ const reject  = document.getElementById("reject")
 async function checkRequestStatus() {
   try {
     const response = await fetch(
-      `http://localhost:3000/requests/status/${currentRequest.RequestID}`,
+      `https://fsdp-cycling-ltey.onrender.com/requests/status/${currentRequest.RequestID}`,
       {
         method: 'GET',
         headers: {
@@ -109,7 +109,7 @@ async function checkRequestStatus() {
 
 async function assignEventToOrgan(){
    try {
-    const response = await fetch(`http://localhost:3000/admin/assign_events`, {
+    const response = await fetch(`https://fsdp-cycling-ltey.onrender.com/admin/assign_events`, {
       method: 'PUT',
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -133,7 +133,7 @@ async function assignEventToOrgan(){
 
 approve.addEventListener("click",async function(){
  try {
-    const response = await fetch(`http://localhost:3000/requests/approve/${currentRequest.RequestID}`, {
+    const response = await fetch(`https://fsdp-cycling-ltey.onrender.com/requests/approve/${currentRequest.RequestID}`, {
       method: 'PUT',
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -163,7 +163,7 @@ approve.addEventListener("click",async function(){
 
 reject.addEventListener("click",async function(){
   try {
-    const response = await fetch(`http://localhost:3000/requests/reject/${currentRequest.RequestID}`, {
+    const response = await fetch(`https://fsdp-cycling-ltey.onrender.com/requests/reject/${currentRequest.RequestID}`, {
       method: 'PUT',
       headers: {
         'Authorization': `Bearer ${token}`,
