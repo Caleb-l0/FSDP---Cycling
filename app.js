@@ -190,7 +190,7 @@ app.get("/community/posts/:postId/comments", authenticate, CommunityController.g
 // ----- REWARDS SYSTEM -----
 
 const rewardsController = require("./Controllers/reward_controller.js");
-app.get("/:userId", authenticate, rewardsController.getRewards);
+app.get("rewards/:userId", authenticate, rewardsController.getRewards);
 app.post("/redeem", authenticate, rewardsController.redeemItem);
 app.get("/history/:userId", authenticate, rewardsController.getHistory);
 
