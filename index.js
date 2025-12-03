@@ -59,7 +59,7 @@
       const password=document.getElementById('signup-password').value;
       const role=document.getElementById('role').value;
       try{
-        const res=await fetch('http://localhost:3000/signup',{
+        const res=await fetch('https://fsdp-cycling-ltey.onrender.com/signup',{
           method:'POST',
           headers:{'Content-Type':'application/json'},
           body:JSON.stringify({name,email,password,role})
@@ -77,7 +77,7 @@
       const email=document.getElementById('email').value;
       const password=document.getElementById('password').value;
       try{
-        const res=await fetch('http://localhost:3000/login',{
+        const res=await fetch('https://fsdp-cycling-ltey.onrender.com/login',{
           method:'POST',
           headers:{'Content-Type':'application/json'},
           body:JSON.stringify({email,password})
