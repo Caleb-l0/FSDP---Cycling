@@ -1,4 +1,46 @@
-const sql = require("mssql");
+
+const pool = require("../../Postgres_config");
+
+// Find user by email (PostgreSQL)
+async function findUserByEmail(email) {
+  const query = `
+    SELECT *
+    FROM users
+    WHERE email = $1
+    LIMIT 1
+  `;
+
+  const values = [email];
+
+  const result = await pool.query(query, values);
+  return result.rows[0];   // PostgreSQL => result.rows
+}
+
+
+// Create User (Signup)
+async function createUser(name, email, hashedPassword, role) {
+  const query = `
+    INSERT INTO users (name, email, password, role, textsizepreference)
+    VALUES ($1, $2, $3, $4, $5)
+  `;
+
+  const values = [
+    name,
+    email,
+    hashedPassword,
+    role,
+    "normal"
+  ];
+
+  await pool.query(query, values);
+}
+
+module.exports = {
+  findUserByEmail,
+  createUser,
+};
+
+/*const sql = require("mssql");
 const db = require("../../dbconfig");
 
 async function findUserByEmail(email) {
@@ -16,4 +58,4 @@ async function createUser(name, email, hashedPassword, role) {
 }
 
 
-module.exports = { findUserByEmail, createUser };
+module.exports = { findUserByEmail, createUser };*/

@@ -1,4 +1,104 @@
-const sql = require("mssql");
+const pool = require("../../Postgres_config");
+
+// -------------------------------
+// 1. Find user by email
+// -------------------------------
+async function findUserByEmail(email) {
+  const query = `
+    SELECT *
+    FROM users
+    WHERE email = $1
+    LIMIT 1
+  `;
+
+  const result = await pool.query(query, [email]);
+  return result.rows[0];   // PostgreSQL uses rows
+}
+
+
+// -------------------------------
+// 2. Get user by ID
+// -------------------------------
+async function getUserById(id) {
+  const query = `
+    SELECT id, name, email, role, textsizepreference
+    FROM users
+    WHERE id = $1
+    LIMIT 1
+  `;
+
+  const result = await pool.query(query, [id]);
+  return result.rows[0];
+}
+
+
+// -------------------------------
+// 3. Update user (dynamic fields)
+// -------------------------------
+async function updateUser(id, name, email, textSizePreference) {
+
+  const updates = [];
+  const values = [];
+  let index = 1;
+
+  // push name
+  if (name) {
+    updates.push(`name = $${index}`);
+    values.push(name);
+    index++;
+  }
+
+  // push email
+  if (email) {
+    updates.push(`email = $${index}`);
+    values.push(email);
+    index++;
+  }
+
+  // push textSizePreference
+  if (textSizePreference) {
+    updates.push(`textsizepreference = $${index}`);
+    values.push(textSizePreference);
+    index++;
+  }
+
+  // Nothing to update
+  if (updates.length === 0) return;
+
+  // Add the id at the end
+  values.push(id);
+
+  const query = `
+    UPDATE users
+    SET ${updates.join(", ")}
+    WHERE id = $${index}
+  `;
+
+  await pool.query(query, values);
+}
+
+
+// -------------------------------
+// 4. Delete user
+// -------------------------------
+async function deleteUser(id) {
+  const query = `
+    DELETE FROM users
+    WHERE id = $1
+  `;
+
+  await pool.query(query, [id]);
+}
+
+
+module.exports = {
+  findUserByEmail,
+  getUserById,
+  updateUser,
+  deleteUser
+};
+
+/*const sql = require("mssql");
 const db = require("../../dbconfig");
 
 async function findUserByEmail(email) {
@@ -47,3 +147,4 @@ async function deleteUser(id) {
 }
 
 module.exports = { findUserByEmail, getUserById, updateUser, deleteUser };
+*/
