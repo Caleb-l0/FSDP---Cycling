@@ -1,7 +1,7 @@
-/*const rewardsModel = require("../Models/reward_model");
+const rewardsModel = require("../Models/reward_model");
 
 // GET points + shop items
-exports.getRewards = async (req, res) => {
+async function getRewards(req, res) {
     try {
         const userId = req.user.id;
         const points = await rewardsModel.getUserPoints(userId);
@@ -12,10 +12,10 @@ exports.getRewards = async (req, res) => {
         console.error(err);
         res.status(500).json({ error: "Failed to load rewards" });
     }
-};
+}
 
 // Redeem an item
-exports.redeemItem = async (req, res) => {
+async function redeemItem(req, res) {
     try {
         const userId = req.user.id;
         const { itemId } = req.body;
@@ -34,10 +34,10 @@ exports.redeemItem = async (req, res) => {
         console.error(err);
         res.status(500).json({ error: "Redemption failed" });
     }
-};
+}
 
 // Get redemption history
-exports.getHistory = async (req, res) => {
+async function getHistory(req, res) {
     try {
         const userId = req.params.userId;
         const history = await rewardsModel.getHistory(userId);
@@ -46,5 +46,11 @@ exports.getHistory = async (req, res) => {
         console.error(err);
         res.status(500).json({ error: "Error loading history" });
     }
+}
+
+
+module.exports = {
+    getRewards,
+    redeemItem,
+    getHistory
 };
-*/
