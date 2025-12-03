@@ -79,7 +79,7 @@ app.delete('/user/:id', authenticate, deleteUser);
 
 
 // ----- PROFILE PAGE -----
-app.get("https://fsdp-cycling-ltey.onrender.com/profile", authenticate, async (req, res) => {
+app.get("/profile", authenticate, async (req, res) => {
   res.json({
     id: req.user.id,
     name: req.user.name,
@@ -89,15 +89,14 @@ app.get("https://fsdp-cycling-ltey.onrender.com/profile", authenticate, async (r
   });
 });
 
-// UPDATE PROFILE
-app.put("https://fsdp-cycling-ltey.onrender.com/profile", authenticate, async (req, res) => {
+// ----- UPDATE PROFILE -----
+app.put("/profile", authenticate, async (req, res) => {
   const { name, email, textSizePreference } = req.body;
 
   try {
     await loginModel.updateUser(req.user.id, name, email, textSizePreference);
 
     res.json({ message: "Profile updated successfully!" });
-
   } catch (err) {
     console.error("Update error:", err);
     res.status(500).json({ message: "Failed to update profile." });

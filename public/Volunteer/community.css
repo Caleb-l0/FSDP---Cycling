@@ -145,39 +145,7 @@ body {
 }
 
 /* ===== GLOBAL COMMENT PANEL ===== */
-.comment-panel {
-    position: fixed;
-    left: 0;
-    bottom: -100%;
-    width: 100%;
-    background: #ffffff;
-    padding: 25px;
-    border-radius: 20px 20px 0 0;
-    box-shadow: 0 -5px 25px rgba(0,0,0,0.15);
-    transition: bottom 0.35s ease-in-out;
-    z-index: 9999;
-}
 
-.comment-panel.show {
-    bottom: 0;
-}
-
-.comment-panel-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.comment-close-btn {
-    border: none;
-    background: #B33A3A;
-    color: white;
-    font-size: 1.3rem;
-    width: 35px;
-    height: 35px;
-    border-radius: 50%;
-    cursor: pointer;
-}
 
 #globalCommentInput {
     width: 100%;
@@ -192,17 +160,7 @@ body {
     font-size: 1rem;
 }
 
-.comment-send-btn {
-    width: 100%;
-    padding: 12px 0;
-    background: #E69A2A;
-    border: none;
-    border-radius: 12px;
-    color: white;
-    font-size: 1.1rem;
-    font-weight: 700;
-    cursor: pointer;
-}
+
 
 /* =========================================================
    COMMENT PANEL (SLIDING UP)
@@ -265,126 +223,121 @@ body {
 }
 
 /* Slide-up comment panel */
-.comment-panel {
+/* ===== DARK OVERLAY ===== */
+.comment-overlay {
     position: fixed;
-    bottom: -260px;
+    top: 0;
     left: 0;
     width: 100%;
-    background: white;
-    padding: 15px;
-    box-shadow: 0 -4px 12px rgba(0,0,0,0.2);
-    border-radius: 14px 14px 0 0;
-    transition: bottom 0.35s ease;
-    z-index: 999;
+    height: 100%;
+    background: rgba(0,0,0,0.45);
+    display: none;
+    z-index: 900;
 }
 
-/* When opened */
+/* ===== SLIDE-UP COMMENT PANEL ===== */
+.comment-panel {
+    position: fixed;
+    left: 0;
+    bottom: -300px;
+    width: 100%;
+    background: #ffffff;
+    padding: 22px;
+    border-radius: 20px 20px 0 0;
+    box-shadow: 0 -6px 20px rgba(0,0,0,0.2);
+    transition: bottom 0.35s ease-in-out;
+    z-index: 1000;
+}
+
 .comment-panel.show {
     bottom: 0;
 }
 
-/* Panel Header */
+/* Title Row */
 .comment-panel-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 12px;
 }
 
-.comment-panel-header h4 {
-    margin: 0;
-    font-size: 1.2rem;
-    font-weight: 700;
-    color: #d48a1e;
-}
-
-/* Close button */
 .comment-close-btn {
     border: none;
-    background: none;
-    font-size: 1.5rem;
+    background: #B33A3A;
+    color: white;
+    font-size: 1.3rem;
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
     cursor: pointer;
-    color: #999;
 }
 
-.comment-close-btn:hover {
-    color: #666;
-}
-
-/* Textarea */
+/* Input */
 .comment-input {
     width: 100%;
     height: 90px;
-    border: 1px solid #f3d19c;
-    border-radius: 10px;
-    padding: 10px;
     resize: none;
-    font-size: 0.95rem;
-    outline: none;
-}
-
-.comment-input:focus {
-    border-color: #e69a2a;
-    box-shadow: 0 0 0 3px rgba(230, 154, 42, 0.2);
-}
-
-/* Submit button */
-.comment-send-btn {
-    display: block;
-    width: 100%;
-    margin-top: 12px;
-    background: linear-gradient(135deg, #E69A2A, #D38B1F);
-    color: white;
+    margin-top: 15px;
+    margin-bottom: 10px;
     padding: 12px;
+    border-radius: 12px;
+    border: 1px solid #e2c8a6;
+    background: #FFF8E1;
     font-size: 1rem;
-    border: none;
-    border-radius: 10px;
-    cursor: pointer;
-    transition: 0.2s ease;
-    font-weight: 700;
 }
 
-.comment-send-btn:hover {
-    transform: translateY(-2px);
-    background: linear-gradient(135deg, #C97C19, #B56A11);
+/* Button */
+.comment-send-btn {
+    width: 100%;
+    padding: 14px;
+    background: #E69A2A;
+    border: none;
+    border-radius: 12px;
+    color: white;
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
 }
+
 
 /* =========================================================
    CREATE POST PANEL
 ========================================================= */
+/* CREATE POST PANEL */
 .post-form-container {
-    max-width: 850px;
-    margin: 20px auto;
+    max-width: 750px;
+    margin: 40px auto;
     padding: 22px;
-    background: white;
-    border-radius: 14px;
+    background: #ffffff;
+    border-radius: 16px;
     border: 1.5px solid #E5D3B3;
-    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 18px rgba(0,0,0,0.08);
     display: none;
 }
 
-#postContent,
-#postImage,
-.post-form-select {
+.post-form-container textarea,
+.post-form-container input,
+.post-form-container select {
     width: 100%;
     padding: 14px;
+    font-size: 1rem;
     border-radius: 12px;
-    border: 1.5px solid #E5D3B3;
     background: #FFF8E1;
-    margin-bottom: 15px;
+    border: 1.5px solid #E5D3B3;
+    margin-bottom: 16px;
 }
 
 .post-submit-btn {
     width: 100%;
-    padding: 12px;
+    padding: 14px;
     background: #E69A2A;
     border: none;
-    border-radius: 12px;
-    font-size: 1.1rem;
-    font-weight: 700;
     color: white;
+    font-size: 1.1rem;
+    border-radius: 12px;
+    font-weight: 700;
     cursor: pointer;
 }
+
 
 /* =========================================================
    PEOPLE YOU MAY KNOW
