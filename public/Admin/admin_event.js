@@ -75,7 +75,7 @@ function setupButtonsByRole(role) {
 
 async function fetchEventDetails() {
   try {
-    const response = await fetch(`http://localhost:3000/${currentEventId}`, {
+    const response = await fetch(`http://localhost:3000/admin/${currentEventId}`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${token}`,

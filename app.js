@@ -150,7 +150,7 @@ app.put('/requests/reject/:id',authenticate,requestController.rejectRequest)
 app.get('/requests/status/:id',authenticate,requestController.checkRequestStatus)
 
 // ----- ADMIN EVENT ROUTES -----
-app.get('/:id',authenticate,EVENT.getEventById) 
+app.get('/admin/:id',authenticate,EVENT.getEventById) 
 
 
 
