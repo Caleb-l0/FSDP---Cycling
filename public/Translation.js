@@ -60,7 +60,7 @@ async function translatePage(targetLang) {
 
     translationInProgress = true;
 
-    const apiURL = "http://localhost:3000/translate";
+    const apiURL = "https://fsdp-cycling-ltey.onrender.com/translate";
     localStorage.setItem("targetLanguage", targetLang);
 
     const elements = document.querySelectorAll("*");
