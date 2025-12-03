@@ -44,8 +44,7 @@ const loginModel = require('./Accounts/login/loginModel');
 
 // --------------- translation
 
-// event con
-const EVENT = require('./Controllers/EventController.js')
+
 
 
 // !!!!!!!!!!!!!1!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -149,8 +148,8 @@ app.put('/requests/approve/:id',authenticate,requestController.approveRequest)
 app.put('/requests/reject/:id',authenticate,requestController.rejectRequest)
 app.get('/requests/status/:id',authenticate,requestController.checkRequestStatus)
 
-// ----- ADMIN EVENT ROUTES -----
-app.get('/admin/:id',authenticate,EVENT.getEventById) 
+
+
 
 
 
@@ -190,7 +189,7 @@ app.get("/community/posts/:postId/comments", authenticate, CommunityController.g
 // ----- REWARDS SYSTEM -----
 
 const rewardsController = require("./Controllers/reward_controller.js");
-app.get("rewards/:userId", authenticate, rewardsController.getRewards);
+app.get("/rewards/:userId", authenticate, rewardsController.getRewards);
 app.post("/redeem", authenticate, rewardsController.redeemItem);
 app.get("/history/:userId", authenticate, rewardsController.getHistory);
 
