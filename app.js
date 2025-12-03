@@ -79,7 +79,7 @@ app.delete('/user/:id', authenticate, deleteUser);
 
 
 // ----- PROFILE PAGE -----
-app.get("/api/profile", authenticate, async (req, res) => {
+app.get("https://fsdp-cycling-ltey.onrender.com/profile", authenticate, async (req, res) => {
   res.json({
     id: req.user.id,
     name: req.user.name,
@@ -90,7 +90,7 @@ app.get("/api/profile", authenticate, async (req, res) => {
 });
 
 // UPDATE PROFILE
-app.put("/api/profile", authenticate, async (req, res) => {
+app.put("https://fsdp-cycling-ltey.onrender.com/profile", authenticate, async (req, res) => {
   const { name, email, textSizePreference } = req.body;
 
   try {
@@ -259,7 +259,7 @@ app.use((err, req, res, next) => {
 
 app.post("/translate", async (req, res) => {
   try {
-    const response = await fetch("http://localhost:5000/translate", {
+    const response = await fetch("https://fsdp-cycling-ltey.onrender.com/translate", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(req.body)
