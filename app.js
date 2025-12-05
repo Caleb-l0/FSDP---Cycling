@@ -9,6 +9,18 @@ const db = require("./dbconfig");
 const app = express();
 const port = process.env.PORT || 3000;
 
+const session = require("express-session");
+
+app.use(
+  session({
+    secret: "supersecretkey",
+    resave: false,
+    saveUninitialized: true
+  })
+);
+
+
+
 // ----- MIDDLEWARE -----
 app.use(cors());
 app.use(express.json());
@@ -270,6 +282,63 @@ app.post("/translate", async (req, res) => {
     console.error("Translate error:", err);
     res.status(500).json({ error: "Translation failed" });
   }
+});
+
+// ---------------- GOOGLE LOGIN ------------------
+
+const { OAuth2Client } = require("google-auth-library");
+const client = new OAuth2Client("59962105456-o8o2c5v5dujk3igho8s84ioutcu8gsl3.apps.googleusercontent.com");
+
+app.post("/google-login", async (req, res) => {
+    try {
+        const { token } = req.body;
+
+        const ticket = await client.verifyIdToken({
+            idToken: token,
+            audience: "YOUR_CLIENT_ID_HERE"
+        });
+
+        const payload = ticket.getPayload();
+        const email = payload.email;
+        const name = payload.name;
+
+        // Connect to SQL Server
+        let pool = await sql.connect(db);
+
+        // Check if user exists
+        let result = await pool.request()
+            .input("email", sql.VarChar, email)
+            .query("SELECT * FROM users WHERE email = @email");
+
+        if (result.recordset.length === 0) {
+            // Create user
+            await pool.request()
+                .input("name", sql.VarChar, name)
+                .input("email", sql.VarChar, email)
+                .query("INSERT INTO users (name, email) VALUES (@name, @email)");
+
+            result = await pool.request()
+                .input("email", sql.VarChar, email)
+                .query("SELECT * FROM users WHERE email = @email");
+        }
+
+        const user = result.recordset[0];
+
+        // STORE USER IN SESSION
+        req.session = req.session || {};
+        req.session.user = {
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            role: user.role || "user"
+        };
+
+        res.json({ success: true });
+
+    } catch (err) {
+        console.error("GOOGLE LOGIN ERROR:", err);
+        res.json({ success: false });
+    }
 });
 
 

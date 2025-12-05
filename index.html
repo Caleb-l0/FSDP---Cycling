@@ -228,6 +228,10 @@
         <input type="password" id="password" placeholder="Password" required><br>
         <button type="submit">Login</button>
       </form>
+      <p>or</p>
+      <button id="googleLoginBtn" class="google-btn">Continue with Google</button>
+</button>
+
       <p style="margin-top:10px;">
         Don't have an account? <a href="#" onclick="switchToSignup()">Sign Up</a>
       </p>
@@ -448,7 +452,40 @@
   </footer>
  <script src="./public/Translation.js"></script>
  <script src="index.js"></script>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
 
+<div id="g_id_onload"
+     data-client_id="59962105456-o8o2c5v5dujk3igho8s84ioutcu8gsl3.apps.googleusercontent.com"
+     data-callback="handleGoogleLogin">
+</div>
+
+<div class="g_id_signin"
+     data-type="standard"
+     data-size="large"
+     data-theme="outline"
+     data-text="continue_with"
+     data-shape="rectangular">
+</div>
+
+<script>
+function handleGoogleLogin(response) {
+    const token = response.credential;
+
+    fetch("/google-login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            window.location.href = "/home.html";
+        } else {
+            alert("Google login failed");
+        }
+    });
+}
+</script>
 
 
 </body>
