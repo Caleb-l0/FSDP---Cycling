@@ -278,7 +278,7 @@ app.post("/translate", async (req, res) => {
 const pool = require("./db");
 const { OAuth2Client } = require("google-auth-library");
 
-const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+const googleClient = new OAuth2Client(process.env.DATABASE_URL);
 
 
 app.post("/auth/google", async (req, res) => {
