@@ -159,6 +159,12 @@
     }
   });
 
+  //Google
+  document.getElementById("googleLoginBtn").addEventListener("click", () => {
+    google.accounts.id.prompt();  
+});
+
+
   // Handle language selection
   document.querySelectorAll(".lang-btn").forEach(btn => {
     btn.addEventListener("click", () => {

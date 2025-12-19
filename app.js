@@ -272,6 +272,46 @@ app.post("/translate", async (req, res) => {
   }
 });
 
+app.post("/google-login", async (req, res) => {
+    try {
+        const { token } = req.body;
+
+        // Verify token with Google
+        const response = await fetch(`https://oauth2.googleapis.com/tokeninfo?id_token=${token}`);
+        const payload = await response.json();
+
+        if (!payload.email) return res.status(400).json({ success: false, message: "Invalid token" });
+
+        const email = payload.email;
+        const name = payload.name || "No Name";
+
+        let pool = await sql.connect(db);
+
+        // Check if user exists
+        let result = await pool.request()
+            .input("email", sql.VarChar, email)
+            .query("SELECT * FROM users WHERE email = @email");
+
+        if (result.recordset.length === 0) {
+            // Create new user
+            await pool.request()
+                .input("name", sql.VarChar, name)
+                .input("email", sql.VarChar, email)
+                .query("INSERT INTO users (name, email) VALUES (@name, @email)");
+
+            result = await pool.request()
+                .input("email", sql.VarChar, email)
+                .query("SELECT * FROM users WHERE email = @email");
+        }
+
+        const user = result.recordset[0];
+        res.json({ success: true, user });
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ success: false, message: "Login failed" });
+    }
+});
 
 
 
