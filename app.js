@@ -283,60 +283,50 @@ const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 app.post("/auth/google", async (req, res) => {
   try {
+    console.log("🔹 /auth/google called");
+
     const { credential } = req.body;
     if (!credential) {
       return res.status(400).json({ message: "Missing credential" });
     }
 
-   
+    console.log("🔹 Verifying Google token");
+
     const ticket = await googleClient.verifyIdToken({
       idToken: credential,
       audience: process.env.GOOGLE_CLIENT_ID
     });
 
     const payload = ticket.getPayload();
+    console.log("🔹 Google payload:", payload?.email);
+
     const email = payload.email;
     const name = payload.name || "No Name";
 
-    if (!email) {
-      return res.status(400).json({ message: "Invalid Google token" });
-    }
-
-   
-    let result = await pool.query(
+    const result = await pool.query(
       "SELECT id, name, email, role FROM users WHERE email = $1",
       [email]
     );
 
     let user = result.rows[0];
 
-   
     if (!user) {
+      console.log("🔹 Creating new user");
       const insert = await pool.query(
-        `INSERT INTO users (name, email, role)
-         VALUES ($1, $2, 'volunteer')
-         RETURNING id, name, email, role`,
+        "INSERT INTO users (name, email, role) VALUES ($1, $2, 'volunteer') RETURNING id, name, email, role",
         [name, email]
       );
       user = insert.rows[0];
     }
 
-   
-    res.json({
-      success: true,
-      user: {
-        id: user.id,
-        name: user.name,
-        email: user.email,
-        role: user.role
-      }
-    });
+    res.json({ success: true, user });
 
   } catch (err) {
-    console.error("Google login error:", err);
+    console.error("❌ Google login error:", err);
     res.status(500).json({ message: "Google login failed" });
   }
 });
+
 
 
 
