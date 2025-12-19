@@ -232,13 +232,15 @@
       <p>Or</p>
       
     <!-- Google Sign-In Button -->
-<button id="googleLoginBtn" type="button">
+
+
+
+<div id="googleButtonContainer" style="margin-top:12px;">
+  <button id="googleLoginBtn" type="button">
   Continue with Google
 </button>
-
-
-<div id="googleButtonContainer" style="margin-top:12px;"></div>
-  </div>
+</div>
+  
     <!-- Google Sign-In Button -->
 
   <!-- Signup Modal -->
@@ -270,7 +272,7 @@
 
   <!--Main -->
   <!-- ===============================
-     OUR MISSION (温暖 + 信任)
+
 ================================ -->
 <section class="hvw-section hvw-mission">
   <div class="hvw-container">
@@ -284,7 +286,7 @@
 
 
 <!-- ===============================
-     STORIES OF KINDNESS (故事驱动)
+
 ================================ -->
 <section class="hvw-section hvw-stories">
   <div class="hvw-container">
@@ -358,7 +360,7 @@
 
 
 <!-- ===============================
-     COMMUNITY VOICES (评价 + 温度)
+
 ================================ -->
 <section class="hvw-section hvw-voices">
   <div class="hvw-container">
@@ -389,7 +391,7 @@
 
 
 <!-- ===============================
-     SENIOR FRIENDLY (老人友好)
+
 ================================ -->
 <section class="hvw-section hvw-seniors">
   <div class="hvw-container">
@@ -456,7 +458,7 @@
  <script src="./public/Translation.js"></script>
  <script src="index.js"></script>
 
-<script>
+<!--<script>
   function handleCredentialResponse(response) {
     // Send the token to your server
     fetch("/google-login", {
@@ -489,6 +491,7 @@
     );
   };
 </script>
+!-->
 
 
 
