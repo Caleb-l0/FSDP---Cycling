@@ -274,10 +274,12 @@ app.post("/translate", async (req, res) => {
 
 // ----- GOOGLE LOGIN ROUTE -----
 
-import pool from "./db.js";
-import { OAuth2Client } from "google-auth-library";
+
+const pool = require("./db");
+const { OAuth2Client } = require("google-auth-library");
 
 const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+
 
 app.post("/auth/google", async (req, res) => {
   try {
