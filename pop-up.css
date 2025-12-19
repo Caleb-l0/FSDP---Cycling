@@ -1,10 +1,12 @@
+/* =====================================================
+   LANGUAGE SELECTION POPUP
+   Designed for seniors: clear, large, calm
+===================================================== */
+
 .lang-popup {
   position: fixed;
-  top: 0;
-  left: 0;
-  height: 100%;
-  width: 100%;
-  background: rgba(0,0,0,0.6);
+  inset: 0;
+  background: rgba(0,0,0,0.65);
   display: none;
   justify-content: center;
   align-items: center;
@@ -16,51 +18,46 @@
 }
 
 .lang-popup-content {
-  background: #fff;
-  width: 90%;
-  max-width: 420px;
-  padding: 30px;
-  border-radius: 16px;
+  background: #ffffff;
+  width: 92%;
+  max-width: 440px;
+  padding: 34px 30px;
+  border-radius: 18px;
   text-align: center;
-  box-shadow: 0 6px 25px rgba(0,0,0,0.3);
-  font-family: "Segoe UI", sans-serif;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.35);
 }
 
 .lang-popup-content h2 {
-  font-size: 28px;
-  margin-bottom: 10px;
-  color: #d48806;
+  font-size: 1.9rem;
+  margin-bottom: 12px;
+  color: #c7771d;
 }
 
 .lang-popup-content p {
-  font-size: 18px;
-  margin-bottom: 20px;
+  font-size: 1.1rem;
   color: #555;
+  margin-bottom: 26px;
 }
 
 .lang-buttons {
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 16px;
 }
 
 .lang-btn {
-  padding: 15px 20px;
-  font-size: 20px;
-  font-weight: bold;
-  background: #f7b733;
+  padding: 16px;
+  font-size: 1.2rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, #f3a33c, #f7c873);
   border: none;
-  border-radius: 12px;
-  color: white;
+  border-radius: 14px;
+  color: #ffffff;
   cursor: pointer;
-  transition: 0.3s;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
 .lang-btn:hover {
-  background: #ffa502;
-  transform: scale(1.05);
-}
-
-.lang-btn:active {
-  transform: scale(0.97);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.25);
 }

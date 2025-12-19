@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en-SG">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cycling Without Age Singapore - Active Seniors Volunteer Program</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;600;700&family=Noto+Sans+SC:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        cwa: {
+                            red: '#D9381E',
+                            dark: '#222222',
+                        },
+                        sg: {
+                            bg: '#F5F7FA', // 干净的灰白背景
+                            green: '#2E7D32', // 花园城市绿
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['"Lexend"', '"Noto Sans SC"', 'sans-serif'], // Lexend 字体专为阅读障碍设计，非常易读
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-size: 20px; } /* 全局字号加大，适应老花眼 */
+        .btn-large {
+            padding: 1rem 2.5rem;
+            font-size: 1.25rem;
+            border-radius: 9999px;
+            transition: all 0.3s ease;
+        }
+        /* 模拟 WhatsApp 悬浮按钮 */
+        .whatsapp-float {
+            position: fixed;
+            width: 70px;
+            height: 70px;
+            bottom: 30px;
+            right: 30px;
+            background-color: #25d366;
+            color: #FFF;
+            border-radius: 50px;
+            text-align: center;
+            font-size: 35px;
+            box-shadow: 2px 2px 10px #666;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .whatsapp-float:hover { background-color: #128C7E; transform: scale(1.1); }
+    </style>
+</head>
+<body class="bg-sg-bg text-gray-800 antialiased">
+
+    <div class="bg-cwa-dark text-white py-3">
+        <div class="container mx-auto px-6 flex justify-between items-center text-sm md:text-base">
+            <div class="flex gap-4">
+                <span><i class="fa-solid fa-location-dot text-cwa-red"></i> Singapore Chapter</span>
+            </div>
+            <div class="flex gap-4 font-bold">
+                <span class="cursor-pointer hover:text-cwa-red">English</span>
+                <span class="opacity-50">|</span>
+                <span class="cursor-pointer hover:text-cwa-red">中文</span>
+            </div>
+        </div>
+    </div>
+
+    <nav class="bg-white shadow-md sticky top-0 z-50">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="text-4xl text-cwa-red"><i class="fa-solid fa-bicycle"></i></div>
+                <div>
+                    <h1 class="text-xl md:text-2xl font-bold leading-none">Cycling Without Age</h1>
+                    <p class="text-sm text-gray-500 font-semibold">Singapore</p>
+                </div>
+            </div>
+            <div class="hidden md:flex gap-8 font-semibold text-gray-700">
+                <a href="#" class="hover:text-cwa-red">Our Story</a>
+                <a href="#benefits" class="hover:text-cwa-red">Why Volunteer?</a>
+                <a href="#faq" class="hover:text-cwa-red">FAQ</a>
+            </div>
+            <a href="#join" class="bg-cwa-red text-white px-6 py-3 rounded-full font-bold shadow hover:bg-red-700 transition hidden md:block">
+                Join as Pilot
+            </a>
+        </div>
+    </nav>
+
+    <header class="relative bg-white overflow-hidden">
+        <div class="container mx-auto px-6 py-16 md:py-24 grid md:grid-cols-2 gap-12 items-center">
+            <div class="order-2 md:order-1">
+                <div class="inline-block bg-green-100 text-sg-green px-4 py-1 rounded-full font-bold mb-4 border border-green-200">
+                    <i class="fa-solid fa-seedling mr-2"></i> Active Ageing SG
+                </div>
+                <h2 class="text-4xl md:text-6xl font-bold text-gray-900 leading-tight mb-6">
+                    Stay Fit, Make Friends, <br>
+                    <span class="text-cwa-red">Ride with Purpose.</span>
+                </h2>
+                <p class="text-xl text-gray-600 mb-8 leading-relaxed">
+                    退休生活不无聊！加入我们的 "Pilot" 团队。哪怕您已经 60 岁、70 岁，只要您会骑脚踏车，就能用我们的<strong>电动三轮车</strong>带老人兜风，重拾甘榜情。
+                </p>
+                
+                <div class="flex flex-col sm:flex-row gap-4">
+                    <a href="#join" class="btn-large bg-cwa-red text-white text-center shadow-lg hover:bg-red-700">
+                        我要报名 (Sign Up)
+                    </a>
+                    <a href="#how-it-works" class="btn-large bg-white border-2 border-gray-300 text-gray-700 text-center hover:bg-gray-50">
+                        <i class="fa-regular fa-circle-play mr-2"></i> 怎么骑? (Video)
+                    </a>
+                </div>
+                <p class="mt-4 text-sm text-gray-500">
+                    <i class="fa-solid fa-check text-green-600 mr-1"></i> No heavy pedaling required (Electric Assist)
+                </p>
+            </div>
+            
+            <div class="order-1 md:order-2 relative">
+                <img src="https://images.unsplash.com/photo-1571068316344-75bc76f778f7?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="Active Senior Pilot" class="rounded-3xl shadow-2xl border-4 border-white w-full object-cover">
+                
+                <div class="absolute bottom-6 left-6 bg-white/90 backdrop-blur p-4 rounded-xl shadow-lg border-l-4 border-cwa-red">
+                    <p class="font-bold text-gray-900">Uncle David, 68岁</p>
+                    <p class="text-sm text-gray-600">"有了电动助力，骑车就像散步一样轻松！"</p>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <section id="benefits" class="py-20 bg-sg-bg">
+        <div class="container mx-auto px-6">
+            <div class="text-center max-w-3xl mx-auto mb-16">
+                <h3 class="text-3xl font-bold mb-4">为什么乐龄人士适合加入？</h3>
+                <p class="text-gray-600 text-xl">不用担心体力，不用担心安全，我们为您准备好了一切。</p>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="bg-white p-8 rounded-2xl shadow-sm border-t-4 border-cwa-red hover:-translate-y-2 transition duration-300">
+                    <div class="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center text-cwa-red text-3xl mb-6">
+                        <i class="fa-solid fa-bolt"></i>
+                    </div>
+                    <h4 class="text-2xl font-bold mb-3">电动助力 (E-Assist)</h4>
+                    <p class="text-gray-600">
+                        我们的三轮车配备了先进的电动马达。即使载着两名乘客上坡，也像平地一样轻松。**不会伤膝盖，不会累。**
+                    </p>
+                </div>
+
+                <div class="bg-white p-8 rounded-2xl shadow-sm border-t-4 border-sg-green hover:-translate-y-2 transition duration-300">
+                    <div class="w-16 h-16 bg-green-50 rounded-full flex items-center justify-center text-sg-green text-3xl mb-6">
+                        <i class="fa-solid fa-graduation-cap"></i>
+                    </div>
+                    <h4 class="text-2xl font-bold mb-3">专业免费培训</h4>
+                    <p class="text-gray-600">
+                        我们会手把手教您如何驾驶。通常只需 2-3 次练习，您就能熟练掌握。我们非常重视道路安全。
+                    </p>
+                </div>
+
+                <div class="bg-white p-8 rounded-2xl shadow-sm border-t-4 border-blue-500 hover:-translate-y-2 transition duration-300">
+                    <div class="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center text-blue-500 text-3xl mb-6">
+                        <i class="fa-solid fa-users"></i>
+                    </div>
+                    <h4 class="text-2xl font-bold mb-3">扩宽朋友圈 (Kaki)</h4>
+                    <p class="text-gray-600">
+                        加入我们的社区，认识更多志同道合的活跃乐龄朋友。大家一起骑车、喝Kopi、分享故事。
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-20 bg-white">
+        <div class="container mx-auto px-6">
+            <div class="flex flex-col md:flex-row gap-12 items-center">
+                <div class="md:w-1/2">
+                    <h3 class="text-3xl md:text-4xl font-bold mb-6">只需简单 3 步，<br>开启您的骑行之旅</h3>
+                    <div class="space-y-8">
+                        <div class="flex">
+                            <div class="flex-shrink-0 w-12 h-12 bg-gray-900 text-white rounded-full flex items-center justify-center font-bold text-xl">1</div>
+                            <div class="ml-6">
+                                <h4 class="text-xl font-bold">在线报名 / WhatsApp 我们</h4>
+                                <p class="text-gray-600">填写简单的表格，或者直接发信息告诉我们您想加入。</p>
+                            </div>
+                        </div>
+                        <div class="flex">
+                            <div class="flex-shrink-0 w-12 h-12 bg-gray-900 text-white rounded-full flex items-center justify-center font-bold text-xl">2</div>
+                            <div class="ml-6">
+                                <h4 class="text-xl font-bold">参加试骑 (Test Ride)</h4>
+                                <p class="text-gray-600">我们会安排一个周末，在公园教您试骑，看看您是否喜欢。</p>
+                            </div>
+                        </div>
+                        <div class="flex">
+                            <div class="flex-shrink-0 w-12 h-12 bg-cwa-red text-white rounded-full flex items-center justify-center font-bold text-xl">3</div>
+                            <div class="ml-6">
+                                <h4 class="text-xl font-bold">成为正式车长 (Pilot)</h4>
+                                <p class="text-gray-600">领取您的制服，开始预约时间，带社区里的老朋友兜风！</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="md:w-1/2">
+                    <img src="https://images.unsplash.com/photo-1556817411-31ae72fa3ea0?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="Seniors having fun" class="rounded-2xl shadow-xl">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="join" class="py-24 bg-cwa-dark text-white relative">
+        <div class="container mx-auto px-6 text-center">
+            <h2 class="text-3xl md:text-5xl font-bold mb-6">准备好加入了吗？</h2>
+            <p class="text-xl text-gray-400 mb-10 max-w-2xl mx-auto">
+                不论您住在 East Coast, Punggol 还是 Jurong，我们都欢迎您的加入。<br>
+                做一点小事，给别人带来大大的笑容。
+            </p>
+            
+            <div class="bg-white text-gray-900 max-w-lg mx-auto p-8 rounded-2xl shadow-2xl">
+                <h3 class="text-2xl font-bold mb-6 text-cwa-red">志愿者登记</h3>
+                <form class="space-y-4 text-left">
+                    <div>
+                        <label class="block font-bold mb-1">您的姓名 (Name)</label>
+                        <input type="text" class="w-full bg-gray-100 border border-gray-300 rounded px-4 py-3 text-lg focus:outline-none focus:border-cwa-red" placeholder="e.g. Tan Ah Hock">
+                    </div>
+                    <div>
+                        <label class="block font-bold mb-1">手机号码 (Mobile Number)</label>
+                        <input type="tel" class="w-full bg-gray-100 border border-gray-300 rounded px-4 py-3 text-lg focus:outline-none focus:border-cwa-red" placeholder="+65 9123 4567">
+                    </div>
+                    <div>
+                        <label class="block font-bold mb-1">居住区域 (Area)</label>
+                        <select class="w-full bg-gray-100 border border-gray-300 rounded px-4 py-3 text-lg">
+                            <option>North (Woodlands/Yishun)</option>
+                            <option>South (City/Telok Blangah)</option>
+                            <option>East (Tampines/Bedok)</option>
+                            <option>West (Jurong/Clementi)</option>
+                            <option>Central (Bishan/Toa Payoh)</option>
+                        </select>
+                    </div>
+                    <button type="button" class="w-full bg-cwa-red text-white font-bold py-4 rounded-xl text-xl hover:bg-red-600 transition shadow-lg mt-4">
+                        提交报名 (Submit)
+                    </button>
+                    <p class="text-center text-sm text-gray-500 mt-2">我们会通过 WhatsApp 联系您</p>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <footer class="bg-gray-100 pt-16 pb-8 border-t border-gray-200">
+        <div class="container mx-auto px-6 grid md:grid-cols-4 gap-8 text-sm text-gray-600">
+            <div class="md:col-span-2">
+                <h5 class="text-gray-900 font-bold text-lg mb-4">Cycling Without Age Singapore</h5>
+                <p class="mb-4 pr-10">
+                    Registered Charity in Singapore. 我们致力于通过骑行连接社区，减少老年孤独，促进代际交流。
+                </p>
+                <div class="flex space-x-4 text-2xl text-gray-400">
+                    <a href="#" class="hover:text-cwa-red"><i class="fa-brands fa-facebook"></i></a>
+                    <a href="#" class="hover:text-cwa-red"><i class="fa-brands fa-instagram"></i></a>
+                </div>
+            </div>
+            <div>
+                <h5 class="text-gray-900 font-bold mb-4">联系我们</h5>
+                <ul class="space-y-2">
+                    <li><i class="fa-brands fa-whatsapp text-green-600 mr-2"></i> +65 8123 4567</li>
+                    <li><i class="fa-solid fa-envelope mr-2"></i> volunteer@cwa.sg</li>
+                    <li><i class="fa-solid fa-location-dot mr-2"></i> National Volunteer & Philanthropy Centre</li>
+                </ul>
+            </div>
+            <div>
+                <h5 class="text-gray-900 font-bold mb-4">合作伙伴</h5>
+                <p>Supported by Active Aging Fund, SG Cares.</p>
+            </div>
+        </div>
+        <div class="text-center mt-12 pt-8 text-gray-400 text-xs">
+            &copy; 2023 Cycling Without Age Singapore. All Rights Reserved.
+        </div>
+    </footer>
+
+    <a href="https://wa.me/6512345678" target="_blank" class="whatsapp-float">
+        <i class="fa-brands fa-whatsapp"></i>
+    </a>
+
+</body>
+</html>
