@@ -160,10 +160,12 @@
   });
 
   //Google
-  document.getElementById("googleLoginBtn").addEventListener("click", () => {
-    google.accounts.id.prompt();  
-});
 
+
+
+
+
+  //
 
   // Handle language selection
   document.querySelectorAll(".lang-btn").forEach(btn => {
@@ -178,3 +180,139 @@
       }
     });
   });
+
+
+
+  // Google log in
+  /* ======================================================
+   GOOGLE LOGIN – FRONTEND (FINAL)
+====================================================== */
+
+const GOOGLE_CLIENT_ID =
+  "59962105456-6vl8vtct35g021l2vasre70lngih92cc.apps.googleusercontent.com";
+
+
+function waitForGoogle(maxWaitMs = 8000) {
+  return new Promise((resolve, reject) => {
+    const start = Date.now();
+    const timer = setInterval(() => {
+      if (window.google?.accounts?.id) {
+        clearInterval(timer);
+        resolve();
+      } else if (Date.now() - start > maxWaitMs) {
+        clearInterval(timer);
+        reject(new Error("Google SDK not loaded"));
+      }
+    }, 50);
+  });
+}
+
+
+async function initGoogleLogin() {
+  try {
+    await waitForGoogle();
+
+    google.accounts.id.initialize({
+      client_id: GOOGLE_CLIENT_ID,
+      callback: handleGoogleCredential,
+      auto_select: false,
+      cancel_on_tap_outside: true
+    });
+
+   
+    const container = document.getElementById("googleButtonContainer");
+    if (container) {
+      google.accounts.id.renderButton(container, {
+        theme: "outline",
+        size: "large",
+        shape: "pill",
+        text: "continue_with"
+      });
+    }
+
+    const googleBtn = document.getElementById("googleLoginBtn");
+    if (googleBtn) {
+      googleBtn.addEventListener("click", () => {
+        google.accounts.id.prompt((notification) => {
+          if (
+            notification.isNotDisplayed() ||
+            notification.isSkippedMoment()
+          ) {
+            createWowToast(
+              "Google popup was blocked. Please use the Google button below.",
+              "error"
+            );
+          }
+        });
+      });
+    }
+
+  } catch (err) {
+    console.error("Google init failed:", err);
+    createWowToast(
+      "Google login failed to load. Please refresh the page.",
+      "error"
+    );
+  }
+}
+
+
+async function handleGoogleCredential(response) {
+  try {
+    const googleToken = response?.credential;
+    if (!googleToken) {
+      createWowToast("Google login failed.", "error");
+      return;
+    }
+
+
+    const res = await fetch(
+      "https://fsdp-cycling-ltey.onrender.com/auth/google",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ credential: googleToken })
+      }
+    );
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      createWowToast(data.message || "Google login failed.", "error");
+      return;
+    }
+
+ 
+    createWowToast("Login successful!", "success");
+
+    localStorage.setItem("token", data.token);
+    localStorage.setItem("userId", data.userId);
+    localStorage.setItem("name", data.name);
+    localStorage.setItem("email", data.email);
+    localStorage.setItem("role", data.role);
+
+ 
+    setTimeout(() => {
+      switch (data.role) {
+        case "admin":
+          window.location.href = "/public/Admin/homepage_login_Admin.html";
+          break;
+        case "volunteer":
+          window.location.href = "/public/Volunteer/homepage_login_volunteer.html";
+          break;
+        case "institution":
+          window.location.href = "/public/Instituition/homepage_login_instituition.html";
+          break;
+        default:
+          window.location.href = "/";
+      }
+    }, 1000);
+
+  } catch (err) {
+    console.error("Google login error:", err);
+    createWowToast("Google login failed. Try again.", "error");
+  }
+}
+
+
+document.addEventListener("DOMContentLoaded", initGoogleLogin);
