@@ -254,8 +254,7 @@ app.use((err, req, res, next) => {
 });
 
 
-
-
+// ----- TRANSLATION ROUTE -----
 app.post("/translate", async (req, res) => {
   try {
     const response = await fetch("https://fsdp-cycling-ltey.onrender.com/translate", {
@@ -272,46 +271,73 @@ app.post("/translate", async (req, res) => {
   }
 });
 
-app.post("/google-login", async (req, res) => {
-    try {
-        const { token } = req.body;
 
-        // Verify token with Google
-        const response = await fetch(`https://oauth2.googleapis.com/tokeninfo?id_token=${token}`);
-        const payload = await response.json();
+// ----- GOOGLE LOGIN ROUTE -----
 
-        if (!payload.email) return res.status(400).json({ success: false, message: "Invalid token" });
+import pool from "./db.js";
+import { OAuth2Client } from "google-auth-library";
 
-        const email = payload.email;
-        const name = payload.name || "No Name";
+const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
-        let pool = await sql.connect(db);
-
-        // Check if user exists
-        let result = await pool.request()
-            .input("email", sql.VarChar, email)
-            .query("SELECT * FROM users WHERE email = @email");
-
-        if (result.recordset.length === 0) {
-            // Create new user
-            await pool.request()
-                .input("name", sql.VarChar, name)
-                .input("email", sql.VarChar, email)
-                .query("INSERT INTO users (name, email) VALUES (@name, @email)");
-
-            result = await pool.request()
-                .input("email", sql.VarChar, email)
-                .query("SELECT * FROM users WHERE email = @email");
-        }
-
-        const user = result.recordset[0];
-        res.json({ success: true, user });
-
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ success: false, message: "Login failed" });
+app.post("/auth/google", async (req, res) => {
+  try {
+    const { credential } = req.body;
+    if (!credential) {
+      return res.status(400).json({ message: "Missing credential" });
     }
+
+   
+    const ticket = await googleClient.verifyIdToken({
+      idToken: credential,
+      audience: process.env.GOOGLE_CLIENT_ID
+    });
+
+    const payload = ticket.getPayload();
+    const email = payload.email;
+    const name = payload.name || "No Name";
+
+    if (!email) {
+      return res.status(400).json({ message: "Invalid Google token" });
+    }
+
+   
+    let result = await pool.query(
+      "SELECT id, name, email, role FROM users WHERE email = $1",
+      [email]
+    );
+
+    let user = result.rows[0];
+
+   
+    if (!user) {
+      const insert = await pool.query(
+        `INSERT INTO users (name, email, role)
+         VALUES ($1, $2, 'volunteer')
+         RETURNING id, name, email, role`,
+        [name, email]
+      );
+      user = insert.rows[0];
+    }
+
+   
+    res.json({
+      success: true,
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role
+      }
+    });
+
+  } catch (err) {
+    console.error("Google login error:", err);
+    res.status(500).json({ message: "Google login failed" });
+  }
 });
+
+
+
 
 
 
