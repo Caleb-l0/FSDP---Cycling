@@ -278,7 +278,7 @@ app.post("/translate", async (req, res) => {
 const pool = require("./db");
 const { OAuth2Client } = require("google-auth-library");
 
-const googleClient = new OAuth2Client(process.env.DATABASE_URL);
+const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 
 app.post("/auth/google", async (req, res) => {
@@ -319,7 +319,20 @@ app.post("/auth/google", async (req, res) => {
       user = insert.rows[0];
     }
 
-    res.json({ success: true, user });
+    const token = jwt.sign(
+  { id: user.id, role: user.role },
+  process.env.JWT_SECRET,
+  { expiresIn: "1d" }
+);
+
+res.json({
+  token,
+  userId: user.id,
+  name: user.name,
+  email: user.email,
+  role: user.role
+});
+
 
   } catch (err) {
     console.error("❌ Google login error:", err);
