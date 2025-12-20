@@ -5,7 +5,7 @@ const path = require('path');
 const cors = require('cors');
 const sql = require("mssql");
 const db = require("./dbconfig");
-
+const jwt = require("jsonwebtoken");
 const app = express();
 const port = process.env.PORT || 3000;
 
@@ -283,14 +283,10 @@ const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 app.post("/auth/google", async (req, res) => {
   try {
-    console.log("🔹 /auth/google called");
-
     const { credential } = req.body;
     if (!credential) {
       return res.status(400).json({ message: "Missing credential" });
     }
-
-    console.log("🔹 Verifying Google token");
 
     const ticket = await googleClient.verifyIdToken({
       idToken: credential,
@@ -298,12 +294,10 @@ app.post("/auth/google", async (req, res) => {
     });
 
     const payload = ticket.getPayload();
-    console.log("🔹 Google payload:", payload?.email);
-
     const email = payload.email;
     const name = payload.name || "No Name";
 
-    const result = await pool.query(
+    let result = await pool.query(
       "SELECT id, name, email, role FROM users WHERE email = $1",
       [email]
     );
@@ -311,7 +305,6 @@ app.post("/auth/google", async (req, res) => {
     let user = result.rows[0];
 
     if (!user) {
-      console.log("🔹 Creating new user");
       const insert = await pool.query(
         "INSERT INTO users (name, email, role) VALUES ($1, $2, 'volunteer') RETURNING id, name, email, role",
         [name, email]
@@ -320,19 +313,18 @@ app.post("/auth/google", async (req, res) => {
     }
 
     const token = jwt.sign(
-  { id: user.id, role: user.role },
-  process.env.JWT_SECRET,
-  { expiresIn: "1d" }
-);
+      { id: user.id, role: user.role },
+      process.env.JWT_SECRET,
+      { expiresIn: "1d" }
+    );
 
-res.json({
-  token,
-  userId: user.id,
-  name: user.name,
-  email: user.email,
-  role: user.role
-});
-
+    res.json({
+      token,
+      userId: user.id,
+      name: user.name,
+      email: user.email,
+      role: user.role
+    });
 
   } catch (err) {
     console.error("❌ Google login error:", err);
