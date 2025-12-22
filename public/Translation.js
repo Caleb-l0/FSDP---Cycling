@@ -85,7 +85,7 @@ async function translatePage(targetLang) {
           saveTranslationToCache(targetLang, originalText, data.translatedText);
 
           await new Promise(r => setTimeout(r, 120));
-        } catch {
+        } catch(err) {
             console.error("Translate fetch failed:", err);
           continue;
         }
