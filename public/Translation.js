@@ -13,8 +13,9 @@ class LibreTranslator {
         // Configuration
         this.config = {
            apiUrl: options.apiUrl || '/translate/batch',
+           cachePrefix: 'libre_translate_',
             cacheDuration: 30 * 24 * 60 * 60 * 1000, // 30 days cache
-            maxTextLength: 5000, // Max length per translation
+            maxTextLength: 3000, // Max length per translation
             batchSize: 10, // Batch translation size
             requestDelay: 100, // Request delay (ms)
             maxCacheSize: 1000, // Max cache entries
@@ -854,7 +855,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize translator
     initLibreTranslator({
         
-        batchSize: 15,
+        batchSize: 5,
         requestDelay: 150
     });
     
