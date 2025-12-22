@@ -1,3 +1,4 @@
+alert("Translation.js LOADED");
 let translateController = null;
 let translationInProgress = false;
 
