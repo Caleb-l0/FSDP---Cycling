@@ -1,8 +1,4 @@
- // ========================
-// GLOBAL UI PREFERENCE KEYS
-// ========================
 
-const TEXT_SIZE_KEY = 'textSizePreference';
 
     // Load header dynamically
     fetch('./public/header.html')
