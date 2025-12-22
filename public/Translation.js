@@ -1,362 +1,949 @@
-/* ===========================
-   CLIENT: translate.js
-   - Uses /translate/batch with chunking
-   - Validates JSON responses
-   - Caches per language + text hash
-   =========================== */
+/**
+ * LibreTranslate Multi-language Translation System
+ * Features:
+ * 1. Click to translate page content
+ * 2. Support 100+ languages
+ * 3. Translation progress indication
+ * 4. Translation interrupt and switch
+ * 5. Language preference caching
+ */
 
-async function translatePage(targetLang) {
-  console.log(`Starting translation to ${targetLang}...`);
+class LibreTranslator {
+    constructor(options = {}) {
+        // Configuration
+        this.config = {
+           apiUrl: options.apiUrl || '/translate/batch',
+            cacheDuration: 30 * 24 * 60 * 60 * 1000, // 30 days cache
+            maxTextLength: 5000, // Max length per translation
+            batchSize: 10, // Batch translation size
+            requestDelay: 100, // Request delay (ms)
+            maxCacheSize: 1000, // Max cache entries
+            ...options
+        };
 
-  const progressEl = document.createElement("div");
-  progressEl.id = "translation-progress";
-  progressEl.style.cssText = `
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    background: #4CAF50;
-    color: white;
-    padding: 10px 20px;
-    border-radius: 5px;
-    z-index: 10000;
-    font-weight: bold;
-  `;
-  document.body.appendChild(progressEl);
+        // State
+        this.isTranslating = false;
+        this.currentLang = null;
+        this.abortController = null;
+        this.progressElement = null;
+        this.cache = new Map();
+        this.translationQueue = [];
+        this.activeRequests = new Set();
 
-  // Change this to your Render URL (or keep relative if same domain)
-  const API_URL = "https://fsdp-cycling-ltey.onrender.com/translate/batch";
+        // Supported languages with codes and display names
+        this.supportedLanguages = {
+            'en': { name: 'English', native: 'English' },
+            'zh': { name: 'Chinese', native: '中文' },
+            'zh-CN': { name: 'Chinese (Simplified)', native: '简体中文' },
+            'zh-TW': { name: 'Chinese (Traditional)', native: '繁體中文' },
+            'ms': { name: 'Malay', native: 'Bahasa Melayu' },
+            'ta': { name: 'Tamil', native: 'தமிழ்' },
+            'ja': { name: 'Japanese', native: '日本語' },
+            'ko': { name: 'Korean', native: '한국어' },
+            'fr': { name: 'French', native: 'Français' },
+            'de': { name: 'German', native: 'Deutsch' },
+            'es': { name: 'Spanish', native: 'Español' },
+            'ru': { name: 'Russian', native: 'Русский' },
+            'ar': { name: 'Arabic', native: 'العربية' },
+            'hi': { name: 'Hindi', native: 'हिन्दी' },
+            'pt': { name: 'Portuguese', native: 'Português' },
+            'it': { name: 'Italian', native: 'Italiano' },
+            'nl': { name: 'Dutch', native: 'Nederlands' },
+            'pl': { name: 'Polish', native: 'Polski' },
+            'tr': { name: 'Turkish', native: 'Türkçe' },
+            'vi': { name: 'Vietnamese', native: 'Tiếng Việt' },
+            'th': { name: 'Thai', native: 'ไทย' },
+            'id': { name: 'Indonesian', native: 'Bahasa Indonesia' }
+        };
 
-  try {
-    progressEl.textContent = "Preparing translation...";
+        // Initialize
+        this.loadCacheFromStorage();
+        this.setupLanguageDetection();
+    }
 
-    const selectors =
-      "h1, h2, h3, h4, h5, h6, p, a, button, .section-title, .hero-content";
+    // ========================
+    // CACHE MANAGEMENT
+    // ========================
+    
+    /**
+     * Generate cache key
+     */
+    generateCacheKey(text, targetLang) {
+        const normalizedText = text.trim().toLowerCase();
+        const hash = this.hashString(normalizedText + targetLang);
+        return `${this.config.cachePrefix}${hash}`;
+    }
 
-    // Collect unique visible texts
-    const seen = new Set();
-    const items = [];
-    document.querySelectorAll(selectors).forEach((el) => {
-      if (!isElementVisible(el)) return;
+    /**
+     * String hash function
+     */
+    hashString(str) {
+        let hash = 0;
+        for (let i = 0; i < str.length; i++) {
+            const char = str.charCodeAt(i);
+            hash = ((hash << 5) - hash) + char;
+            hash = hash & hash;
+        }
+        return Math.abs(hash).toString(16);
+    }
 
-      const text = (el.textContent || "").trim();
-      if (!text || text.length <= 2) return;
+    /**
+     * Get translation from cache
+     */
+    getFromCache(text, targetLang) {
+        const cacheKey = this.generateCacheKey(text, targetLang);
+        
+        // Check memory cache
+        if (this.cache.has(cacheKey)) {
+            const cached = this.cache.get(cacheKey);
+            if (Date.now() < cached.expiry) {
+                return { text: cached.text, source: 'memory' };
+            } else {
+                this.cache.delete(cacheKey);
+            }
+        }
 
-      // Avoid translating icon-only or empty elements
-      if (el.matches('span') && (el.className || "").includes("icon")) return;
+        // Check localStorage
+        try {
+            const stored = localStorage.getItem(cacheKey);
+            if (stored) {
+                const cached = JSON.parse(stored);
+                if (Date.now() < cached.expiry) {
+                    this.cache.set(cacheKey, cached);
+                    return { text: cached.text, source: 'storage' };
+                } else {
+                    localStorage.removeItem(cacheKey);
+                }
+            }
+        } catch (error) {
+            console.warn('Cache read error:', error);
+        }
 
-      // Deduplicate by exact text
-      if (seen.has(text)) return;
-      seen.add(text);
+        return null;
+    }
 
-      items.push({ element: el, text });
+    /**
+     * Save translation to cache
+     */
+    saveToCache(text, targetLang, translatedText) {
+        const cacheKey = this.generateCacheKey(text, targetLang);
+        const cacheItem = {
+            text: translatedText,
+            original: text,
+            lang: targetLang,
+            expiry: Date.now() + this.config.cacheDuration,
+            timestamp: Date.now()
+        };
+
+        // Save to memory
+        this.cache.set(cacheKey, cacheItem);
+
+        // Save to localStorage with size limit
+        try {
+            // Check cache size
+            const cacheKeys = Object.keys(localStorage)
+                .filter(key => key.startsWith(this.config.cachePrefix));
+            
+            if (cacheKeys.length >= this.config.maxCacheSize) {
+                // Remove oldest cache entries
+                const oldestKeys = cacheKeys
+                    .map(key => ({ key, item: JSON.parse(localStorage.getItem(key)) }))
+                    .filter(item => item.item)
+                    .sort((a, b) => a.item.timestamp - b.item.timestamp)
+                    .slice(0, 10)
+                    .map(item => item.key);
+                
+                oldestKeys.forEach(key => {
+                    localStorage.removeItem(key);
+                    this.cache.delete(key);
+                });
+            }
+            
+            localStorage.setItem(cacheKey, JSON.stringify(cacheItem));
+        } catch (error) {
+            console.warn('Cache save error:', error);
+        }
+    }
+
+    /**
+     * Load cache from storage
+     */
+    loadCacheFromStorage() {
+        try {
+            const keys = Object.keys(localStorage);
+            const prefix = this.config.cachePrefix;
+            let loadedCount = 0;
+            
+            keys.forEach(key => {
+                if (key.startsWith(prefix)) {
+                    try {
+                        const cached = JSON.parse(localStorage.getItem(key));
+                        if (cached && Date.now() < cached.expiry) {
+                            this.cache.set(key, cached);
+                            loadedCount++;
+                        } else {
+                            localStorage.removeItem(key);
+                        }
+                    } catch (error) {
+                        localStorage.removeItem(key);
+                    }
+                }
+            });
+            
+            console.log(`Loaded ${loadedCount} cached translations`);
+        } catch (error) {
+            console.warn('Cache load error:', error);
+        }
+    }
+
+    /**
+     * Clear all cache
+     */
+    clearAllCache() {
+        try {
+            const keys = Object.keys(localStorage);
+            const prefix = this.config.cachePrefix;
+            let clearedCount = 0;
+            
+            keys.forEach(key => {
+                if (key.startsWith(prefix)) {
+                    localStorage.removeItem(key);
+                    clearedCount++;
+                }
+            });
+            
+            this.cache.clear();
+            console.log(`Cleared ${clearedCount} cache entries`);
+            return clearedCount;
+        } catch (error) {
+            console.warn('Clear cache error:', error);
+            return 0;
+        }
+    }
+
+    // ========================
+    // TRANSLATION FUNCTIONS
+    // ========================
+    
+    /**
+     * Translate single text
+     */
+    async translateText(text, targetLang, sourceLang = 'auto') {
+        // Check cache first
+        const cached = this.getFromCache(text, targetLang);
+        if (cached) {
+            console.log(`Cache hit for: "${text.substring(0, 30)}..."`);
+            return cached.text;
+        }
+
+        // Validate text
+        if (!text || text.trim().length === 0) {
+            return text;
+        }
+
+        // Truncate if too long
+        if (text.length > this.config.maxTextLength) {
+            console.warn(`Text too long (${text.length} chars), truncating`);
+            text = text.substring(0, this.config.maxTextLength) + '...';
+        }
+
+        // Create request promise
+        const requestPromise = (async () => {
+            try {
+                const response = await fetch(this.config.apiUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        q: text,
+                        source: sourceLang,
+                        target: targetLang,
+                        format: 'text',
+                       
+                    }),
+                    signal: this.abortController?.signal
+                });
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`HTTP ${response.status}: ${errorText}`);
+                }
+
+                const data = await response.json();
+                
+                if (!data || !data.translatedText) {
+                    throw new Error('Invalid response format');
+                }
+
+                // Save to cache
+                this.saveToCache(text, targetLang, data.translatedText);
+                
+                return data.translatedText;
+
+            } catch (error) {
+                if (error.name === 'AbortError') {
+                    throw error; // Re-throw abort errors
+                }
+                
+                console.error(`Translation failed for "${text.substring(0, 30)}...":`, error);
+                
+                // Fallback: return original with language tag
+                return `[${targetLang.toUpperCase()}] ${text}`;
+            }
+        })();
+
+        // Store request for potential cancellation
+        this.activeRequests.add(requestPromise);
+        
+        try {
+            const result = await requestPromise;
+            return result;
+        } finally {
+            this.activeRequests.delete(requestPromise);
+        }
+    }
+
+    /**
+     * Batch translate texts
+     */
+    async translateBatch(texts, targetLang, sourceLang = 'auto') {
+        if (!texts || texts.length === 0) return [];
+        
+        const results = new Array(texts.length);
+        
+        // Process in batches
+        for (let i = 0; i < texts.length; i += this.config.batchSize) {
+            // Check if translation was aborted
+            if (this.abortController?.signal.aborted) {
+                throw new DOMException('Translation aborted', 'AbortError');
+            }
+            
+            const batch = texts.slice(i, i + this.config.batchSize);
+            const batchPromises = batch.map((text, index) => 
+                this.translateText(text, targetLang, sourceLang)
+                    .then(result => ({ index: i + index, result }))
+                    .catch(error => ({ index: i + index, error }))
+            );
+            
+            const batchResults = await Promise.all(batchPromises);
+            
+            // Process batch results
+            batchResults.forEach(({ index, result, error }) => {
+                if (error) {
+                    results[index] = texts[index]; // Fallback to original
+                } else {
+                    results[index] = result;
+                }
+            });
+            
+            // Update progress
+            if (this.progressElement) {
+                const progress = Math.min(i + batch.length, texts.length);
+                const total = texts.length;
+                this.progressElement.textContent = `Translating... ${progress}/${total}`;
+            }
+            
+            // Delay between batches
+            if (i + this.config.batchSize < texts.length) {
+                await this.delay(this.config.requestDelay);
+            }
+        }
+        
+        return results;
+    }
+
+    /**
+     * Delay helper
+     */
+    delay(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    // ========================
+    // PAGE TRANSLATION
+    // ========================
+    
+    /**
+     * Collect all text elements from page
+     */
+    collectTextElements() {
+        const elements = [];
+        const seenTexts = new Set();
+        
+        // Selectors for elements to translate
+        const selectors = [
+            'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
+            'p', 'span', 'a', 'button',
+            'label', 'th', 'td', 'li',
+            '.title', '.subtitle', '.content',
+            '.hero-content', '.section-title',
+            '.service-content', '.card-title',
+            '.card-text', '.btn-text',
+            'nav a', 'footer a', 'footer p'
+        ].join(', ');
+        
+        try {
+            document.querySelectorAll(selectors).forEach(element => {
+                // Skip elements that shouldn't be translated
+                if (this.shouldSkipElement(element)) return;
+                
+                const text = element.textContent.trim();
+                
+                // Filter criteria
+                if (text && 
+                    text.length > 1 && 
+                    !/^\d+$/.test(text) && // Not pure numbers
+                    !text.startsWith('http') && // Not URLs
+                    !text.includes('@') && // Not emails
+                    !seenTexts.has(text)) {
+                    
+                    seenTexts.add(text);
+                    elements.push({
+                        element: element,
+                        text: text,
+                        originalHTML: element.innerHTML,
+                        isInput: element.tagName === 'INPUT' || element.tagName === 'TEXTAREA'
+                    });
+                }
+            });
+        } catch (error) {
+            console.error('Error collecting text elements:', error);
+        }
+        
+        return elements;
+    }
+
+    /**
+     * Check if element should be skipped
+     */
+    shouldSkipElement(element) {
+        const tagName = element.tagName.toLowerCase();
+        const className = element.className || '';
+        
+        // Skip script, style, code elements
+        if (['script', 'style', 'noscript', 'code', 'pre'].includes(tagName)) {
+            return true;
+        }
+        
+        // Skip icon elements
+        if (className.includes('icon') || 
+            className.includes('fa-') || 
+            className.includes('material-icons')) {
+            return true;
+        }
+        
+        // Skip hidden elements
+        if (element.offsetParent === null && 
+            window.getComputedStyle(element).display === 'none') {
+            return true;
+        }
+        
+        // Skip input elements (they have value, not textContent)
+        if (['input', 'textarea', 'select', 'option'].includes(tagName)) {
+            return true;
+        }
+        
+        // Skip elements with no-translate class or attribute
+        if (className.includes('no-translate') || 
+            element.hasAttribute('data-no-translate')) {
+            return true;
+        }
+        
+        return false;
+    }
+
+    /**
+     * Create progress indicator
+     */
+    createProgressIndicator() {
+        // Remove existing progress element
+        const existing = document.getElementById('libre-translate-progress');
+        if (existing) existing.remove();
+        
+        // Create new progress element
+        const el = document.createElement('div');
+        el.id = 'libre-translate-progress';
+        el.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 25px;
+            z-index: 10000;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            font-size: 14px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        `;
+        
+        // Add spinner
+        const spinner = document.createElement('div');
+        spinner.style.cssText = `
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        `;
+        
+        el.appendChild(spinner);
+        
+        // Add text
+        const text = document.createElement('span');
+        text.textContent = 'Starting translation...';
+        el.appendChild(text);
+        
+        // Add close button
+        const closeBtn = document.createElement('button');
+        closeBtn.textContent = '×';
+        closeBtn.style.cssText = `
+            background: none;
+            border: none;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            margin-left: 8px;
+            padding: 0 4px;
+        `;
+        closeBtn.onclick = () => this.abortTranslation();
+        el.appendChild(closeBtn);
+        
+        document.body.appendChild(el);
+        
+        // Add spinner animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes spin {
+                to { transform: rotate(360deg); }
+            }
+        `;
+        document.head.appendChild(style);
+        
+        return el;
+    }
+
+    /**
+     * Update progress indicator
+     */
+    updateProgress(text, type = 'info') {
+        if (!this.progressElement) return;
+        
+        const textElement = this.progressElement.querySelector('span');
+        if (textElement) {
+            textElement.textContent = text;
+        }
+        
+        // Change color based on type
+        if (type === 'success') {
+            this.progressElement.style.background = 'linear-gradient(135deg, #34a853, #0f9d58)';
+        } else if (type === 'error') {
+            this.progressElement.style.background = 'linear-gradient(135deg, #ea4335, #d93025)';
+        } else if (type === 'warning') {
+            this.progressElement.style.background = 'linear-gradient(135deg, #fbbc05, #f9ab00)';
+        }
+    }
+
+    /**
+     * Remove progress indicator
+     */
+    removeProgressIndicator() {
+        if (this.progressElement) {
+            this.progressElement.style.opacity = '0';
+            this.progressElement.style.transform = 'translateY(-20px)';
+            
+            setTimeout(() => {
+                if (this.progressElement && this.progressElement.parentNode) {
+                    this.progressElement.parentNode.removeChild(this.progressElement);
+                }
+                this.progressElement = null;
+            }, 300);
+        }
+    }
+
+    /**
+     * Abort current translation
+     */
+    abortTranslation() {
+        if (this.isTranslating) {
+            console.log('Translation aborted by user');
+            
+            // Signal abort to all requests
+            if (this.abortController) {
+                this.abortController.abort();
+            }
+            
+            // Clear all active requests
+            this.activeRequests.clear();
+            
+            // Update state
+            this.isTranslating = false;
+            this.currentLang = null;
+            
+            // Update UI
+            this.updateProgress('Translation cancelled', 'warning');
+            setTimeout(() => this.removeProgressIndicator(), 1500);
+        }
+    }
+
+    /**
+     * Translate entire page
+     */
+    async translatePage(targetLang, sourceLang = 'auto') {
+        // Check if already translating
+        if (this.isTranslating) {
+            const userConfirmed = confirm(
+                'Translation is already in progress. Do you want to cancel and start new translation?'
+            );
+            
+            if (userConfirmed) {
+                this.abortTranslation();
+                await this.delay(300); // Small delay for cleanup
+            } else {
+                return;
+            }
+        }
+        
+        try {
+            // Set translation state
+            this.isTranslating = true;
+            this.currentLang = targetLang;
+            this.abortController = new AbortController();
+            
+            // Show progress
+            this.progressElement = this.createProgressIndicator();
+            this.updateProgress('Preparing translation...');
+            
+            // Collect text elements
+            const textElements = this.collectTextElements();
+            console.log(`Found ${textElements.length} text elements to translate`);
+            
+            if (textElements.length === 0) {
+                this.updateProgress('No text found to translate', 'warning');
+                setTimeout(() => this.removeProgressIndicator(), 2000);
+                this.isTranslating = false;
+                return;
+            }
+            
+            // Extract texts for batch translation
+            const texts = textElements.map(item => item.text);
+            
+            // Perform batch translation
+            this.updateProgress(`Translating ${textElements.length} items...`);
+            
+            const translatedTexts = await this.translateBatch(
+                texts, 
+                targetLang, 
+                sourceLang
+            );
+            
+            // Check if translation was aborted
+            if (this.abortController.signal.aborted) {
+                throw new DOMException('Translation aborted', 'AbortError');
+            }
+            
+            // Apply translations to elements
+            let successCount = 0;
+            textElements.forEach((item, index) => {
+                if (translatedTexts[index] && translatedTexts[index] !== item.text) {
+                    item.element.textContent = translatedTexts[index];
+                    successCount++;
+                }
+            });
+            
+            // Save language preference
+            this.saveLanguagePreference(targetLang);
+            
+            // Update UI
+            this.updateProgress(`✅ Translated ${successCount} items`, 'success');
+            
+            // Log completion
+            console.log(`Translation completed: ${successCount}/${textElements.length} items translated to ${targetLang}`);
+            
+        } catch (error) {
+            if (error.name === 'AbortError') {
+                this.updateProgress('Translation cancelled', 'warning');
+            } else {
+                console.error('Translation failed:', error);
+                this.updateProgress('❌ Translation failed', 'error');
+            }
+        } finally {
+            // Cleanup after delay
+            setTimeout(() => {
+                this.isTranslating = false;
+                this.currentLang = null;
+                this.abortController = null;
+                this.removeProgressIndicator();
+            }, 3000);
+        }
+    }
+
+    // ========================
+    // LANGUAGE MANAGEMENT
+    // ========================
+    
+    /**
+     * Save language preference
+     */
+    saveLanguagePreference(langCode) {
+        try {
+            const preference = {
+                lang: langCode,
+                timestamp: Date.now(),
+                expiry: Date.now() + (365 * 24 * 60 * 60 * 1000) // 1 year
+            };
+            
+            localStorage.setItem('libre_translate_preference', JSON.stringify(preference));
+            console.log(`Saved language preference: ${langCode}`);
+        } catch (error) {
+            console.warn('Failed to save language preference:', error);
+        }
+    }
+
+    /**
+     * Get saved language preference
+     */
+    getLanguagePreference() {
+        try {
+            const stored = localStorage.getItem('libre_translate_preference');
+            if (stored) {
+                const preference = JSON.parse(stored);
+                if (Date.now() < preference.expiry) {
+                    return preference.lang;
+                }
+            }
+        } catch (error) {
+            console.warn('Failed to get language preference:', error);
+        }
+        return null;
+    }
+
+    /**
+     * Clear language preference
+     */
+    clearLanguagePreference() {
+        localStorage.removeItem('libre_translate_preference');
+    }
+
+    /**
+     * Setup language detection
+     */
+    setupLanguageDetection() {
+        // Detect browser language
+        const browserLang = navigator.language || navigator.userLanguage;
+        const savedLang = this.getLanguagePreference();
+        
+        // Use saved preference, then browser language, then default to English
+        this.userPreferredLang = savedLang || browserLang.split('-')[0] || 'en';
+        
+        // Validate if language is supported
+        if (!this.supportedLanguages[this.userPreferredLang]) {
+            this.userPreferredLang = 'en'; // Fallback to English
+        }
+    }
+
+    /**
+     * Get language display name
+     */
+    getLanguageDisplayName(langCode, format = 'name') {
+        const lang = this.supportedLanguages[langCode];
+        if (!lang) return langCode.toUpperCase();
+        
+        return format === 'native' ? lang.native : lang.name;
+    }
+
+    /**
+     * Get all supported languages
+     */
+    getSupportedLanguages() {
+        return Object.entries(this.supportedLanguages).map(([code, info]) => ({
+            code,
+            name: info.name,
+            native: info.native
+        }));
+    }
+
+    // ========================
+    // INITIALIZATION
+    // ========================
+    
+    /**
+     * Initialize translator
+     */
+    initialize() {
+        console.log('LibreTranslator initialized');
+        
+        // Apply saved language on page load
+        const savedLang = this.getLanguagePreference();
+        if (savedLang && savedLang !== 'en') {
+            // Delay to ensure page is fully loaded
+            setTimeout(() => {
+                this.translatePage(savedLang);
+            }, 2000);
+        }
+    }
+}
+
+// ========================
+// GLOBAL INSTANCE & FUNCTIONS
+// ========================
+
+let libreTranslator = null;
+
+/**
+ * Initialize LibreTranslator
+ */
+function initLibreTranslator(options = {}) {
+    if (libreTranslator && libreTranslator.isTranslating) {
+        console.warn('Cannot reinitialize while translating');
+        return libreTranslator;
+    }
+    
+    libreTranslator = new LibreTranslator(options);
+    libreTranslator.initialize();
+    
+    return libreTranslator;
+}
+
+/**
+ * Translate page to specific language
+ */
+function translatePageTo(langCode) {
+    if (!libreTranslator) {
+        console.error('LibreTranslator not initialized');
+        alert('Please wait for translator to initialize');
+        return;
+    }
+    
+    libreTranslator.translatePage(langCode);
+}
+
+/**
+ * Abort current translation
+ */
+function abortCurrentTranslation() {
+    if (libreTranslator) {
+        libreTranslator.abortTranslation();
+    }
+}
+
+/**
+ * Clear translation cache
+ */
+function clearTranslationCache() {
+    if (libreTranslator) {
+        const cleared = libreTranslator.clearAllCache();
+        alert(`Cleared ${cleared} cached translations`);
+    }
+}
+
+// ========================
+// EVENT LISTENERS
+// ========================
+
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM loaded, setting up translation system...');
+    
+    // Initialize translator
+    initLibreTranslator({
+        
+        batchSize: 15,
+        requestDelay: 150
     });
+    
+    // Setup language buttons
+    setupLanguageButtons();
+    
+    // Setup language dropdown
+    setupLanguageDropdown();
+});
 
-    console.log(`Collected ${items.length} unique texts for translation`);
-    progressEl.textContent = `Translating ${items.length} items...`;
-
-    // Build a stable list of texts and apply cache first
-    const texts = [];
-    const indexMap = []; // maps texts[] index to items[] index
-    let cachedCount = 0;
-
-    for (let i = 0; i < items.length; i++) {
-      const cacheKey = makeCacheKey(targetLang, items[i].text);
-      const cached = localStorage.getItem(cacheKey);
-      if (cached) {
-        items[i].element.textContent = cached;
-        cachedCount++;
-      } else {
-        indexMap.push(i);
-        texts.push(items[i].text);
-      }
-    }
-
-    if (texts.length === 0) {
-      progressEl.textContent = `✅ Translated ${cachedCount}/${items.length} items (cached)`;
-      setTimeout(() => progressEl.remove(), 1500);
-      localStorage.setItem("targetLanguage", targetLang);
-      return;
-    }
-
-    // Translate in chunks to avoid server limits/timeouts
-    const CHUNK_SIZE = 25;
-    let successCount = cachedCount;
-
-    for (let start = 0; start < texts.length; start += CHUNK_SIZE) {
-      const end = Math.min(start + CHUNK_SIZE, texts.length);
-      const chunk = texts.slice(start, end);
-
-      progressEl.textContent = `Translating... ${Math.min(end, texts.length)}/${texts.length} (plus cached ${cachedCount})`;
-
-      const res = await fetch(API_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          target_language: targetLang,
-          texts: chunk,
-        }),
-      });
-
-      // Validate response type before JSON parsing
-      const contentType = res.headers.get("content-type") || "";
-      if (!res.ok || !contentType.includes("application/json")) {
-        const raw = await res.text().catch(() => "");
-        console.error("Translation server returned non-JSON or error:", {
-          status: res.status,
-          contentType,
-          raw: raw.slice(0, 400),
+/**
+ * Setup language buttons
+ */
+function setupLanguageButtons() {
+    // Find all language buttons
+    const buttons = document.querySelectorAll('[data-lang], .lang-btn, .language-option');
+    
+    buttons.forEach(button => {
+        button.addEventListener('click', function(event) {
+            event.preventDefault();
+            event.stopPropagation();
+            
+            let langCode = this.dataset.lang;
+            
+            // If no data-lang, try to infer from text
+            if (!langCode) {
+                const text = this.textContent.trim();
+                const langMap = {
+                    'English': 'en',
+                    '中文': 'zh-CN',
+                    '简体中文': 'zh-CN',
+                    '繁體中文': 'zh-TW',
+                    'Malay': 'ms',
+                    'Tamil': 'ta',
+                    '日本語': 'ja',
+                    '한국어': 'ko',
+                    'Français': 'fr',
+                    'Deutsch': 'de',
+                    'Español': 'es'
+                };
+                
+                langCode = langMap[text] || 'en';
+            }
+            
+            // Start translation
+            translatePageTo(langCode);
+            
+            // Close dropdowns
+            closeAllDropdowns();
         });
-        throw new Error(`Translation server error (${res.status})`);
-      }
-
-      const data = await res.json();
-
-      if (!data || !Array.isArray(data.translations)) {
-        console.error("Invalid translation payload:", data);
-        throw new Error("Invalid translation payload");
-      }
-
-      if (data.translations.length !== chunk.length) {
-        console.warn("Mismatched translation count:", {
-          sent: chunk.length,
-          got: data.translations.length,
-        });
-      }
-
-      // Apply translations back to original elements
-      for (let i = 0; i < chunk.length; i++) {
-        const translated = data.translations[i];
-        const originalText = chunk[i];
-
-        if (typeof translated !== "string" || !translated.trim()) continue;
-
-        // Find the corresponding original item index
-        const itemsIndex = indexMap[start + i];
-        if (itemsIndex == null) continue;
-
-        items[itemsIndex].element.textContent = translated;
-
-        // Cache
-        const cacheKey = makeCacheKey(targetLang, originalText);
-        localStorage.setItem(cacheKey, translated);
-        successCount++;
-      }
-
-      // Small delay to reduce burst load
-      await sleep(120);
-    }
-
-    progressEl.textContent = `✅ Translated ${successCount}/${items.length} items`;
-    progressEl.style.background = "#4CAF50";
-
-    localStorage.setItem("targetLanguage", targetLang);
-
-    setTimeout(() => progressEl.remove(), 2000);
-  } catch (error) {
-    console.error("Translation failed:", error);
-    progressEl.textContent = `❌ Error: ${error.message}`;
-    progressEl.style.background = "#f44336";
-    setTimeout(() => progressEl.remove(), 3000);
-    alert(`Translation failed: ${error.message}`);
-  }
-}
-
-function makeCacheKey(targetLang, text) {
-  return `trans_${targetLang}_${hashCode(text)}`;
-}
-
-function hashCode(str) {
-  let hash = 0;
-  for (let i = 0; i < str.length; i++) {
-    const char = str.charCodeAt(i);
-    hash = (hash << 5) - hash + char;
-    hash |= 0; // 32-bit
-  }
-  return String(hash);
-}
-
-function sleep(ms) {
-  return new Promise((r) => setTimeout(r, ms));
-}
-
-function isElementVisible(el) {
-  const style = window.getComputedStyle(el);
-  if (style.display === "none" || style.visibility === "hidden" || style.opacity === "0") return false;
-  const rect = el.getBoundingClientRect();
-  return rect.width > 0 && rect.height > 0;
-}
-
-// Replace inline onclick="translatePage('xx')" safely
-document.addEventListener("DOMContentLoaded", () => {
-  document.querySelectorAll('[onclick*="translatePage"]').forEach((btn) => {
-    const old = btn.getAttribute("onclick") || "";
-    const match = old.match(/translatePage\('([^']+)'\)/);
-    if (!match) return;
-
-    const lang = match[1];
-    btn.removeAttribute("onclick");
-    btn.addEventListener("click", (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      translatePage(lang);
     });
-  });
-});
-
-/* ===========================
-   SERVER: index.js (Express)
-   - /translate (single)
-   - /translate/batch (recommended)
-   - CORS, rate limit, JSON validation
-   - Uses LibreTranslate by default (swap provider easily)
-   =========================== */
-
-const express = require("express");
-const cors = require("cors");
-const rateLimit = require("express-rate-limit");
-const { translateOne, translateBatch } = require("./translateService");
-
-const app = express();
-
-// Render/Proxies safety
-app.set("trust proxy", 1);
-
-// CORS: allow your frontend origin(s)
-app.use(
-  cors({
-    origin: "*",
-    methods: ["GET", "POST", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-  })
-);
-
-app.use(express.json({ limit: "100kb" }));
-
-// Basic health check
-app.get("/", (req, res) => {
-  res.status(200).json({ ok: true, service: "translation-api" });
-});
-
-// Rate limit to protect free instances
-const limiter = rateLimit({
-  windowMs: 60 * 1000,
-  max: 60,
-  standardHeaders: true,
-  legacyHeaders: false,
-});
-app.use(limiter);
-
-// Single translate
-app.post("/translate", async (req, res) => {
-  try {
-    const { text, target_language } = req.body || {};
-    if (typeof text !== "string" || !text.trim()) {
-      return res.status(400).json({ error: "text must be a non-empty string" });
-    }
-    if (typeof target_language !== "string" || !target_language.trim()) {
-      return res.status(400).json({ error: "target_language must be a non-empty string" });
-    }
-
-    const translation = await translateOne(text, target_language);
-    return res.status(200).json({ translation });
-  } catch (err) {
-    console.error("POST /translate error:", err);
-    return res.status(500).json({ error: "translation_failed" });
-  }
-});
-
-// Batch translate (recommended)
-app.post("/translate/batch", async (req, res) => {
-  try {
-    const { texts, target_language } = req.body || {};
-
-    if (!Array.isArray(texts) || texts.length === 0) {
-      return res.status(400).json({ error: "texts must be a non-empty array of strings" });
-    }
-    if (texts.length > 50) {
-      return res.status(400).json({ error: "texts max length is 50 per request" });
-    }
-    if (typeof target_language !== "string" || !target_language.trim()) {
-      return res.status(400).json({ error: "target_language must be a non-empty string" });
-    }
-    if (texts.some((t) => typeof t !== "string" || !t.trim())) {
-      return res.status(400).json({ error: "texts must contain only non-empty strings" });
-    }
-
-    const translations = await translateBatch(texts, target_language);
-    return res.status(200).json({ translations });
-  } catch (err) {
-    console.error("POST /translate/batch error:", err);
-    return res.status(500).json({ error: "translation_failed" });
-  }
-});
-
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Translation server running on :${PORT}`));
-/* ===========================
-   SERVER: translateService.js
-   Default provider: LibreTranslate
-   - Set LIBRETRANSLATE_URL in Render env
-   - Optional: LIBRETRANSLATE_API_KEY
-   =========================== */
-
-const DEFAULT_LT_URL = "https://libretranslate.com/translate";
-
-function getProviderConfig() {
-  return {
-    url: process.env.LIBRETRANSLATE_URL || DEFAULT_LT_URL,
-    apiKey: process.env.LIBRETRANSLATE_API_KEY || "",
-  };
 }
 
-export async function translateOne(text, targetLang) {
-  const { url, apiKey } = getProviderConfig();
-
-  const payload = {
-    q: text,
-    source: "auto",
-    target: targetLang,
-    format: "text",
-  };
-
-  if (apiKey) payload.api_key = apiKey;
-
-  const res = await fetch(url, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload),
-  });
-
-  const contentType = res.headers.get("content-type") || "";
-  if (!res.ok || !contentType.includes("application/json")) {
-    const raw = await res.text().catch(() => "");
-    throw new Error(`Provider error: ${res.status} ${raw.slice(0, 200)}`);
-  }
-
-  const data = await res.json();
-
-  // LibreTranslate returns: { translatedText: "..." }
-  const out = data?.translatedText;
-  if (typeof out !== "string") throw new Error("Provider payload invalid");
-  return out;
-}
-
-export async function translateBatch(texts, targetLang) {
-  // LibreTranslate does not officially support batch in one call on all hosts.
-  // We do a small controlled parallel fan-out server-side (much safer than browser fan-out).
-  const CONCURRENCY = 4;
-  const results = new Array(texts.length);
-
-  let idx = 0;
-  async function worker() {
-    while (idx < texts.length) {
-      const cur = idx++;
-      results[cur] = await translateOne(texts[cur], targetLang);
+/**
+ * Setup language dropdown
+ */
+function setupLanguageDropdown() {
+    const langButton = document.getElementById('langButton');
+    if (langButton) {
+        langButton.addEventListener('click', function(event) {
+            event.stopPropagation();
+            const dropdown = document.querySelector('.lang-dropdown-content, .hv-lang-dropdown-content');
+            if (dropdown) {
+                dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+            }
+        });
     }
-  }
-
-  const workers = Array.from({ length: Math.min(CONCURRENCY, texts.length) }, () => worker());
-  await Promise.all(workers);
-
-  return results;
+    
+    // Click outside to close dropdowns
+    document.addEventListener('click', function() {
+        closeAllDropdowns();
+    });
 }
+
+/**
+ * Close all dropdowns
+ */
+function closeAllDropdowns() {
+    document.querySelectorAll('.lang-dropdown-content, .hv-lang-dropdown-content').forEach(dropdown => {
+        dropdown.style.display = 'none';
+    });
+}
+
+// ========================
+// GLOBAL EXPORTS
+// ========================
+
+window.LibreTranslator = LibreTranslator;
+window.initLibreTranslator = initLibreTranslator;
+window.translatePageTo = translatePageTo;
+window.abortCurrentTranslation = abortCurrentTranslation;
+window.clearTranslationCache = clearTranslationCache;

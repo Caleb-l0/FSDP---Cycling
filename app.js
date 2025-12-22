@@ -255,21 +255,77 @@ app.use((err, req, res, next) => {
 
 
 // ----- TRANSLATION ROUTE -----
-app.post("/translate", async (req, res) => {
-  try {
-    const response = await fetch("https://fsdp-cycling-ltey.onrender.com/translate", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(req.body)
-    });
+app.get("/", (req, res) => {
+  res.json({ ok: true, service: "translation-backend" });
+});
 
-    const data = await response.json();
-    res.json(data);
+/**
+ * Batch translate endpoint
+ */
+app.post("/translate/batch", async (req, res) => {
+  try {
+    const { texts, target_language } = req.body;
+
+    if (!Array.isArray(texts) || texts.length === 0) {
+      return res.status(400).json({ error: "texts must be an array" });
+    }
+
+    if (!target_language) {
+      return res.status(400).json({ error: "target_language required" });
+    }
+
+    if (texts.length > 50) {
+      return res.status(400).json({ error: "too many texts" });
+    }
+
+    const results = [];
+
+    for (const text of texts) {
+      const translated = await translateOne(text, target_language);
+      results.push(translated);
+    }
+
+    res.json({ translations: results });
+
   } catch (err) {
-    console.error("Translate error:", err);
-    res.status(500).json({ error: "Translation failed" });
+    console.error("Translation failed:", err);
+    res.status(500).json({ error: "translation_failed" });
   }
 });
+
+/**
+ * Single translation via LibreTranslate
+ */
+async function translateOne(text, targetLang) {
+  const response = await fetch(
+    process.env.LIBRE_API_URL || "https://libretranslate.com/translate",
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        q: text,
+        source: "auto",
+        target: targetLang,
+        format: "text",
+        api_key: process.env.LIBRE_API_KEY || ""
+      })
+    }
+  );
+
+  const ct = response.headers.get("content-type") || "";
+  if (!response.ok || !ct.includes("application/json")) {
+    const raw = await response.text();
+    throw new Error(`LibreTranslate error ${response.status}: ${raw}`);
+  }
+
+  const data = await response.json();
+  return data.translatedText || text;
+}
+
+
+
+
+
 
 
 // ----- GOOGLE LOGIN ROUTE -----
