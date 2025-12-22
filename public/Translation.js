@@ -1,126 +1,116 @@
-alert("Translation.js LOADED");
-let translateController = null;
-let translationInProgress = false;
+// Translation.js
+console.log("Translation.js LOADED");
 
 const TEXT_SIZE_KEY = "happyVolunteerTextSize";
 const DEFAULT_TEXT_SIZE = "normal";
+let translationInProgress = false;
 
-/* ================= TEXT SIZE ================= */
-
+/**
+ * TEXT SIZE MANAGEMENT
+ */
 function normalizeTextSizeValue(value) {
-  return value === "large" ? "large" : DEFAULT_TEXT_SIZE;
-}
-
-function getTextSizePreference() {
-  return normalizeTextSizeValue(localStorage.getItem(TEXT_SIZE_KEY));
+    return value === "large" ? "large" : DEFAULT_TEXT_SIZE;
 }
 
 function applyTextSizePreference(mode) {
-  const normalized = normalizeTextSizeValue(mode);
-  document.body.classList.toggle("large-text-mode", normalized === "large");
-  document.documentElement.setAttribute("data-text-size", normalized);
+    const normalized = normalizeTextSizeValue(mode);
+    document.body.classList.toggle("large-text-mode", normalized === "large");
+    document.documentElement.setAttribute("data-text-size", normalized);
 }
 
-function setTextSizePreference(mode) {
-  const normalized = normalizeTextSizeValue(mode);
-  localStorage.setItem(TEXT_SIZE_KEY, normalized);
-  applyTextSizePreference(normalized);
-}
+window.setTextSizePreference = function(mode) {
+    localStorage.setItem(TEXT_SIZE_KEY, mode);
+    applyTextSizePreference(mode);
+};
 
-window.setTextSizePreference = setTextSizePreference;
-
-/* ================= TRANSLATION ================= */
-
+/**
+ * TRANSLATION LOGIC
+ */
 async function translatePage(targetLang) {
-  if (translationInProgress) return;
+    if (translationInProgress || !targetLang) return;
 
-  translationInProgress = true;
-  localStorage.setItem("targetLanguage", targetLang);
+    translationInProgress = true;
+    localStorage.setItem("targetLanguage", targetLang);
 
-  if (translateController) translateController.abort();
-  translateController = new AbortController();
-  const signal = translateController.signal;
+    const apiURL = "https://fsdp-cycling-ltey.onrender.com/translate";
+    
+    // Select elements but filter out those that are empty or just whitespace
+    const elements = Array.from(document.querySelectorAll("h1,h2,h3,h4,h5,h6,p,span,a,button,label,li,th,td"))
+                          .filter(el => el.textContent.trim().length > 0);
 
-  const apiURL = "https://fsdp-cycling-ltey.onrender.com/translate";
+    console.log(`Translating ${elements.length} elements to: ${targetLang}`);
 
-  try {
-    const elements = document.querySelectorAll(
-      "h1,h2,h3,h4,h5,h6,p,span,a,button,label,li,th,td"
-    );
+    // Process all elements concurrently using Promise.allSettled
+    await Promise.allSettled(elements.map(async (el) => {
+        const originalText = el.textContent.trim();
+        
+        // Check local cache first
+        const cached = getCachedTranslation(targetLang, originalText);
+        if (cached) {
+            el.textContent = cached;
+            return;
+        }
 
-    for (const el of elements) {
-  if (signal.aborted) break;
+        try {
+            const response = await fetch(apiURL, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    q: originalText,
+                    from: "auto",
+                    to: targetLang
+                })
+            });
 
-  const originalText = el.textContent.trim();
-  if (!originalText) continue;
+            if (!response.ok) return;
 
-  const cached = getCachedTranslation(targetLang, originalText);
-  if (cached) {
-    el.textContent = cached;
-    continue;
-  }
-
-  try {
-    const response = await fetch(apiURL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        q: originalText,
-        from: "auto",
-        to: targetLang
-      }),
-      signal
-    });
-
-    if (!response.ok) continue;
-
-    const data = await response.json();
-    if (!data?.translatedText) continue;
-
-    el.textContent = data.translatedText;
-    saveTranslationToCache(targetLang, originalText, data.translatedText);
-
-    await new Promise(r => setTimeout(r, 120));
-  } catch (err) {
-    console.error("Translate fetch failed:", err);
-    continue;
-  }
-}
-  } finally {
+            const data = await response.json();
+            if (data?.translatedText) {
+                el.textContent = data.translatedText;
+                saveTranslationToCache(targetLang, originalText, data.translatedText);
+            }
+        } catch (err) {
+            console.error("Translation error for element:", originalText, err);
+        }
+    }));
 
     translationInProgress = false;
-  }
+    console.log("Translation complete.");
 }
 
-/* ================= CACHE ================= */
-
 function getCachedTranslation(lang, text) {
-  const cache = JSON.parse(localStorage.getItem("translationCache") || "{}");
-  return cache?.[lang]?.[text] || null;
+    const cache = JSON.parse(localStorage.getItem("translationCache") || "{}");
+    return cache[lang]?.[text] || null;
 }
 
 function saveTranslationToCache(lang, original, translated) {
-  const cache = JSON.parse(localStorage.getItem("translationCache") || "{}");
-  if (!cache[lang]) cache[lang] = {};
-  cache[lang][original] = translated;
-  localStorage.setItem("translationCache", JSON.stringify(cache));
+    const cache = JSON.parse(localStorage.getItem("translationCache") || "{}");
+    if (!cache[lang]) cache[lang] = {};
+    cache[lang][original] = translated;
+    localStorage.setItem("translationCache", JSON.stringify(cache));
 }
 
-function changeLanguage(lang) {
-  if (translationInProgress) return;
-  localStorage.removeItem("translationCache");
-  translatePage(lang);
-}
+window.changeLanguage = function(lang) {
+    if (translationInProgress) {
+        console.warn("Translation already in progress...");
+        return;
+    }
+    // Clear cache when manually switching to ensure fresh results
+    localStorage.removeItem("translationCache");
+    translatePage(lang);
+};
 
-/* ================= INIT ================= */
-
+/**
+ * INITIALIZATION
+ */
 document.addEventListener("DOMContentLoaded", () => {
-  applyTextSizePreference(getTextSizePreference());
+    // Apply text size
+    const savedSize = localStorage.getItem(TEXT_SIZE_KEY) || DEFAULT_TEXT_SIZE;
+    applyTextSizePreference(savedSize);
 
-  const savedLang = localStorage.getItem("targetLanguage");
-  if (savedLang) translatePage(savedLang);
+    // Auto-translate if language is saved
+    const savedLang = localStorage.getItem("targetLanguage");
+    if (savedLang) {
+        translatePage(savedLang);
+    }
 });
-
-
-window.changeLanguage = changeLanguage;
-window.translatePage = translatePage;
