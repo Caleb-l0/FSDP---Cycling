@@ -49,49 +49,43 @@ async function translatePage(targetLang) {
     );
 
     for (const el of elements) {
-      if (signal.aborted) break;
+  if (signal.aborted) break;
 
-      if (
-        el.children.length === 0 &&
-        el.childNodes.length === 1 &&
-        el.childNodes[0].nodeType === Node.TEXT_NODE
-      ) {
-        const originalText = el.textContent.trim();
-        if (!originalText) continue;
+  const originalText = el.textContent.trim();
+  if (!originalText) continue;
 
-        const cached = getCachedTranslation(targetLang, originalText);
-        if (cached) {
-          el.textContent = cached;
-          continue;
-        }
+  const cached = getCachedTranslation(targetLang, originalText);
+  if (cached) {
+    el.textContent = cached;
+    continue;
+  }
 
-        try {
-          const response = await fetch(apiURL, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              q: originalText,
-              from: "auto",
-              to: targetLang
-            }),
-            signal
-          });
+  try {
+    const response = await fetch(apiURL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        q: originalText,
+        from: "auto",
+        to: targetLang
+      }),
+      signal
+    });
 
-          if (!response.ok) continue;
+    if (!response.ok) continue;
 
-          const data = await response.json();
-          if (!data?.translatedText) continue;
+    const data = await response.json();
+    if (!data?.translatedText) continue;
 
-          el.textContent = data.translatedText;
-          saveTranslationToCache(targetLang, originalText, data.translatedText);
+    el.textContent = data.translatedText;
+    saveTranslationToCache(targetLang, originalText, data.translatedText);
 
-          await new Promise(r => setTimeout(r, 120));
-        } catch(err) {
-            console.error("Translate fetch failed:", err);
-          continue;
-        }
-      }
-    }
+    await new Promise(r => setTimeout(r, 120));
+  } catch (err) {
+    console.error("Translate fetch failed:", err);
+    continue;
+  }
+}
   } finally {
 
     translationInProgress = false;
