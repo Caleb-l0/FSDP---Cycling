@@ -125,3 +125,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const savedLang = localStorage.getItem("targetLanguage");
   if (savedLang) translatePage(savedLang);
 });
+
+
+window.changeLanguage = changeLanguage;
+window.translatePage = translatePage;
