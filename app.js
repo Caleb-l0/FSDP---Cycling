@@ -254,16 +254,18 @@ app.use((err, req, res, next) => {
 });
 
 
-// ----- TRANSLATION ROUTE -----
-app.post("/translate", async (req, res) => {
+// ----- TRANSLATION ROUTE -----app.post("/translate", async (req, res) => {
   const { q, from, to } = req.body;
 
   if (!q || !to) {
-    return res.status(400).json({ error: "Missing q or to" });
+    return res.json({ translatedText: q || "" });
   }
 
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 7000);
+
   try {
-    const r = await fetch("https://libretranslate.com/translate", {
+    const r = await fetch("https://libretranslate.de/translate", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -275,34 +277,24 @@ app.post("/translate", async (req, res) => {
         target: to,
         format: "text"
       }),
-      timeout: 8000
+      signal: controller.signal
     });
 
-    // ⚠️ 
     if (!r.ok) {
-      console.error("LibreTranslate status:", r.status);
       return res.json({ translatedText: q });
     }
 
-    let data;
-    try {
-      data = await r.json();
-    } catch {
-      return res.json({ translatedText: q });
-    }
-
-    if (!data || !data.translatedText) {
-      return res.json({ translatedText: q });
-    }
-
-    res.json({ translatedText: data.translatedText });
+    const data = await r.json();
+    res.json({ translatedText: data?.translatedText || q });
 
   } catch (err) {
-    console.error("Translate upstream error:", err);
-    // ✅ fallback，不炸前端
+    console.error("Translate error:", err.name || err);
     res.json({ translatedText: q });
+
+  } finally {
+    clearTimeout(timeout);
   }
-});
+
 
 
 // ----- GOOGLE LOGIN ROUTE -----

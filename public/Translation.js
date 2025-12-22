@@ -38,60 +38,62 @@ async function translatePage(targetLang) {
 
   if (translateController) translateController.abort();
   translateController = new AbortController();
-
-  const apiURL = "/translate";
   const signal = translateController.signal;
 
-  const elements = document.querySelectorAll(
-    "h1,h2,h3,h4,h5,h6,p,span,a,button,label,li,th,td"
-  );
+  const apiURL = "/translate";
 
-  for (const el of elements) {
-    if (signal.aborted) break;
+  try {
+    const elements = document.querySelectorAll(
+      "h1,h2,h3,h4,h5,h6,p,span,a,button,label,li,th,td"
+    );
 
-    if (
-      el.children.length === 0 &&
-      el.childNodes.length === 1 &&
-      el.childNodes[0].nodeType === Node.TEXT_NODE
-    ) {
-      const originalText = el.textContent.trim();
-      if (!originalText) continue;
+    for (const el of elements) {
+      if (signal.aborted) break;
 
-      const cached = getCachedTranslation(targetLang, originalText);
-      if (cached) {
-        el.textContent = cached;
-        continue;
-      }
+      if (
+        el.children.length === 0 &&
+        el.childNodes.length === 1 &&
+        el.childNodes[0].nodeType === Node.TEXT_NODE
+      ) {
+        const originalText = el.textContent.trim();
+        if (!originalText) continue;
 
-      try {
-        const response = await fetch(apiURL, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            q: originalText,
-            from: "auto",
-            to: targetLang
-          }),
-          signal
-        });
+        const cached = getCachedTranslation(targetLang, originalText);
+        if (cached) {
+          el.textContent = cached;
+          continue;
+        }
 
-        if (!response.ok) continue;
+        try {
+          const response = await fetch(apiURL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              q: originalText,
+              from: "auto",
+              to: targetLang
+            }),
+            signal
+          });
 
-        const data = await response.json();
-        if (!data?.translatedText) continue;
+          if (!response.ok) continue;
 
-        el.textContent = data.translatedText;
-        saveTranslationToCache(targetLang, originalText, data.translatedText);
+          const data = await response.json();
+          if (!data?.translatedText) continue;
 
-        await new Promise(r => setTimeout(r, 120)); // rate safety
+          el.textContent = data.translatedText;
+          saveTranslationToCache(targetLang, originalText, data.translatedText);
 
-      } catch {
-        continue;
+          await new Promise(r => setTimeout(r, 120));
+        } catch {
+          continue;
+        }
       }
     }
-  }
+  } finally {
 
-  translationInProgress = false;
+    translationInProgress = false;
+  }
 }
 
 /* ================= CACHE ================= */
