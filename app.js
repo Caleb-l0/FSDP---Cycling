@@ -288,6 +288,7 @@ app.post("/auth/google", async (req, res) => {
       return res.status(400).json({ message: "Missing credential" });
     }
 
+    
     const ticket = await googleClient.verifyIdToken({
       idToken: credential,
       audience: process.env.GOOGLE_CLIENT_ID
@@ -295,25 +296,34 @@ app.post("/auth/google", async (req, res) => {
 
     const payload = ticket.getPayload();
     const email = payload.email;
-    const name = payload.name || "No Name";
+    const name = payload.name || "Google User";
 
-    let result = await pool.query(
-      "SELECT id, name, email, role FROM users WHERE email = $1",
-      [email]
-    );
+    
+   let result = await pool.query(
+  "SELECT id, name, email, role, textsizepreference FROM users WHERE email = $1",  
+  [email]
+);
 
     let user = result.rows[0];
 
     if (!user) {
+     
       const insert = await pool.query(
-        "INSERT INTO users (name, email, role) VALUES ($1, $2, 'volunteer') RETURNING id, name, email, role",
+        `INSERT INTO users (name, email, role, textSizePreference) 
+         VALUES ($1, $2, 'volunteer', 'normal') 
+         RETURNING id, name, email, role, textSizePreference`,
         [name, email]
       );
       user = insert.rows[0];
     }
 
+   
     const token = jwt.sign(
-      { id: user.id, role: user.role },
+      { 
+        id: user.id, 
+        email: user.email,
+        role: user.role 
+      },
       process.env.JWT_SECRET,
       { expiresIn: "1d" }
     );
@@ -323,12 +333,25 @@ app.post("/auth/google", async (req, res) => {
       userId: user.id,
       name: user.name,
       email: user.email,
-      role: user.role
+      role: user.role,
+      textSizePreference: user.textSizePreference || 'normal'
     });
 
   } catch (err) {
     console.error("❌ Google login error:", err);
-    res.status(500).json({ message: "Google login failed" });
+    res.status(500).json({ 
+      message: "Google login failed",
+      error: process.env.NODE_ENV === 'development' ? err.message : undefined 
+    });
+  }
+});
+// te'st database connection
+app.get('/test-db', async (req, res) => {
+  try {
+    const result = await pool.query('SELECT NOW()');
+    res.json({ success: true, time: result.rows[0].now });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
   }
 });
 
