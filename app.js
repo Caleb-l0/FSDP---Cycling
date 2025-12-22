@@ -254,7 +254,6 @@ app.use((err, req, res, next) => {
 });
 
 
-
 // ----- TRANSLATION ROUTE -----
 app.post("/translate", async (req, res) => {
   const { q, from, to } = req.body;
@@ -264,30 +263,44 @@ app.post("/translate", async (req, res) => {
   }
 
   try {
-    const response = await fetch("https://libretranslate.com/translate", {
+    const r = await fetch("https://libretranslate.com/translate", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json"
+      },
       body: JSON.stringify({
         q,
         source: from || "auto",
         target: to,
         format: "text"
-      })
+      }),
+      timeout: 8000
     });
 
-    if (!response.ok) {
-      throw new Error(`LibreTranslate error ${response.status}`);
+    // ⚠️ 
+    if (!r.ok) {
+      console.error("LibreTranslate status:", r.status);
+      return res.json({ translatedText: q });
     }
 
-    const data = await response.json();
+    let data;
+    try {
+      data = await r.json();
+    } catch {
+      return res.json({ translatedText: q });
+    }
 
-    res.json({
-      translatedText: data.translatedText
-    });
+    if (!data || !data.translatedText) {
+      return res.json({ translatedText: q });
+    }
+
+    res.json({ translatedText: data.translatedText });
 
   } catch (err) {
-    console.error("Translate error:", err);
-    res.status(500).json({ error: "Translation failed" });
+    console.error("Translate upstream error:", err);
+    // ✅ fallback，不炸前端
+    res.json({ translatedText: q });
   }
 });
 
