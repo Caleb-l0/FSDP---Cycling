@@ -254,7 +254,7 @@ app.use((err, req, res, next) => {
 });
 
 
-// ----- TRANSLATION ROUTE -----app.post("/translate", async (req, res) => {
+app.post("/translate", async (req, res) => {
   const { q, from, to } = req.body;
 
   if (!q || !to) {
@@ -288,13 +288,13 @@ app.use((err, req, res, next) => {
     res.json({ translatedText: data?.translatedText || q });
 
   } catch (err) {
-    console.error("Translate error:", err.name || err);
+    console.error("Translate error:", err);
     res.json({ translatedText: q });
 
   } finally {
     clearTimeout(timeout);
   }
-
+});
 
 
 // ----- GOOGLE LOGIN ROUTE -----
