@@ -262,52 +262,64 @@ app.use((err, req, res, next) => {
 const MAX_TEXT_LENGTH = Number(process.env.MAX_TEXT_LENGTH || 3000);
 const TRANSLATION_TIMEOUT = Number(process.env.TRANSLATION_TIMEOUT || 8000);
 
-app.post('/translate/batch', async (req, res) => {
-    const { q, source, target } = req.body;
+app.post("/translate/batch", async (req, res) => {
+  const { q, source, target } = req.body;
 
-    if (!q || !target) {
-        return res.status(400).json({ error: 'Missing q or target' });
+  if (!q || !target) {
+    return res.status(400).json({ error: "Missing q or target" });
+  }
+
+  if (typeof q !== "string" || q.length > MAX_TEXT_LENGTH) {
+    return res.status(400).json({ error: "Text too long" });
+  }
+
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), TRANSLATION_TIMEOUT);
+
+  try {
+    const r = await fetch("https://libretranslate.com/translate", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        q,
+        source: source || "auto",
+        target,
+        format: "text"
+      }),
+      signal: controller.signal
+    });
+
+    // 🔴 
+    if (!r.ok) {
+      const raw = await r.text();
+      console.error("LibreTranslate error:", r.status, raw);
+      return res.status(502).json({
+        error: "Upstream translation service failed"
+      });
     }
 
-    if (typeof q !== 'string' || q.length > MAX_TEXT_LENGTH) {
-        return res.status(400).json({ error: 'Text too long' });
+    const data = await r.json();
+
+    if (!data || !data.translatedText) {
+      console.error("Invalid translation response:", data);
+      return res.status(502).json({
+        error: "Invalid translation response"
+      });
     }
 
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), TRANSLATION_TIMEOUT);
+    res.json({ translatedText: data.translatedText });
 
-    try {
-        const r = await fetch('https://libretranslate.com/translate', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                q,
-                source: source || 'auto',
-                target,
-                format: 'text'
-            }),
-            signal: controller.signal
-        });
-
-        const data = await r.json();
-
-        if (!data || !data.translatedText) {
-            throw new Error('Invalid translation response');
-        }
-
-        res.json({ translatedText: data.translatedText });
-
-    } catch (err) {
-        if (err.name === 'AbortError') {
-            return res.status(504).json({ error: 'Translation timeout' });
-        }
-
-        console.error(err);
-        res.status(500).json({ error: 'Translation failed' });
-
-    } finally {
-        clearTimeout(timeout);
+  } catch (err) {
+    if (err.name === "AbortError") {
+      return res.status(504).json({ error: "Translation timeout" });
     }
+
+    console.error("Translation exception:", err);
+    res.status(500).json({ error: "Translation failed" });
+
+  } finally {
+    clearTimeout(timer);
+  }
 });
 
 
