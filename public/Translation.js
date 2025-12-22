@@ -40,7 +40,7 @@ async function translatePage(targetLang) {
   translateController = new AbortController();
   const signal = translateController.signal;
 
-  const apiURL = "/translate";
+  const apiURL = "https://fsdp-cycling-ltey.onrender.com/translate";
 
   try {
     const elements = document.querySelectorAll(
@@ -86,6 +86,7 @@ async function translatePage(targetLang) {
 
           await new Promise(r => setTimeout(r, 120));
         } catch {
+            console.error("Translate fetch failed:", err);
           continue;
         }
       }
