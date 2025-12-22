@@ -254,17 +254,37 @@ app.use((err, req, res, next) => {
 });
 
 
+
 // ----- TRANSLATION ROUTE -----
 app.post("/translate", async (req, res) => {
+  const { q, from, to } = req.body;
+
+  if (!q || !to) {
+    return res.status(400).json({ error: "Missing q or to" });
+  }
+
   try {
-    const response = await fetch("https://fsdp-cycling-ltey.onrender.com/translate", {
+    const response = await fetch("https://libretranslate.com/translate", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(req.body)
+      body: JSON.stringify({
+        q,
+        source: from || "auto",
+        target: to,
+        format: "text"
+      })
     });
 
+    if (!response.ok) {
+      throw new Error(`LibreTranslate error ${response.status}`);
+    }
+
     const data = await response.json();
-    res.json(data);
+
+    res.json({
+      translatedText: data.translatedText
+    });
+
   } catch (err) {
     console.error("Translate error:", err);
     res.status(500).json({ error: "Translation failed" });
