@@ -254,83 +254,22 @@ app.use((err, req, res, next) => {
 });
 
 
-
 // ----- TRANSLATION ROUTE -----
-
-
-
-const MAX_TEXT_LENGTH = Number(process.env.MAX_TEXT_LENGTH || 3000);
-const TRANSLATION_TIMEOUT = Number(process.env.TRANSLATION_TIMEOUT || 8000);
-
-app.post("/translate/batch", async (req, res) => {
-  const { texts, source, target } = req.body;
-
-  if (!Array.isArray(texts) || texts.length === 0 || !target) {
-    return res.status(400).json({ error: "Invalid request payload" });
-  }
-
-  // Basic validation
-  for (const t of texts) {
-    if (typeof t !== "string" || t.length > MAX_TEXT_LENGTH) {
-      return res.status(400).json({ error: "Text too long or invalid" });
-    }
-  }
-
-  const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), TRANSLATION_TIMEOUT);
-
+app.post("/translate", async (req, res) => {
   try {
-    // LibreTranslate supports array input
-    const r = await fetch("https://libretranslate.com/translate", {
+    const response = await fetch("https://fsdp-cycling-ltey.onrender.com/translate", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        q: texts,
-        source: source || "auto",
-        target,
-        format: "text"
-      }),
-      signal: controller.signal
+      body: JSON.stringify(req.body)
     });
 
-    if (!r.ok) {
-      const raw = await r.text();
-      console.error("LibreTranslate error:", r.status, raw);
-      return res.status(502).json({
-        error: "Upstream translation service failed"
-      });
-    }
-
-    const data = await r.json();
-
-    // LibreTranslate returns array for array input
-    const translatedTexts = Array.isArray(data)
-      ? data.map(d => d.translatedText)
-      : [];
-
-    if (translatedTexts.length !== texts.length) {
-      return res.status(502).json({ error: "Invalid translation response" });
-    }
-
-    res.json({ translatedTexts });
-
+    const data = await response.json();
+    res.json(data);
   } catch (err) {
-    if (err.name === "AbortError") {
-      return res.status(504).json({ error: "Translation timeout" });
-    }
-
-    console.error("Translation exception:", err);
+    console.error("Translate error:", err);
     res.status(500).json({ error: "Translation failed" });
-
-  } finally {
-    clearTimeout(timer);
   }
 });
-
-
-
-
-
 
 
 // ----- GOOGLE LOGIN ROUTE -----
