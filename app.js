@@ -263,25 +263,29 @@ const MAX_TEXT_LENGTH = Number(process.env.MAX_TEXT_LENGTH || 3000);
 const TRANSLATION_TIMEOUT = Number(process.env.TRANSLATION_TIMEOUT || 8000);
 
 app.post("/translate/batch", async (req, res) => {
-  const { q, source, target } = req.body;
+  const { texts, source, target } = req.body;
 
-  if (!q || !target) {
-    return res.status(400).json({ error: "Missing q or target" });
+  if (!Array.isArray(texts) || texts.length === 0 || !target) {
+    return res.status(400).json({ error: "Invalid request payload" });
   }
 
-  if (typeof q !== "string" || q.length > MAX_TEXT_LENGTH) {
-    return res.status(400).json({ error: "Text too long" });
+  // Basic validation
+  for (const t of texts) {
+    if (typeof t !== "string" || t.length > MAX_TEXT_LENGTH) {
+      return res.status(400).json({ error: "Text too long or invalid" });
+    }
   }
 
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), TRANSLATION_TIMEOUT);
 
   try {
+    // LibreTranslate supports array input
     const r = await fetch("https://libretranslate.com/translate", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        q,
+        q: texts,
         source: source || "auto",
         target,
         format: "text"
@@ -289,7 +293,6 @@ app.post("/translate/batch", async (req, res) => {
       signal: controller.signal
     });
 
-    // 🔴 
     if (!r.ok) {
       const raw = await r.text();
       console.error("LibreTranslate error:", r.status, raw);
@@ -300,14 +303,16 @@ app.post("/translate/batch", async (req, res) => {
 
     const data = await r.json();
 
-    if (!data || !data.translatedText) {
-      console.error("Invalid translation response:", data);
-      return res.status(502).json({
-        error: "Invalid translation response"
-      });
+    // LibreTranslate returns array for array input
+    const translatedTexts = Array.isArray(data)
+      ? data.map(d => d.translatedText)
+      : [];
+
+    if (translatedTexts.length !== texts.length) {
+      return res.status(502).json({ error: "Invalid translation response" });
     }
 
-    res.json({ translatedText: data.translatedText });
+    res.json({ translatedTexts });
 
   } catch (err) {
     if (err.name === "AbortError") {
@@ -321,7 +326,6 @@ app.post("/translate/batch", async (req, res) => {
     clearTimeout(timer);
   }
 });
-
 
 
 

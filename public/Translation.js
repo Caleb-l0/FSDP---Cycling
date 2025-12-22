@@ -74,6 +74,38 @@ class LibreTranslator {
         const hash = this.hashString(normalizedText + targetLang);
         return `${this.config.cachePrefix}${hash}`;
     }
+ 
+async translateBatchOnce(texts, targetLang, sourceLang = "auto") {
+  const response = await fetch(this.config.apiUrl, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Accept": "application/json"
+    },
+    body: JSON.stringify({
+      texts,
+      source: sourceLang,
+      target: targetLang
+    })
+  });
+
+  if (!response.ok) {
+    const err = await response.text();
+    throw new Error(`HTTP ${response.status}: ${err}`);
+  }
+
+  const data = await response.json();
+
+  if (!data || !Array.isArray(data.translatedTexts)) {
+    throw new Error("Invalid translation response");
+  }
+
+  return data.translatedTexts;
+}
+
+
+
+
 
     /**
      * String hash function
@@ -597,94 +629,60 @@ class LibreTranslator {
     /**
      * Translate entire page
      */
-    async translatePage(targetLang, sourceLang = 'auto') {
-        // Check if already translating
-        if (this.isTranslating) {
-            const userConfirmed = confirm(
-                'Translation is already in progress. Do you want to cancel and start new translation?'
-            );
-            
-            if (userConfirmed) {
-                this.abortTranslation();
-                await this.delay(300); // Small delay for cleanup
-            } else {
-                return;
-            }
-        }
-        
-        try {
-            // Set translation state
-            this.isTranslating = true;
-            this.currentLang = targetLang;
-            this.abortController = new AbortController();
-            
-            // Show progress
-            this.progressElement = this.createProgressIndicator();
-            this.updateProgress('Preparing translation...');
-            
-            // Collect text elements
-            const textElements = this.collectTextElements();
-            console.log(`Found ${textElements.length} text elements to translate`);
-            
-            if (textElements.length === 0) {
-                this.updateProgress('No text found to translate', 'warning');
-                setTimeout(() => this.removeProgressIndicator(), 2000);
-                this.isTranslating = false;
-                return;
-            }
-            
-            // Extract texts for batch translation
-            const texts = textElements.map(item => item.text);
-            
-            // Perform batch translation
-            this.updateProgress(`Translating ${textElements.length} items...`);
-            
-            const translatedTexts = await this.translateBatch(
-                texts, 
-                targetLang, 
-                sourceLang
-            );
-            
-            // Check if translation was aborted
-            if (this.abortController.signal.aborted) {
-                throw new DOMException('Translation aborted', 'AbortError');
-            }
-            
-            // Apply translations to elements
-            let successCount = 0;
-            textElements.forEach((item, index) => {
-                if (translatedTexts[index] && translatedTexts[index] !== item.text) {
-                    item.element.textContent = translatedTexts[index];
-                    successCount++;
-                }
-            });
-            
-            // Save language preference
-            this.saveLanguagePreference(targetLang);
-            
-            // Update UI
-            this.updateProgress(`✅ Translated ${successCount} items`, 'success');
-            
-            // Log completion
-            console.log(`Translation completed: ${successCount}/${textElements.length} items translated to ${targetLang}`);
-            
-        } catch (error) {
-            if (error.name === 'AbortError') {
-                this.updateProgress('Translation cancelled', 'warning');
-            } else {
-                console.error('Translation failed:', error);
-                this.updateProgress('❌ Translation failed', 'error');
-            }
-        } finally {
-            // Cleanup after delay
-            setTimeout(() => {
-                this.isTranslating = false;
-                this.currentLang = null;
-                this.abortController = null;
-                this.removeProgressIndicator();
-            }, 3000);
-        }
+  async translatePage(targetLang, sourceLang = "auto") {
+  if (this.isTranslating) return;
+
+  try {
+    this.isTranslating = true;
+    this.currentLang = targetLang;
+
+    this.progressElement = this.createProgressIndicator();
+    this.updateProgress("Preparing translation...");
+
+    const textElements = this.collectTextElements();
+
+    if (textElements.length === 0) {
+      this.updateProgress("No text to translate", "warning");
+      return;
     }
+
+    const texts = textElements.map(item => item.text);
+
+    this.updateProgress(`Translating ${texts.length} items...`);
+
+    
+    const translatedTexts = await this.translateBatchOnce(
+      texts,
+      targetLang,
+      sourceLang
+    );
+
+    let successCount = 0;
+
+    textElements.forEach((item, i) => {
+      const translated = translatedTexts[i];
+      if (translated && translated !== item.text) {
+        item.element.textContent = translated;
+        successCount++;
+      }
+    });
+
+    this.saveLanguagePreference(targetLang);
+    this.updateProgress(`✅ Translated ${successCount} items`, "success");
+
+  } catch (err) {
+    console.error("Translation failed:", err);
+    this.updateProgress("❌ Translation failed", "error");
+
+  } finally {
+    setTimeout(() => {
+      this.isTranslating = false;
+      this.currentLang = null;
+      this.removeProgressIndicator();
+    }, 2500);
+  }
+}
+
 
     // ========================
     // LANGUAGE MANAGEMENT
