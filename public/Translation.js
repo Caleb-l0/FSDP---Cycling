@@ -211,10 +211,10 @@ document.addEventListener("DOMContentLoaded", () => {
    - Uses LibreTranslate by default (swap provider easily)
    =========================== */
 
-import express from "express";
-import cors from "cors";
-import rateLimit from "express-rate-limit";
-import { translateOne, translateBatch } from "./translateService.js";
+const express = require("express");
+const cors = require("cors");
+const rateLimit = require("express-rate-limit");
+const { translateOne, translateBatch } = require("./translateService");
 
 const app = express();
 
