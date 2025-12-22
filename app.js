@@ -257,7 +257,7 @@ app.use((err, req, res, next) => {
 
 // ----- TRANSLATION ROUTE -----
 
-const fetch = require('node-fetch');
+
 
 const MAX_TEXT_LENGTH = Number(process.env.MAX_TEXT_LENGTH || 3000);
 const TRANSLATION_TIMEOUT = Number(process.env.TRANSLATION_TIMEOUT || 8000);
