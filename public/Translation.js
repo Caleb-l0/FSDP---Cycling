@@ -26,57 +26,77 @@ window.setTextSizePreference = function(mode) {
 /**
  * TRANSLATION LOGIC
  */
-async function translatePage(targetLang) {
-    if (translationInProgress || !targetLang) return;
 
-    translationInProgress = true;
-    localStorage.setItem("targetLanguage", targetLang);
+function getTextNodes(root) {
+  const walker = document.createTreeWalker(
+    root,
+    NodeFilter.SHOW_TEXT,
+    {
+      acceptNode(node) {
+        if (!node.nodeValue) return NodeFilter.FILTER_REJECT;
+        const text = node.nodeValue.trim();
+        if (!text) return NodeFilter.FILTER_REJECT;
+        if (text.length < 2) return NodeFilter.FILTER_REJECT;
+        if (/^\d+$/.test(text)) return NodeFilter.FILTER_REJECT;
+        return NodeFilter.FILTER_ACCEPT;
+      }
+    }
+  );
 
-    const apiURL = "https://fsdp-cycling-ltey.onrender.com/translate";
-    
-    // Select elements but filter out those that are empty or just whitespace
-    const elements = Array.from(document.querySelectorAll("h1,h2,h3,h4,h5,h6,p,span,a,button,label,li,th,td"))
-                          .filter(el => el.textContent.trim().length > 0);
-
-    console.log(`Translating ${elements.length} elements to: ${targetLang}`);
-
-    // Process all elements concurrently using Promise.allSettled
-    await Promise.allSettled(elements.map(async (el) => {
-        const originalText = el.textContent.trim();
-        
-        // Check local cache first
-        const cached = getCachedTranslation(targetLang, originalText);
-        if (cached) {
-            el.textContent = cached;
-            return;
-        }
-
-        try {
-            const response = await fetch(apiURL, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    q: originalText,
-                    from: "auto",
-                    to: targetLang
-                })
-            });
-
-            if (!response.ok) return;
-
-            const data = await response.json();
-            if (data?.translatedText) {
-                el.textContent = data.translatedText;
-                saveTranslationToCache(targetLang, originalText, data.translatedText);
-            }
-        } catch (err) {
-            console.error("Translation error for element:", originalText, err);
-        }
-    }));
-
-    translationInProgress = false;
-    console.log("Translation complete.");
+  const nodes = [];
+  let current;
+  while ((current = walker.nextNode())) {
+    nodes.push(current);
+  }
+  return nodes;
 }
+
+
+async function translatePage(targetLang) {
+  if (translationInProgress) return;
+  translationInProgress = true;
+
+  const apiURL = "/translate";
+  const textNodes = getTextNodes(document.body);
+
+  for (const node of textNodes) {
+    const originalText = node.nodeValue.trim();
+
+    const cached = getCachedTranslation(targetLang, originalText);
+    if (cached) {
+      node.nodeValue = cached;
+      continue;
+    }
+
+    try {
+      const res = await fetch(apiURL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          q: originalText,
+          from: "auto",
+          to: targetLang
+        })
+      });
+
+      if (!res.ok) continue;
+
+      const data = await res.json();
+      if (!data?.translatedText) continue;
+
+      node.nodeValue = data.translatedText;
+      saveTranslationToCache(targetLang, originalText, data.translatedText);
+
+      await new Promise(r => setTimeout(r, 120)); // rate safety
+
+    } catch (e) {
+      console.error("Translate failed:", e);
+    }
+  }
+
+  translationInProgress = false;
+}
+
 
 function getCachedTranslation(lang, text) {
     const cache = JSON.parse(localStorage.getItem("translationCache") || "{}");
