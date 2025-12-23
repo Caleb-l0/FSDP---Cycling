@@ -1,4 +1,4 @@
-JavaScript// Translation.js
+
 console.log("Translation.js LOADED");
 
 const TEXT_SIZE_KEY = "happyVolunteerTextSize";
