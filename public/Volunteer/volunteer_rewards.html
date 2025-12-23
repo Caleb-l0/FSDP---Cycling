@@ -103,7 +103,7 @@
   let currentPoints = 0;
 
   //  Fetch user points + shop items 
-  fetch(`http://localhost:3000/rewards/${userId}`, {
+  fetch(`https://fsdp-cycling-ltey.onrender.com/rewards/${userId}`, {
     headers: { "Authorization": `Bearer ${token}` }
   })
   .then(res => res.json())
@@ -132,7 +132,7 @@
       button.addEventListener("click", () => {
         if (currentPoints < item.Cost) return;
 
-        fetch("http://localhost:3000/rewards/redeem", {
+        fetch("https://fsdp-cycling-ltey.onrender.com/rewards/redeem", {
           method: "POST",
           headers: {
             "Authorization": `Bearer ${token}`,
@@ -161,7 +161,7 @@
 
 
     async function loadHistory() {
-  const res = await fetch(`http://localhost:3000/rewards/history/${userId}`, {
+  const res = await fetch(`https://fsdp-cycling-ltey.onrender.com/rewards/history/${userId}`, {
   headers: {
     "Authorization": `Bearer ${token}`
   }
