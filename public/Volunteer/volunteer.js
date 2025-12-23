@@ -60,14 +60,14 @@ async function loadHomepageEvents() {
         container.innerHTML += `
             <div class="event-box">
                 <div class="service-card event-item"
-                    onclick="goToEventDetail(${e.EventID})">
+                    onclick="goToEventDetail(${e.eventid})">
 
                     <div class="service-icon"><i class="fas fa-calendar"></i></div>
 
                     <div class="service-content">
-                        <h3>${e.EventName}</h3>
-                        <p>${new Date(e.EventDate).toLocaleDateString()}</p>
-                        <p>${e.Location}</p>
+                        <h3>${e.eventname}</h3>
+                        <p>${new Date(e.eventdate).toLocaleDateString()}</p>
+                        <p>${e.location}</p>
                     </div>
                 </div>
             </div>
