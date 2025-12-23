@@ -1,4 +1,4 @@
-// Translation.js
+JavaScript// Translation.js
 console.log("Translation.js LOADED");
 
 const TEXT_SIZE_KEY = "happyVolunteerTextSize";
@@ -63,7 +63,7 @@ async function translatePage(targetLang) {
     const textNodes = getTextNodes(document.body);
     console.log("Text nodes found:", textNodes.length);
 
-    // Show loading indicator
+    // Loading indicator
     const indicator = document.createElement("div");
     indicator.id = "translation-indicator";
     indicator.style.cssText = `
@@ -75,45 +75,52 @@ async function translatePage(targetLang) {
     indicator.textContent = "Translating page... Please wait";
     document.body.appendChild(indicator);
 
-    const batchSize = 5;  // Safe concurrency for Render free tier
+    // Collect texts that need translation
+    const textsToTranslate = [];
+    const nodesToUpdate = [];
 
-    for (let i = 0; i < textNodes.length; i += batchSize) {
-        const batch = textNodes.slice(i, i + batchSize);
+    textNodes.forEach(node => {
+        const originalText = node.nodeValue.trim();
+        if (!originalText) return;
 
-        await Promise.all(batch.map(async (node) => {
-            const originalText = node.nodeValue.trim();
-            if (!originalText) return;
+        const cached = getCachedTranslation(targetLang, originalText);
+        if (cached) {
+            node.nodeValue = cached;
+        } else {
+            textsToTranslate.push(originalText);
+            nodesToUpdate.push(node);
+        }
+    });
 
-            const cached = getCachedTranslation(targetLang, originalText);
-            if (cached) {
-                node.nodeValue = cached;
-                return;
-            }
+    if (textsToTranslate.length > 0) {
+        try {
+            const res = await fetch(apiURL, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    q: textsToTranslate,     // Send as array for batch
+                    source: "auto",
+                    target: targetLang
+                })
+            });
 
-            try {
-                const res = await fetch(apiURL, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        q: originalText,
-                        source: "auto",
-                        target: targetLang
-                    })
-                });
+            const data = await res.json();
 
-                const data = await res.json();
-                const translated = data?.translatedText || originalText;
+            // Handle both { translatedTexts: [...] } and { translatedText: "..." } for safety
+            const translatedArray = data.translatedTexts || 
+                                   (Array.isArray(data.translatedText) ? data.translatedText : 
+                                   (data.translatedText ? [data.translatedText] : textsToTranslate));
+
+            nodesToUpdate.forEach((node, i) => {
+                const translated = translatedArray[i] || textsToTranslate[i];
                 node.nodeValue = translated;
-                saveTranslationToCache(targetLang, originalText, translated);
+                saveTranslationToCache(targetLang, textsToTranslate[i], translated);
+            });
 
-            } catch (e) {
-                console.error("Translation failed for text:", originalText, e);
-                // Keep original on error
-            }
-        }));
-
-        // Small delay between batches to avoid rate limiting
-        await new Promise(r => setTimeout(r, 300));
+        } catch (e) {
+            console.error("Batch translation failed:", e);
+            // Keep original text on complete failure
+        }
     }
 
     // Remove loading indicator
@@ -137,12 +144,12 @@ function saveTranslationToCache(lang, original, translated) {
 }
 
 window.changeLanguage = function(lang) {
-    localStorage.setItem("targetLanguage", lang);  // Remember choice
+    localStorage.setItem("targetLanguage", lang);
     if (translationInProgress) {
         console.warn("Translation already in progress...");
         return;
     }
-    localStorage.removeItem("translationCache");  // Clear cache for fresh translation
+    localStorage.removeItem("translationCache");  // Clear cache when switching language
     translatePage(lang);
 };
 
@@ -150,13 +157,11 @@ window.changeLanguage = function(lang) {
  * INITIALIZATION
  */
 document.addEventListener("DOMContentLoaded", () => {
-    // Apply text size
     const savedSize = localStorage.getItem(TEXT_SIZE_KEY) || DEFAULT_TEXT_SIZE;
     applyTextSizePreference(savedSize);
 
-    // Auto-translate if language is saved
     const savedLang = localStorage.getItem("targetLanguage");
-    if (savedLang && savedLang !== "en") {  // Assuming "en" is default/original
+    if (savedLang && savedLang !== "en") {
         translatePage(savedLang);
     }
 });

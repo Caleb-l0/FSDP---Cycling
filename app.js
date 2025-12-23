@@ -257,9 +257,8 @@ app.use((err, req, res, next) => {
 app.post("/translate", async (req, res) => {
   let { q, from = "auto", to } = req.body;
 
-  // 
   if (!q || !to) {
-    return res.json({ 
+    return res.json({
       translatedText: Array.isArray(q) ? q : (q || ""),
       translatedTexts: Array.isArray(q) ? q.map(() => "") : undefined
     });
@@ -268,56 +267,51 @@ app.post("/translate", async (req, res) => {
   const isBatch = Array.isArray(q);
   const texts = isBatch ? q : [q];
 
-  // 
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 25000);
+  //
+  const userEmail = "chensail@outlook.com";  
+
+  const translatedResults = [];
 
   try {
-    const r = await fetch("https://translate.argosopentech.com/translate", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Accept": "application/json"
-      },
-      body: JSON.stringify({
-        q: texts,              // 
-        source: from,
-        target: to,
-        format: "text"
-      }),
-      signal: controller.signal
-    });
+    for (const text of texts) {
+      const encodedText = encodeURIComponent(text.trim());
+      let url = `https://api.mymemory.translated.net/get?q=${encodedText}&langpair=${from}|${to}`;
 
-    if (!r.ok) {
-      console.error("LibreTranslate error:", r.status, r.statusText);
-      //
-      return res.json({
-        translatedText: isBatch ? undefined : (q || ""),
-        translatedTexts: isBatch ? texts : undefined
-      });
+      // 
+      if (userEmail && userEmail.includes("@")) {
+        url += `&de=${encodeURIComponent(userEmail)}`;
+      }
+
+      const r = await fetch(url, { signal: AbortSignal.timeout(15000) });
+
+      if (!r.ok) {
+        translatedResults.push(text);
+        continue;
+      }
+
+      const data = await r.json();
+
+      if (data.responseStatus === 200) {
+        translatedResults.push(data.responseData.translatedText || text);
+      } else {
+        translatedResults.push(text);
+      }
     }
 
-    const data = await r.json();
-
-    // 
     if (isBatch) {
-      const translatedTexts = data.translatedText || texts;
-      res.json({ translatedTexts });
+      res.json({ translatedTexts: translatedResults });
     } else {
-      res.json({ translatedText: data.translatedText || q });
+      res.json({ translatedText: translatedResults[0] });
     }
 
   } catch (err) {
-    console.error("Translate error:", err.name === 'AbortError' ? "Timeout" : err);
+    console.error("MyMemory translate error:", err);
 
-    // 
-    res.json({
-      translatedText: isBatch ? undefined : q,
-      translatedTexts: isBatch ? texts : undefined
-    });
-
-  } finally {
-    clearTimeout(timeout);
+    if (isBatch) {
+      res.json({ translatedTexts: texts });
+    } else {
+      res.json({ translatedText: q });
+    }
   }
 });
 
