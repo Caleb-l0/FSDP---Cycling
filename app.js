@@ -273,7 +273,7 @@ app.post("/translate", async (req, res) => {
   const timeout = setTimeout(() => controller.abort(), 25000);
 
   try {
-    const r = await fetch("https://libretranslate.de/translate", {
+    const r = await fetch("https://translate.argosopentech.com/translate", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
