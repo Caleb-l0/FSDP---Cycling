@@ -59,7 +59,7 @@ console.log("Text nodes found:", getTextNodes(document.body).length);
   console.log(`Translating page to ${targetLang}...`);
 
 
-  const apiURL = "/translate";
+  const apiURL = "https://fsdp-cycling-ltey.onrender.com/translate";
   const textNodes = getTextNodes(document.body);
 
   for (const node of textNodes) {
