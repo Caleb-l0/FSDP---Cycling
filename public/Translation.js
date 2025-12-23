@@ -56,6 +56,9 @@ async function translatePage(targetLang) {
   if (translationInProgress) return;
   translationInProgress = true;
 
+  console.log(`Translating page to ${targetLang}...`);
+
+
   const apiURL = "/translate";
   const textNodes = getTextNodes(document.body);
 
