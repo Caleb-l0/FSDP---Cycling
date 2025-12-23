@@ -12,7 +12,7 @@ async function getEvents(req, res) {
 
 async function signUp(req, res) {
   const { eventId } = req.body;
-  const userId = req.user.id; // ✅ 从 token 拿 userId
+  const userId = req.user.id; 
 
   if (!eventId) {
     return res.status(400).json({ message: 'Missing eventId' });

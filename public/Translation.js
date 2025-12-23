@@ -41,7 +41,6 @@ async function translatePage(targetLang) {
 
     console.log(`Translating to ${targetLang}...`);
 
-    const apiURL = "https://fsdp-cycling-ltey.onrender.com/translate";
     const textNodes = getTextNodes(document.body);
 
     const indicator = document.createElement("div");
@@ -51,6 +50,7 @@ async function translatePage(targetLang) {
 
     const textsToTranslate = [];
     const nodesToUpdate = [];
+    const originalTexts = [];
 
     textNodes.forEach(node => {
         const original = node.nodeValue.trim();
@@ -60,50 +60,39 @@ async function translatePage(targetLang) {
         if (cached) {
             node.nodeValue = cached;
         } else {
+            originalTexts.push(original);
             textsToTranslate.push(original);
             nodesToUpdate.push(node);
         }
     });
 
-    if (textsToTranslate.length > 0) {
+    // 逐个翻译（MyMemory 不支持批量数组，所以安全循环）
+    for (let i = 0; i < textsToTranslate.length; i++) {
+        const text = textsToTranslate[i];
+
         try {
-            const res = await fetch(apiURL, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    q: textsToTranslate,
-                    source: "auto",
-                    target: targetLang
-                })
-            });
+            const encoded = encodeURIComponent(text);
+            const url = `https://api.mymemory.translated.net/get?q=${encoded}&langpair=en|${targetLang}`;
 
+            const res = await fetch(url);
             const data = await res.json();
-            console.log("Backend response:", data);  // 关键日志，看这个！
 
-            let translatedArray = [];
+            let translated = text; // 默认原文字
 
-            if (data.translatedTexts && Array.isArray(data.translatedTexts)) {
-                translatedArray = data.translatedTexts;
-            } else if (data.translatedText) {
-                translatedArray = Array.isArray(data.translatedText) ? data.translatedText : [data.translatedText];
-            } else {
-                translatedArray = textsToTranslate;  // fallback
+            if (data.responseStatus === 200 && data.responseData && data.responseData.translatedText) {
+                translated = data.responseData.translatedText;
             }
 
-            // 确保长度匹配
-            if (translatedArray.length < textsToTranslate.length) {
-                translatedArray = translatedArray.concat(textsToTranslate.slice(translatedArray.length));
-            }
-
-            nodesToUpdate.forEach((node, i) => {
-                const translated = translatedArray[i] || textsToTranslate[i];
-                node.nodeValue = translated;
-                saveTranslationToCache(targetLang, textsToTranslate[i], translated);
-            });
+            nodesToUpdate[i].nodeValue = translated;
+            saveTranslationToCache(targetLang, text, translated);
 
         } catch (e) {
-            console.error("Translation request failed:", e);
+            console.error("Translate failed for:", text, e);
+            // 出错保留原文字
         }
+
+        // 可选：加小延迟避免触发限流
+        // await new Promise(r => setTimeout(r, 100));
     }
 
     document.body.removeChild(indicator);
@@ -124,7 +113,7 @@ function saveTranslationToCache(lang, original, translated) {
 
 window.changeLanguage = function(lang) {
     localStorage.setItem("targetLanguage", lang);
-    localStorage.removeItem("translationCache");
+    localStorage.removeItem("translationCache"); // 切换语言时清缓存
     translatePage(lang);
 };
 
@@ -133,5 +122,7 @@ document.addEventListener("DOMContentLoaded", () => {
     applyTextSizePreference(savedSize);
 
     const savedLang = localStorage.getItem("targetLanguage");
-    if (savedLang && savedLang !== "en") translatePage(savedLang);
+    if (savedLang && savedLang !== "en") {
+        translatePage(savedLang);
+    }
 });
