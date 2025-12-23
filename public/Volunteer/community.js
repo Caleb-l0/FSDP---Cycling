@@ -36,7 +36,7 @@ async function submitPost() {
         TaggedInstitutionID: institution ? parseInt(institution) : null
     };
 
-    const res = await fetch("http://localhost:3000/community/posts", {
+    const res = await fetch("https://fsdp-cycling-ltey.onrender.com/community/posts", {
         method: "POST",
         headers: {
             "Authorization": `Bearer ${token}`,

@@ -66,7 +66,7 @@ async function translatePage(targetLang) {
         }
     });
 
-    // 逐个翻译（MyMemory 不支持批量数组，所以安全循环）
+  
     for (let i = 0; i < textsToTranslate.length; i++) {
         const text = textsToTranslate[i];
 
@@ -77,7 +77,7 @@ async function translatePage(targetLang) {
             const res = await fetch(url);
             const data = await res.json();
 
-            let translated = text; // 默认原文字
+            let translated = text; 
 
             if (data.responseStatus === 200 && data.responseData && data.responseData.translatedText) {
                 translated = data.responseData.translatedText;
@@ -88,11 +88,10 @@ async function translatePage(targetLang) {
 
         } catch (e) {
             console.error("Translate failed for:", text, e);
-            // 出错保留原文字
+            
         }
 
-        // 可选：加小延迟避免触发限流
-        // await new Promise(r => setTimeout(r, 100));
+      
     }
 
     document.body.removeChild(indicator);
@@ -113,7 +112,7 @@ function saveTranslationToCache(lang, original, translated) {
 
 window.changeLanguage = function(lang) {
     localStorage.setItem("targetLanguage", lang);
-    localStorage.removeItem("translationCache"); // 切换语言时清缓存
+    localStorage.removeItem("translationCache"); 
     translatePage(lang);
 };
 
