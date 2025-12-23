@@ -48,7 +48,7 @@ async function getInstitutions(req, res) {
 async function browsePosts(req, res) {
     try {
         const posts = await model.getAllPosts();
-        res.json(posts.recordset);
+        res.json(posts);
     } catch (err) {
         res.status(500).json({ message: "Failed to load posts" });
     }

@@ -31,9 +31,9 @@ async function submitPost() {
     }
 
     const body = {
-        Content: content,
-        Visibility: visibility,
-        TaggedInstitutionID: institution ? parseInt(institution) : null
+       content: content,
+    visibility: visibility,
+    taggedinstitutionid: institution ? parseInt(institution) : null
     };
 
     const res = await fetch("https://fsdp-cycling-ltey.onrender.com/community/posts", {
