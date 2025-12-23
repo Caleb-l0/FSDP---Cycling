@@ -71,19 +71,19 @@ async function loadPosts() {
 
     posts.forEach(p => {
         container.innerHTML += `
-        <div class="post-card" data-post-id="${p.PostID}">
+        <div class="post-card" data-post-id="${p.postid}">
             
             <div class="post-header">
                 <img class="post-avatar" src="./default_user.png">
                 <div>
-                    <h4 class="post-user">${p.UserName}</h4>
-                    <p class="post-time">${new Date(p.CreatedAt).toLocaleString()}</p>
+                    <h4 class="post-user">${p.username}</h4>
+                    <p class="post-time">${new Date(p.createdat).toLocaleString()}</p>
                 </div>
             </div>
 
-            <p class="post-text">${p.Content}</p>
+            <p class="post-text">${p.content}</p>
 
-            ${p.PhotoURL ? `<img class="post-img" src="${p.PhotoURL}">` : ""}
+            ${p.photourl ? `<img class="post-img" src="${p.photourl}">` : ""}
 
             <div class="post-actions">
                 <button class="btn-like">
@@ -91,7 +91,7 @@ async function loadPosts() {
                 </button>
 
                 <div class="like-display">
-                    People Like: <span class="like-count">${p.LikeCount}</span>
+                    People Like: <span class="like-count">${p.likecount}</span>
                 </div>
 
                 <button class="btn-open-comments">
@@ -149,7 +149,7 @@ function attachCommentEvents() {
         const openBtn = card.querySelector(".btn-open-comments");
         const list = card.querySelector(".post-comments");
 
-        // 点击打开 global panel
+       
         openBtn.addEventListener("click", () => {
             currentPostId = postId;
             document.getElementById("globalCommentPanel").classList.add("show");
@@ -157,7 +157,7 @@ function attachCommentEvents() {
             document.getElementById("globalCommentInput").value = "";
         });
 
-        // 加载评论
+        
         loadComments(postId, list);
     });
 }
@@ -199,24 +199,33 @@ document.getElementById("globalCommentSend").addEventListener("click", async () 
 
 
 async function loadComments(postId, container) {
-    if (!container) return;
+  if (!container) return;
 
-    const res = await fetch(`https://fsdp-cycling-ltey.onrender.com/community/posts/${postId}/comments`, {
-        headers: { "Authorization": `Bearer ${token}` }
-    });
+  const res = await fetch(
+    `https://fsdp-cycling-ltey.onrender.com/community/posts/${postId}/comments`,
+    { headers: { "Authorization": `Bearer ${token}` } }
+  );
 
-    const comments = await res.json();
+  if (!res.ok) {
+    console.error("Load comments failed:", res.status);
     container.innerHTML = "";
+    return;
+  }
 
-    comments.forEach(c => {
-        container.innerHTML += `
-            <div class="comment-item">
-                <strong>${c.UserName}:</strong>
-                <span>${c.CommentText}</span>
-                <div class="comment-time">${new Date(c.CreatedAt).toLocaleString()}</div>
-            </div>
-        `;
-    });
+  const comments = await res.json();
+  container.innerHTML = "";
+
+  if (!Array.isArray(comments)) return;
+
+  comments.forEach(c => {
+    container.innerHTML += `
+      <div class="comment-item">
+        <strong>${c.username}:</strong>
+        <span>${c.commenttext}</span>
+        <div class="comment-time">${new Date(c.createdat).toLocaleString()}</div>
+      </div>
+    `;
+  });
 }
 
 
@@ -266,81 +275,64 @@ async function loadInstitutions() {
     panels.innerHTML = "";
 
     data.forEach((org, index) => {
+  tabs.innerHTML += `
+    <button class="insti-btn ${index === 0 ? "active" : ""}"
+      data-target="inst_${org.organizationid}">
+      ${org.orgname}
+    </button>
+  `;
 
-        // Create tab button
-        tabs.innerHTML += `
-            <button class="insti-btn ${index === 0 ? "active" : ""}"
-                data-target="inst_${org.OrganizationID}">
-                ${org.OrgName}
-            </button>
-        `;
+  panels.innerHTML += `
+    <div id="inst_${org.organizationid}" class="insti-panel ${index === 0 ? "active" : ""}">
+      <div class="insti-overview active">
+        <div class="insti-banner">
+          <img src="./default_org.jpg" class="insti-banner-img">
+          <div class="insti-banner-overlay">
+            <h3>${org.orgname}</h3>
+          </div>
+        </div>
 
-        // Create panel with two screens: Overview + Events
-        panels.innerHTML += `
-            <div id="inst_${org.OrganizationID}" class="insti-panel ${index === 0 ? "active" : ""}">
-                
-                <!-- Institution Overview -->
-                <div class="insti-overview active">
+        <div class="insti-description">
+          <p>${org.orgdescription ?? ""}</p>
+        </div>
 
-                    <div class="insti-banner">
-                        <img src="./default_org.jpg" class="insti-banner-img">
-                        <div class="insti-banner-overlay">
-                            <h3>${org.OrgName}</h3>
-                        </div>
-                    </div>
+        <div class="insti-stats">
+          <div class="stat-box">
+            <span>${(org.events || []).length}</span>
+            <label>Events</label>
+          </div>
+        </div>
 
-                    <div class="insti-description">
-                        <p>${org.OrgDescription}</p>
-                    </div>
+        <button class="insti-view-events-btn"
+          onclick="openInstitutionEvents('${org.organizationid}')">
+          View Events →
+        </button>
+      </div>
 
-                    <div class="insti-stats">
-                        <div class="stat-box">
-                            <span>${org.Events.length}</span>
-                            <label>Events</label>
-                        </div>
-                        <div class="stat-box">
-                            <span>${Math.floor(Math.random()*50)+10}</span>
-                            <label>Volunteers</label>
-                        </div>
-                    </div>
+      <div class="insti-events-screen">
+        <button class="back-btn" onclick="goBackToInstitution('${org.organizationid}')">← Back</button>
 
-                    <button class="insti-view-events-btn" 
-                        onclick="openInstitutionEvents('${org.OrganizationID}')">
-                        View Events →
-                    </button>
+        <h3 class="events-title">${org.orgname} - Events</h3>
 
-                </div>
-
-                <!-- Institution Events -->
-                <div class="insti-events-screen">
-
-                    <button class="back-btn" onclick="goBackToInstitution('${org.OrganizationID}')">
-                        ← Back
-                    </button>
-
-                    <h3 class="events-title">${org.OrgName} - Events</h3>
-
-                    <div class="insti-events-list">
-                        ${
-                            org.Events.length === 0 ? 
-                            `<p class="no-events">No events available</p>` 
-                            : org.Events.map(e => `
-                                <div class="event-card" onclick="openEventDetail(${e.EventID})">
-                                    <h4>${e.EventName}</h4>
-                                    <p>${new Date(e.EventDate).toLocaleDateString()}</p>
-                                    <p>${e.Location}</p>
-                                    <p>Number of Volunteer Required: ${e.RequiredVolunteers}</p>
-                                    <button class="btn">Join Event</button>
-                                </div>
-                            `).join("")
-                        }
-                    </div>
-
-                </div>
-
-            </div>
-        `;
-    });
+        <div class="insti-events-list">
+          ${
+            (!org.events || org.events.length === 0)
+            ? `<p class="no-events">No events available</p>`
+            : org.events.map(e => `
+              <div class="event-card" onclick="openEventDetail(${e.eventid})">
+                <h4>${e.eventname}</h4>
+                <p>${new Date(e.eventdate).toLocaleDateString()}</p>
+                <p>${e.location}</p>
+                <p>Number of Volunteer Required: ${e.requiredvolunteers}</p>
+                <button class="btn">Join Event</button>
+              </div>
+            `).join("")
+          }
+        </div>
+      </div>
+    </div>
+  `;
+});
 
     attachInstitutionTabEvents();
 }

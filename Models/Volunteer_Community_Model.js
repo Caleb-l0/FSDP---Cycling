@@ -32,7 +32,16 @@ async function createPost(postData) {
 // ===================================================
 async function getAllPosts() {
   const result = await pool.query(`
-      SELECT cp.*, u.name AS username
+      SELECT 
+        cp.postid,
+        cp.userid,
+        cp.content,
+        cp.photourl,
+        cp.likecount,
+        cp.visibility,
+        cp.taggedinstitutionid,
+        cp.createdat,
+        u.name AS username
       FROM communityposts cp
       INNER JOIN users u ON cp.userid = u.id
       ORDER BY cp.createdat DESC
