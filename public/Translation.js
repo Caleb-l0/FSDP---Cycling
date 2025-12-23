@@ -55,6 +55,19 @@ function getTextNodes(root) {
 async function translatePage(targetLang) {
   if (translationInProgress) return;
   translationInProgress = true;
+  const indicator = document.createElement('div');
+  indicator.style.position = 'fixed';
+  indicator.style.top = '50%';
+  indicator.style.left = '50%';
+  indicator.style.transform = 'translate(-50%, -50%)';
+  indicator.style.background = 'rgba(0,0,0,0.8)';
+  indicator.style.color = 'white';
+  indicator.style.padding = '20px';
+  indicator.style.borderRadius = '10px';
+  indicator.style.zIndex = '9999';
+  indicator.textContent = 'Translating page, please wait...';
+  document.body.appendChild(indicator);
+
 
   console.log("Text nodes found:", getTextNodes(document.body).length);
   console.log(`Translating page to ${targetLang}...`);
@@ -112,7 +125,9 @@ function saveTranslationToCache(lang, original, translated) {
     localStorage.setItem("translationCache", JSON.stringify(cache));
 }
 
+window.translatePage = translatePage;
 window.changeLanguage = function(lang) {
+  localStorage.setItem("targetLanguage", lang);
     if (translationInProgress) {
         console.warn("Translation already in progress...");
         return;
