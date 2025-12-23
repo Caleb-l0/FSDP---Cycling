@@ -55,15 +55,16 @@ function getTextNodes(root) {
 async function translatePage(targetLang) {
   if (translationInProgress) return;
   translationInProgress = true;
-console.log("Text nodes found:", getTextNodes(document.body).length);
-  console.log(`Translating page to ${targetLang}...`);
 
+  console.log("Text nodes found:", getTextNodes(document.body).length);
+  console.log(`Translating page to ${targetLang}...`);
 
   const apiURL = "https://fsdp-cycling-ltey.onrender.com/translate";
   const textNodes = getTextNodes(document.body);
 
   for (const node of textNodes) {
     const originalText = node.nodeValue.trim();
+    if (!originalText) continue;
 
     const cached = getCachedTranslation(targetLang, originalText);
     if (cached) {
@@ -77,12 +78,10 @@ console.log("Text nodes found:", getTextNodes(document.body).length);
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           q: originalText,
-          from: "auto",
-          to: targetLang
+          source: "auto",
+          target: targetLang
         })
       });
-
-      if (!res.ok) continue;
 
       const data = await res.json();
       if (!data?.translatedText) continue;
@@ -90,7 +89,7 @@ console.log("Text nodes found:", getTextNodes(document.body).length);
       node.nodeValue = data.translatedText;
       saveTranslationToCache(targetLang, originalText, data.translatedText);
 
-      await new Promise(r => setTimeout(r, 120)); // rate safety
+      await new Promise(r => setTimeout(r, 120));
 
     } catch (e) {
       console.error("Translate failed:", e);
