@@ -10,11 +10,11 @@ async function createPost(req, res) {
         }
 
         const postData = {
-            UserID: userID,
-            Content: body.Content,
-            PhotoURL: body.PhotoURL || null,
-            Visibility: body.Visibility || "public",
-            TaggedInstitutionID: body.TaggedInstitutionID || null
+             userid: userID,
+  content: body.content,          
+  photourl: body.photourl || null,
+  visibility: body.visibility || "public",
+  taggedinstitutionid: body.taggedinstitutionid || null
         };
 
         const result = await model.createPost(postData);
