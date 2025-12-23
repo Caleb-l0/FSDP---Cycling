@@ -255,14 +255,22 @@ app.use((err, req, res, next) => {
 
 
 app.post("/translate", async (req, res) => {
-  const { q, from, to } = req.body;
+  let { q, from = "auto", to } = req.body;
 
+  // 
   if (!q || !to) {
-    return res.json({ translatedText: q || "" });
+    return res.json({ 
+      translatedText: Array.isArray(q) ? q : (q || ""),
+      translatedTexts: Array.isArray(q) ? q.map(() => "") : undefined
+    });
   }
 
+  const isBatch = Array.isArray(q);
+  const texts = isBatch ? q : [q];
+
+  // 
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 7000);
+  const timeout = setTimeout(() => controller.abort(), 25000);
 
   try {
     const r = await fetch("https://libretranslate.de/translate", {
@@ -272,8 +280,8 @@ app.post("/translate", async (req, res) => {
         "Accept": "application/json"
       },
       body: JSON.stringify({
-        q,
-        source: from || "auto",
+        q: texts,              // 
+        source: from,
         target: to,
         format: "text"
       }),
@@ -281,15 +289,32 @@ app.post("/translate", async (req, res) => {
     });
 
     if (!r.ok) {
-      return res.json({ translatedText: q });
+      console.error("LibreTranslate error:", r.status, r.statusText);
+      //
+      return res.json({
+        translatedText: isBatch ? undefined : (q || ""),
+        translatedTexts: isBatch ? texts : undefined
+      });
     }
 
     const data = await r.json();
-    res.json({ translatedText: data?.translatedText || q });
+
+    // 
+    if (isBatch) {
+      const translatedTexts = data.translatedText || texts;
+      res.json({ translatedTexts });
+    } else {
+      res.json({ translatedText: data.translatedText || q });
+    }
 
   } catch (err) {
-    console.error("Translate error:", err);
-    res.json({ translatedText: q });
+    console.error("Translate error:", err.name === 'AbortError' ? "Timeout" : err);
+
+    // 
+    res.json({
+      translatedText: isBatch ? undefined : q,
+      translatedTexts: isBatch ? texts : undefined
+    });
 
   } finally {
     clearTimeout(timeout);
