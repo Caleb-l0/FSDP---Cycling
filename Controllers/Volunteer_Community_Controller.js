@@ -5,7 +5,7 @@ async function createPost(req, res) {
         const userID = req.user.id;
         const body = req.body;
 
-        if (!body.Content || body.Content.trim() === "") {
+        if (!body.content || body.content.trim() === "") {
             return res.status(400).json({ message: "Content is required" });
         }
 
