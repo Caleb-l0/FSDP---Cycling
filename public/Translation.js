@@ -55,7 +55,7 @@ function getTextNodes(root) {
 async function translatePage(targetLang) {
   if (translationInProgress) return;
   translationInProgress = true;
-
+console.log("Text nodes found:", getTextNodes(document.body).length);
   console.log(`Translating page to ${targetLang}...`);
 
 
