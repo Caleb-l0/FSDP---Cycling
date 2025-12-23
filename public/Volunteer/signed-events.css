@@ -71,3 +71,26 @@
   color: #3E2723;
   font-weight: 700;
 }
+
+
+.toggle-btn {
+  display: block;
+  margin: 36px auto 20px;
+  padding: 14px 28px;
+  border-radius: 999px;
+  border: none;
+
+  background: #264653;
+  color: #ffffff;
+
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+
+  transition: background 0.2s ease, transform 0.15s ease;
+}
+
+.toggle-btn:hover {
+  background: #1f3a44;
+  transform: translateY(-2px);
+}
