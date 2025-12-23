@@ -16,40 +16,50 @@ body {
   margin: 0 auto;
 }
 
+/* ======================================================
+   PRIMARY ACTION
+====================================================== */
 .toggle-btn {
-  display: block;
-  margin: 36px auto 20px;
-  padding: 14px 28px;
+  display: inline-block;
+  margin: 36px auto 24px;
+  padding: 14px 32px;
+
   border-radius: 999px;
   border: none;
-
   background: #264653;
   color: #ffffff;
 
   font-size: 1rem;
   font-weight: 600;
-  cursor: pointer;
+  letter-spacing: 0.2px;
 
-  transition: background 0.2s ease, transform 0.15s ease;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.15s ease, box-shadow 0.15s ease;
 }
 
 .toggle-btn:hover {
   background: #1f3a44;
   transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(0,0,0,0.15);
 }
 
+/* ======================================================
+   SECTION TITLE
+====================================================== */
 h2 {
   text-align: center;
-  margin: 28px 0 36px;
-  font-size: 1.9rem;
+  margin: 32px 0 40px;
+  font-size: 1.85rem;
   font-weight: 700;
+  letter-spacing: 0.3px;
 }
+
 /* ======================================================
-   EVENT LIST – STRUCTURED LAYOUT
+   EVENT LIST – GRID
 ====================================================== */
 .event-list {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
   gap: 28px;
   margin-top: 36px;
 }
@@ -58,10 +68,10 @@ h2 {
    EVENT CARD
 ====================================================== */
 .event-card {
-  position: relative;
   background: #ffffff;
   border-radius: 18px;
   overflow: hidden;
+
   display: flex;
   flex-direction: column;
 
@@ -69,7 +79,7 @@ h2 {
   transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
-/* Auto cover image */
+/* Cover Image */
 .event-card::before {
   content: "";
   display: block;
@@ -84,36 +94,20 @@ h2 {
   background-position: center;
 }
 
+/* Hover Elevation */
 .event-card:hover {
   transform: translateY(-6px);
   box-shadow: 0 14px 32px rgba(0,0,0,0.14);
 }
 
-/* Event image */
-.event-card::before {
-  content: "";
-  display: block;
-  height: 160px;
-  background-image:
-    linear-gradient(
-      rgba(0,0,0,0.15),
-      rgba(0,0,0,0.35)
-    ),
-    url("https://images.unsplash.com/photo-1509099836639-18ba1795216d?auto=format&fit=crop&w=900&q=60");
-  background-size: cover;
-  background-position: center;
-}
-
-/* Hover */
-.event-card:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 14px 32px rgba(0,0,0,0.14);
-}
+/* ======================================================
+   EVENT DETAILS
+====================================================== */
 .event-details {
-  padding: 20px 22px 24px;
+  padding: 22px 24px 26px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
 }
 
 .event-details h3 {
@@ -123,23 +117,24 @@ h2 {
   color: #1f2933;
 }
 
-/* Date / Location */
+.event-details p {
+  font-size: 0.95rem;
+  color: #4b5563;
+  line-height: 1.55;
+}
+
 .event-details p strong {
   color: #264653;
 }
 
-/* Description */
-.event-details p {
-  font-size: 0.95rem;
-  color: #4b5563;
-  line-height: 1.5;
-}
-
+/* ======================================================
+   SIGNUP BUTTON
+====================================================== */
 .signup-btn {
-  margin-top: 14px;
+  margin-top: 16px;
   align-self: flex-start;
 
-  padding: 10px 22px;
+  padding: 11px 26px;
   border-radius: 999px;
   border: none;
 
@@ -148,17 +143,22 @@ h2 {
 
   font-size: 0.95rem;
   font-weight: 600;
+  letter-spacing: 0.2px;
 
   cursor: pointer;
-  transition: background 0.2s ease, transform 0.15s ease;
+  transition: background 0.2s ease, transform 0.15s ease, box-shadow 0.15s ease;
 }
 
 .signup-btn:hover {
   background: #d48a1e;
   transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(0,0,0,0.15);
 }
 
-/* Latest events – first 2 big */
+/* ======================================================
+   VISUAL PRIORITY
+====================================================== */
+/* Latest events – first 2 */
 .event-card:nth-child(-n+2) {
   grid-column: span 2;
 }
@@ -167,41 +167,38 @@ h2 {
   height: 200px;
 }
 
-/* Recommended – next 3 highlighted */
+/* Highlighted recommendations */
 .event-card:nth-child(n+3):nth-child(-n+5) {
   border: 2px solid rgba(230,154,42,0.35);
 }
 
-/* Nearby – rest more compact */
+/* Compact for rest */
 .event-card:nth-child(n+6)::before {
   height: 120px;
   opacity: 0.9;
 }
 
+/* ======================================================
+   STATUS MESSAGES
+====================================================== */
 .event-message {
   grid-column: 1 / -1;
   text-align: center;
-  padding: 36px 24px;
+  padding: 40px 28px;
   border-radius: 16px;
+
   font-size: 1rem;
   background: #ffffff;
   box-shadow: 0 6px 18px rgba(0,0,0,0.08);
 }
 
-.event-message--loading {
-  color: #264653;
-}
+.event-message--loading { color: #264653; }
+.event-message--empty   { color: #6b7280; }
+.event-message--error   { color: #e76f51; }
 
-.event-message--empty {
-  color: #6b7280;
-}
-
-.event-message--error {
-  color: #e76f51;
-}
-
-
-
+/* ======================================================
+   TABLET
+====================================================== */
 @media (max-width: 900px) {
   .event-card:nth-child(-n+2) {
     grid-column: span 1;
@@ -212,19 +209,22 @@ h2 {
    MOBILE
 ====================================================== */
 @media (max-width: 768px) {
+
   h2 {
     font-size: 1.5rem;
+    margin-bottom: 28px;
   }
 
-
-@media (max-width: 768px) {
   .event-card::before {
     height: 130px;
+  }
+
+  .event-details {
+    padding: 18px 20px 22px;
   }
 
   .signup-btn {
     width: 100%;
     text-align: center;
   }
-}
 }

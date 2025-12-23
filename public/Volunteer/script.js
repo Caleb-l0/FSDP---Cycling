@@ -18,7 +18,10 @@ async function loadEvents() {
     const events = await response.json();
 
     if (!Array.isArray(events) || events.length === 0) {
-      setStatusMessage('empty', 'No events available for sign up at the moment. Please check back later!');
+      setStatusMessage(
+        'empty',
+        'No events available for sign up at the moment. Please check back later!'
+      );
       return;
     }
 
@@ -26,7 +29,10 @@ async function loadEvents() {
 
   } catch (error) {
     console.error('Error loading events:', error);
-    setStatusMessage('error', 'Failed to load events. Please check your network or try again later.');
+    setStatusMessage(
+      'error',
+      'Failed to load events. Please check your network or try again later.'
+    );
   }
 }
 
@@ -37,13 +43,12 @@ function renderEvents(events) {
     const card = document.createElement('div');
     card.classList.add('event-card');
 
-    const title = event.EventName || 'Untitled Event';
-    const date = formatDate(event.EventDate);
-    const description = event.Description || 'No description available.';
-    
-    const location = event.Location || 'Location TBD';   // ✅ FIXED HERE
-    const required = event.RequiredVolunteers
-      ? `Required Volunteers: ${event.RequiredVolunteers}`
+    const title = event.eventname || 'Untitled Event';
+    const date = formatDate(event.eventdate);
+    const description = event.description || 'No description available.';
+    const location = event.location || 'Location TBD';
+    const required = event.requiredvolunteers
+      ? `Required Volunteers: ${event.requiredvolunteers}`
       : '';
 
     card.innerHTML = `
@@ -60,14 +65,15 @@ function renderEvents(events) {
     button.classList.add('signup-btn');
     button.type = 'button';
     button.textContent = 'Sign Up';
-    button.addEventListener('click', () => signUp(title, event.EventID));
+
+    button.addEventListener('click', () =>
+      signUp(title, event.eventid)
+    );
 
     card.querySelector('.event-details').appendChild(button);
-
     eventList.appendChild(card);
   });
 }
-
 
 function setStatusMessage(type, message) {
   eventList.innerHTML = `
@@ -92,7 +98,7 @@ function formatDate(rawDate) {
 
 async function signUp(eventTitle, eventId) {
   const token = localStorage.getItem('token');
-  
+
   if (!token) {
     alert('Please login first');
     window.location.href = '../../index.html';
@@ -100,30 +106,34 @@ async function signUp(eventTitle, eventId) {
   }
 
   try {
-    const response = await fetch(`https://fsdp-cycling-ltey.onrender.com/events/signup`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ eventId })  
-    });
+    const response = await fetch(
+      `https://fsdp-cycling-ltey.onrender.com/events/signup`,
+      {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ eventId }) // ✅ 正确字段
+      }
+    );
 
     const data = await response.json();
 
     if (!response.ok) {
-      throw new Error(data.message);
+      throw new Error(data.message || 'Signup failed');
     }
 
     alert(`🎉 You have successfully signed up for "${eventTitle}"!`);
 
   } catch (error) {
-    if (error.message.includes('already')) {
+    console.error('Signup error:', error);
+
+    if (error.message?.includes('already')) {
       alert('You already signed up for this event.');
-      return;
+    } else {
+      alert('Failed to sign up.');
     }
-    alert('Failed to sign up.');
   }
 }
-
 
