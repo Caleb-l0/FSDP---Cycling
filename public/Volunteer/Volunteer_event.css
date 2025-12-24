@@ -78,7 +78,7 @@ h2 {
   overflow: hidden;
   display: flex;
   flex-direction: column;
-
+height:100%;
   box-shadow: 0 4px 14px rgba(0,0,0,0.08);
   transition: box-shadow 0.2s ease;
 }
@@ -112,6 +112,7 @@ h2 {
   display: flex;
   flex-direction: column;
   gap: 10px;
+  flex:1;
 }
 
 .event-details h3 {
@@ -140,7 +141,7 @@ h2 {
    SIGN UP BUTTON
 ====================================================== */
 .signup-btn {
-  margin-top: 18px;
+  margin-top: auto;
   align-self: flex-start;
 
   padding: 10px 24px;
@@ -149,7 +150,7 @@ h2 {
 
   background: #e69a2a;
   color: #ffffff;
-
+ 
   font-size: 0.95rem;
   font-weight: 600;
   letter-spacing: 0.2px;
