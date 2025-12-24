@@ -1,151 +1,242 @@
 /* ===============================
-   SIGNED EVENT CARD (container)
+   SIGNED EVENT CARD (container) – Ultra Professional
 ================================= */
 .signed-event-card {
   position: relative;
   background: #ffffff;
   border: 1px solid #e2e8f0;
-  border-radius: 20px;
-  padding: 24px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
-  transition: all 0.3s ease;
+  border-radius: 24px;
+  padding: 28px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
   flex-direction: column;
   height: 100%;
+  overflow: hidden;
+}
+
+.signed-event-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 6px;
+  background: linear-gradient(to right, #264653, #2a9d8f);
+  border-radius: 24px 24px 0 0;
 }
 
 .signed-event-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
+  transform: translateY(-8px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+  border-color: #cbd5e1;
+}
+
+/* Subtle inner glow on hover */
+.signed-event-card:hover::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 24px;
+  padding: 2px;
+  background: linear-gradient(135deg, rgba(38, 70, 83, 0.08), rgba(42, 157, 143, 0.08));
+  mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  -webkit-mask-composite: xor;
+  pointer-events: none;
 }
 
 /* ===============================
-   STATUS BADGES
+   STATUS BADGES – Premium Pill Design
 ================================= */
 .status-badge {
-  display: inline-block;
-  padding: 6px 16px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 18px;
   border-radius: 999px;
   font-size: 0.875rem;
-  font-weight: 600;
-  letter-spacing: 0.2px;
-  margin-bottom: 14px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
   text-transform: uppercase;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  position: relative;
+  overflow: hidden;
 }
 
-/* Consistent professional colors */
+.status-badge::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.3), rgba(255,255,255,0.1));
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+/* High-end status colors with depth */
 .status-badge--upcoming {
-  background-color: #10b981; /* emerald-500 */
+  background: linear-gradient(135deg, #10b981, #059669);
   color: #ffffff;
 }
 
 .status-badge--ongoing {
-  background-color: #3b82f6; /* blue-500 */
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
   color: #ffffff;
 }
 
 .status-badge--completed {
-  background-color: #6b7280; /* gray-500 */
+  background: linear-gradient(135deg, #6b7280, #4b5563);
   color: #ffffff;
 }
 
 .status-badge--cancelled {
-  background-color: #ef4444; /* red-500 */
+  background: linear-gradient(135deg, #ef4444, #dc2626);
   color: #ffffff;
 }
 
 /* ===============================
-   EVENT DETAILS
+   EVENT DETAILS – Refined Typography
 ================================= */
 .signed-event-card .event-details h3 {
-  margin: 0 0 12px 0;
-  font-size: 1.35rem;
-  font-weight: 700;
-  color: #1e293b;
-  line-height: 1.3;
+  margin: 0 0 14px 0;
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #0f172a;
+  line-height: 1.25;
+  letter-spacing: -0.5px;
 }
 
 .signed-event-card .event-details p {
-  margin: 0 0 8px 0;
-  font-size: 1rem;
+  margin: 0 0 10px 0;
+  font-size: 1.025rem;
   color: #475569;
-  line-height: 1.6;
+  line-height: 1.65;
 }
 
 .signed-event-card .event-details p strong {
   color: #1e293b;
-  font-weight: 600;
+  font-weight: 700;
 }
 
 /* ===============================
-   SIGNUP INFO (bottom section)
+   SIGNUP INFO – Elegant Footer Section
 ================================= */
 .signup-info {
   margin-top: auto;
-  padding-top: 16px;
-  border-top: 1px solid #e2e8f0;
+  padding-top: 20px;
+  border-top: 2px solid #e2e8f0;
   color: #64748b;
-  font-size: 0.95rem;
-  line-height: 1.5;
+  font-size: 0.975rem;
+  line-height: 1.6;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.signup-info::before {
+  content: '';
+  position: absolute;
+  left: 28px;
+  right: 28px;
+  top: -2px;
+  height: 2px;
+  background: linear-gradient(to right, transparent, #264653, transparent);
+  border-radius: 1px;
 }
 
 /* ===============================
-   TOGGLE BUTTON (consistent with main page)
+   TOGGLE BUTTON – Luxury Feel
 ================================= */
 .toggle-btn {
   display: block;
-  margin: 40px auto 24px;
-  padding: 14px 32px;
+  margin: 48px auto 32px;
+  padding: 16px 40px;
   border-radius: 999px;
   border: none;
-  background: #264653;
+  background: linear-gradient(135deg, #264653, #2a9d8f);
   color: #ffffff;
-  font-size: 1rem;
-  font-weight: 600;
-  letter-spacing: 0.3px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: 0.8px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
+  box-shadow: 0 6px 20px rgba(38, 70, 83, 0.25);
+  position: relative;
+  overflow: hidden;
+}
+
+.toggle-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.2), transparent);
+  border-radius: inherit;
+  pointer-events: none;
 }
 
 .toggle-btn:hover {
-  background: #1f3a44;
-  box-shadow: 0 6px 16px rgba(38, 70, 83, 0.3);
-  transform: translateY(-2px);
+  background: linear-gradient(135deg, #1f3a44, #21867a);
+  transform: translateY(-3px);
+  box-shadow: 0 12px 28px rgba(38, 70, 83, 0.35);
+}
+
+.toggle-btn:active {
+  transform: translateY(-1px);
 }
 
 /* ===============================
-   RESPONSIVE ADJUSTMENTS
+   RESPONSIVE – Flawless on All Devices
 ================================= */
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
   .signed-event-card {
-    padding: 20px;
+    padding: 24px;
   }
 
   .signed-event-card .event-details h3 {
-    font-size: 1.25rem;
+    font-size: 1.4rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .signed-event-card {
+    padding: 22px;
+    border-radius: 20px;
+  }
+
+  .signed-event-card .event-details h3 {
+    font-size: 1.35rem;
   }
 
   .status-badge {
-    padding: 6px 14px;
-    font-size: 0.825rem;
-  }
-
-  .signup-info {
-    font-size: 0.9rem;
+    padding: 7px 16px;
+    font-size: 0.85rem;
   }
 
   .toggle-btn {
-    padding: 14px 28px;
-    width: 90%;
+    padding: 15px 36px;
+    font-size: 1.05rem;
+    width: 95%;
+    max-width: 400px;
   }
 }
 
 @media (max-width: 480px) {
   .signed-event-card {
-    padding: 18px;
+    padding: 20px;
+    border-radius: 18px;
   }
 
   .signed-event-card .event-details h3 {
-    font-size: 1.2rem;
+    font-size: 1.3rem;
+  }
+
+  .status-badge {
+    padding: 6px 14px;
+    font-size: 0.8rem;
+  }
+
+  .signup-info {
+    font-size: 0.95rem;
   }
 }
