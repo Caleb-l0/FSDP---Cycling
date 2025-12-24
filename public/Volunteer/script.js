@@ -114,7 +114,7 @@ async function signUp(eventTitle, eventId) {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ eventId }) // ✅ 正确字段
+        body: JSON.stringify({ eventId }) 
       }
     );
 

@@ -1,13 +1,19 @@
 /* ======================================================
-   BASE
+   BASE – Professional Public Service Standard
 ====================================================== */
 body {
-  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-family:
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    Roboto,
+    Arial,
+    sans-serif;
   margin: 0;
   padding-top: 72px;
   background: #f5f7fa;
   color: #1f2933;
-  line-height: 1.6;
+  line-height: 1.65;
 }
 
 .container {
@@ -17,30 +23,29 @@ body {
 }
 
 /* ======================================================
-   PRIMARY ACTION
+   PRIMARY ACTION BUTTON
 ====================================================== */
 .toggle-btn {
-  display: inline-block;
+  display: block;
   margin: 36px auto 24px;
-  padding: 14px 32px;
-
+  padding: 14px 30px;
   border-radius: 999px;
   border: none;
+
   background: #264653;
   color: #ffffff;
 
   font-size: 1rem;
   font-weight: 600;
-  letter-spacing: 0.2px;
+  letter-spacing: 0.3px;
 
   cursor: pointer;
-  transition: background 0.2s ease, transform 0.15s ease, box-shadow 0.15s ease;
+  transition: background 0.15s ease, box-shadow 0.15s ease;
 }
 
 .toggle-btn:hover {
   background: #1f3a44;
-  transform: translateY(-2px);
-  box-shadow: 0 6px 14px rgba(0,0,0,0.15);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.12);
 }
 
 /* ======================================================
@@ -51,53 +56,52 @@ h2 {
   margin: 32px 0 40px;
   font-size: 1.85rem;
   font-weight: 700;
-  letter-spacing: 0.3px;
+  letter-spacing: -0.3px;
 }
 
 /* ======================================================
-   EVENT LIST – GRID
+   EVENT LIST – GRID SYSTEM
 ====================================================== */
 .event-list {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 28px;
   margin-top: 36px;
 }
 
 /* ======================================================
-   EVENT CARD
+   EVENT CARD – PROFESSIONAL NGO STYLE
 ====================================================== */
 .event-card {
   background: #ffffff;
   border-radius: 18px;
   overflow: hidden;
-
   display: flex;
   flex-direction: column;
 
-  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+  transition: box-shadow 0.2s ease;
 }
 
-/* Cover Image */
+.event-card:hover {
+  box-shadow: 0 10px 26px rgba(0,0,0,0.14);
+}
+
+/* ======================================================
+   EVENT IMAGE (AUTO COVER)
+====================================================== */
 .event-card::before {
   content: "";
   display: block;
   height: 160px;
   background-image:
     linear-gradient(
-      rgba(0,0,0,0.15),
+      rgba(0,0,0,0.12),
       rgba(0,0,0,0.35)
     ),
     url("https://images.unsplash.com/photo-1509099836639-18ba1795216d?auto=format&fit=crop&w=900&q=60");
   background-size: cover;
   background-position: center;
-}
-
-/* Hover Elevation */
-.event-card:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 14px 32px rgba(0,0,0,0.14);
 }
 
 /* ======================================================
@@ -113,28 +117,33 @@ h2 {
 .event-details h3 {
   font-size: 1.25rem;
   font-weight: 600;
-  margin-bottom: 6px;
+  margin: 0;
   color: #1f2933;
+  line-height: 1.35;
 }
 
+/* Date / Location emphasis */
+.event-details p strong {
+  color: #264653;
+  font-weight: 600;
+}
+
+/* Description */
 .event-details p {
+  margin: 0;
   font-size: 0.95rem;
   color: #4b5563;
   line-height: 1.55;
 }
 
-.event-details p strong {
-  color: #264653;
-}
-
 /* ======================================================
-   SIGNUP BUTTON
+   SIGN UP BUTTON
 ====================================================== */
 .signup-btn {
-  margin-top: 16px;
+  margin-top: 18px;
   align-self: flex-start;
 
-  padding: 11px 26px;
+  padding: 10px 24px;
   border-radius: 999px;
   border: none;
 
@@ -146,19 +155,18 @@ h2 {
   letter-spacing: 0.2px;
 
   cursor: pointer;
-  transition: background 0.2s ease, transform 0.15s ease, box-shadow 0.15s ease;
+  transition: background 0.15s ease, box-shadow 0.15s ease;
 }
 
 .signup-btn:hover {
   background: #d48a1e;
-  transform: translateY(-2px);
-  box-shadow: 0 6px 14px rgba(0,0,0,0.15);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.12);
 }
 
 /* ======================================================
-   VISUAL PRIORITY
+   EVENT PRIORITY STYLES
 ====================================================== */
-/* Latest events – first 2 */
+/* Latest events */
 .event-card:nth-child(-n+2) {
   grid-column: span 2;
 }
@@ -167,37 +175,43 @@ h2 {
   height: 200px;
 }
 
-/* Highlighted recommendations */
+/* Recommended */
 .event-card:nth-child(n+3):nth-child(-n+5) {
   border: 2px solid rgba(230,154,42,0.35);
 }
 
-/* Compact for rest */
+/* Compact / nearby */
 .event-card:nth-child(n+6)::before {
   height: 120px;
-  opacity: 0.9;
 }
 
 /* ======================================================
-   STATUS MESSAGES
+   SYSTEM MESSAGES
 ====================================================== */
 .event-message {
   grid-column: 1 / -1;
   text-align: center;
-  padding: 40px 28px;
+  padding: 36px 26px;
   border-radius: 16px;
-
   font-size: 1rem;
   background: #ffffff;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+  box-shadow: 0 4px 14px rgba(0,0,0,0.08);
 }
 
-.event-message--loading { color: #264653; }
-.event-message--empty   { color: #6b7280; }
-.event-message--error   { color: #e76f51; }
+.event-message--loading {
+  color: #264653;
+}
+
+.event-message--empty {
+  color: #6b7280;
+}
+
+.event-message--error {
+  color: #e76f51;
+}
 
 /* ======================================================
-   TABLET
+   RESPONSIVE
 ====================================================== */
 @media (max-width: 900px) {
   .event-card:nth-child(-n+2) {
@@ -205,22 +219,13 @@ h2 {
   }
 }
 
-/* ======================================================
-   MOBILE
-====================================================== */
 @media (max-width: 768px) {
-
   h2 {
     font-size: 1.5rem;
-    margin-bottom: 28px;
   }
 
   .event-card::before {
     height: 130px;
-  }
-
-  .event-details {
-    padding: 18px 20px 22px;
   }
 
   .signup-btn {
