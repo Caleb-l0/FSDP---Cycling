@@ -268,6 +268,111 @@
   font-size: 0.72rem;
 }
 
+/* -------------------------------------------------- */
+/* SEARCH BAR – RESPONSIVE & PROFESSIONAL */
+/* -------------------------------------------------- */
+
+.search-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  background: #FFFDF7;
+  border: 1.5px solid #E5D3B3;
+  border-radius: 14px;
+
+  padding: 10px 14px;
+  margin-bottom: 25px;
+
+  box-shadow: 0 6px 14px rgba(78, 52, 46, 0.08);
+
+  max-width: 100%;
+}
+
+/* Input */
+.search-bar input {
+  flex: 1;
+  min-width: 0; /* CRITICAL for mobile flex shrink */
+  border: none;
+  outline: none;
+  background: transparent;
+
+  font-size: 0.95rem;
+  color: #3E2723;
+}
+
+.search-bar input::placeholder {
+  color: #8D6E63;
+}
+
+/* Button */
+.search-bar button {
+  white-space: nowrap;
+
+  background: #E69A2A;
+  color: white;
+  border: none;
+
+  border-radius: 10px;
+  padding: 8px 16px;
+
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+
+  transition: 0.25s ease;
+}
+
+.search-bar button:hover {
+  background: #CE7F18;
+  transform: translateY(-1px);
+}
+
+/* -------------------------------------------------- */
+/* TABLET ADJUSTMENT */
+/* -------------------------------------------------- */
+@media (max-width: 800px) {
+  .search-bar {
+    padding: 9px 12px;
+  }
+
+  .search-bar input {
+    font-size: 0.9rem;
+  }
+
+  .search-bar button {
+    padding: 7px 14px;
+    font-size: 0.85rem;
+  }
+}
+
+/* -------------------------------------------------- */
+/* MOBILE OPTIMIZATION */
+/* -------------------------------------------------- */
+@media (max-width: 500px) {
+  .search-bar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+
+    padding: 10px;
+  }
+
+  .search-bar input {
+    width: 100%;
+    font-size: 0.85rem;
+    padding: 6px 2px;
+  }
+
+  .search-bar button {
+    width: 100%;
+    padding: 8px 0;
+    font-size: 0.85rem;
+    border-radius: 12px;
+  }
+}
+
+
 
 /* -------------------------------------------------- */
 /* RESPONSIVE */

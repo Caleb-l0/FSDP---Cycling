@@ -403,7 +403,7 @@ async function requestAll2(choice) {
             const eventCard = document.createElement('div');
             eventCard.className = 'event-card';
             eventCard.innerHTML = `
-                <h3>${event.EventName}</h3>
+                <h3>${event.eventname}</h3>
                 <p><strong>Date:</strong> ${day} ${month} ${year}</p>
                 
                 <p><strong>Organization:</strong> ${event.organizationid}</p>
@@ -437,7 +437,7 @@ async function requestAll2(choice) {
             const eventCard = document.createElement('div');
             eventCard.className = 'event-card';
             eventCard.innerHTML = `
-                <h3>${event.EventName}</h3>
+                <h3>${event.eventname}</h3>
                 <p><strong>Date:</strong> ${day} ${month} ${year}</p>
                 
                 <p><strong>Organization:</strong> ${event.organizationid}</p>
@@ -469,7 +469,7 @@ async function requestAll2(choice) {
             const eventCard = document.createElement('div');
             eventCard.className = 'event-card';
             eventCard.innerHTML = `
-                <h3>${event.EventName}</h3>
+                <h3>${event.eventname}</h3>
                 <p><strong>Date:</strong> ${day} ${month} ${year}</p>
                 
                 <p><strong>Organization:</strong> ${event.organizationid}</p>
