@@ -11,7 +11,7 @@ currentRequest = JSON.parse(localStorage.getItem('currentRequest'));
 
 window.addEventListener("DOMContentLoaded", () => {
   if (!currentRequest) return;
-  document.getElementById("eventName").value = currentRequest.EventName || "";
+  document.getElementById("eventName").value = currentRequest.eventname || "";
 
   document.getElementById("eventLocation").value = currentRequest.EventLocation || "";
 

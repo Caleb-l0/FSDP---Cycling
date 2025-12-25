@@ -140,15 +140,15 @@ try{
     if(choice == "all"){
    for (const application of data) {
    
-  const locationObj = await GetLocation(parseInt(application.EventID));
-  const locationName = locationObj.EventLocation;
+  const locationObj = await GetLocation(parseInt(application.eventid));
+  const locationName = locationObj.eventlocation;
 
-  const date = new Date(application.EventDate);
+  const date = new Date(application.eventdate);
   const day = date.getDate();
   const month = months[date.getMonth()];
   const year = date.getFullYear();
       
-        const date2 = new Date(application.CreatedAt);
+        const date2 = new Date(application.createdat);
          const day2 = date2.getDate();
            const month2 = months[date2.getMonth()];
            const year2 = date2.getFullYear();
@@ -157,12 +157,12 @@ try{
   card.className = "event-card";
 
   card.innerHTML = `
-    <h3>${application.EventName}</h3>
+    <h3>${application.eventname}</h3>
     <p><strong>Date:</strong> ${day} ${month} ${year}</p>
     <p><strong>Location:</strong> ${locationName}</p>
     <p><strong>Apply on:</strong> ${day2} ${month2} ${year2}</p>
-    <p><strong>Organization:</strong> ${application.OrganizationID}</p>
-    <span class="status-tag status-${application.Status.toLowerCase()}">${application.Status}</span>
+    <p><strong>Organization:</strong> ${application.organizationid}</p>
+    <span class="status-tag status-${application.status.toLowerCase()}">${application.status}</span>
   `;
 
   card.addEventListener("click", () => {
@@ -173,19 +173,19 @@ try{
   eventGrid1.appendChild(card);
 }}
     else if (choice === "date") {
-      data.sort((a, b) =>   new Date(a.EventDate)-new Date(b.EventDate));
+      data.sort((a, b) =>   new Date(a.eventdate)-new Date(b.eventdate));
         for (const application of data) {
 
-   
-  const locationObj = await GetLocation(parseInt(application.EventID));
-  const locationName = locationObj.EventLocation;
 
-  const date = new Date(application.EventDate);
+  const locationObj = await GetLocation(parseInt(application.eventid));
+  const locationName = locationObj.eventlocation;
+
+  const date = new Date(application.eventdate);
   const day = date.getDate();
   const month = months[date.getMonth()];
   const year = date.getFullYear();
       
-        const date2 = new Date(application.CreatedAt);
+        const date2 = new Date(application.createdat);
          const day2 = date2.getDate();
            const month2 = months[date2.getMonth()];
            const year2 = date2.getFullYear();
@@ -194,12 +194,12 @@ try{
   card.className = "event-card";
 
   card.innerHTML = `
-    <h3>${application.EventName}</h3>
+<h3>${application.eventname}</h3>
     <p><strong>Date:</strong> ${day} ${month} ${year}</p>
     <p><strong>Location:</strong> ${locationName}</p>
     <p><strong>Apply on:</strong> ${day2} ${month2} ${year2}</p>
-    <p><strong>Organization:</strong> ${application.OrganizationID}</p>
-    <span class="status-tag status-${application.Status.toLowerCase()}">${application.Status}</span>
+    <p><strong>Organization:</strong> ${application.organizationid}</p>
+    <span class="status-tag status-${application.status.toLowerCase()}">${application.status}</span>
   `;
 
   card.addEventListener("click", () => {
@@ -211,17 +211,17 @@ try{
     }
     else if (choice === "approved") {
        for (const application of data) {
-        if(application.Status="Approved"){
+        if(application.status="Approved"){
    
-  const locationObj = await GetLocation(parseInt(application.EventID));
-  const locationName = locationObj.EventLocation;
+  const locationObj = await GetLocation(parseInt(application.eventid));
+  const locationName = locationObj.eventlocation;
 
-  const date = new Date(application.EventDate);
+  const date = new Date(application.eventdate);
   const day = date.getDate();
   const month = months[date.getMonth()];
   const year = date.getFullYear();
       
-        const date2 = new Date(application.CreatedAt);
+        const date2 = new Date(application.createdat);
          const day2 = date2.getDate();
            const month2 = months[date2.getMonth()];
            const year2 = date2.getFullYear();
@@ -230,12 +230,12 @@ try{
   card.className = "event-card";
 
   card.innerHTML = `
-    <h3>${application.EventName}</h3>
+    <h3>${application.eventname}</h3>
     <p><strong>Date:</strong> ${day} ${month} ${year}</p>
     <p><strong>Location:</strong> ${locationName}</p>
     <p><strong>Apply on:</strong> ${day2} ${month2} ${year2}</p>
-    <p><strong>Organization:</strong> ${application.OrganizationID}</p>
-    <span class="status-tag status-${application.Status.toLowerCase()}">${application.Status}</span>
+    <p><strong>Organization:</strong> ${application.organizationid}</p>
+    <span class="status-tag status-${application.status.toLowerCase()}">${application.status}</span>
   `;
 
   card.addEventListener("click", () => {
@@ -247,17 +247,17 @@ try{
 
     else if(choice == "rejected"){
        for (const application of data) {
-        if(application.Status = "Rejected"){
+        if(application.status = "Rejected"){
    
-  const locationObj = await GetLocation(parseInt(application.EventID));
-  const locationName = locationObj.EventLocation;
+  const locationObj = await GetLocation(parseInt(application.eventid));
+  const locationName = locationObj.eventlocation;
 
-  const date = new Date(application.EventDate);
+  const date = new Date(application.eventdate);
   const day = date.getDate();
   const month = months[date.getMonth()];
   const year = date.getFullYear();
       
-        const date2 = new Date(application.CreatedAt);
+        const date2 = new Date(application.createdat);
          const day2 = date2.getDate();
            const month2 = months[date2.getMonth()];
            const year2 = date2.getFullYear();
@@ -266,12 +266,12 @@ try{
   card.className = "event-card";
 
   card.innerHTML = `
-    <h3>${application.EventName}</h3>
+    <h3>${application.eventname}</h3>
     <p><strong>Date:</strong> ${day} ${month} ${year}</p>
     <p><strong>Location:</strong> ${locationName}</p>
     <p><strong>Apply on:</strong> ${day2} ${month2} ${year2}</p>
-    <p><strong>Organization:</strong> ${application.OrganizationID}</p>
-    <span class="status-tag status-${application.Status.toLowerCase()}">${application.Status}</span>
+    <p><strong>Organization:</strong> ${application.organizationid}</p>
+    <span class="status-tag status-${application.status.toLowerCase()}">${application.status}</span>
   `;
 
   card.addEventListener("click", () => {
@@ -283,17 +283,17 @@ try{
        }}
       else if (choice ==  'history'){
        for (const application of data) {
-        if(application.Status === "Approved" || application.Status === "Rejected"){
+        if(application.status === "Approved" || application.status === "Rejected"){
    
-  const locationObj = await GetLocation(parseInt(application.EventID));
-  const locationName = locationObj.EventLocation;
+  const locationObj = await GetLocation(parseInt(application.eventid));
+  const locationName = locationObj.eventlocation;
 
-  const date = new Date(application.EventDate);
+  const date = new Date(application.eventdate);
   const day = date.getDate();
   const month = months[date.getMonth()];
   const year = date.getFullYear();
       
-        const date2 = new Date(application.CreatedAt);
+        const date2 = new Date(application.createdat);
          const day2 = date2.getDate();
            const month2 = months[date2.getMonth()];
            const year2 = date2.getFullYear();
@@ -302,12 +302,12 @@ try{
   card.className = "event-card";
 
   card.innerHTML = `
-    <h3>${application.EventName}</h3>
+    <h3>${application.eventname}</h3>
     <p><strong>Date:</strong> ${day} ${month} ${year}</p>
     <p><strong>Location:</strong> ${locationName}</p>
     <p><strong>Apply on:</strong> ${day2} ${month2} ${year2}</p>
-    <p><strong>Organization:</strong> ${application.OrganizationID}</p>
-    <span class="status-tag status-${application.Status.toLowerCase()}">${application.Status}</span>
+    <p><strong>Organization:</strong> ${application.organizationid}</p>
+    <span class="status-tag status-${application.status.toLowerCase()}">${application.status}</span>
   `;
 
   card.addEventListener("click", () => {
@@ -396,7 +396,7 @@ async function requestAll2(choice) {
 
         if(choice == "all"){
         data.forEach(event => {
-          date = new Date(event.EventDate)
+          date = new Date(event.eventdate)
             const day =date.getDate(); 
   const month = months[date.getMonth()];
   const year = date.getFullYear();
@@ -406,16 +406,15 @@ async function requestAll2(choice) {
                 <h3>${event.EventName}</h3>
                 <p><strong>Date:</strong> ${day} ${month} ${year}</p>
                 
-                <p><strong>Organization:</strong> ${event.OrganizationID}</p>
+                <p><strong>Organization:</strong> ${event.organizationid}</p>
                 
 
-                 <p><strong>Participants:</strong> ${event.PeopleSignUp || 'No people Sign Up for this event'} / ${event.MaximumParticipant}</p>
-                 <p><strong>Location:</strong> ${event.Location}</p>
-
+                 <p><strong>Participants:</strong> ${event.peoplesignup || 'No people Sign Up for this event'} / ${event.maximumparticipant}</p>
+                 <p><strong>Location:</strong> ${event.location}</p>
    
                  
 
-                <span class="status-tag status-pending">${event.Status}</span>
+                <span class="status-tag status-pending">${event.status}</span>
 
             `;
              eventCard.addEventListener('click', () => {
@@ -429,9 +428,9 @@ async function requestAll2(choice) {
           // --------------------
 
         else if (choice === "Event date") {
-           data.sort((a, b) =>  new Date(a.EventDate)-new Date(b.EventDate));
+           data.sort((a, b) =>  new Date(a.eventdate)-new Date(b.eventdate));
                    data.forEach(event => {
-          date = new Date(event.EventDate)
+          date = new Date(event.eventdate)
             const day =date.getDate(); 
   const month = months[date.getMonth()];
   const year = date.getFullYear();
@@ -441,12 +440,11 @@ async function requestAll2(choice) {
                 <h3>${event.EventName}</h3>
                 <p><strong>Date:</strong> ${day} ${month} ${year}</p>
                 
-                <p><strong>Organization:</strong> ${event.OrganizationID}</p>
+                <p><strong>Organization:</strong> ${event.organizationid}</p>
                 
 
-                 <p><strong>Participants:</strong> ${event.PeopleSignUp || 'No people Sign Up for this event'} / ${event.MaximumParticipant} </p>
-                 <p><strong>Location:</strong> ${event.Location}</p>
-
+                 <p><strong>Participants:</strong> ${event.peoplesignup || 'No people Sign Up for this event'} / ${event.maximumparticipant} </p>
+                 <p><strong>Location:</strong> ${event.location}</p>
                 <span class="status-tag status-pending">${event.Status}</span>
 
             `;
@@ -462,9 +460,9 @@ async function requestAll2(choice) {
 
           // --------------------
         else if (choice === "Organization") {
-            const sortedData = data.sort((a, b) => a.OrganizationID - b.OrganizationID);
+            const sortedData = data.sort((a, b) => a.organizationid - b.organizationid);
                           sortedData.forEach(event => {
-          date = new Date(event.EventDate)
+          date = new Date(event.eventdate)
             const day =date.getDate(); 
   const month = months[date.getMonth()];
   const year = date.getFullYear();
@@ -474,13 +472,12 @@ async function requestAll2(choice) {
                 <h3>${event.EventName}</h3>
                 <p><strong>Date:</strong> ${day} ${month} ${year}</p>
                 
-                <p><strong>Organization:</strong> ${event.OrganizationID}</p>
+                <p><strong>Organization:</strong> ${event.organizationid}</p>
                 
 
-                 <p><strong>Participants:</strong> ${event.PeopleSignUp || 'No people Sign Up for this event'} / ${event.MaximumParticipant}</p>
-                 <p><strong>Location:</strong> ${event.Location}</p>
-
-                <span class="status-tag status-pending">${event.Status}</span>
+                 <p><strong>Participants:</strong> ${event.peoplesignup || 'No people Sign Up for this event'} / ${event.maximumparticipant}</p>
+                 <p><strong>Location:</strong> ${event.location}</p>
+                <span class="status-tag status-pending">${event.status}</span>
 
             `;
              eventCard.addEventListener('click', () => {
@@ -495,24 +492,24 @@ async function requestAll2(choice) {
         // --------------------
 
         else if (choice ==  'full'){
-            const newdata = data.filter(data => data. RequiredVolunteers === data.PeopleSignUp)
+            const newdata = data.filter(data => data.requiredvolunteers === data.peoplesignup)
             newdata.forEach(event => {
-          date = new Date(event.EventDate)
+          date = new Date(event.eventdate)
             const day =date.getDate(); 
   const month = months[date.getMonth()];
   const year = date.getFullYear();
             const eventCard = document.createElement('div');
             eventCard.className = 'event-card';
             eventCard.innerHTML = `
-                <h3>${event.EventName}</h3>
+                <h3>${event.eventname}</h3>
                 <p><strong>Date:</strong> ${day} ${month} ${year}</p>
                 
-                <p><strong>Organization:</strong> ${event.OrganizationID}</p>
+                <p><strong>Organization:</strong> ${event.organizationid}</p>
 
-                 <p><strong>Participants:</strong> ${event.PeopleSignUp || 'No people Sign Up for this event'}/ ${event.MaximumParticipant} </p>
-                 <p><strong>Location:</strong> ${event.Location}</p>
+                 <p><strong>Participants:</strong> ${event.peoplesignup || 'No people Sign Up for this event'}/ ${event.maximumparticipant} </p>
+                 <p><strong>Location:</strong> ${event.location}</p>
 
-                <span class="status-tag status-pending">${event.Status}</span>
+                <span class="status-tag status-pending">${event.status}</span>
 
             `;
              eventCard.addEventListener('click', () => {
@@ -527,24 +524,24 @@ async function requestAll2(choice) {
         //---------------------------
 
          else if (choice ==  'not full'){
-            const newdata = data.filter(data => data. RequiredVolunteers > data.PeopleSignUp)
+            const newdata = data.filter(data => data.requiredvolunteers > data.peoplesignup)
             newdata.forEach(event => {
-          date = new Date(event.EventDate)
+          date = new Date(event.eventdate)
             const day =date.getDate(); 
   const month = months[date.getMonth()];
   const year = date.getFullYear();
             const eventCard = document.createElement('div');
             eventCard.className = 'event-card';
             eventCard.innerHTML = `
-                <h3>${event.EventName}</h3>
+                <h3>${event.eventname}</h3>
                 <p><strong>Date:</strong> ${day} ${month} ${year}</p>
                 
-                <p><strong>Organization:</strong> ${event.OrganizationID}</p>
+                <p><strong>Organization:</strong> ${event.organizationid}</p>
 
-                 <p><strong>Participants:</strong> ${event.PeopleSignUp || 'No people Sign Up for this event'}/ ${event.MaximumParticipant}</p>
-                 <p><strong>Location:</strong> ${event.Location}</p>
+                 <p><strong>Participants:</strong> ${event.peoplesignup || 'No people Sign Up for this event'}/ ${event.maximumparticipant}</p>
+                 <p><strong>Location:</strong> ${event.location}</p>
 
-                <span class="status-tag status-pending">${event.Status}</span>
+                <span class="status-tag status-pending">${event.status}</span>
 
             `;
              eventCard.addEventListener('click', () => {
@@ -561,24 +558,24 @@ async function requestAll2(choice) {
           else if (choice ==  'outdated'){
             const currentDate = new Date();
          
-                const newdata =  data.filter(ev => new Date(ev.EventDate) < currentDate)
+                const newdata =  data.filter(ev => new Date(ev.eventdate) < currentDate)
             newdata.forEach(event => {
-          date = new Date(event.EventDate)
+          date = new Date(event.eventdate)
             const day =date.getDate(); 
   const month = months[date.getMonth()];
   const year = date.getFullYear();
             const eventCard = document.createElement('div');
             eventCard.className = 'event-card';
             eventCard.innerHTML = `
-                <h3>${event.EventName}</h3>
+                <h3>${event.eventname}</h3>
                 <p><strong>Date:</strong> ${day} ${month} ${year}</p>
                 
-                <p><strong>Organization:</strong> ${event.OrganizationID}</p>
+                <p><strong>Organization:</strong> ${event.organizationid}</p>
 
-                 <p><strong>Participants:</strong> ${event.PeopleSignUp || 'No people Sign Up for this event'}/ ${event.MaximumParticipant}</p>
-                 <p><strong>Location:</strong> ${event.Location}</p>
+                 <p><strong>Participants:</strong> ${event.peoplesignup || 'No people Sign Up for this event'}/ ${event.maximumparticipant}</p>
+                 <p><strong>Location:</strong> ${event.location}</p>
 
-                <span class="status-tag status-pending">${event.Status}</span>
+                <span class="status-tag status-pending">${event.status}</span>
 
             `;
              eventCard.addEventListener('click', () => {
@@ -690,19 +687,21 @@ function svcLoadCalendar() {
     const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
 
     const dailyEvents = adminEvents.filter(ev =>
-      ev.EventDate.slice(0, 10) === dateStr
+      
+ ev.eventdate.slice(0, 10) === dateStr
+      
     );
 
     let eventHTML = "";
     dailyEvents.forEach(ev => {
-      const time = ev.EventDate.slice(11, 16);
+      const time = ev.eventdate.slice(11, 16);
 
       eventHTML += `
         <div class="svc-event-box svc-event-click"
           data-event='${JSON.stringify(ev).replace(/'/g, "&apos;")}'>
 
-          <div class="svc-event-title">${ev.EventName}</div>
-          <div>${ev.Location}</div>
+          <div class="svc-event-title">${ev.eventname}</div>
+          <div>${ev.location}</div>
           <div class="svc-event-time">${time}</div>
         </div>`;
     });
