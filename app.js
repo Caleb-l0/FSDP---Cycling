@@ -42,6 +42,7 @@ const eventController = require('./Controllers/VolunteerEventController.js');
 // ----- LOGIN MODEL (for text size updates) -----
 const loginModel = require('./Accounts/login/loginModel');
 
+const weatherController = require("./Weather Checker/MVC/weatherController");
 // --------------- translation
 
 
@@ -221,6 +222,18 @@ app.use((req, res, next) => {
   }
   next();
 });
+
+app.use(express.static(path.join(__dirname, 'Weather Checker')));
+
+
+// Weather Checker Routes
+app.get("/weather.html", (req, res) => {
+  res.sendFile(path.join(__dirname, "Weather Checker", "weather.html"));
+});
+app.post("/api/weather", weatherController.createWeatherCheck);
+app.get("/api/weather", weatherController.getWeatherChecks);
+app.put("/api/weather/:id", weatherController.updateWeatherEntry);
+app.delete("/api/weather/:id", weatherController.deleteWeatherEntry);
 
 // Global error handler - must be last
 app.use((err, req, res, next) => {
