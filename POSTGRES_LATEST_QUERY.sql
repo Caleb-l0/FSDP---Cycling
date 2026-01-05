@@ -40,6 +40,7 @@ CREATE TABLE events (
     status VARCHAR(20) DEFAULT 'Upcoming',
     createdat TIMESTAMP DEFAULT NOW(),
     updatedat TIMESTAMP,
+    peoplesignup INT DEFAULT 0,
     FOREIGN KEY (organizationid) REFERENCES organizations(organizationid)
 );
 
