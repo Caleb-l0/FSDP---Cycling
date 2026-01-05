@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>获取位置示例</title>
+</head>
+<body>
+
+<button onclick="getLocation()">获取我的位置</button>
+
+</body>
+<script>
+function getLocation() {
+  if (!navigator.geolocation) {
+    alert("浏览器不支持定位");
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(
+    (position) => {
+      const lat = position.coords.latitude;
+      const lng = position.coords.longitude;
+
+      console.log("Latitude:", lat);
+      console.log("Longitude:", lng);
+openNavigation(lat, lng, 1.3521, 103.8198);
+      // 你可以在这里发给后端
+      // sendLocationToServer(lat, lng);
+    },
+    (error) => {
+      switch (error.code) {
+        case error.PERMISSION_DENIED:
+          alert("用户拒绝了定位权限");
+          break;
+        case error.POSITION_UNAVAILABLE:
+          alert("无法获取位置信息");
+          break;
+        case error.TIMEOUT:
+          alert("定位超时");
+          break;
+        default:
+          alert("定位失败");
+      }
+    },
+    {
+      enableHighAccuracy: true,
+      timeout: 10000,
+      maximumAge: 0
+    }
+  );
+}
+
+function openNavigation(lat, lng, destLat, destLng) {
+  const url = `https://www.google.com/maps/dir/?api=1&origin=${lat},${lng}&destination=${destLat},${destLng}&travelmode=walking`;
+  window.open(url, "_blank");
+}
+
+
+
+
+
+</script>
+
+
+</html>
