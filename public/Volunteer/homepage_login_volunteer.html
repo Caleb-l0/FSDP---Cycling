@@ -94,19 +94,24 @@
     </div>
 </section>
 
-<!-- Weather By Current Location -->
 <section class="features">
     <div class="section-title">
-        <h2> Weather At Your Location</h2>
+        <h2>Weather At Your Location</h2>
         <p>Real-time weather based on your current position</p>
     </div>
 
     <div class="container">
+        <div id="locationPrompt" class="location-prompt">
+            <h3>📍 Use your location?</h3>
+            <p>We use your location to show accurate local weather.</p>
+            <button onclick="requestLocation()">Allow Location</button>
+        </div>
         <div class="service-card">
-            <div id="geo-weather">Detecting your location...</div>
+            <div id="geo-weather"></div>
         </div>
     </div>
 </section>
+
 <!-- Latest Events -->
 <section class="services">
     <div class="container">
