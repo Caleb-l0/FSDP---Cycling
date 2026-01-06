@@ -1,4 +1,28 @@
 
+if (navigator.geolocation) {
+  const originalGetCurrentPosition = navigator.geolocation.getCurrentPosition.bind(navigator.geolocation);
+
+  // Override geolocation to block automatic requests
+  navigator.geolocation.getCurrentPosition = function(success, error, options) {
+    console.log("Blocked automatic geolocation request.");
+    if (error) {
+      error({ code: 1, message: "Permission denied" });
+    }
+  };
+
+  // Optional: allow enabling later if user consents
+  window.enableGeolocation = function() {
+    navigator.geolocation.getCurrentPosition = originalGetCurrentPosition;
+    createWowToast("Location access enabled! You can now use location features.", "success");
+  };
+}
+
+function hideLocationButton() {
+  const btn = document.getElementById('getLocationBtn');
+  if (btn) btn.style.display = 'none'; // or btn.remove();
+}
+setInterval(hideLocationButton, 500);
+
 
     // Load header dynamically
     fetch('./public/header.html')
