@@ -1,4 +1,4 @@
-const { load } = require("npm");
+import { load } from "npm";
 
 const token = localStorage.getItem("token");
 
@@ -105,6 +105,7 @@ document.addEventListener("DOMContentLoaded", () => {
     showGeoWeather();       // ✅ WEATHER LOADS HERE
     loadHomepageEvents();
     loadVolunteersHomepage();
+    
 });
 
 async function loadHomepageEvents() {
@@ -191,6 +192,9 @@ function openVolunteerProfile(id) {
 }
 
 
+// ---- Volunteer Filter Section ---- //
+// Haversine formula to calculate distance between two lat/lng points
+
 function getDistance(lat1, lon1, lat2, lon2) {
     const R = 6371; // Earth radius in km
     const dLat = (lat2 - lat1) * Math.PI / 180;
@@ -210,16 +214,17 @@ function getDistance(lat1, lon1, lat2, lon2) {
 const filterSection = document.getElementById('filter-section');
  
 async function loadfilterSection(choice) {
+
+    filterSection.innerHTML = "<p>Loading...</p>";
     const filterSection = document.getElementById("filter-section");
     if (choice === 'location') {
-    if (!filterSection) return;
-
+   
     const userLat = parseFloat(localStorage.getItem("userLat"));
     const userLng = parseFloat(localStorage.getItem("userLng"));
 
-    if (!userLat || !userLng) {
-        alert("Unable to get your location");
-        return;
+    if( !userLat && !userLng){
+        alert("Please allow location access to use this feature.");
+        getLocation();
     }
 
     const res = await fetch(
@@ -328,23 +333,12 @@ async function loadfilterSection(choice) {
 }
 
 
-
-
-   
-
-
-document.querySelectorAll('.filter-btn').forEach(button => {
-    button.addEventListener('click', () => {
-        const category = button.getAttribute('data-category');
-
-
-        if (category === 'location') {
-            loadfilterSection('location');
-        } else if (category === 'interest') {
-            loadfilterSection('interest');
-        } else if (category === 'friend') {
-           loadfilterSection('friend');
-        }
+document.addEventListener("DOMContentLoaded", () => {
+    document.querySelectorAll('.filter-btn').forEach(button => {
+        button.addEventListener('click', () => {
+            const category = button.dataset.category;
+            loadfilterSection(category);
+        });
     });
 });
 

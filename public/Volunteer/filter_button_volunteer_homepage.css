@@ -1,0 +1,78 @@
+/* ====== Filter Buttons ====== */
+.filter-buttons-container {
+  display: flex;
+  justify-content: center;
+  gap: 18px;
+  flex-wrap: wrap;
+  margin: 30px auto 10px;
+}
+
+/* Individual filter button */
+.filter-btn {
+  background-color: #ffffff;
+  border: 2px solid #264653;
+  color: #264653;
+
+  padding: 14px 28px;
+  border-radius: 999px; /* Large rounded shape for clarity */
+
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+
+  min-width: 180px;
+  text-align: center;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  transition:
+    background-color 0.25s ease,
+    color 0.25s ease,
+    box-shadow 0.25s ease,
+    transform 0.2s ease;
+}
+
+/* Hover state (soft and non-distracting) */
+.filter-btn:hover {
+  background-color: #f4a261;
+  color: #ffffff;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+}
+
+/* Active / selected state */
+.filter-btn.active {
+  background-color: #264653;
+  color: #ffffff;
+  box-shadow: 0 6px 18px rgba(38, 70, 83, 0.35);
+}
+
+/* Focus state for accessibility */
+.filter-btn:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(244, 162, 97, 0.4);
+}
+
+/* ====== Tablet ====== */
+@media (max-width: 768px) {
+  .filter-buttons-container {
+    gap: 14px;
+  }
+
+  .filter-btn {
+    width: 100%;
+    max-width: 360px;
+    padding: 16px 22px;
+    font-size: 1.05rem;
+  }
+}
+
+/* ====== Mobile ====== */
+@media (max-width: 480px) {
+  .filter-btn {
+    padding: 18px 24px;
+    font-size: 1.1rem;
+  }
+}

@@ -11,7 +11,6 @@ function getLocation() {
             console.log("Longitude:", lng);
             localStorage.setItem("userLat", lat);
             localStorage.setItem("userLng", lng);
-
         },
         (error) => {
             alert("Error getting location: " + error.message);
