@@ -50,8 +50,7 @@ async function loadEventDetails(id) {
       : "-";
     document.getElementById("req-desc").textContent = data.description || "-";
      
-    signedUp = data.usersignedup === true;
-    setupButtons(data);
+  
 
   } catch (err) {
     console.error(err);

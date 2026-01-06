@@ -87,12 +87,18 @@ async function cancel(req, res) {
 
 async function isSignedUp(req, res) {
   try {
-    const signedUp = await EventModel.isSignedUp(req.query.userID, req.query.eventID);
+    const userId = req.user.id;           
+    const { eventId } = req.params;       
+
+    const signedUp = await EventModel.isSignedUp(userId, eventId);
+
     res.json({ signedUp });
-  } catch (error) {
-    res.status(500).json({ message: "Server Error", error: error.message });
+  } catch (err) {
+    console.error("isSignedUp error:", err);
+    res.status(500).json({ message: "Server error" });
   }
 }
+
 
 // for admin
 async function updateEvent(req, res) {
@@ -105,6 +111,29 @@ async function updateEvent(req, res) {
 }
 
 
+async function cancelSignup(req, res) {
+  try {
+    const userId = req.user.id;
+    const { eventId } = req.params;
+
+    const result = await EventModel.cancel(userId, eventId);
+
+
+    if (result.rowCount === 0) {
+      return res.status(400).json({
+        message: "No active signup found to cancel"
+      });
+    }
+
+    return res.json({
+      message: "Signup cancelled successfully"
+    });
+
+  } catch (err) {
+    console.error("Cancel signup error:", err);
+    res.status(500).json({ message: "Server error" });
+  }
+}
 
 
 
@@ -118,4 +147,5 @@ module.exports = {
   isSignedUp,
   updateEvent,
   getEventsByLocation,
+  cancelSignup,
 };
