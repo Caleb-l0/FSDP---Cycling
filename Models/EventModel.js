@@ -1,19 +1,22 @@
 const pool = require("../Postgres_config");
 
-
-// =====================================================
-// 1. Get Event By Location + Date (Controller style)
-// =====================================================
+/* =====================================================
+   1. Get Events By Location + Date
+   ===================================================== */
 async function getEventsByLocation(req, res) {
   try {
     const { location, date } = req.query;
+
+    if (!location || !date) {
+      return res.status(400).json({ message: "Location and date are required" });
+    }
 
     const startOfDay = `${date} 00:00:00`;
     const endOfDay = `${date} 23:59:59`;
 
     const result = await pool.query(
       `
-      SELECT eventid, eventname, eventdate
+      SELECT eventid, eventname, eventdate, location
       FROM events
       WHERE location = $1
         AND eventdate BETWEEN $2 AND $3
@@ -23,54 +26,57 @@ async function getEventsByLocation(req, res) {
     );
 
     res.json(result.rows);
-
   } catch (err) {
-    console.error("getEventsByLocation Error:", err);
-    res.status(500).json({ message: "Server Error" });
+    console.error("getEventsByLocation error:", err);
+    res.status(500).json({ message: "Server error" });
   }
 }
 
-
-
-// =====================================================
-// 2. Get Event by ID
-// =====================================================
+/* =====================================================
+   2. Get Event By ID (WITH organization name)
+   ===================================================== */
 async function getEventById(eventID) {
   const result = await pool.query(
-    `SELECT * FROM events WHERE eventid = $1`,
-    [eventID]
-  );
-  return result.rows[0] || null;
-}
-
-
-
-// =====================================================
-// 3. Check if event already assigned to organization
-// =====================================================
-async function checkAssigned(eventID) {
-  const result = await pool.query(
     `
-    SELECT organizationid
-    FROM events
-    WHERE eventid = $1
+    SELECT 
+      e.eventid,
+      e.eventname,
+      e.eventdate,
+      e.location,
+      e.description,
+      e.requiredvolunteers,
+      e.maximumparticipant,
+      e.peoplesignup,
+      e.createdat,
+      e.status,
+      o.orgname AS organizationname
+    FROM events e
+    LEFT JOIN organizations o
+      ON e.organizationid = o.organizationid
+    WHERE e.eventid = $1
     `,
     [eventID]
   );
 
-  if (result.rows.length === 0) return false;
-
-  const orgid = result.rows[0].organizationid;
-
-  return orgid !== null;
+  return result.rows[0] || null;
 }
 
+/* =====================================================
+   3. Check if Event Assigned to Organization
+   ===================================================== */
+async function checkAssigned(eventID) {
+  const result = await pool.query(
+    `SELECT organizationid FROM events WHERE eventid = $1`,
+    [eventID]
+  );
 
+  if (result.rows.length === 0) return false;
+  return result.rows[0].organizationid !== null;
+}
 
-
-// =====================================================
-// 4. Delete Event
-// =====================================================
+/* =====================================================
+   4. Delete Event
+   ===================================================== */
 async function deleteEvent(eventID) {
   await pool.query(
     `DELETE FROM events WHERE eventid = $1`,
@@ -78,64 +84,76 @@ async function deleteEvent(eventID) {
   );
 }
 
-
-
-
-// =====================================================
-// 5. Signup for Event
-// =====================================================
+/* =====================================================
+   5. Sign Up for Event
+   ===================================================== */
 async function signup(userID, eventID) {
-  // Check if already signed up
-  const checkResult = await pool.query(
+  // check existing signup
+  const check = await pool.query(
     `
-    SELECT *
-    FROM eventsignups
-    WHERE userid = $1 AND eventid = $2
+    SELECT 1 FROM eventsignups
+    WHERE userid = $1 AND eventid = $2 AND status = 'Active'
     `,
     [userID, eventID]
   );
 
-  if (checkResult.rows.length > 0) {
-    throw new Error("User already signed up for this event.");
+  if (check.rows.length > 0) {
+    throw new Error("User already signed up");
   }
 
-  // Insert signup
+  // insert signup
   await pool.query(
     `
-    INSERT INTO eventsignups(userid, eventid)
+    INSERT INTO eventsignups (userid, eventid)
     VALUES ($1, $2)
     `,
     [userID, eventID]
   );
-}
 
-
-
-
-// =====================================================
-// 6. Cancel Signup
-// =====================================================
-async function cancel(userID, eventID) {
+  // increment people signup count
   await pool.query(
     `
-    UPDATE eventsignups
-    SET status = 'Cancelled'
-    WHERE userid = $1 AND eventid = $2
+    UPDATE events
+    SET peoplesignup = peoplesignup + 1
+    WHERE eventid = $1
     `,
-    [userID, eventID]
+    [eventID]
   );
 }
 
+/* =====================================================
+   6. Cancel Signup
+   ===================================================== */
+async function cancel(userID, eventID) {
+  const result = await pool.query(
+    `
+    UPDATE eventsignups
+    SET status = 'Cancelled'
+    WHERE userid = $1 AND eventid = $2 AND status = 'Active'
+    RETURNING *
+    `,
+    [userID, eventID]
+  );
 
+  if (result.rowCount > 0) {
+    await pool.query(
+      `
+      UPDATE events
+      SET peoplesignup = GREATEST(peoplesignup - 1, 0)
+      WHERE eventid = $1
+      `,
+      [eventID]
+    );
+  }
+}
 
-
-// =====================================================
-// 7. Check if User Already Signed Up
-// =====================================================
+/* =====================================================
+   7. Check If User Already Signed Up
+   ===================================================== */
 async function isSignedUp(userID, eventID) {
   const result = await pool.query(
     `
-    SELECT *
+    SELECT 1
     FROM eventsignups
     WHERE userid = $1 AND eventid = $2 AND status = 'Active'
     `,
@@ -145,12 +163,9 @@ async function isSignedUp(userID, eventID) {
   return result.rows.length > 0;
 }
 
-
-
-
-// =====================================================
-// 8. Update Event
-// =====================================================
+/* =====================================================
+   8. Update Event
+   ===================================================== */
 async function updateEvent(eventID, data) {
   await pool.query(
     `
@@ -164,31 +179,26 @@ async function updateEvent(eventID, data) {
     WHERE eventid = $6
     `,
     [
-      data.EventName,
-      data.EventDate,
-      data.EventLocation,
-      data.RequiredVolunteers,
-      data.Description,
+      data.eventname,
+      data.eventdate,
+      data.location,
+      data.requiredvolunteers,
+      data.description,
       eventID
     ]
   );
 }
 
-
-
-
-// =====================================================
 module.exports = {
+  getEventsByLocation,
   getEventById,
   checkAssigned,
   deleteEvent,
   signup,
   cancel,
   isSignedUp,
-  updateEvent,
-  getEventsByLocation
+  updateEvent
 };
-
 
 /*const sql = require("mssql");
 const db = require("../dbconfig");

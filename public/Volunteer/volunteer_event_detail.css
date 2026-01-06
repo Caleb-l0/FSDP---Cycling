@@ -1,3 +1,6 @@
+  
+  
+  
   .request-card {
       display: flex;
       flex-direction: column;
@@ -115,6 +118,91 @@
     .btn-secondary:hover {
       background: #e0e0e0;
     }
+
+
+
+    /* =========================
+   EVENT STATUS BADGE
+   ========================= */
+
+.event-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 16px;
+  border-radius: 999px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin: 12px 0 18px;
+  width: fit-content;
+}
+
+/* UPCOMING */
+.event-status.upcoming {
+  background: #e8f4fd;
+  color: #1e88e5;
+}
+
+.event-status.upcoming i {
+  color: #1e88e5;
+}
+
+/* ONGOING */
+.event-status.ongoing {
+  background: #e8f8f0;
+  color: #2e7d32;
+}
+
+.event-status.ongoing i {
+  color: #2e7d32;
+}
+
+/* EXPIRED */
+.event-status.expired {
+  background: #fbeaea;
+  color: #c62828;
+}
+
+.event-status.expired i {
+  color: #c62828;
+}
+
+/* Icon size */
+.event-status i {
+  font-size: 1rem;
+}
+
+/* =========================
+   SIGNUP BUTTON STATES
+   ========================= */
+
+.btn-primary {
+  background: #f4a261;
+  color: white;
+  border: none;
+}
+
+.btn-primary:hover {
+  background: #e76f51;
+}
+
+.btn-cancelled {
+  background: #fbeaea;
+  color: #c62828;
+  border: 1.5px solid #c62828;
+}
+
+.btn-cancelled:hover {
+  background: #f3caca;
+}
+
+.btn-disabled {
+  background: #ddd;
+  color: #888;
+  cursor: not-allowed;
+}
+
+
 
     @media (max-width: 768px) {
       .request-info {

@@ -4,6 +4,9 @@ if (!token) {
   window.location.href = "../../index.html";
 }
 
+let signedUp = false;
+
+
 // Get eventId
 const params = new URLSearchParams(window.location.search);
 const eventId = params.get("eventId");
@@ -33,14 +36,20 @@ async function loadEventDetails(id) {
     if (!res.ok) throw new Error("Failed to load event");
     const data = await res.json();
     document.getElementById("req-name").textContent = data.eventname;
-    document.getElementById("req-org").textContent = data.organizationname || "-";
+    document.getElementById("req-org").textContent = data.organizationid || "-";
     document.getElementById("req-date").textContent =
       new Date(data.eventdate).toLocaleString();
+      setEventStatus(data.eventdate);
+    document.getElementById("req-status").textContent = data.status;
+     document.getElementById("req-people-num").textContent = data.maximumparticipant || "-";
     document.getElementById("req-loc").textContent = data.location;
     document.getElementById("req-needed").textContent = data.requiredvolunteers;
-    document.getElementById("req-id").textContent = data.eventid;
+    document.getElementById("req-created").textContent = data.createdat
+      ? new Date(data.createdat).toLocaleString()
+      : "-";
     document.getElementById("req-desc").textContent = data.description || "-";
-
+     
+    signedUp = data.usersignedup === true;
     setupButtons(data);
 
   } catch (err) {
@@ -121,3 +130,40 @@ async function cancelSignUp(eventId) {
     alert("Failed to cancel sign-up.");
   }
 }
+
+
+
+// event status display logic
+
+function setEventStatus(eventDate) {
+    const statusEl = document.getElementById("event-status");
+    const statusText = statusEl.querySelector("span");
+    const statusIcon = statusEl.querySelector("i");
+
+    const now = new Date();
+    const start = new Date(eventDate);
+
+    // Default reset
+    statusEl.className = "event-status";
+
+    if (start > now) {
+        // UPCOMING
+        statusEl.classList.add("upcoming");
+        statusIcon.className = "fas fa-clock";
+        statusText.textContent = "Upcoming Event";
+    } else {
+        // If within same day → ongoing
+        const diffHours = Math.abs(now - start) / (1000 * 60 * 60);
+
+        if (diffHours <= 6) {
+            statusEl.classList.add("ongoing");
+            statusIcon.className = "fas fa-play-circle";
+            statusText.textContent = "Ongoing Now";
+        } else {
+            statusEl.classList.add("expired");
+            statusIcon.className = "fas fa-check-circle";
+            statusText.textContent = "Event Ended";
+        }
+    }
+}
+
