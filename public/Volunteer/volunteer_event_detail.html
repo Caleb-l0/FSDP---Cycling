@@ -1,161 +1,277 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Event Details</title>
-  <link rel="stylesheet" href="../Admin/request_detail.css">
-  
-   <link rel="stylesheet" href='../homepage.css'>
-   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <link rel="stylesheet" href="../Admin/request_detail.css" />
+  <link rel="stylesheet" href="../homepage.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
 
   <style>
+    .request-card {
+      display: flex;
+      flex-direction: column;
+      background: #ffffff;
+      border-radius: 16px;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+      overflow: hidden;
+      margin-top: 120px;
+    }
+
+    .request-img img {
+      width: 100%;
+      height: auto;
+      object-fit: cover;
+    }
+
+    .request-info {
+      padding: 30px;
+    }
+
+    .request-info h2 {
+      font-size: 2rem;
+      color: #264653;
+      margin-bottom: 8px;
+    }
+
+    .org-line {
+      color: #666;
+      font-size: 1rem;
+      margin-bottom: 20px;
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .info-item {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      background: #fffdf9;
+      padding: 14px 16px;
+      border-radius: 10px;
+      border: 1px solid #eee;
+    }
+
+    .info-item i {
+      font-size: 1.3rem;
+      color: #f4a261;
+      margin-top: 4px;
+    }
+
+    .info-item strong {
+      display: block;
+      font-size: 0.95rem;
+      color: #444;
+    }
+
+    .info-item p {
+      margin: 0;
+      font-size: 1rem;
+      color: #222;
+    }
+
+    .desc {
+      margin-top: 24px;
+    }
+
+    .desc h3 {
+      font-size: 1.4rem;
+      color: #264653;
+      margin-bottom: 10px;
+    }
+
+    .desc p {
+      font-size: 1.05rem;
+      line-height: 1.7;
+      color: #444;
+    }
+
+    .btn-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-top: 30px;
+    }
 
     .btn-action {
-  border: 1.5px solid #1f1f1e;
-  background: #FFF8E1;
-  color: #4E342E;    
-  min-width: 150px;
-  padding: 8px 18px;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.3s;
-  font-weight: 500;
-}
+      border: none;
+      padding: 12px 28px;
+      border-radius: 30px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.25s ease;
+    }
 
-    .btn-create {
-  background: #4CAF50; /* Green */
-  color: white;
-}
+    .btn-primary {
+      background: #f4a261;
+      color: white;
+    }
 
-.btn-reject {
-  background: #E53935; /* Red */
-  color: white;
-}
+    .btn-primary:hover {
+      background: #e76f51;
+    }
+
+    .btn-secondary {
+      background: #f1f1f1;
+      color: #333;
+    }
+
+    .btn-secondary:hover {
+      background: #e0e0e0;
+    }
+
+    @media (max-width: 768px) {
+      .request-info {
+        padding: 20px;
+      }
+
+      .request-info h2 {
+        font-size: 1.6rem;
+      }
+    }
   </style>
 </head>
+
 <body>
 
 <header class="hv-header">
-    <div class="container hv-header-content">
-
-        <div class="hv-logo">
-                <a href="./homepage_login_volunteer.html" style="text-decoration: none; color: inherit;">
-                Happy Volunteer
-            </a>
-        </div>
-
-        <nav id="mainNav">
-            <ul>
-    
-                <li><a href="./volunteer-events.html">Booking</a></li>
-                <li><a href="#">Community</a></li>
-                <li><a href="./volunteer_rewards.html">Reward</a></li>
-                <li><a href="#">Friends</a></li>
-                <li><a href="../Profile/profilepage.html">Profile</a></li>
-            </ul>
-        </nav>
-
-
-        <button class="hv-nav-toggle" id="hvNavToggle">
-          
-            <i class="fas fa-bars"></i>
-        </button>
-
-        <nav class="hv-nav" id="hvNav">
-            
-            <ul>
-          
-                <li><a href="./volunteer-events.html">Booking</a></li>
-                <li><a href="#">Community</a></li>
-                <li><a href="./volunteer_rewards.html">Reward</a></li>
-                <li><a href="#">Friends</a></li>
-                <li><a href="../Profile/profilepage.html">Profile</a></li>
-            </ul>
-        </nav>
-
-
+  <div class="container hv-header-content">
+    <div class="hv-logo">
+      <a href="./homepage_login_volunteer.html" style="text-decoration:none;color:inherit;">
+        Happy Volunteer
+      </a>
     </div>
+
+    <nav id="mainNav">
+      <ul>
+        <li><a href="./volunteer-events.html">Booking</a></li>
+        <li><a href="#">Community</a></li>
+        <li><a href="./volunteer_rewards.html">Reward</a></li>
+        <li><a href="#">Friends</a></li>
+        <li><a href="../Profile/profilepage.html">Profile</a></li>
+      </ul>
+    </nav>
+
+    <button class="hv-nav-toggle" id="hvNavToggle">
+      <i class="fas fa-bars"></i>
+    </button>
+
+    <nav class="hv-nav" id="hvNav">
+      <ul>
+        <li><a href="./volunteer-events.html">Booking</a></li>
+        <li><a href="#">Community</a></li>
+        <li><a href="./volunteer_rewards.html">Reward</a></li>
+        <li><a href="#">Friends</a></li>
+        <li><a href="../Profile/profilepage.html">Profile</a></li>
+      </ul>
+    </nav>
+  </div>
 </header>
 
-  <main class="request-wrapper container">
-    <div class="request-card">
-      <div class="request-img">
-        <img id="req-img" src="https://source.unsplash.com/800x500/?volunteer,event" alt="Event Image">
-      </div>
+<main class="request-wrapper container">
 
-      <div class="request-info">
-        <h2 id="req-name">Event Name</h2>
-        <div class="info-grid">
-          <p><strong>Date:</strong> <span id="req-date">-</span></p>
-          <p><strong>Organization:</strong> <span id="req-org">-</span></p>
-          <p><strong>Created:</strong> <span id="req-created">-</span></p>
-          <p><strong>Location:</strong> <span id="req-loc">-</span></p>
-          <p><strong>Volunteers Needed:</strong> <span id="req-needed">-</span></p>
-          <p><strong>Event ID:</strong> <span id="req-user">-</span></p>
-        </div>
-        <div class="desc">
-          <p><strong>Description:</strong></p>
-          <p id="req-desc">-</p>
-        </div>
+  <section class="request-card">
 
-        <div class="btn-group">
-         
-          <button id="btn-signup" class="btn-action" onclick="signUp(document.getElementById('req-name').textContent, eventId)">Sign Up</button>
-          <button id="btn-cancel" class="btn-action" >Cancel</button>
-        </div>
-      </div>
+    <div class="request-img">
+      <img id="req-img"
+           src="https://source.unsplash.com/900x500/?volunteer,event"
+           alt="Event Image" />
     </div>
-  </main>
-  
-    <footer>
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-column">
-                    <h3>Harry Volunteering</h3>
-                    <ul>
-                        <li><a href="#">About Us</a></li>
-                        <li><a href="#">Our Team</a></li>
-                        <li><a href="#">Opportunity</a></li>
-                        <li><a href="#">Social Media</a></li>
-                    </ul>
-                </div>
-                <div class="footer-column">
-                    <h3>Information</h3>
-                    <ul>
-                        <li><a href="#">Problem report</a></li>
-                        <li><a href="#"></a></li>
-                        <li><a href="#">Resource</a></li>
-                        <li><a href="#">Activity</a></li>
-                    </ul>
-                </div>
-                <div class="footer-column">
-                    <h3>Contact Us</h3>
-                    <ul>
-                        <li><a href="#">Contact Us</a></li>
-                        <li><a href="#">Support</a></li>
-                        <li><a href="#">cooperation</a></li>
-                        <li><a href="#">Feedback</a></li>
-                    </ul>
-                </div>
-                <div class="footer-column">
-                    <h3>Law</h3>
-                    <ul>
-                        <li><a href="#">Privacy Policy</a></li>
-                        <li><a href="#">Statement</a></li>
-                        <li><a href="#">Cookie</a></li>
-                        <li><a href="#">Statement</a></li>
-                    </ul>
-                </div>
-            </div>
-            <div class="copyright">
-                <p>&copy; 2025 Harry Volunteering. Right reserved.</p>
-            </div>
-        </div>
-    </footer>
 
-  <script src="./volunteer_event_detail.js"></script>
-  <script src="../Translation.js"></script>
-  <script src="../homepage.js"></script>
+    <div class="request-info">
+
+      <h2 id="req-name">Event Name</h2>
+      <p class="org-line">
+        Organized by <strong id="req-org">-</strong>
+      </p>
+
+      <div class="info-grid">
+
+        <div class="info-item">
+          <i class="fas fa-calendar-alt"></i>
+          <div>
+            <strong>Date</strong>
+            <p id="req-date">-</p>
+          </div>
+        </div>
+
+        <div class="info-item">
+          <i class="fas fa-map-marker-alt"></i>
+          <div>
+            <strong>Location</strong>
+            <p id="req-loc">-</p>
+          </div>
+        </div>
+
+        <div class="info-item">
+          <i class="fas fa-users"></i>
+          <div>
+            <strong>Volunteers Needed</strong>
+            <p id="req-needed">-</p>
+          </div>
+        </div>
+
+        <div class="info-item">
+          <i class="fas fa-id-badge"></i>
+          <div>
+            <strong>Event ID</strong>
+            <p id="req-user">-</p>
+          </div>
+        </div>
+
+        <div class="info-item">
+          <i class="fas fa-clock"></i>
+          <div>
+            <strong>Created On</strong>
+            <p id="req-created">-</p>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="desc">
+        <h3>About This Event</h3>
+        <p id="req-desc">-</p>
+      </div>
+
+      <div class="btn-group">
+        <button id="btn-signup"
+                class="btn-action btn-primary"
+                onclick="signUp(document.getElementById('req-name').textContent, eventId)">
+          Sign Up for This Event
+        </button>
+
+        <button id="btn-cancel"
+                class="btn-action btn-secondary"
+                onclick="history.back()">
+          Back
+        </button>
+      </div>
+
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="container">
+    <div class="copyright">
+      <p>&copy; 2025 Happy Volunteer. All rights reserved.</p>
+    </div>
+  </div>
+</footer>
+
+<script src="./volunteer_event_detail.js"></script>
+<script src="../Translation.js"></script>
+<script src="../homepage.js"></script>
+
 </body>
 </html>
