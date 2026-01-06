@@ -419,3 +419,8 @@ process.on('unhandledRejection', (err) => {
 app.listen(port, () => {
   console.log(`✅ Server running on http://localhost:${port}`);
 });
+
+// ---------------- Camera access script for Volunteer page ----------------
+app.get('/camera', authenticate, (req, res) => {
+  res.sendFile(path.join(__dirname, 'public/camera.html'));
+});
