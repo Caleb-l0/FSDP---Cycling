@@ -1,18 +1,35 @@
 const video = document.getElementById("camera");
+const flipBtn = document.getElementById("flipBtn");
 
-async function startCamera() {
+let stream = null;
+let usingFront = true;
+
+async function startCamera(facingMode = null) {
+  
+  if (stream) {
+    stream.getTracks().forEach(t => t.stop());
+  }
+
   try {
-    const stream = await navigator.mediaDevices.getUserMedia({
-      video: true,
+    const constraints = {
+      video: facingMode ? { facingMode } : true,
       audio: false
-    });
+    };
 
+    stream = await navigator.mediaDevices.getUserMedia(constraints);
     video.srcObject = stream;
+
   } catch (err) {
-    console.error("Camera access denied or error:", err);
-    alert("Camera access is required to use this feature.");
+    console.error(err);
+    alert("Unable to access camera");
   }
 }
 
 
+flipBtn.addEventListener("click", () => {
+  usingFront = !usingFront;
+  startCamera(usingFront ? "user" : "environment");
+});
+
 startCamera();
+
