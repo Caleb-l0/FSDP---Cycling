@@ -1,12 +1,10 @@
 
-import { load } from "npm";
-
 
 const token = localStorage.getItem("token");
 
 if (!token) {
     alert("Please log in first");
-    window.location.href = "/index.html";   
+    window.location.href = "../../index.html";   
 }
 
 /* =====================================================
@@ -205,13 +203,13 @@ const filterSection = document.getElementById('filter-section');
 async function loadfilterSection(choice) {
 
     filterSection.innerHTML = "<p>Loading...</p>";
-    const filterSection = document.getElementById("filter-section");
+   
     if (choice === 'location') {
    
     const userLat = parseFloat(localStorage.getItem("userLat"));
     const userLng = parseFloat(localStorage.getItem("userLng"));
 
-    if( !userLat && !userLng){
+    if( !userLat || !userLng){
         alert("Please allow location access to use this feature.");
         getLocation();
     }
