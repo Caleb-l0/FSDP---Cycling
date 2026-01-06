@@ -165,7 +165,7 @@ app.get("/institution/events/all", adminEventController.getAllEvents);
 app.get("/volunteer/events/:id", authenticate, eventController.getEventDetails);
 app.post("/volunteer/events/signup/:eventID", authenticate, EventController.signup);
 app.delete("/volunteer/events/delete/:eventID", authenticate, EventController.deleteEvent);
-app.get("volunteer/event/isSignedUp", authenticate, EventController.isSignedUp);
+app.get("/volunteer/event/isSignedUp", authenticate, EventController.isSignedUp);
 
 
 // ----- Community route FOR Volunteer----------
