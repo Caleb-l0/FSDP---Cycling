@@ -18,6 +18,7 @@ if (!eventId) {
 
 document.addEventListener("DOMContentLoaded", () => {
   loadEventDetails(eventId);
+  checkIsSignedUp(eventId);
 });
 
 // ===========================
@@ -57,6 +58,30 @@ async function loadEventDetails(id) {
     alert("Unable to load event details");
   }
 }
+// check assign
+
+async function checkIsSignedUp(eventId) {
+  try {
+    const res = await fetch(
+      `https://fsdp-cycling-ltey.onrender.com/volunteer/events/isSignedUp/${eventId}`,
+      {
+        headers: { Authorization: `Bearer ${token}` }
+      }
+    );
+
+    if (!res.ok) throw new Error();
+
+    const data = await res.json();
+    signedUp = data.signedUp;
+
+    updateSignupButtonUI();
+
+  } catch (err) {
+    console.error("checkIsSignedUp failed", err);
+  }
+}
+
+
 
 // ===========================
 // BUTTON LOGIC
@@ -79,6 +104,31 @@ function setupButtons(eventData) {
   btnCancel.onclick = () =>
     cancelSignUp(eventData.eventid);
 }
+
+// ===========================
+// UPDATE SIGNUP BUTTON UI
+// ===========================
+function updateSignupButtonUI() {
+  const btnSignup = document.getElementById("btn-signup");
+  const btnCancel = document.getElementById("btn-cancel");
+
+  if (signedUp) {
+    
+    btnSignup.style.display = "none";
+
+    btnCancel.style.display = "inline-block";
+    btnCancel.textContent = "Cancel Signup";
+    btnCancel.classList.add("btn-cancel-danger");
+  } else {
+    
+    btnCancel.style.display = "none";
+
+    btnSignup.style.display = "inline-block";
+    btnSignup.textContent = "Sign Up for This Event";
+    btnSignup.classList.remove("btn-disabled");
+  }
+}
+
 
 // ===========================
 // SIGN UP

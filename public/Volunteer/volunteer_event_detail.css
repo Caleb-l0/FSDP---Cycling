@@ -202,6 +202,19 @@
   cursor: not-allowed;
 }
 
+.btn-cancel-danger {
+  background: #FDECEA;
+  color: #C62828;
+  border: 2px solid #C62828;
+  font-weight: 600;
+}
+
+.btn-cancel-danger:hover {
+  background: #C62828;
+  color: #fff;
+}
+
+
 
 
     @media (max-width: 768px) {
