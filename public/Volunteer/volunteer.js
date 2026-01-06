@@ -1,22 +1,28 @@
+<<<<<<< HEAD
 import { load } from "npm";
 
+=======
+>>>>>>> 7b2acec09c9f761b87de2b7ad34631f0803cfc37
 const token = localStorage.getItem("token");
 
 if (!token) {
     alert("Please log in first");
-    window.location.href = "../../index.html";   
+    window.location.href = "/index.html";   
 }
 
+/* =====================================================
+   WEATHER (DISPLAY BY CURRENT LOCATION ONLY)
+   ===================================================== */
 function showGeoWeather() {
     const geoDiv = document.getElementById("geo-weather");
     if (!geoDiv) return;
 
     if (!navigator.geolocation) {
-        geoDiv.innerHTML = "<p>Geolocation is not supported by your browser.</p>";
+        geoDiv.textContent = "Geolocation is not supported by your browser.";
         return;
     }
 
-    geoDiv.innerHTML = "<p>Detecting your location...</p>";
+    geoDiv.textContent = "Detecting your location...";
 
     navigator.geolocation.getCurrentPosition(
         async (position) => {
@@ -40,31 +46,14 @@ function showGeoWeather() {
                     </div>
                 `;
             } catch (err) {
-                geoDiv.innerHTML = "<p>Failed to load weather data.</p>";
+                geoDiv.textContent = "Failed to load weather data.";
             }
         },
         () => {
-            geoDiv.innerHTML = "<p>Location permission denied.</p>";
+            geoDiv.textContent = "Location permission denied.";
         }
     );
 }
-
-/* =====================================================
-   Initialize page after DOM loaded
-   ===================================================== */
-document.addEventListener("DOMContentLoaded", () => {
-    // Only attach weather button if token exists
-    if (token) {
-        const detectBtn = document.getElementById("detect-weather-btn");
-        if (detectBtn) {
-            detectBtn.addEventListener("click", showGeoWeather);
-        }
-
-        // Load events and volunteers after login
-        loadHomepageEvents();
-        loadVolunteersHomepage();
-    }
-});
 /* =====================================================
    VOLUNTEER FORM
    ===================================================== */
@@ -190,6 +179,7 @@ async function loadVolunteersHomepage() {
 function openVolunteerProfile(id) {
     window.location.href = `../Profile/profilepage.html?userId=${id}`;
 }
+<<<<<<< HEAD
 
 
 // ---- Volunteer Filter Section ---- //
@@ -344,3 +334,5 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 
+=======
+>>>>>>> 7b2acec09c9f761b87de2b7ad34631f0803cfc37
