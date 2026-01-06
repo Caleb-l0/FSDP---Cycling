@@ -5,19 +5,16 @@ if (!token) {
     window.location.href = "/index.html";   
 }
 
-/* =====================================================
-   WEATHER (DISPLAY BY CURRENT LOCATION ONLY)
-   ===================================================== */
 function showGeoWeather() {
     const geoDiv = document.getElementById("geo-weather");
     if (!geoDiv) return;
 
     if (!navigator.geolocation) {
-        geoDiv.textContent = "Geolocation is not supported by your browser.";
+        geoDiv.innerHTML = "<p>Geolocation is not supported by your browser.</p>";
         return;
     }
 
-    geoDiv.textContent = "Detecting your location...";
+    geoDiv.innerHTML = "<p>Detecting your location...</p>";
 
     navigator.geolocation.getCurrentPosition(
         async (position) => {
@@ -41,14 +38,31 @@ function showGeoWeather() {
                     </div>
                 `;
             } catch (err) {
-                geoDiv.textContent = "Failed to load weather data.";
+                geoDiv.innerHTML = "<p>Failed to load weather data.</p>";
             }
         },
         () => {
-            geoDiv.textContent = "Location permission denied.";
+            geoDiv.innerHTML = "<p>Location permission denied.</p>";
         }
     );
 }
+
+/* =====================================================
+   Initialize page after DOM loaded
+   ===================================================== */
+document.addEventListener("DOMContentLoaded", () => {
+    // Only attach weather button if token exists
+    if (token) {
+        const detectBtn = document.getElementById("detect-weather-btn");
+        if (detectBtn) {
+            detectBtn.addEventListener("click", showGeoWeather);
+        }
+
+        // Load events and volunteers after login
+        loadHomepageEvents();
+        loadVolunteersHomepage();
+    }
+});
 /* =====================================================
    VOLUNTEER FORM
    ===================================================== */
