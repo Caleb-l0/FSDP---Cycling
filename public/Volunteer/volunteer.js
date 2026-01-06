@@ -1,8 +1,7 @@
-<<<<<<< HEAD
+
 import { load } from "npm";
 
-=======
->>>>>>> 7b2acec09c9f761b87de2b7ad34631f0803cfc37
+
 const token = localStorage.getItem("token");
 
 if (!token) {
@@ -179,7 +178,7 @@ async function loadVolunteersHomepage() {
 function openVolunteerProfile(id) {
     window.location.href = `../Profile/profilepage.html?userId=${id}`;
 }
-<<<<<<< HEAD
+
 
 
 // ---- Volunteer Filter Section ---- //
@@ -334,5 +333,4 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 
-=======
->>>>>>> 7b2acec09c9f761b87de2b7ad34631f0803cfc37
+
