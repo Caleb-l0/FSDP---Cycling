@@ -1,22 +1,35 @@
-const video = document.getElementById("video");
+const video = document.getElementById("camera");
+const flipBtn = document.getElementById("flipBtn");
 
-async function startCamera() {
+let stream = null;
+let usingFront = true;
+
+async function startCamera(facingMode = null) {
+  
+  if (stream) {
+    stream.getTracks().forEach(t => t.stop());
+  }
+
   try {
     const constraints = {
-      video: {
-        facingMode: { ideal: "environment" } // back camera on phones
-      },
+      video: facingMode ? { facingMode } : true,
       audio: false
     };
 
-    const stream = await navigator.mediaDevices.getUserMedia(constraints);
+    stream = await navigator.mediaDevices.getUserMedia(constraints);
     video.srcObject = stream;
 
   } catch (err) {
-    console.error("Camera error:", err);
-    alert("Unable to access camera.");
+    console.error(err);
+    alert("Unable to access camera");
   }
 }
+
+
+flipBtn.addEventListener("click", () => {
+  usingFront = !usingFront;
+  startCamera(usingFront ? "user" : "environment");
+});
 
 startCamera();
 
