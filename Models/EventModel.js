@@ -85,8 +85,10 @@ async function deleteEvent(eventID) {
 }
 
 /* =====================================================
-   5. Sign Up for Event
+volunteer logic
    ===================================================== */
+
+   
 async function signup(userID, eventID) {
   // check existing signup
   const check = await pool.query(
