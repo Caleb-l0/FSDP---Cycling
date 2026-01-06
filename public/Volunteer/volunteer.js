@@ -1,22 +1,23 @@
-const { load } = require("npm");
-
 const token = localStorage.getItem("token");
 
 if (!token) {
     alert("Please log in first");
-    window.location.href = "../../index.html";   
+    window.location.href = "/index.html";   
 }
 
+/* =====================================================
+   WEATHER (DISPLAY BY CURRENT LOCATION ONLY)
+   ===================================================== */
 function showGeoWeather() {
     const geoDiv = document.getElementById("geo-weather");
     if (!geoDiv) return;
 
     if (!navigator.geolocation) {
-        geoDiv.innerHTML = "<p>Geolocation is not supported by your browser.</p>";
+        geoDiv.textContent = "Geolocation is not supported by your browser.";
         return;
     }
 
-    geoDiv.innerHTML = "<p>Detecting your location...</p>";
+    geoDiv.textContent = "Detecting your location...";
 
     navigator.geolocation.getCurrentPosition(
         async (position) => {
@@ -40,31 +41,14 @@ function showGeoWeather() {
                     </div>
                 `;
             } catch (err) {
-                geoDiv.innerHTML = "<p>Failed to load weather data.</p>";
+                geoDiv.textContent = "Failed to load weather data.";
             }
         },
         () => {
-            geoDiv.innerHTML = "<p>Location permission denied.</p>";
+            geoDiv.textContent = "Location permission denied.";
         }
     );
 }
-
-/* =====================================================
-   Initialize page after DOM loaded
-   ===================================================== */
-document.addEventListener("DOMContentLoaded", () => {
-    // Only attach weather button if token exists
-    if (token) {
-        const detectBtn = document.getElementById("detect-weather-btn");
-        if (detectBtn) {
-            detectBtn.addEventListener("click", showGeoWeather);
-        }
-
-        // Load events and volunteers after login
-        loadHomepageEvents();
-        loadVolunteersHomepage();
-    }
-});
 /* =====================================================
    VOLUNTEER FORM
    ===================================================== */
@@ -189,164 +173,3 @@ async function loadVolunteersHomepage() {
 function openVolunteerProfile(id) {
     window.location.href = `../Profile/profilepage.html?userId=${id}`;
 }
-
-
-function getDistance(lat1, lon1, lat2, lon2) {
-    const R = 6371; // Earth radius in km
-    const dLat = (lat2 - lat1) * Math.PI / 180;
-    const dLon = (lon2 - lon1) * Math.PI / 180;
-
-    const a =
-        Math.sin(dLat / 2) ** 2 +
-        Math.cos(lat1 * Math.PI / 180) *
-        Math.cos(lat2 * Math.PI / 180) *
-        Math.sin(dLon / 2) ** 2;
-
-    return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-}
-
-
-// volunteer filter event button
-const filterSection = document.getElementById('filter-section');
- 
-async function loadfilterSection(choice) {
-    const filterSection = document.getElementById("filter-section");
-    if (choice === 'location') {
-    if (!filterSection) return;
-
-    const userLat = parseFloat(localStorage.getItem("userLat"));
-    const userLng = parseFloat(localStorage.getItem("userLng"));
-
-    if (!userLat || !userLng) {
-        alert("Unable to get your location");
-        return;
-    }
-
-    const res = await fetch(
-        "https://fsdp-cycling-ltey.onrender.com/volunteer/events",
-        { headers: { Authorization: `Bearer ${token}` } }
-    );
-
-    const events = await res.json();
-
-    // Haversine formula to calculate distance between two lat/lng points
-
-    const sortedEvents = events
-        .filter(e => e.latitude && e.longitude)
-        .map(e => ({
-            ...e,
-            distance: getDistance(
-                userLat,
-                userLng,
-                e.latitude,
-                e.longitude
-            )
-        }))
-        .sort((a, b) => a.distance - b.distance)
-        .slice(0, 5); // recommend top 5 closest events 
-
-    filterSection.innerHTML = "";
-
-    sortedEvents.forEach(e => {
-        filterSection.innerHTML += `
-            <div class="event-box">
-                <div class="service-card"
-                     onclick="goToEventDetail(${e.eventid})">
-
-                    <div class="service-icon">
-                        <i class="fas fa-map-marker-alt"></i>
-                    </div>
-
-                    <div class="service-content">
-                        <h3>${e.eventname}</h3>
-                        <p>${e.location}</p>
-                        <p>📍 ${e.distance.toFixed(1)} km away</p>
-                    </div>
-
-                </div>
-            </div>
-        `;
-    });
-}
- else if (choice === 'interest') {
-        if (!filterSection) return;
-        const res = await fetch(
-            "https://fsdp-cycling-ltey.onrender.com/volunteer/events",
-            { headers: { Authorization: `Bearer ${token}` } }
-        );
-        const events = await res.json();
-
-        // For demo, randomly select 5 events as "interest-based"
-        const shuffledEvents = events.sort(() => 0.5 - Math.random()).slice(0, 5);
-        filterSection.innerHTML = "";
-
-        shuffledEvents.forEach(e => {
-            filterSection.innerHTML += `
-                <div class="event-box">
-                    <div class="service-card"
-                         onclick="goToEventDetail(${e.eventid})">
-                        <div class="service-icon">
-                            <i class="fas fa-heart"></i>
-                        </div>
-                        <div class="service-content">
-                            <h3>${e.eventname}</h3>
-                            <p>${e.location}</p>
-                        </div>
-                    </div>
-                </div>
-            `;
-        }
-    );
-}
- else if (choice === 'friend') {
-        if (!filterSection) return;
-        const res = await fetch(
-            "https://fsdp-cycling-ltey.onrender.com/volunteer/events",
-            { headers: { Authorization: `Bearer ${token}` } }
-        );
-        const events = await res.json();            
-        // For demo, randomly select 5 events as "friend-based"
-        const shuffledEvents = events.sort(() => 0.5 - Math.random()).slice(0, 5);
-        filterSection.innerHTML = "";   
-        shuffledEvents.forEach(e => {
-            filterSection.innerHTML += `
-                <div class="event-box">
-                    <div class="service-card"
-                         onclick="goToEventDetail(${e.eventid})">
-                        <div class="service-icon">
-                            <i class="fas fa-users"></i>
-                        </div>
-                        <div class="service-content">
-                            <h3>${e.eventname}</h3>
-                            <p>${e.location}</p>
-                        </div>
-                    </div>
-                </div>
-            `;
-        });
-}
-}
-
-
-
-
-   
-
-
-document.querySelectorAll('.filter-btn').forEach(button => {
-    button.addEventListener('click', () => {
-        const category = button.getAttribute('data-category');
-
-
-        if (category === 'location') {
-            loadfilterSection('location');
-        } else if (category === 'interest') {
-            loadfilterSection('interest');
-        } else if (category === 'friend') {
-           loadfilterSection('friend');
-        }
-    });
-});
-
-
-
