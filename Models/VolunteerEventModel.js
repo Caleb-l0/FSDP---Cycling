@@ -76,11 +76,28 @@ async function getSignedUpEvents(userId) {
 }
 
 
+async function getEventById(eventId) {
+  const result = await pool.query(
+    `SELECT * FROM events WHERE eventid = $1`,
+    [eventId]
+  );  
+  return result.rows[0];
+} 
+
+
+
+
+
+
+
+
+
 
 module.exports = {
   getAllEvents,
   signUpForEvent,
-  getSignedUpEvents
+  getSignedUpEvents,
+  getEventById,
 };
 
 

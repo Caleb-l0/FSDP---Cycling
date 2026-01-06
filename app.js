@@ -120,11 +120,10 @@ app.get("/send-email",authenticate,EmailController.getMemberEmailsByOrganization
 
 app.get("/events/checkAssigned/:eventID", authenticate, EventController.checkAssigned);
 app.get("/isSignedUp", authenticate, EventController.isSignedUp);
-app.post("/events/signup/:eventID", authenticate, EventController.signup);
+
 app.delete("/events/cancel/:eventID", authenticate, EventController.cancel);
 app.get("/events/by-location",authenticate, EventController.getEventsByLocation);
 app.get("/events/:eventID", authenticate, EventController.getEventById);
-app.delete("/events/delete/:eventID", authenticate, EventController.deleteEvent);
 app.put("/events/update/:eventID", authenticate, EventController.updateEvent);
 
 
@@ -165,7 +164,9 @@ app.get('/volunteer/events', adminEventController.getAllEvents);
 app.get('/volunteer/signed-events', authenticate, eventController.getSignedUpEvents);
 app.post('/events/signup', authenticate, eventController.signUp);
 app.get("/institution/events/all", adminEventController.getAllEvents);
-
+app.get("/volunteer/events/:id", authenticate, eventController.getEventDetails);
+app.post("/volunteer/events/signup/:eventID", authenticate, EventController.signup);
+app.delete("/volunteer/events/delete/:eventID", authenticate, EventController.deleteEvent);
 
 
 

@@ -29,7 +29,7 @@ async function loadEventDetails(id) {
       }
     );
 
-    
+
     if (!res.ok) throw new Error("Failed to load event");
     const data = await res.json();
     document.getElementById("req-name").textContent = data.eventname;
@@ -77,7 +77,7 @@ function setupButtons(eventData) {
 async function signUp(eventName, eventId) {
   try {
     const res = await fetch(
-      `https://fsdp-cycling-ltey.onrender.com/events/signup/${eventId}`,
+      `https://fsdp-cycling-ltey.onrender.com/volunteer/events/signup/${eventId}`,
       {
         method: "POST",
         headers: {
@@ -103,7 +103,7 @@ async function signUp(eventName, eventId) {
 async function cancelSignUp(eventId) {
   try {
     const res = await fetch(
-      `https://fsdp-cycling-ltey.onrender.com/events/signup/${eventId}`,
+      `https://fsdp-cycling-ltey.onrender.com/volunteer/events/signup/${eventId}`,
       {
         method: "DELETE",
         headers: {

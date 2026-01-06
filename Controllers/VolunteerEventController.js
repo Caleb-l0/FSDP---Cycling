@@ -1,3 +1,4 @@
+const { get } = require('mongoose');
 const eventModel = require('../Models/VolunteerEventModel');
 
 async function getEvents(req, res) {
@@ -55,5 +56,21 @@ async function getSignedUpEvents(req, res) {
   }
 }
 
-module.exports = { getEvents, signUp, getSignedUpEvents };
+
+async function getEventDetails(req, res) {
+  const eventId = req.params.id;
+  try {
+    const event = await eventModel.getEventById(eventId);
+    if (!event) {
+      return res.status(404).json({ message: 'Event not found' });
+    }
+    res.json(event);
+  }
+  catch (err) {
+    console.error('Error fetching event details:', err);
+    res.status(500).json({ message: 'Failed to fetch event details.' });
+  }
+}
+
+module.exports = { getEvents, signUp, getSignedUpEvents,getEventDetails };
 
