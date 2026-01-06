@@ -1,4 +1,3 @@
-import { getLocation } from "../../getLocation";
 
 const token = localStorage.getItem("token");
 
@@ -93,6 +92,32 @@ document.addEventListener("DOMContentLoaded", () => {
     loadVolunteersHomepage();
     
 });
+
+
+
+// ---- Volunteer Homepage Events Section ---- //
+
+
+function getLocation() {
+  if (!navigator.geolocation) {
+    alert("Geolocation is not supported by your browser");
+    return;
+  } 
+    navigator.geolocation.getCurrentPosition(
+        (position) => {
+            const lat = position.coords.latitude;
+            const lng = position.coords.longitude;
+            console.log("Latitude:", lat);
+            console.log("Longitude:", lng);
+            localStorage.setItem("userLat", lat);
+            localStorage.setItem("userLng", lng);
+        },
+        (error) => {
+            alert("Error getting location: " + error.message);
+        }
+    );
+}
+
 
 async function loadHomepageEvents() {
     const container = document.querySelector(".scrollable");
@@ -318,6 +343,8 @@ async function loadfilterSection(choice) {
         });
 }
 }
+
+
 
 
 document.addEventListener("DOMContentLoaded", () => {
