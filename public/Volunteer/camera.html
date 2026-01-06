@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Camera Preview</title>
+  <style>
+    #cameraBox {
+      width: 320px;
+      height: 240px;
+      border: 2px solid #ccc;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  </style>
+</head>
+<body>
+
+  <h3>Camera Preview</h3>
+  <div id="cameraBox">
+    <video id="camera" autoplay playsinline></video>
+  </div>
+
+  <script src="camera.js"></script>
+</body>
+</html>
