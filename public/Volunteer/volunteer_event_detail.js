@@ -162,7 +162,7 @@ async function signUp(eventName, eventId) {
 async function cancelSignUp(eventId) {
   try {
     const res = await fetch(
-      `https://fsdp-cycling-ltey.onrender.com/volunteer/events/signup/${eventId}`,
+      `https://fsdp-cycling-ltey.onrender.com/volunteer/events/cancel/signup/${eventId}`,
       {
         method: "DELETE",
         headers: {

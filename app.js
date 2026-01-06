@@ -165,6 +165,7 @@ app.get("/institution/events/all", adminEventController.getAllEvents);
 app.get("/volunteer/events/:id", authenticate, eventController.getEventDetails);
 app.post("/volunteer/events/signup/:eventID", authenticate, EventController.signup);
 app.delete("/volunteer/events/delete/:eventID", authenticate, EventController.deleteEvent);
+app.delete("/volunteer/events/cancel/signup/:eventID", authenticate, EventController.cancel);
 app.get("/volunteer/events/isSignedUp/:eventID", authenticate, EventController.isSignedUp);
 
 
