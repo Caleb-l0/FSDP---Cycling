@@ -109,22 +109,23 @@ function setupButtons(eventData) {
 // ===========================
 function updateSignupButtonUI() {
   const btnSignup = document.getElementById("btn-signup");
-  const btnCancel = document.getElementById("btn-cancel");
+  const btnCancelSignup = document.getElementById("btn-cancel-signup");
 
   if (signedUp) {
-    
     btnSignup.style.display = "none";
+    btnCancelSignup.style.display = "inline-block";
 
-    btnCancel.style.display = "inline-block";
-    btnCancel.textContent = "Cancel Signup";
-    btnCancel.classList.add("btn-cancel-danger");
+    btnCancelSignup.onclick = () => cancelSignUp(eventId);
+
   } else {
-    
-    btnCancel.style.display = "none";
-
     btnSignup.style.display = "inline-block";
-    btnSignup.textContent = "Sign Up for This Event";
-    btnSignup.classList.remove("btn-disabled");
+    btnCancelSignup.style.display = "none";
+
+    btnSignup.onclick = () =>
+      signUp(
+        document.getElementById("req-name").textContent,
+        eventId
+      );
   }
 }
 
@@ -161,7 +162,7 @@ async function signUp(eventName, eventId) {
 async function cancelSignUp(eventId) {
   try {
     const res = await fetch(
-      `https://fsdp-cycling-ltey.onrender.com/volunteer/events/signup/${eventId}`,
+      `https://fsdp-cycling-ltey.onrender.com/volunteer/events/cancel/signup/${eventId}`,
       {
         method: "DELETE",
         headers: {

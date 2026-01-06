@@ -148,7 +148,7 @@ async function cancel(userID, eventID) {
     );
   }
 
-  return result; 
+  return result; // ⭐⭐⭐ 必须 return
 }
 
 

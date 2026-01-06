@@ -120,19 +120,27 @@
         <p id="req-desc">-</p>
       </div>
 
-      <div class="btn-group">
-        <button id="btn-signup"
-                class="btn-action btn-primary"
-                onclick="signUp(document.getElementById('req-name').textContent, eventId)">
-          Sign Up for This Event
-        </button>
+ <div class="btn-group">
 
-        <button id="btn-cancel"
-                class="btn-action btn-secondary"
-                onclick="history.back()">
-          Back
-        </button>
-      </div>
+  <!-- Sign Up -->
+  <button id="btn-signup"
+          class="btn-action btn-primary">
+    Sign Up for This Event
+  </button>
+
+  <!-- Cancel Signup -->
+  <button id="btn-cancel-signup"
+          class="btn-action btn-danger"
+          style="display:none">
+    Cancel Signup
+  </button>
+
+  <!-- Back -->
+  <button id="btn-back"
+          class="btn-action btn-secondary"
+          onclick="history.back()">
+    Back
+  </button>
 
     </div>
   </section>
