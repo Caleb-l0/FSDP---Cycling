@@ -87,15 +87,15 @@ async function cancel(req, res) {
 
 async function isSignedUp(req, res) {
   try {
-    const userId = req.user.id;           
-    const { eventId } = req.params;       
+    const userID = req.user.id;              
+    const { eventID } = req.params;          
 
-    const signedUp = await EventModel.isSignedUp(userId, eventId);
+    const signedUp = await EventModel.isSignedUp(userID, eventID);
 
     res.json({ signedUp });
-  } catch (err) {
-    console.error("isSignedUp error:", err);
-    res.status(500).json({ message: "Server error" });
+  } catch (error) {
+    console.error("isSignedUp error:", error);
+    res.status(500).json({ message: "Server Error" });
   }
 }
 
