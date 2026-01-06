@@ -24,7 +24,7 @@ function showGeoWeather() {
             const lat = position.coords.latitude;
             const lon = position.coords.longitude;
 
-            const apiKey = "3652b8b54e92c83d871ca9705153b07f"; // your API key
+            const apiKey = "3652b8b54e92c83d871ca9705153b07f";
             const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=${apiKey}`;
 
             try {
@@ -32,17 +32,15 @@ function showGeoWeather() {
                 const data = await res.json();
 
                 geoDiv.innerHTML = `
-                    <div class="service-card">
-                        <div class="service-icon">
-                            <img src="https://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png">
-                        </div>
-                        <div class="service-content">
-                            <h3>Weather in ${data.name}</h3>
-                            <p>${data.main.temp}°C — ${data.weather[0].description}</p>
-                        </div>
+                    <div class="service-icon">
+                        <img src="https://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png" alt="weather">
+                    </div>
+                    <div class="service-content">
+                        <h3>${data.name}</h3>
+                        <p>${data.main.temp}°C — ${data.weather[0].description}</p>
                     </div>
                 `;
-            } catch {
+            } catch (err) {
                 geoDiv.textContent = "Failed to load weather data.";
             }
         },
@@ -51,7 +49,6 @@ function showGeoWeather() {
         }
     );
 }
-
 /* =====================================================
    VOLUNTEER FORM
    ===================================================== */
