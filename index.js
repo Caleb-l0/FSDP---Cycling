@@ -1,4 +1,20 @@
+if (navigator.geolocation) {
+  const originalGetCurrentPosition = navigator.geolocation.getCurrentPosition.bind(navigator.geolocation);
 
+  // Override the method temporarily
+  navigator.geolocation.getCurrentPosition = function(success, error, options) {
+    console.log("Blocked automatic geolocation request.");
+    if (error) {
+      error({ code: 1, message: "Permission denied" });
+    }
+  };
+
+  // Expose a function to re-enable geolocation when user consents
+  window.enableGeolocation = function() {
+    navigator.geolocation.getCurrentPosition = originalGetCurrentPosition;
+    createWowToast("Location access enabled! You can now use location features.", "success");
+  };
+}
 
     // Load header dynamically
     fetch('./public/header.html')
