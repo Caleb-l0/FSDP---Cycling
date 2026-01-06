@@ -104,22 +104,23 @@ app.put("/profile", authenticate, async (req, res) => {
   }
 });
 
-// Event Booking Routes (By Organizations)
+// Event Booking Routies (By Organzations)
 const eventBookingRoutes = require("./Routes/EventBookingRoutes");
 app.use("/organization/events", eventBookingRoutes);
+
 
 // -------Email -------------
 app.get("/getOrganID",authenticate,EmailController.getOrganisationID)
 app.get("/getUserEmail/:orgID",authenticate,EmailController.getMemberEmailsByOrganizationID)
 app.get("/send-email",authenticate,EmailController.getMemberEmailsByOrganizationID)
 
+
+
 // ------ Event API Routes (must be before static files) -------------
+
 app.get("/events/checkAssigned/:eventID", authenticate, EventController.checkAssigned);
 app.get("/isSignedUp", authenticate, EventController.isSignedUp);
-
 app.post("/events/signup/:eventID", authenticate, EventController.signup);
-
-
 app.delete("/events/cancel/:eventID", authenticate, EventController.cancel);
 app.get("/events/by-location",authenticate, EventController.getEventsByLocation);
 app.get("/events/:eventID", authenticate, EventController.getEventById);
@@ -151,13 +152,12 @@ app.get('/requests/status/:id',authenticate,requestController.checkRequestStatus
 
 
 
-
-
-
+// ----- ADMIN EVENT FEED -----
 app.get('/admin/events', authenticate, adminEventController.getAllEvents); 
 app.get("/admin/events/location/:eventID",authenticate,adminEventController.getEventLocation);
 app.post('/admin/create_events', authenticate, adminEventController.createEvent);
 app.put('/admin/assign_events',authenticate,adminEventController.assignEventToOrgan)
+
 
 // ----- VOLUNTEER EVENT FEED -----
 
@@ -169,7 +169,7 @@ app.get("/institution/events/all", adminEventController.getAllEvents);
 
 
 
-// ----- Community route ----------
+// ----- Community route FOR Volunteer----------
 
 app.get("/community/browse/posts",authenticate, CommunityController.browsePosts);
 app.post("/community/posts", authenticate,  CommunityController.createPost);
@@ -186,7 +186,7 @@ app.get("/community/posts/:postId/comments", authenticate, CommunityController.g
 //  ???????????????????????????????????????????????????????
 
 
-// ----- REWARDS SYSTEM -----
+// REWARDS SYSTEM For Volunteer -----
 
 const rewardsController = require("./Controllers/reward_controller.js");
 app.get("/rewards/:userId", authenticate, rewardsController.getRewards);
@@ -267,6 +267,7 @@ app.use((err, req, res, next) => {
 });
 
 
+// ----- TRANSLATION ROUTE -----
 app.post("/translate", async (req, res) => {
   let { q, from = "auto", to } = req.body;
 
@@ -403,6 +404,8 @@ app.post("/auth/google", async (req, res) => {
   }
 });
 // te'st database connection
+
+
 app.get('/test-db', async (req, res) => {
   try {
     const result = await pool.query('SELECT NOW()');

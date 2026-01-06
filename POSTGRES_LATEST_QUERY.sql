@@ -6,7 +6,7 @@ CREATE TABLE users (
     email VARCHAR(100) UNIQUE,
     password VARCHAR(100),
     textsizepreference VARCHAR(20) DEFAULT 'normal',
-    role VARCHAR(50) DEFAULT 'user'
+    role VARCHAR(50) DEFAULT 'volunteer'
 );
 
 CREATE TABLE organizations (
@@ -43,6 +43,9 @@ CREATE TABLE events (
     peoplesignup INT DEFAULT 0,
     FOREIGN KEY (organizationid) REFERENCES organizations(organizationid)
 );
+ALTER TABLE events
+ADD COLUMN latitude DOUBLE PRECISION,
+ADD COLUMN longitude DOUBLE PRECISION;
 
 
 CREATE TABLE volunterrequests (
@@ -202,3 +205,20 @@ ON communitylikes(postid);
 
 
 
+
+
+TRUNCATE TABLE
+    communitylikes,
+    communitycomments,
+    communityposts,
+    rewards,
+    eventbookings,
+    userevents,
+    eventsignups,
+    volunterrequests,
+    events,
+    userorganizations,
+    organizations,
+    users,
+    shopitems
+RESTART IDENTITY CASCADE;
