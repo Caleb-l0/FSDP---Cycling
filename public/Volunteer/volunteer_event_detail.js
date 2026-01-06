@@ -41,20 +41,12 @@ async function loadEventDetails(id) {
       new Date(data.eventdate).toLocaleString();
       setEventStatus(data.eventdate);
     document.getElementById("req-status").textContent = data.status;
-    document.getElementById("req-user").textContent = data.usersignedup
-      ? "You have signed up"
-      : "You have not signed up";
      document.getElementById("req-people-num").textContent = data.maximumparticipant || "-";
-    document.getElementById("req-signup-date").textContent = data.signupdate
-      ? new Date(data.signupdate).toLocaleString()
-      : "-";
     document.getElementById("req-loc").textContent = data.location;
     document.getElementById("req-needed").textContent = data.requiredvolunteers;
-    document.getElementById("req-id").textContent = data.eventid;
     document.getElementById("req-created").textContent = data.createdat
       ? new Date(data.createdat).toLocaleString()
       : "-";
-    
     document.getElementById("req-desc").textContent = data.description || "-";
      
     signedUp = data.usersignedup === true;
