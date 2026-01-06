@@ -1,18 +1,22 @@
-const video = document.getElementById("camera");
+const video = document.getElementById("video");
 
 async function startCamera() {
   try {
-    const stream = await navigator.mediaDevices.getUserMedia({
-      video: true,
+    const constraints = {
+      video: {
+        facingMode: { ideal: "environment" } // back camera on phones
+      },
       audio: false
-    });
+    };
 
+    const stream = await navigator.mediaDevices.getUserMedia(constraints);
     video.srcObject = stream;
+
   } catch (err) {
-    console.error("Camera access denied or error:", err);
-    alert("Camera access is required to use this feature.");
+    console.error("Camera error:", err);
+    alert("Unable to access camera.");
   }
 }
 
-
 startCamera();
+
