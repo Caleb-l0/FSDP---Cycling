@@ -5,12 +5,9 @@ if (!token) {
     window.location.href = "/index.html";   
 }
 
-function requestLocation() {
-    const promptDiv = document.getElementById("locationPrompt");
-    if (promptDiv) promptDiv.style.display = "none"; // Hide prompt after click
-    showGeoWeather();
-}
-
+/* =====================================================
+   WEATHER (DISPLAY BY CURRENT LOCATION ONLY)
+   ===================================================== */
 function showGeoWeather() {
     const geoDiv = document.getElementById("geo-weather");
     if (!geoDiv) return;
@@ -27,13 +24,11 @@ function showGeoWeather() {
             const lat = position.coords.latitude;
             const lon = position.coords.longitude;
 
-            const apiKey = "3652b8b54e92c83d871ca9705153b07f"; // OpenWeatherMap API key
+            const apiKey = "3652b8b54e92c83d871ca9705153b07f";
             const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=${apiKey}`;
 
             try {
                 const res = await fetch(url);
-                if (!res.ok) throw new Error("Weather API request failed");
-
                 const data = await res.json();
 
                 geoDiv.innerHTML = `
@@ -42,46 +37,18 @@ function showGeoWeather() {
                     </div>
                     <div class="service-content">
                         <h3>${data.name}</h3>
-                        <p>${data.main.temp}°C — ${capitalizeFirstLetter(data.weather[0].description)}</p>
+                        <p>${data.main.temp}°C — ${data.weather[0].description}</p>
                     </div>
                 `;
             } catch (err) {
-                console.error(err);
                 geoDiv.textContent = "Failed to load weather data.";
             }
         },
-        (error) => {
-            if (error.code === error.PERMISSION_DENIED) {
-                geoDiv.textContent = "Location permission denied.";
-            } else {
-                geoDiv.textContent = "Unable to retrieve your location.";
-            }
+        () => {
+            geoDiv.textContent = "Location permission denied.";
         }
     );
 }
-
-/* Helper function to capitalize first letter of description */
-function capitalizeFirstLetter(str) {
-    return str.charAt(0).toUpperCase() + str.slice(1);
-}
-
-/* =====================================================
-   AUTO LOAD WEATHER WHEN DOM IS READY
-   ===================================================== */
-document.addEventListener("DOMContentLoaded", () => {
-    const promptDiv = document.getElementById("locationPrompt");
-    const geoDiv = document.getElementById("geo-weather");
-
-    if (!promptDiv || !geoDiv) return;
-
-    // Show prompt and wait for user click
-    geoDiv.textContent = "";
-    promptDiv.style.display = "block";
-
-    const allowBtn = promptDiv.querySelector("button");
-    if (allowBtn) allowBtn.addEventListener("click", requestLocation);
-});
-
 /* =====================================================
    VOLUNTEER FORM
    ===================================================== */
