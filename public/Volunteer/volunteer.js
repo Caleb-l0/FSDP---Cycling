@@ -4,26 +4,75 @@ if (!token) {
     alert("Please log in first");
     window.location.href = "/index.html";   
 }
-// Function to handle volunteer form submission
+
+/* =====================================================
+   WEATHER (DISPLAY BY CURRENT LOCATION ONLY)
+   ===================================================== */
+function showGeoWeather() {
+    const geoDiv = document.getElementById("geo-weather");
+    if (!geoDiv) return;
+
+    if (!navigator.geolocation) {
+        geoDiv.textContent = "Geolocation is not supported by your browser.";
+        return;
+    }
+
+    geoDiv.textContent = "Detecting your location...";
+
+    navigator.geolocation.getCurrentPosition(
+        async (position) => {
+            const lat = position.coords.latitude;
+            const lon = position.coords.longitude;
+
+            const apiKey = "3652b8b54e92c83d871ca9705153b07f"; // your API key
+            const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=${apiKey}`;
+
+            try {
+                const res = await fetch(url);
+                const data = await res.json();
+
+                geoDiv.innerHTML = `
+                    <div class="service-card">
+                        <div class="service-icon">
+                            <img src="https://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png">
+                        </div>
+                        <div class="service-content">
+                            <h3>Weather in ${data.name}</h3>
+                            <p>${data.main.temp}°C — ${data.weather[0].description}</p>
+                        </div>
+                    </div>
+                `;
+            } catch {
+                geoDiv.textContent = "Failed to load weather data.";
+            }
+        },
+        () => {
+            geoDiv.textContent = "Location permission denied.";
+        }
+    );
+}
+
+/* =====================================================
+   VOLUNTEER FORM
+   ===================================================== */
 function handleVolunteerFormSubmit(event) {
     event.preventDefault();
     const formData = new FormData(event.target);
-    // Process form data (e.g., send to server or display a message)
     console.log("Volunteer Form Submitted:", Object.fromEntries(formData.entries()));
     alert("Thank you for signing up as a volunteer!");
 }
-// Attach event listener to the volunteer form
-document.addEventListener("DOMContentLoaded", function() {
+
+document.addEventListener("DOMContentLoaded", function () {
     const volunteerForm = document.getElementById("volunteer-form");
     if (volunteerForm) {
         volunteerForm.addEventListener("submit", handleVolunteerFormSubmit);
     }
 });
-// Additional volunteer-related functions can be added here
-// For example, functions to fetch volunteer opportunities, update volunteer profiles, etc.
-// Function to fetch volunteer opportunities (example)
+
+/* =====================================================
+   SAMPLE OPPORTUNITIES (OPTIONAL)
+   ===================================================== */
 function fetchVolunteerOpportunities() {
-    // Simulate fetching data from a server
     const opportunities = [
         { title: "Community Clean-Up", date: "2024-07-15" },
         { title: "Food Drive Assistance", date: "2024-08-01" },
@@ -31,38 +80,40 @@ function fetchVolunteerOpportunities() {
     console.log("Volunteer Opportunities:", opportunities);
     return opportunities;
 }
-// Call the function to fetch opportunities on page load
-document.addEventListener("DOMContentLoaded", function() {
+
+document.addEventListener("DOMContentLoaded", function () {
     fetchVolunteerOpportunities();
 });
 
-
-
-
-
+/* =====================================================
+   HOMEPAGE EVENTS
+   ===================================================== */
 document.addEventListener("DOMContentLoaded", () => {
+    showGeoWeather();       // ✅ WEATHER LOADS HERE
     loadHomepageEvents();
+    loadVolunteersHomepage();
 });
 
 async function loadHomepageEvents() {
     const container = document.querySelector(".scrollable");
     if (!container) return;
 
-     const res = await fetch("https://fsdp-cycling-ltey.onrender.com/volunteer/events", {
+    const res = await fetch("https://fsdp-cycling-ltey.onrender.com/volunteer/events", {
         headers: { "Authorization": `Bearer ${token}` }
     });
 
     const events = await res.json();
-
     container.innerHTML = "";
 
     events.forEach(e => {
         container.innerHTML += `
             <div class="event-box">
                 <div class="service-card event-item"
-                    onclick="goToEventDetail(${e.eventid})">
+                     onclick="goToEventDetail(${e.eventid})">
 
-                    <div class="service-icon"><i class="fas fa-calendar"></i></div>
+                    <div class="service-icon">
+                        <i class="fas fa-calendar"></i>
+                    </div>
 
                     <div class="service-content">
                         <h3>${e.eventname}</h3>
@@ -79,25 +130,23 @@ function goToEventDetail(id) {
     window.location.href = `./volunteer_event_detail.html?eventId=${id}`;
 }
 
-
-document.addEventListener("DOMContentLoaded", () => {
-    loadVolunteersHomepage();
-});
-
+/* =====================================================
+   VOLUNTEERS HOMEPAGE
+   ===================================================== */
 async function loadVolunteersHomepage() {
     const container = document.querySelector("#homepage-volunteers");
     if (!container) return;
 
-    const token = localStorage.getItem("token");
-
     try {
-        const res = await fetch("https://fsdp-cycling-ltey.onrender.com/community/browse/volunteers", {
-            method: "GET",
-            headers: { "Authorization": `Bearer ${token}` }
-        });
+        const res = await fetch(
+            "https://fsdp-cycling-ltey.onrender.com/community/browse/volunteers",
+            {
+                method: "GET",
+                headers: { "Authorization": `Bearer ${token}` }
+            }
+        );
 
         const volunteers = await res.json();
-
         container.innerHTML = "";
 
         volunteers.forEach(v => {
@@ -114,7 +163,6 @@ async function loadVolunteersHomepage() {
                             <h3>${v.name}</h3>
                             <p>Active Volunteer</p>
                         </div>
-
                     </div>
                 </div>
             `;
@@ -128,7 +176,3 @@ async function loadVolunteersHomepage() {
 function openVolunteerProfile(id) {
     window.location.href = `../Profile/profilepage.html?userId=${id}`;
 }
-
-
-
-
