@@ -4,13 +4,21 @@
   <meta charset="UTF-8" />
   <title>Camera Preview</title>
   <style>
+    
+#cameraContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
     #cameraBox {
-      width: 320px;
-      height: 240px;
-      border: 2px solid #ccc;
-      border-radius: 8px;
-      overflow: hidden;
-    }
+    width: 80vw;        
+    max-width: 600px;  
+    aspect-ratio: 4 / 3;
+    background: #000;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+}
 
     video {
       width: 100%;
