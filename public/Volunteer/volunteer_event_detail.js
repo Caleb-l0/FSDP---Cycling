@@ -42,7 +42,7 @@ async function loadEventDetails(id) {
       new Date(data.eventdate).toLocaleString();
       setEventStatus(data.eventdate);
     document.getElementById("req-status").textContent = data.status;
-     document.getElementById("req-people-num").textContent = data.maximumparticipant || "-";
+     document.getElementById("req-people-num").textContent = data.maximumparticipant;
     document.getElementById("req-loc").textContent = data.location;
     document.getElementById("req-needed").textContent = data.requiredvolunteers;
     document.getElementById("req-created").textContent = data.createdat
@@ -50,8 +50,7 @@ async function loadEventDetails(id) {
       : "-";
     document.getElementById("req-desc").textContent = data.description || "-";
      
-    signedUp = data.usersignedup === true;
-    setupButtons(data);
+  
 
   } catch (err) {
     console.error(err);

@@ -147,7 +147,10 @@ async function cancel(userID, eventID) {
       [eventID]
     );
   }
+
+  return result; 
 }
+
 
 /* =====================================================
    7. Check If User Already Signed Up
