@@ -1,4 +1,4 @@
-
+import { getLocation } from "../../getLocation";
 
 const token = localStorage.getItem("token");
 
