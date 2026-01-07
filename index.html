@@ -227,7 +227,10 @@
       <form onsubmit="login(event)">
         <input type="email" id="email" placeholder="Email" required><br>
         <input type="password" id="password" placeholder="Password" required><br>
-        <input type="checkbox" id="rememberMe"> Remember Me<br>
+        <form action ="checkbox-field">
+        <label for="rememberMe"> Remember Me</label><br>
+        <input type="checkbox" id="rememberMe" name="rememberMe">
+        </form>
         <button type="submit">Login</button>
       </form>
       <p style="font-size:15px;padding:3px;font-weight:10">Or</p>
