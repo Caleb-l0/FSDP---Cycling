@@ -146,36 +146,5 @@ async function deleteUser(id) {
   await sql.query`DELETE FROM Users WHERE id = ${id}`;
 }
 
-// -------------------------------
-// 4. Set OTP for user
-// -------------------------------
-async function setOTP(email, otp, expiry) {
-  const query = `
-    UPDATE users
-    SET otp_code = $1, otp_expiry = $2
-    WHERE email = $3
-  `;
-  await pool.query(query, [otp, expiry, email]);
-}
-
-// -------------------------------
-// 5. Verify OTP
-// -------------------------------
-async function verifyOTP(email, otp) {
-  const query = `
-    SELECT otp_code, otp_expiry
-    FROM users
-    WHERE email = $1
-  `;
-  const result = await pool.query(query, [email]);
-  const user = result.rows[0];
-  if (!user || user.otp_code !== otp || new Date() > user.otp_expiry) {
-    return false;
-  }
-  // Clear OTP after verification
-  await pool.query(`UPDATE users SET otp_code = NULL, otp_expiry = NULL WHERE email = $1`, [email]);
-  return true;
-}
-
-module.exports = { findUserByEmail, getUserById, updateUser, deleteUser, setOTP, verifyOTP };
+module.exports = { findUserByEmail, getUserById, updateUser, deleteUser };
 */

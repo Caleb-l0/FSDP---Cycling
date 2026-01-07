@@ -16,7 +16,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // ----- LOGIN ROUTES -----
-const { loginUser, getUserById, updateUser, deleteUser, sendOTP, verifyOTP } = require('./Accounts/login/loginController');
+const { loginUser, getUserById, updateUser, deleteUser } = require('./Accounts/login/loginController');
 const { validateLogin } = require('./Accounts/login/loginValidation');
 const { authenticate } = require('./Accounts/login/authenticate');
 
@@ -65,8 +65,6 @@ const fetch = require("node-fetch");
 
 // ----- LOGIN & SIGNUP API ROUTES (must be before static files) -----
 app.post('/login', validateLogin, loginUser);
-app.post('/send-otp', sendOTP);
-app.post('/verify-otp', verifyOTP);
 
 // ----- SIGNUP ROUTES -----
 const { signupUser } = require('./Accounts/signup/signupController');
