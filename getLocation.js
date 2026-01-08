@@ -2,43 +2,60 @@ function getLocation() {
   if (!navigator.geolocation) {
     alert("Geolocation is not supported by your browser");
     return;
-  } 
-    navigator.geolocation.getCurrentPosition(
-        (position) => {
-            const lat = position.coords.latitude;
-            const lng = position.coords.longitude;
-            console.log("Latitude:", lat);
-            console.log("Longitude:", lng);
-            localStorage.setItem("userLat", lat);
-            localStorage.setItem("userLng", lng);
-        },
-        (error) => {
-            alert("Error getting location: " + error.message);
-        }
-    );
-}
+  }
 
+  navigator.geolocation.getCurrentPosition(
+    (position) => {
+      const lat = position.coords.latitude;
+      const lng = position.coords.longitude;
 
+      localStorage.setItem("userLat", lat);
+      localStorage.setItem("userLng", lng);
 
-function AskPosition() {
-  const panel = document.createElement('div');
-  panel.style.position = 'fixed';
-  panel.style.top = '10px';
-  panel.style.right = '10px';
-  panel.style.padding = '10px';
-  panel.style.backgroundColor = 'white';
-  panel.style.border = '1px solid black';
-  panel.style.zIndex = '1000';
-    panel.innerHTML = '<button id="getLocationBtn">Do you allow location access?</button>';
-    document.body.appendChild(panel);
-    document.getElementById('getLocationBtn').onclick = function() {
-        getLocation();
-        document.body.removeChild(panel);
+      console.log("Latitude:", lat);
+      console.log("Longitude:", lng);
+    },
+    (error) => {
+      alert("Unable to retrieve your location.");
     }
-
+  );
 }
 
-document.addEventListener('DOMContentLoaded', function() {
-    AskPosition();
-});
+function showLocationPrompt() {
+ 
+  if (localStorage.getItem("locationAsked")) return;
 
+  const panel = document.createElement("div");
+  panel.className = "hvloc-panel";
+
+  panel.innerHTML = `
+    <h3>📍 Enable Location</h3>
+    <p>
+      We use your location to recommend nearby volunteer activities
+      and improve your experience.
+    </p>
+    <div class="hvloc-actions">
+      <button class="hvloc-btn primary" id="hvloc-allow">
+        Allow Location
+      </button>
+      <button class="hvloc-btn secondary" id="hvloc-deny">
+        Not Now
+      </button>
+    </div>
+  `;
+
+  document.body.appendChild(panel);
+
+  document.getElementById("hvloc-allow").onclick = () => {
+    getLocation();
+    localStorage.setItem("locationAsked", "true");
+    panel.remove();
+  };
+
+  document.getElementById("hvloc-deny").onclick = () => {
+    localStorage.setItem("locationAsked", "true");
+    panel.remove();
+  };
+}
+
+document.addEventListener("DOMContentLoaded", showLocationPrompt);

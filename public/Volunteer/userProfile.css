@@ -1,0 +1,207 @@
+/* ROOT */
+#hvop-root{
+  max-width:1100px;
+  margin:140px auto;
+  padding:0 24px;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont;
+}
+
+/* HERO */
+.hvop-hero{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:32px;
+  border-radius:24px;
+  background:#fff;
+  border-top:6px solid #f4a261;
+  box-shadow:0 18px 50px rgba(0,0,0,.18);
+  margin-bottom:32px;
+}
+
+.hvop-hero-left{
+  display:flex;
+  gap:24px;
+  align-items:center;
+}
+
+.hvop-avatar{
+  width:96px;
+  height:96px;
+  border-radius:50%;
+  border:4px solid rgba(244,162,97,.3);
+}
+
+.hvop-name{margin:0;font-size:2rem}
+.hvop-title{margin:6px 0;color:#6b7280}
+
+.hvop-meta{
+  display:flex;
+  gap:12px;
+  flex-wrap:wrap;
+}
+
+.hvop-level{
+  background:#f4a261;
+  color:#fff;
+  padding:6px 12px;
+  border-radius:999px;
+}
+
+.hvop-followers{font-weight:600}
+
+/* ADD FRIEND */
+.hvop-btn-add{
+  padding:14px 22px;
+  border-radius:999px;
+  border:2px solid #f4a261;
+  background:#fff;
+  color:#f4a261;
+  font-weight:600;
+  cursor:pointer;
+  box-shadow:0 6px 18px rgba(244,162,97,.25);
+}
+.hvop-btn-add.added{
+  background:#16a34a;
+  border-color:#16a34a;
+  color:#fff;
+}
+
+/* BODY */
+.hvop-body{
+  display:grid;
+  grid-template-columns:220px 1fr;
+  gap:28px;
+  align-items:flex-start;
+}
+
+/* NAV */
+.hvop-nav{
+  background:#fff;
+  border-radius:18px;
+  padding:12px;
+  box-shadow:0 6px 20px rgba(0,0,0,.1);
+}
+.hvop-nav-btn{
+  width:100%;
+  padding:14px;
+  background:none;
+  border:none;
+  text-align:left;
+  border-radius:14px;
+}
+.hvop-nav-btn.active{
+  background:rgba(244,162,97,.2);
+  font-weight:600;
+}
+
+/* CONTENT */
+.hvop-content{
+  background:#fff;
+  border-radius:24px;
+  padding:36px;
+  box-shadow:0 12px 36px rgba(0,0,0,.14);
+}
+.hvop-panel{display:none}
+.hvop-panel.active{display:block}
+
+/* OVERVIEW */
+.hvop-overview-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:24px;
+  margin-bottom:40px;
+}
+
+.hvop-overview-card{
+  background:#fff;
+  border-radius:22px;
+  padding:32px;
+  text-align:center;
+  box-shadow:0 6px 20px rgba(0,0,0,.1);
+}
+
+.hvop-overview-card strong{
+  font-size:2.2rem;
+  color:#f4a261;
+  display:block;
+}
+
+/* TEXT CARD */
+.hvop-text-card{
+  background:#fff;
+  border-radius:22px;
+  padding:32px;
+  box-shadow:0 6px 20px rgba(0,0,0,.1);
+}
+
+.hvop-text-card h2{
+  margin-top:0;
+  border-left:4px solid #f4a261;
+  padding-left:12px;
+}
+
+/* EVENTS */
+.hvop-event-grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:32px;
+}
+
+.hvop-event-card-3d{
+  background:#fff;
+  border-radius:24px;
+  overflow:hidden;
+  box-shadow:0 10px 30px rgba(0,0,0,.12);
+  transition:.25s;
+}
+.hvop-event-card-3d:hover{
+  transform:translateY(-4px);
+  box-shadow:0 18px 45px rgba(0,0,0,.18);
+}
+
+.hvop-event-top{
+  height:110px;
+  background:linear-gradient(135deg,#fde9c7,#f9dca8);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:2.4rem;
+}
+
+.hvop-event-content{
+  padding:24px;
+}
+.hvop-event-content h3{
+  margin:0 0 12px;
+  font-size:1.25rem;
+}
+.hvop-event-date,
+.hvop-event-location{
+  margin:4px 0;
+  color:#374151;
+}
+
+/* BADGES */
+.hvop-badge-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:24px;
+}
+.hvop-badge{
+  padding:32px;
+  border-radius:24px;
+  font-size:1.4rem;
+  font-weight:700;
+  text-align:center;
+}
+.hvop-badge.gold{background:#f4a261;color:#fff}
+.hvop-badge.blue{background:#3b82f6;color:#fff}
+.hvop-badge.green{background:#10b981;color:#fff}
+
+/* RESPONSIVE */
+@media(max-width:900px){
+  .hvop-body{grid-template-columns:1fr}
+  .hvop-event-grid{grid-template-columns:1fr}
+  .hvop-overview-grid{grid-template-columns:1fr}
+}

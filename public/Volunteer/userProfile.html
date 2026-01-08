@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>User Profile</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="./userProfile.css" />
+    <link rel="stylesheet" href="../homepage.css" />
+</head>
+<body>
+    <header class="hv-header">
+    <div class="container hv-header-content">
+
+        <div class="hv-logo">
+                <a href="./homepage_login_volunteer.html" style="text-decoration: none; color: inherit;">
+                Happy Volunteer
+            </a>
+        </div>
+
+        <nav id="mainNav">
+            <ul>
+             
+                <li><a href="./volunteer-events.html">Booking</a></li>
+                <li><a href="#">Community</a></li>
+                <li><a href="./volunteer_rewards.html">Reward</a></li>
+                <li><a href="#">Friends</a></li>
+                <li><a href="../Profile/profilepage.html">Profile</a></li>
+            </ul>
+        </nav>
+
+
+        <button class="hv-nav-toggle" id="hvNavToggle">
+          
+            <i class="fas fa-bars"></i>
+        </button>
+
+        <nav class="hv-nav" id="hvNav">
+            
+            <ul>
+           <button class="btn-create-post" id="openPostForm">Create Post</button>
+                <li><a href="./volunteer-events.html">Booking</a></li>
+                <li><a href="#">Community</a></li>
+                <li><a href="./volunteer_rewards.html">Reward</a></li>
+                <li><a href="#">Friends</a></li>
+                <li><a href="../Profile/profilepage.html">Profile</a></li>
+            </ul>
+        </nav>
+    </div>
+    </header>
+
+
+
+<main id="hvop-root">
+
+  <!-- HERO -->
+  <section class="hvop-hero">
+    <div class="hvop-hero-left">
+      <img
+        src="https://source.unsplash.com/200x200/?elderly,portrait"
+        class="hvop-avatar"
+        alt="Volunteer Avatar"
+      />
+
+      <div class="hvop-hero-main">
+        <h1 class="hvop-name">Tan Wei Ming</h1>
+        <p class="hvop-title">Community Guardian</p>
+
+        <div class="hvop-meta">
+          <span class="hvop-level">Level 6 · Gold Volunteer</span>
+          <span class="hvop-followers">👥 128 Followers</span>
+        </div>
+      </div>
+    </div>
+
+    <button id="hvop-add-friend-btn" class="hvop-btn-add">
+      ➕ Add as Friend
+    </button>
+  </section>
+
+  <!-- BODY -->
+  <section class="hvop-body">
+
+    <!-- LEFT NAV -->
+    <aside class="hvop-nav">
+      <button class="hvop-nav-btn active" data-target="overview">Overview</button>
+      <button class="hvop-nav-btn" data-target="events">Events</button>
+      <button class="hvop-nav-btn" data-target="experience">Experience</button>
+      <button class="hvop-nav-btn" data-target="badges">Badges</button>
+    </aside>
+
+    <!-- RIGHT CONTENT -->
+    <div class="hvop-content">
+
+      <!-- OVERVIEW -->
+      <section class="hvop-panel active" id="overview">
+
+        <div class="hvop-overview-grid">
+          <div class="hvop-overview-card">
+            <strong>128</strong>
+            <span>Followers</span>
+          </div>
+          <div class="hvop-overview-card">
+            <strong>24</strong>
+            <span>Events Joined</span>
+          </div>
+          <div class="hvop-overview-card">
+            <strong>5 Years</strong>
+            <span>Experience</span>
+          </div>
+        </div>
+
+        <div class="hvop-text-card">
+          <h2>Profile Summary</h2>
+          <p>
+            Dedicated community volunteer with over five years of experience
+            supporting elderly programmes and neighbourhood initiatives.
+          </p>
+        </div>
+
+      </section>
+
+      <!-- EVENTS -->
+      <section class="hvop-panel" id="events">
+
+        <div class="hvop-event-grid">
+
+          <div class="hvop-event-card-3d">
+            <div class="hvop-event-top">
+              <span>📅</span>
+            </div>
+            <div class="hvop-event-content">
+              <h3>Cycling Without Age – Punggol Waterway Experience</h3>
+              <p class="hvop-event-date">22 Feb 2026</p>
+              <p class="hvop-event-location">Punggol Waterway Park</p>
+            </div>
+          </div>
+
+          <div class="hvop-event-card-3d">
+            <div class="hvop-event-top">
+              <span>📅</span>
+            </div>
+            <div class="hvop-event-content">
+              <h3>Cycling Without Age – Bishan Park Morning Ride</h3>
+              <p class="hvop-event-date">26 Feb 2026</p>
+              <p class="hvop-event-location">Bishan–Ang Mo Kio Park</p>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- EXPERIENCE -->
+      <section class="hvop-panel" id="experience">
+
+        <div class="hvop-text-card">
+          <h2>Volunteer Experience</h2>
+
+          <p><strong>2021 – Present</strong></p>
+          <p>
+            Lead volunteer for elderly outreach and cycling companionship
+            programmes across multiple neighbourhoods.
+          </p>
+
+          <p><strong>2019 – 2021</strong></p>
+          <p>
+            Participated actively in food distribution, park activities,
+            and community clean-up initiatives.
+          </p>
+        </div>
+
+      </section>
+
+      <!-- BADGES -->
+      <section class="hvop-panel" id="badges">
+
+        <div class="hvop-badge-grid">
+          <div class="hvop-badge gold">🏅 100+ Hours</div>
+          <div class="hvop-badge blue">🌟 Community Star</div>
+          <div class="hvop-badge green">🤝 Mentor</div>
+        </div>
+
+      </section>
+
+    </div>
+  </section>
+
+</main>
+
+
+
+
+<footer class="hv-footer">
+  <div class="container">
+    <div class="copyright">
+      <p>&copy; 2025 Happy Volunteer. All rights reserved.</p>
+    </div>
+  </div>
+</footer>
+
+<script src="../homepage.js"></script>
+<script src="./userProfile.js"></script>
+<script src="../Translation.js"></script>
+</body>
+</html>

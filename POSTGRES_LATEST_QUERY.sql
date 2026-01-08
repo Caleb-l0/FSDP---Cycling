@@ -202,6 +202,33 @@ CREATE INDEX idx_likes_postid
 ON communitylikes(postid);
 
 
+CREATE TABLE friendrequests (
+    requestid SERIAL PRIMARY KEY,
+
+    userid INT NOT NULL,      
+    friendid INT NOT NULL,    
+
+    requesttype VARCHAR(20) DEFAULT 'friend'
+        CHECK (requesttype IN ('friend')),
+
+    status VARCHAR(20) DEFAULT 'pending'
+        CHECK (status IN ('pending', 'accepted', 'rejected', 'cancelled')),
+
+    requestdate TIMESTAMP DEFAULT NOW(),
+
+    CONSTRAINT fk_friendrequest_user
+        FOREIGN KEY (userid)
+        REFERENCES users(id)
+        ON DELETE CASCADE,
+
+    CONSTRAINT fk_friendrequest_friend
+        FOREIGN KEY (friendid)
+        REFERENCES users(id)
+        ON DELETE CASCADE,
+
+    CONSTRAINT unique_friend_request
+        UNIQUE (userid, friendid)
+);
 
 
 
