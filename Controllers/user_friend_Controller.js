@@ -1,4 +1,4 @@
-const userFriendsModel = require("../Models/userFriends_Model");
+const userFriendsModel = require("../Models/user_friend_Model");
 
 /**
  * Get my friends list (private)

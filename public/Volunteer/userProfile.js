@@ -6,7 +6,7 @@ if (!token) {
 }
 
 /* =========================
-   SECTION SWITCH
+   NAV SWITCH
 ========================= */
 document.querySelectorAll(".hvop-nav-btn").forEach(btn => {
   btn.onclick = () => {
@@ -35,7 +35,7 @@ addBtn.onclick = () => {
 const userId = new URLSearchParams(window.location.search).get("userId");
 
 /* =========================
-   FETCH PUBLIC PROFILE
+   LOAD PUBLIC PROFILE
 ========================= */
 async function loadPublicProfile(id) {
   try {
@@ -50,14 +50,31 @@ async function loadPublicProfile(id) {
     const profile = await res.json();
     console.log("Public profile:", profile);
 
-    /* ===== BASIC INFO ===== */
-    document.getElementById("hvop-username").textContent =
-      profile.name;
+    /* =========================
+       HERO
+    ========================= */
+    document.querySelector(".hvop-name").textContent =
+      profile.name ?? "Unknown Volunteer";
 
-    document.getElementById("hvop-total-events").textContent =
-      profile.total_events;
+    document.querySelector(".hvop-title").textContent =
+      getVolunteerTitle(profile.level);
 
-    /* ===== BADGES ===== */
+    document.querySelector(".hvop-level").textContent =
+      `Level ${profile.level} · ${getVolunteerTier(profile.level)}`;
+
+    document.querySelector(".hvop-followers").textContent =
+      `👥 ${getFollowersCount()} Followers`;
+
+    /* =========================
+       OVERVIEW
+    ========================= */
+    setOverviewCard(0, getFollowersCount());
+    setOverviewCard(1, profile.total_events ?? 0);
+    setOverviewCard(2, getExperienceYears(profile.total_events));
+
+    /* =========================
+       BADGES
+    ========================= */
     renderBadges(profile.badges);
 
   } catch (err) {
@@ -67,7 +84,42 @@ async function loadPublicProfile(id) {
 }
 
 /* =========================
-   RENDER BADGES
+   HELPERS
+========================= */
+function getVolunteerTitle(level = 1) {
+  if (level >= 10) return "Community Champion";
+  if (level >= 6) return "Community Guardian";
+  if (level >= 3) return "Active Volunteer";
+  return "New Volunteer";
+}
+
+function getVolunteerTier(level = 1) {
+  if (level >= 10) return "Platinum Volunteer";
+  if (level >= 6) return "Gold Volunteer";
+  if (level >= 3) return "Silver Volunteer";
+  return "Bronze Volunteer";
+}
+
+function getFollowersCount() {
+  // placeholder（等未来 Followers API）
+  return 128;
+}
+
+function getExperienceYears(totalEvents = 0) {
+  // 粗略推导：5 次活动 ≈ 1 年
+  const years = Math.max(1, Math.floor(totalEvents / 5));
+  return `${years} Years`;
+}
+
+function setOverviewCard(index, value) {
+  const cards = document.querySelectorAll(".hvop-overview-card strong");
+  if (cards[index]) {
+    cards[index].textContent = value;
+  }
+}
+
+/* =========================
+   BADGES
 ========================= */
 function renderBadges(badges) {
   const grid = document.getElementById("hvop-badge-grid");
