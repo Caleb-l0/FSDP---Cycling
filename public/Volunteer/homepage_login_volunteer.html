@@ -14,12 +14,14 @@
 <header class="hv-header">
     <div class="container hv-header-content">
 
+        <!-- LEFT -->
         <div class="hv-logo">
             <a href="./homepage_login_volunteer.html" style="text-decoration: none; color: inherit;">
                 Happy Volunteer
             </a>
         </div>
 
+        <!-- CENTER -->
         <nav id="mainNav">
             <ul>
                 <li><a href="./volunteer-events.html">Booking</a></li>
@@ -30,35 +32,44 @@
             </ul>
         </nav>
 
-        <!-- Translation Dropdown in Header -->
-        <div class="hv-lang-dropdown">
-          <button id="langButton">Language </button>
-          <div class="hv-lang-dropdown-content">
-            <button onclick="changeLanguage('en')">English</button>
-            <button onclick="changeLanguage('zh')">Chinese</button>
-            <button onclick="changeLanguage('ms')">Malay</button>
-            <button onclick="changeLanguage('ta')">Tamil</button>
-          </div>
+        <!-- RIGHT SIDE -->
+        <div class="hv-header-right">
+
+            <!-- Language -->
+            <div class="hv-lang-dropdown">
+                <button id="langButton">Language</button>
+                <div class="hv-lang-dropdown-content">
+                    <button onclick="changeLanguage('en')">English</button>
+                    <button onclick="changeLanguage('zh')">Chinese</button>
+                    <button onclick="changeLanguage('ms')">Malay</button>
+                    <button onclick="changeLanguage('ta')">Tamil</button>
+                </div>
+            </div>
+
+            <!-- Logged In Badge -->
+            <div class="hv-user-status" id="userStatus">
+                Logged in as Guest
+            </div>
+
+            <!-- Mobile Menu Button -->
+            <button class="hv-nav-toggle" id="hvNavToggle">
+                <i class="fas fa-bars"></i>
+            </button>
+
         </div>
 
-        <button class="hv-nav-toggle" id="hvNavToggle">
-            <i class="fas fa-bars"></i>
-        </button>
-
-        <nav class="hv-nav" id="hvNav">
-            <ul>
-                <li><a href="./volunteer-events.html">Booking</a></li>
-                <li><a href="./volunteer_community_page.html">Community</a></li>
-                <li><a href="./volunteer_rewards.html">Reward</a></li>
-                <li><a href="./volunteer_friend.html">Friends</a></li>
-                <li><a href="../Profile/profilepage.html">Profile</a></li>
-            </ul>
-        </nav>
-        <div class="hv-user-status" id="userStatus">
-            Logged in as Guest
-        </div>
-        
     </div>
+
+    <!-- Mobile Menu -->
+    <nav class="hv-nav" id="hvNav">
+        <ul>
+            <li><a href="./volunteer-events.html">Booking</a></li>
+            <li><a href="./volunteer_community_page.html">Community</a></li>
+            <li><a href="./volunteer_rewards.html">Reward</a></li>
+            <li><a href="./volunteer_friend.html">Friends</a></li>
+            <li><a href="../Profile/profilepage.html">Profile</a></li>
+        </ul>
+    </nav>
 </header>
 
 <!-- Hero Slider -->
