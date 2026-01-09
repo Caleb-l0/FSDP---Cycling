@@ -200,11 +200,11 @@ function loadHeaderByRole() {
   if (role === "volunteer") {
     navHTML = `
       <ul>
-        <li><a href="../Volunteer/volunteer-events.html">Booking</a></li>
-        <li><a href="#">Community</a></li>
-        <li><a href="../Volunteer/volunteer_rewards.html">Reward</a></li>
-        <li><a href="#">Friends</a></li>
-        <li><a href="./profilepage.html">Profile</a></li>
+                <li><a href="./volunteer-events.html">Booking</a></li>
+                <li><a href="./volunteer_community_page.html">Community</a></li>
+                <li><a href="./volunteer_rewards.html">Reward</a></li>
+                <li><a href="./Volunteer_friend.html">Friends</a></li>
+                <li><a href="../Profile/profilepage.html">Profile</a></li>
       </ul>`;
     logoHref = "../Volunteer/homepage_login_volunteer.html";
   }
