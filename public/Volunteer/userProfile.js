@@ -1,82 +1,64 @@
-
-
 const UserEndPoint = `https://fsdp-cycling-ltey.onrender.com`;
-const token = localStorage.getItem('token');
+const token = localStorage.getItem("token");
 
 if (!token) {
-  window.location.href = '../../index.html';
+  window.location.href = "../../index.html";
 }
 
-// Section switch
-document.querySelectorAll(".hvop-nav-btn").forEach(btn=>{
-  btn.onclick=()=>{
-    document.querySelectorAll(".hvop-nav-btn,.hvop-panel")
-      .forEach(el=>el.classList.remove("active"));
+/* =========================
+   SECTION SWITCH
+========================= */
+document.querySelectorAll(".hvop-nav-btn").forEach(btn => {
+  btn.onclick = () => {
+    document
+      .querySelectorAll(".hvop-nav-btn, .hvop-panel")
+      .forEach(el => el.classList.remove("active"));
+
     btn.classList.add("active");
     document.getElementById(btn.dataset.target).classList.add("active");
   };
 });
 
-// Add friend interaction
+/* =========================
+   ADD FRIEND (UI ONLY)
+========================= */
 const addBtn = document.getElementById("hvop-add-friend-btn");
-addBtn.onclick = ()=>{
-  if(addBtn.classList.contains("added")) return;
+addBtn.onclick = () => {
+  if (addBtn.classList.contains("added")) return;
   addBtn.textContent = "✔ Friends";
   addBtn.classList.add("added");
 };
 
-const userId = URLSearchParams
-  ? new URLSearchParams(window.location.search).get("userId")
-  : null;
+/* =========================
+   GET USER ID
+========================= */
+const userId = new URLSearchParams(window.location.search).get("userId");
 
-async function GetUserId(id) {
+/* =========================
+   FETCH PUBLIC PROFILE
+========================= */
+async function loadPublicProfile(id) {
   try {
     const res = await fetch(
-      `${UserEndPoint}/volunteer/user/profile/${id}`,
-      {
-        method: "GET",
-
-      }
+      `${UserEndPoint}/volunteer/user/profile/${id}`
     );
 
     if (!res.ok) {
       throw new Error("Failed to fetch profile");
     }
 
-    const userProfile = await res.json();
-    console.log(userProfile);
+    const profile = await res.json();
+    console.log("Public profile:", profile);
 
-    
-   document.getElementById("hvop-username").textContent =
-  userProfile.name;
+    /* ===== BASIC INFO ===== */
+    document.getElementById("hvop-username").textContent =
+      profile.name;
 
-    document.getElementById("hvop-email").textContent =
-      userProfile.userInfo.email;
-
-    document.getElementById("hvop-joindate").textContent =
-      new Date(userProfile.userInfo.joindate).toLocaleDateString();
-
-  
     document.getElementById("hvop-total-events").textContent =
-      userProfile.userExperience.total_events;
+      profile.total_events;
 
-    document.getElementById("hvop-first-event-date").textContent =
-      userProfile.userExperience.first_event_date
-        ? new Date(userProfile.userExperience.first_event_date).toLocaleDateString()
-        : "N/A";
-
-    /* ===== Events ===== */
-    const eventsList = document.getElementById("hvop-events-list");
-    eventsList.innerHTML = "";
-
-    userProfile.userEvents.forEach(event => {
-      const li = document.createElement("li");
-      li.textContent = `${event.eventname} · ${new Date(event.eventdate).toLocaleDateString()} · ${event.location}`;
-      eventsList.appendChild(li);
-    });
-
-    /* ===== Badges ===== */
-    renderBadges(userProfile.badges);
+    /* ===== BADGES ===== */
+    renderBadges(profile.badges);
 
   } catch (err) {
     console.error("Error fetching user profile:", err);
@@ -84,6 +66,9 @@ async function GetUserId(id) {
   }
 }
 
+/* =========================
+   RENDER BADGES
+========================= */
 function renderBadges(badges) {
   const grid = document.getElementById("hvop-badge-grid");
   const emptyText = document.getElementById("hvop-no-badges");
@@ -101,7 +86,6 @@ function renderBadges(badges) {
     const card = document.createElement("div");
     card.className = "hvop-badge-card";
 
-    // icon
     const icon = document.createElement("div");
     icon.className = "hvop-badge-icon";
 
@@ -114,55 +98,21 @@ function renderBadges(badges) {
       icon.textContent = "🏅";
     }
 
-    // name
     const name = document.createElement("div");
     name.className = "hvop-badge-name";
     name.textContent = badge.badgename;
 
-    // description
-    const desc = document.createElement("div");
-    desc.className = "hvop-badge-desc";
-    desc.textContent = badge.description || "";
-
-    // date
-    const date = document.createElement("div");
-    date.className = "hvop-badge-meta";
-    date.textContent = `Earned: ${new Date(badge.getdate).toLocaleDateString()}`;
-
     card.appendChild(icon);
     card.appendChild(name);
-    card.appendChild(desc);
-    card.appendChild(date);
-
     grid.appendChild(card);
   });
 }
 
-async function fetchUserBadges(userId) {
-  const res = await fetch(
-    `${UserEndPoint}/volunteer/user/profile/${userId}`,
-    {
-      method: "GET",
-      
-    }
-  );
-
-  if (!res.ok) {
-    throw new Error("Failed to fetch user profile");
-  }
-
-  const data = await res.json();
-  return data.userBadge || [];
+/* =========================
+   INIT
+========================= */
+if (userId) {
+  loadPublicProfile(userId);
+} else {
+  alert("Invalid user");
 }
-
-(async function initBadges() {
-  try {
-    const badges = await fetchUserBadges(userId);
-    renderBadges(badges);
-  } catch (err) {
-    console.error("Badge load error:", err);
-  }
-})();
-
-
-GetUserId(userId);

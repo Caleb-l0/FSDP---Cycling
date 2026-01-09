@@ -12,7 +12,6 @@ async function getPublicVolunteerProfile(req, res) {
     if (!userInfo) {
       return res.status(404).json({ message: "User not found" });
     }
-
     const userExperience = await userProfileModel.getUserExperience(userId);
     const userBadge = await userProfileModel.getUserBadges(userId);
 
