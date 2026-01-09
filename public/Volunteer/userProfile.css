@@ -183,21 +183,79 @@
 }
 
 /* BADGES */
+/* BADGES (Dynamic) */
 .hvop-badge-grid{
   display:grid;
   grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
   gap:24px;
 }
-.hvop-badge{
-  padding:32px;
+
+.hvop-badge-card{
+  background:#fff;
   border-radius:24px;
-  font-size:1.4rem;
-  font-weight:700;
-  text-align:center;
+  padding:28px;
+  box-shadow:0 8px 26px rgba(0,0,0,.12);
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  transition:.25s;
+  position:relative;
+  overflow:hidden;
 }
-.hvop-badge.gold{background:#f4a261;color:#fff}
-.hvop-badge.blue{background:#3b82f6;color:#fff}
-.hvop-badge.green{background:#10b981;color:#fff}
+
+.hvop-badge-card::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(
+    135deg,
+    rgba(244,162,97,.18),
+    rgba(244,162,97,0)
+  );
+  opacity:.7;
+  pointer-events:none;
+}
+
+.hvop-badge-card:hover{
+  transform:translateY(-4px);
+  box-shadow:0 14px 40px rgba(0,0,0,.18);
+}
+
+.hvop-badge-icon{
+  width:56px;
+  height:56px;
+  border-radius:16px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:26px;
+  background:rgba(244,162,97,.18);
+}
+
+.hvop-badge-icon img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  border-radius:12px;
+}
+
+.hvop-badge-name{
+  font-size:1.1rem;
+  font-weight:700;
+  color:#111827;
+}
+
+.hvop-badge-desc{
+  font-size:.95rem;
+  color:#6b7280;
+  line-height:1.45;
+}
+
+.hvop-badge-meta{
+  margin-top:auto;
+  font-size:.85rem;
+  color:#9ca3af;
+}
 
 /* RESPONSIVE */
 @media(max-width:900px){

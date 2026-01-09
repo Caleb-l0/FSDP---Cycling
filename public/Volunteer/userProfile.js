@@ -1,4 +1,4 @@
-const { user } = require("../../dbconfig");
+
 
 const UserEndPoint = `https://fsdp-cycling-ltey.onrender.com`;
 const token = localStorage.getItem('token');
