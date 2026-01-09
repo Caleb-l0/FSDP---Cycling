@@ -34,5 +34,5 @@ async function getPublicVolunteerProfile(req, res) {
 }
 
 module.exports = {
-  getVolunteerProfile
+ getPublicVolunteerProfile
 };
