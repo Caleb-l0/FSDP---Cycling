@@ -8,6 +8,11 @@ CREATE TABLE users (
     textsizepreference VARCHAR(20) DEFAULT 'normal',
     role VARCHAR(50) DEFAULT 'volunteer'
 );
+ALTER TABLE users
+ADD COLUMN level INT DEFAULT 1 CHECK (level >= 1),
+ADD COLUMN joindate TIMESTAMP DEFAULT NOW();
+
+
 
 
 CREATE TABLE organizations (
@@ -232,10 +237,6 @@ CREATE TABLE friendrequests (
 );
 
 
-
-ALTER TABLE users
-ADD COLUMN level INT DEFAULT 1 CHECK (level >= 1),
-ADD COLUMN joindate TIMESTAMP DEFAULT NOW();
 
 
 CREATE TABLE badges (

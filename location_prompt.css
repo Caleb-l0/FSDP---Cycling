@@ -1,0 +1,98 @@
+/* =========================
+   LOCATION PROMPT PANEL
+========================= */
+.hvloc-panel {
+  position: fixed;
+  bottom: 32px;
+  right: 32px;
+  width: 340px;
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 20px 22px;
+  box-shadow: 
+    0 20px 40px rgba(0, 0, 0, 0.18),
+    0 4px 12px rgba(0, 0, 0, 0.08);
+  z-index: 9999;
+  animation: hvloc-slide-in 0.45s ease-out;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont;
+}
+
+/* Title */
+.hvloc-panel h3 {
+  margin: 0 0 8px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+/* Description */
+.hvloc-panel p {
+  margin: 0 0 16px;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: #6b7280;
+}
+
+/* Action Buttons */
+.hvloc-actions {
+  display: flex;
+  gap: 12px;
+}
+
+/* Common Button */
+.hvloc-btn {
+  flex: 1;
+  padding: 10px 0;
+  border-radius: 999px;
+  border: none;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+/* Primary Button */
+.hvloc-btn.primary {
+  background: #f4a261;
+  color: #ffffff;
+  box-shadow: 0 6px 14px rgba(244, 162, 97, 0.4);
+}
+
+.hvloc-btn.primary:hover {
+  background: #e9944f;
+  transform: translateY(-1px);
+}
+
+/* Secondary Button */
+.hvloc-btn.secondary {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+.hvloc-btn.secondary:hover {
+  background: #e5e7eb;
+}
+
+/* Entrance Animation */
+@keyframes hvloc-slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* =========================
+   MOBILE RESPONSIVE
+========================= */
+@media (max-width: 480px) {
+  .hvloc-panel {
+    right: 16px;
+    left: 16px;
+    width: auto;
+    bottom: 20px;
+  }
+}
