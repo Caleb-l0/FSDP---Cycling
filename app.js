@@ -160,7 +160,7 @@ app.put('/admin/assign_events',authenticate,adminEventController.assignEventToOr
 
 
 // ------ VOLUNTEER USER PROFILE --------
-app.get('/volunteer/user/profile/:id',authenticate,volunteerUserController.getVolunteerProfile);
+app.get('/volunteer/user/profile/:id',volunteerUserController.getVolunteerProfile);
 
 // ----- VOLUNTEER EVENT FEED -----
 

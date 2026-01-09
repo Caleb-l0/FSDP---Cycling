@@ -35,9 +35,7 @@ async function GetUserId(id) {
       `${UserEndPoint}/volunteer/user/profile/${id}`,
       {
         method: "GET",
-        headers: {
-          "Authorization": `Bearer ${token}`
-        }
+
       }
     );
 
@@ -145,9 +143,7 @@ async function fetchUserBadges(userId) {
     `${UserEndPoint}/volunteer/user/profile/${userId}`,
     {
       method: "GET",
-      headers: {
-        "Authorization": `Bearer ${token}`
-      }
+      
     }
   );
 
