@@ -46,6 +46,9 @@ const loginModel = require('./Accounts/login/loginModel');
 // ----------------- VOLUNTEER USER PROFILE CONTROLLER --------------
 const volunteerUserController = require("./Controllers/volunteer_user_profile_Controller.js")
 
+
+// ------ VOLUNTEER FRIENDS CONTROLLER --------------
+const userFriendController = require("./Controllers/user_friend_Controller.js");
 // --------------- translation
 
 
@@ -162,6 +165,10 @@ app.put('/admin/assign_events',authenticate,adminEventController.assignEventToOr
 // ------ VOLUNTEER USER PROFILE --------
 app.get('/volunteer/user/profile/:id',volunteerUserController.getPublicVolunteerProfile);
 
+// ------ VOLUNTEER FRIENDS CONTROLLER -----
+
+
+app.get('/volunteer/user/friends', authenticate, userFriendController.getMyFriends);
 // ----- VOLUNTEER EVENT FEED -----
 
 app.get('/volunteer/events', adminEventController.getAllEvents);

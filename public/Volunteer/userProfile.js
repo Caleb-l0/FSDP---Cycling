@@ -47,8 +47,8 @@ async function GetUserId(id) {
     console.log(userProfile);
 
     
-    document.getElementById("hvop-username").textContent =
-      userProfile.userInfo.name;
+   document.getElementById("hvop-username").textContent =
+  userProfile.name;
 
     document.getElementById("hvop-email").textContent =
       userProfile.userInfo.email;
@@ -76,7 +76,7 @@ async function GetUserId(id) {
     });
 
     /* ===== Badges ===== */
-    renderBadges(userProfile.userBadge);
+    renderBadges(userProfile.badges);
 
   } catch (err) {
     console.error("Error fetching user profile:", err);
