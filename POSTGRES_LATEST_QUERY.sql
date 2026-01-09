@@ -233,6 +233,71 @@ CREATE TABLE friendrequests (
 
 
 
+ALTER TABLE users
+ADD COLUMN level INT DEFAULT 1 CHECK (level >= 1),
+ADD COLUMN joindate TIMESTAMP DEFAULT NOW();
+
+
+CREATE TABLE badges (
+    badgeid SERIAL PRIMARY KEY,
+
+    badgetype VARCHAR(50) NOT NULL,
+    -- e.g. 'hours', 'events', 'community', 'mentor'
+
+    badgename VARCHAR(100) NOT NULL,
+    -- e.g. '100+ Volunteer Hours'
+
+    description TEXT,
+
+    iconurl VARCHAR(255),
+   
+
+    requirementvalue INT,
+    -- e.g. 100 hours / 10 events
+
+    isactive BOOLEAN DEFAULT TRUE,
+
+    createdat TIMESTAMP DEFAULT NOW()
+);
+
+
+CREATE TABLE studentbadges (
+    userbadgeid SERIAL PRIMARY KEY,
+
+    userid INT NOT NULL,
+    badgeid INT NOT NULL,
+
+    getdate TIMESTAMP DEFAULT NOW(),
+
+    source VARCHAR(50),
+    -- e.g. 'system', 'admin', 'event'
+
+    status VARCHAR(20) DEFAULT 'active'
+        CHECK (status IN ('active', 'revoked')),
+
+    CONSTRAINT fk_user_badge_user
+        FOREIGN KEY (userid)
+        REFERENCES users(id)
+        ON DELETE CASCADE,
+
+    CONSTRAINT fk_user_badge_badge
+        FOREIGN KEY (badgeid)
+        REFERENCES badges(badgeid)
+        ON DELETE CASCADE,
+
+    CONSTRAINT unique_user_badge
+        UNIQUE (userid, badgeid)
+);
+
+
+INSERT INTO badges (badgetype, badgename, description, requirementvalue)
+VALUES
+('hours', '100+ Volunteer Hours', 'Completed over 100 hours of volunteering', 100),
+('events', '10 Events Joined', 'Participated in 10 volunteer events', 10),
+('community', 'Community Star', 'Outstanding contribution to community', NULL),
+('mentor', 'Volunteer Mentor', 'Guided new volunteers', NULL);
+
+
 
 
 TRUNCATE TABLE

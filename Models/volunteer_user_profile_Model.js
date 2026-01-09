@@ -1,96 +1,99 @@
-
 const pool = require("../Postgres_config");
 
 /**
-
+ * Get user basic information
  */
 async function getUserById(id) {
-  const sql = `
-    SELECT 
-      id,
-      name,
-      email,
-      role,
-      level,
-      joindate
-    FROM users
-    WHERE id = $1
-  `;
+  const result = await pool.query(
+    `
+      SELECT 
+        id,
+        name,
+        email,
+        role,
+        level,
+        joindate
+      FROM users
+      WHERE id = $1
+    `,
+    [id]
+  );
 
-  const result = await pool.query(sql, [id]);
-  return result.rows[0];
+  return result.rows[0] || null;
 }
 
 /**
-
+ * Get user volunteering experience summary
  */
-async function getUserExperience(userId) {
-  const sql = `
-    SELECT
-      COUNT(es.eventid) AS total_events,
-      MIN(es.signupdate) AS first_event_date
-    FROM eventsignups es
-    WHERE es.userid = $1
-      AND es.status = 'Active'
-  `;
+async function getUserExperience(id) {
+  const result = await pool.query(
+    `
+      SELECT
+        COUNT(es.eventid) AS total_events,
+        MIN(es.signupdate) AS first_event_date
+      FROM eventsignups es
+      WHERE es.userid = $1
+        AND es.status = 'Active'
+    `,
+    [id]
+  );
 
-  const result = await pool.query(sql, [userId]);
-  return result.rows[0];
+  return result.rows[0] || null;
 }
 
 /**
-
+ * Get events joined by user
  */
-async function getUserEvent(userId) {
-  const sql = `
-    SELECT
-      e.eventid,
-      e.eventname,
-      e.eventdate,
-      e.location,
-      e.status
-    FROM events e
-    JOIN eventsignups es
-      ON e.eventid = es.eventid
-    WHERE es.userid = $1
-    ORDER BY e.eventdate DESC
-  `;
+async function getUserEvents(id) {
+  const result = await pool.query(
+    `
+      SELECT
+        e.eventid,
+        e.eventname,
+        e.eventdate,
+        e.location,
+        e.status
+      FROM events e
+      JOIN eventsignups es
+        ON e.eventid = es.eventid
+      WHERE es.userid = $1
+      ORDER BY e.eventdate DESC
+    `,
+    [id]
+  );
 
-  const result = await pool.query(sql, [userId]);
   return result.rows;
 }
 
 /**
-
+ * Get badges earned by user
  */
-async function getUserBadge(userId) {
-  const sql = `
-    SELECT
-      b.badgeid,
-      b.badgename,
-      b.badgetype,
-      b.description,
-      b.iconurl,
-      sb.getdate
-    FROM studentbadges sb
-    JOIN badges b
-      ON sb.badgeid = b.badgeid
-    WHERE sb.userid = $1
-      AND sb.status = 'active'
-    ORDER BY sb.getdate DESC
-  `;
+async function getUserBadges(id) {
+  const result = await pool.query(
+    `
+      SELECT
+        b.badgeid,
+        b.badgename,
+        b.badgetype,
+        b.description,
+        b.iconurl,
+        sb.getdate
+      FROM userbadges sb
+      JOIN badges b
+        ON sb.badgeid = b.badgeid
+      WHERE sb.userid = $1
+        AND sb.status = 'active'
+      ORDER BY sb.getdate DESC
+    `,
+    [id]
+  );
 
-  const result = await pool.query(sql, [userId]);
   return result.rows;
 }
 
-
-
-module.exports ={
-    getUserById,
-    getUserBadge,
-    getUserEvent,
-    getUserExperience,
-
-
-}
+module.exports = {
+  getUserById,
+  getUserExperience,
+  getUserEvents,
+  getUserBadges
+};
