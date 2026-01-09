@@ -199,7 +199,7 @@ async function loadVolunteersHomepage() {
 }
 
 function openVolunteerProfile(id) {
-    window.location.href = `../Profile/profilepage.html?userId=${id}`;
+    window.location.href = `./userProfile.html?userId=${id}`;
 }
 
 

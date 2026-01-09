@@ -15,3 +15,8 @@ addBtn.onclick = ()=>{
   addBtn.textContent = "✔ Friends";
   addBtn.classList.add("added");
 };
+
+
+async function GetUserId(id){
+   const userData = fetch("")
+}

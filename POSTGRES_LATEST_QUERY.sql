@@ -9,6 +9,7 @@ CREATE TABLE users (
     role VARCHAR(50) DEFAULT 'volunteer'
 );
 
+
 CREATE TABLE organizations (
     organizationid SERIAL PRIMARY KEY,
     orgname VARCHAR(100) NOT NULL,

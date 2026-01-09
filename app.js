@@ -156,6 +156,9 @@ app.post('/admin/create_events', authenticate, adminEventController.createEvent)
 app.put('/admin/assign_events',authenticate,adminEventController.assignEventToOrgan)
 
 
+// ------ VOLUNTEER USER PROFILE --------
+app.get('/volunteer/user/profile/:id',authenticate,volun)
+
 // ----- VOLUNTEER EVENT FEED -----
 
 app.get('/volunteer/events', adminEventController.getAllEvents);
