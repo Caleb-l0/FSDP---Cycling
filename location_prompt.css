@@ -3,20 +3,19 @@
 ========================= */
 .hvloc-panel {
   position: fixed;
-  bottom: 32px;
+  top: 88px;
   right: 32px;
-  width: 340px;
-  background: #ffffff;
-  border-radius: 20px;
-  padding: 20px 22px;
-  box-shadow: 
-    0 20px 40px rgba(0, 0, 0, 0.18),
-    0 4px 12px rgba(0, 0, 0, 0.08);
+  width: 360px;
+  background: #fffdf8;
+  border-radius: 22px;
+  padding: 20px 22px 22px;
+  box-shadow:
+    0 20px 40px rgba(0,0,0,.15),
+    0 4px 12px rgba(0,0,0,.08);
   z-index: 9999;
-  animation: hvloc-slide-in 0.45s ease-out;
   font-family: system-ui, -apple-system, BlinkMacSystemFont;
+  animation: hvloc-fade-down .45s ease;
 }
-
 /* Title */
 .hvloc-panel h3 {
   margin: 0 0 8px;
@@ -33,44 +32,41 @@
   color: #6b7280;
 }
 
-/* Action Buttons */
 .hvloc-actions {
   display: flex;
   gap: 12px;
 }
 
-/* Common Button */
-.hvloc-btn {
+/* Allow */
+.hvloc-btn.primary {
   flex: 1;
+  background: #f4a261;
+  color: #fff;
+  border: none;
   padding: 10px 0;
   border-radius: 999px;
-  border: none;
-  font-size: 0.9rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.25s ease;
-}
-
-/* Primary Button */
-.hvloc-btn.primary {
-  background: #f4a261;
-  color: #ffffff;
-  box-shadow: 0 6px 14px rgba(244, 162, 97, 0.4);
+  box-shadow: 0 6px 14px rgba(244,162,97,.35);
 }
 
 .hvloc-btn.primary:hover {
-  background: #e9944f;
-  transform: translateY(-1px);
+  background: #e9954f;
 }
 
-/* Secondary Button */
 .hvloc-btn.secondary {
-  background: #f3f4f6;
+  flex: 1;
+  background: #ffffff;
+  border: 1.5px solid #d1d5db;
   color: #374151;
+  padding: 10px 0;
+  border-radius: 999px;
+  font-weight: 600;
+  cursor: pointer;
 }
 
 .hvloc-btn.secondary:hover {
-  background: #e5e7eb;
+  background: #f9fafb;
 }
 
 /* Entrance Animation */
@@ -94,5 +90,26 @@
     left: 16px;
     width: auto;
     bottom: 20px;
+  }
+}
+@media (max-width: 480px) {
+  .hvloc-panel {
+    top: auto;
+    bottom: 20px;
+    left: 16px;
+    right: 16px;
+    width: auto;
+    border-radius: 26px;
+  }
+}
+
+@keyframes hvloc-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
   }
 }

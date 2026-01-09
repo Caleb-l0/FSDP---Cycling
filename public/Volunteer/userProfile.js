@@ -48,7 +48,7 @@ async function GetUserId(id) {
 
     
     document.getElementById("hvop-username").textContent =
-      userProfile.name;
+      userProfile.userInfo.name;
 
     document.getElementById("hvop-email").textContent =
       userProfile.userInfo.email;
