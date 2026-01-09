@@ -55,14 +55,15 @@ function renderEvents(events) {
     const card = document.createElement('div');
     card.classList.add('event-card', 'signed-event-card');
 
-    const title = event.EventName || 'Untitled Event';
-    const date = formatDate(event.EventDate);
-    const description = event.Description || 'No description available.';
-    const location = event.EventLocation || 'Location TBD';
-    const required = event.RequiredVolunteers ? `Required Volunteers: ${event.RequiredVolunteers}` : '';
-    const signUpDate = formatDate(event.SignUpDate);
-    const eventStatus = event.Status || 'Upcoming';
-    const signUpStatus = event.SignUpStatus || 'Active';
+    // Support both lowercase (from database) and uppercase field names
+    const title = event.eventname || event.EventName || 'Untitled Event';
+    const date = formatDate(event.eventdate || event.EventDate);
+    const description = event.description || event.Description || 'No description available.';
+    const location = event.location || event.EventLocation || 'Location TBD';
+    const required = (event.requiredvolunteers || event.RequiredVolunteers) ? `Required Volunteers: ${event.requiredvolunteers || event.RequiredVolunteers}` : '';
+    const signUpDate = formatDate(event.signupdate || event.SignUpDate);
+    const eventStatus = event.status || event.Status || 'Upcoming';
+    const signUpStatus = event.signupstatus || event.SignUpStatus || 'Active';
 
     const requiredMarkup = required ? `<p>${required}</p>` : '';
     const statusBadge = getStatusBadge(eventStatus, signUpStatus);

@@ -3,21 +3,17 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>HappyVolunteering | Events</title>
-    <link rel="stylesheet" href="../homepage.css">
-  <!-- Font Awesome for the menu icon -->
+  <title>HappyVolunteering | Calendar</title>
+  <link rel="stylesheet" href="../homepage.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-  <link rel="stylesheet" href="./Volunteer_event.css" />
+  <link rel="stylesheet" href="./volunteer-calendar.css" />
 </head>
-
 <body>
 
 <header class="hv-header">
     <div class="container hv-header-content">
-
         <div class="hv-logo">
-                <a href="./homepage_login_volunteer.html" style="text-decoration: none; color: inherit;">
+            <a href="./homepage_login_volunteer.html" style="text-decoration: none; color: inherit;">
                 Happy Volunteer
             </a>
         </div>
@@ -45,32 +41,25 @@
                 <li><a href="../Profile/profilepage.html">Profile</a></li>
             </ul>
         </nav>
-
-
     </div>
 </header>
 
 <div class="container">
-
-  <div class="action-buttons">
-    <button class="toggle-btn" onclick="window.location.href='volunteer-signed-events.html'">
-      View My Signed-Up Events
-    </button>
-    <button class="toggle-btn calendar-btn" onclick="window.location.href='volunteer-calendar.html'">
-      <i class="fas fa-calendar-alt"></i> View Calendar
+  <div class="calendar-header">
+    <h2>February 2026 Calendar</h2>
+    <button class="back-btn" onclick="window.location.href='volunteer-events.html'">
+      <i class="fas fa-arrow-left"></i> Back to Events
     </button>
   </div>
 
-  <h2>Upcoming Volunteer Events</h2>
-
-  <div class="event-list" id="eventList" aria-live="polite">
+  <div id="calendar-container" class="calendar-container">
+    <div class="calendar-loading">Loading calendar...</div>
   </div>
 </div>
 
 <footer>
     <div class="container">
         <div class="footer-content">
-
             <div class="footer-column">
                 <h3>Happy Volunteer</h3>
                 <ul>
@@ -110,7 +99,6 @@
                     <li><a href="#">Disclaimer</a></li>
                 </ul>
             </div>
-
         </div>
 
         <div class="copyright">
@@ -119,9 +107,10 @@
     </div>
 </footer>
 
-<script src="script.js"></script>
- <script src="../Translation.js"></script>
-  <script src="../homepage.js"></script>
+<script src="volunteer-calendar.js"></script>
+<script src="../Translation.js"></script>
+<script src="../homepage.js"></script>
 
 </body>
 </html>
+

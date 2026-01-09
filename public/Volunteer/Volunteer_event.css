@@ -23,9 +23,15 @@ body {
 }
 
 
-.toggle-btn {
-  display: block;
+.action-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
   margin: 40px auto 24px;
+  flex-wrap: wrap;
+}
+
+.toggle-btn {
   padding: 14px 32px;
   border-radius: 999px;
   border: none;
@@ -36,12 +42,24 @@ body {
   letter-spacing: 0.3px;
   cursor: pointer;
   transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .toggle-btn:hover {
   background: #1f3a44;
   box-shadow: 0 6px 16px rgba(38, 70, 83, 0.3);
   transform: translateY(-2px);
+}
+
+.calendar-btn {
+  background: #ea8d2a;
+}
+
+.calendar-btn:hover {
+  background: #d97a1f;
+  box-shadow: 0 6px 16px rgba(234, 141, 42, 0.3);
 }
 
 
