@@ -142,7 +142,7 @@ function renderBadges(badges) {
 
 async function fetchUserBadges(userId) {
   const res = await fetch(
-    `${API_BASE}/volunteer/user/profile/${userId}`,
+    `${UserEndPoint}/volunteer/user/profile/${userId}`,
     {
       method: "GET",
       headers: {
