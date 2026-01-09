@@ -91,9 +91,24 @@ async function getUserBadges(id) {
   return result.rows;
 }
 
+async function getFollowersCount(userId) {
+  const result = await pool.query(
+    `
+    SELECT COUNT(*) 
+    FROM userfriends 
+    WHERE friendid = $1 AND status = 'active'
+    `,
+    [userId]
+  );
+  return parseInt(result.rows[0].count);
+}
+
+
+
 module.exports = {
   getUserById,
   getUserExperience,
   getUserEvents,
-  getUserBadges
+  getUserBadges,
+  getFollowersCount
 };

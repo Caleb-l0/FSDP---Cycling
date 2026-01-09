@@ -1,37 +1,41 @@
 const userProfileModel = require("../Models/volunteer_user_profile_Model");
 
+
 async function getPublicVolunteerProfile(req, res) {
   try {
-    const userId = parseInt(req.params.id, 10);
+    const userId = parseInt(req.params.id);
 
-    if (Number.isNaN(userId)) {
-      return res.status(400).json({ message: "Invalid user id" });
-    }
+    const user = await userProfileModel.getUserById(userId);
+    if (!user) return res.status(404).json({ message: "User not found" });
 
-    const userInfo = await userProfileModel.getUserById(userId);
-    if (!userInfo) {
-      return res.status(404).json({ message: "User not found" });
-    }
-    const userExperience = await userProfileModel.getUserExperience(userId);
-    const userBadge = await userProfileModel.getUserBadges(userId);
+    const exp = await userProfileModel.getUserExperience(userId);
+    const badges = await userProfileModel.getUserBadges(userId);
+    const events = await userProfileModel.getUserEvents(userId);
+    const followers = await userProfileModel.getFollowersCount(userId);
 
-    return res.status(200).json({
-      id: userInfo.id,
-      name: userInfo.name,
-      level: userInfo.level,
-      total_events: userExperience?.total_events ?? 0,
-      badges: userBadge.map(b => ({
-        badgename: b.badgename,
-        iconurl: b.iconurl
-      }))
+    return res.json({
+      id: user.id,
+      name: user.name,
+      level: user.level,
+      joindate: user.joindate,
+      role: user.role,
+
+      total_events: exp.total_events,
+      first_event_date: exp.first_event_date,
+
+      followers,
+      events,
+      badges
     });
-
-  } catch (error) {
-    console.error("Public profile error:", error);
-    return res.status(500).json({ message: "Server error" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
   }
 }
 
+
+
 module.exports = {
  getPublicVolunteerProfile
+
 };
