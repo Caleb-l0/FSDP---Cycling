@@ -157,7 +157,7 @@ app.put('/admin/assign_events',authenticate,adminEventController.assignEventToOr
 
 
 // ------ VOLUNTEER USER PROFILE --------
-app.get('/volunteer/user/profile/:id',authenticate,volun)
+//app.get('/volunteer/user/profile/:id',authenticate,volun)
 
 // ----- VOLUNTEER EVENT FEED -----
 
