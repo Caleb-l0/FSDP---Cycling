@@ -518,16 +518,28 @@ footer .copyright {
   }
 }
 
+/* Header layout fix */
 .hv-header-content {
     display: flex;
     align-items: center;
+    justify-content: space-between;
 }
 
+/* Right side container */
+.hv-header-right {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+/* Logged-in badge */
 .hv-user-status {
-    margin-left: auto;
     font-size: 14px;
     font-weight: 600;
-    color: #333;
+    color: #264653;
+    background: #eef0f3;
+    padding: 8px 14px;
+    border-radius: 999px;
     white-space: nowrap;
 }
 
