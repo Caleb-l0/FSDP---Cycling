@@ -517,3 +517,32 @@ footer .copyright {
     display: none;
   }
 }
+
+/* Header layout fix */
+.hv-header-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+/* Right side container */
+.hv-header-right {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+/* Logged-in badge */
+.hv-user-status {
+    font-size: 14px;
+    font-weight: 600;
+    color: #264653;
+    background: transparent;    
+    padding: 0;                     
+    border-radius: 0;               
+    white-space: nowrap;
+    margin-left: 45px;             
+    opacity: 0.85;                 
+}
+
+
