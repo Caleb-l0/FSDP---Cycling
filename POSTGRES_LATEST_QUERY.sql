@@ -261,7 +261,7 @@ CREATE TABLE badges (
 );
 
 
-CREATE TABLE studentbadges (
+CREATE TABLE userbadges (
     userbadgeid SERIAL PRIMARY KEY,
 
     userid INT NOT NULL,
@@ -288,6 +288,45 @@ CREATE TABLE studentbadges (
     CONSTRAINT unique_user_badge
         UNIQUE (userid, badgeid)
 );
+
+
+
+CREATE TABLE userfriends (
+    userfriendid SERIAL PRIMARY KEY,
+
+    userid INT NOT NULL,
+    friendid INT NOT NULL,
+
+    adddate TIMESTAMP DEFAULT NOW(),
+
+    friend_level INT DEFAULT 1
+        CHECK (friend_level >= 1),
+
+    nickname VARCHAR(100),
+    description TEXT,
+
+    status VARCHAR(20) DEFAULT 'active'
+        CHECK (status IN ('active', 'blocked', 'removed')),
+
+    CONSTRAINT fk_userfriends_user
+        FOREIGN KEY (userid)
+        REFERENCES users(id)
+        ON DELETE CASCADE,
+
+    CONSTRAINT fk_userfriends_friend
+        FOREIGN KEY (friendid)
+        REFERENCES users(id)
+        ON DELETE CASCADE,
+
+    CONSTRAINT chk_not_self_friend
+        CHECK (userid <> friendid),
+
+    CONSTRAINT unique_user_friend
+        UNIQUE (userid, friendid)
+);
+
+
+
 
 
 INSERT INTO badges (badgetype, badgename, description, requirementvalue)

@@ -1,33 +1,35 @@
 const userProfileModel = require("../Models/volunteer_user_profile_Model");
 
-async function getVolunteerProfile(req, res) {
+async function getPublicVolunteerProfile(req, res) {
   try {
-    const requestedId = parseInt(req.params.id);
-    const loggedInUserId = req.user.id; 
+    const userId = parseInt(req.params.id, 10);
 
- 
-    if (requestedId !== loggedInUserId) {
-      return res.status(403).json({ message: "Forbidden" });
+    if (Number.isNaN(userId)) {
+      return res.status(400).json({ message: "Invalid user id" });
     }
 
-    const userInfo = await userProfileModel.getUserById(requestedId);
-    const userExperience = await userProfileModel.getUserExperience(requestedId);
-    const userEvents = await userProfileModel.getUserEvents(requestedId);
-    const userBadge = await userProfileModel.getUserBadges(requestedId);
+    const userInfo = await userProfileModel.getUserById(userId);
+    if (!userInfo) {
+      return res.status(404).json({ message: "User not found" });
+    }
 
-    res.status(200).json({
-      userInfo,
-      userExperience,
-      userEvents,
-      userBadge
+    const userExperience = await userProfileModel.getUserExperience(userId);
+    const userBadge = await userProfileModel.getUserBadges(userId);
+
+    return res.status(200).json({
+      id: userInfo.id,
+      name: userInfo.name,
+      level: userInfo.level,
+      total_events: userExperience?.total_events ?? 0,
+      badges: userBadge.map(b => ({
+        badgename: b.badgename,
+        iconurl: b.iconurl
+      }))
     });
 
   } catch (error) {
-    console.error(error);
-    res.status(500).json({
-      message: "Failed to fetch user profile",
-      error: error.message
-    });
+    console.error("Public profile error:", error);
+    return res.status(500).json({ message: "Server error" });
   }
 }
 
