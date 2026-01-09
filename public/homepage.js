@@ -55,3 +55,13 @@ setInterval(nextHeroSlide, 5000);
 document.getElementById("hvNavToggle").addEventListener("click", () => {
     document.getElementById("mainNav").classList.toggle("active");
 });
+
+
+document.addEventListener("DOMContentLoaded", () => {
+    const name = localStorage.getItem("name");
+    const userStatus = document.getElementById("userStatus");
+
+    if (name && userStatus) {
+        userStatus.textContent = "Logged in as " + name;
+    }
+});
