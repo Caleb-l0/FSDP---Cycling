@@ -517,3 +517,18 @@ footer .copyright {
     display: none;
   }
 }
+
+.hv-header-content {
+    display: flex;
+    align-items: center;
+}
+
+.hv-user-status {
+    margin-left: auto;
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+    white-space: nowrap;
+    padding-left: 20px;
+}
+
