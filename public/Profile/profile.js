@@ -22,9 +22,14 @@ async function loadProfile() {
     if (!response.ok) throw new Error("Unauthorized");
 
     const data = await response.json();
-    document.getElementById("name").value = data.name;
-    document.getElementById("email").value = data.email;
-    document.getElementById("role").textContent = data.role;
+    console.log("PROFILE API:", data);  
+
+    const user = data.user || data; 
+
+    document.getElementById("name").value  = user.name || "";
+    document.getElementById("email").value = user.email || "";
+    document.getElementById("role").textContent = user.role || "";
+
 
     selectedTextSize = data.textSizePreference || selectedTextSize;
     updateTextSizeButtons(selectedTextSize);
