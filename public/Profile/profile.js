@@ -22,9 +22,11 @@ async function loadProfile() {
     if (!response.ok) throw new Error("Unauthorized");
 
     const data = await response.json();
-    document.getElementById("name").value = data.name;
-    document.getElementById("email").value = data.email;
-    document.getElementById("role").textContent = data.role;
+    const userData = data.user || data;
+
+    document.getElementById("name").value = userData.name || "";
+    document.getElementById("email").value = userData.email || "";
+    document.getElementById("role").textContent = userData.role || "";
 
     selectedTextSize = data.textSizePreference || selectedTextSize;
     updateTextSizeButtons(selectedTextSize);
