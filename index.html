@@ -234,6 +234,7 @@
         </div>
         <button type="submit">Login</button>
       </form>
+      <button onclick="showOtp()">Login with OTP</button>
       <p style="font-size:15px;padding:3px;font-weight:10">Or</p>
       <div id="googleButtonContainer" style="margin-top:12px;">
   <button id="googleLoginBtn" type="button">
@@ -244,24 +245,25 @@
         Don't have an account? <a href="#" onclick="switchToSignup()" >Sign Up</a>
       </p>
     </div>
-    <button onclick="showOtp()">Login with OTP</button>
   </div>  
 
-  <!-- OTP -->
+  <!-- OTP  -->
   <div id="otpStep" style="display:none;">
     <h2>Enter OTP</h2>
 
     <input
-      type="text"
       id="otp"
-      placeholder="6-digit OTP"
+      type="text"
       maxlength="6"
+      placeholder="6-digit OTP"
     >
 
-    <button onclick="verifyOtp()">Verify OTP</button>
+    <button type="button" onclick="verifyOtp()">
+      Verify OTP
+    </button>
 
-    <p>
-      <a href="index.html" onclick="backToLogin()">← Back</a>
+    <p style="margin-top:10px;">
+      <a href="#" onclick="backToLogin()">← Back</a>
     </p>
   </div>
 
