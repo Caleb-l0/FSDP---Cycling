@@ -332,10 +332,11 @@ function showOtp() {
   document.querySelector("#loginModal form").style.display = "none";
   document.getElementById("otpStep").style.display = "block";
 
-  alert("OTP sent to " + email + " (use 123456 to test)");
+  alert("OTP sent to " + email);
 }
 
 function backToLogin() {
   document.getElementById("otpStep").style.display = "none";
   document.querySelector("#loginModal form").style.display = "block";
+  
 }
