@@ -317,3 +317,35 @@ async function handleGoogleCredential(response) {
 
 
 document.addEventListener("DOMContentLoaded", initGoogleLogin);
+
+// OTP login popup
+function showOtp() {
+  const email = document.getElementById("email").value;
+
+  if (!email) {
+    alert("Please enter email first");
+    return;
+  }
+
+  document.getElementById("loginStep").style.display = "none";
+  document.getElementById("otpStep").style.display = "block";
+
+  alert("OTP sent to " + email); 
+}
+
+function backToLogin() {
+  document.getElementById("otpStep").style.display = "none";
+  document.getElementById("loginStep").style.display = "block";
+}
+
+function verifyOtp() {
+  const otp = document.getElementById("otp").value;
+
+  if (otp.length !== 6) {
+    alert("Invalid OTP");
+    return;
+  }
+
+  alert("Login successful!");
+  closeLogin(); 
+}

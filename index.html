@@ -244,7 +244,26 @@
         Don't have an account? <a href="#" onclick="switchToSignup()" >Sign Up</a>
       </p>
     </div>
+    <button onclick="showOtp()">Login with OTP</button>
   </div>  
+
+  <!-- OTP -->
+  <div id="otpStep" style="display:none;">
+    <h2>Enter OTP</h2>
+
+    <input
+      type="text"
+      id="otp"
+      placeholder="6-digit OTP"
+      maxlength="6"
+    >
+
+    <button onclick="verifyOtp()">Verify OTP</button>
+
+    <p>
+      <a href="index.html" onclick="backToLogin()">← Back</a>
+    </p>
+  </div>
 
 
   <!-- Signup Modal -->
