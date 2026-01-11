@@ -315,6 +315,10 @@ async function handleGoogleCredential(response) {
   }
 }
 
+
+
+
+
 // OTP login
 let otpConfirmation = null;
 
@@ -388,3 +392,66 @@ function verifyOtp() {
   alert("Login successful!");
   closeLogin(); 
 }
+
+
+async function verifyOtp() {
+  const otp = document.getElementById("otp").value;
+
+  if (otp.length !== 6) {
+    createWowToast("Invalid OTP", "error");
+    return;
+  }
+
+  try {
+    const result = await otpConfirmation.confirm(otp);
+
+    const firebaseUser = result.user;
+    const phone = firebaseUser.phoneNumber;
+    const firebaseUid = firebaseUser.uid;
+
+ 
+    const res = await fetch("https://fsdp-cycling-ltey.onrender.com/auth/phone", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        phone,
+        firebaseUid
+      })
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      createWowToast(data.message || "Phone login failed", "error");
+      return;
+    }
+
+ 
+    localStorage.setItem("token", data.token);
+    localStorage.setItem("userId", data.userId);
+    localStorage.setItem("name", data.name);
+    localStorage.setItem("role", data.role);
+
+    createWowToast("Login successful!");
+
+    setTimeout(() => {
+      switch (data.role) {
+        case "admin":
+          window.location.href = "/public/Admin/homepage_login_Admin.html";
+          break;
+        case "volunteer":
+          window.location.href = "/public/Volunteer/homepage_login_volunteer.html";
+          break;
+        case "institution":
+          window.location.href = "/public/Instituition/homepage_login_instituition.html";
+          break;
+      }
+    }, 800);
+
+  } catch (err) {
+    console.error(err);
+    createWowToast("Wrong OTP", "error");
+  }
+}
+
+// Firebase setup for OTP

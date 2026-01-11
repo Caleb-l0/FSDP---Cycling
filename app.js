@@ -43,6 +43,10 @@ const eventController = require('./Controllers/VolunteerEventController.js');
 // ----- LOGIN MODEL (for text size updates) -----
 const loginModel = require('./Accounts/login/loginModel');
 
+// ------ LOGIN WITH PHONE CONTROLLER --------------
+const { phoneAuth } = require("../controllers/authController");
+
+
 // ----------------- VOLUNTEER USER PROFILE CONTROLLER --------------
 const volunteerUserController = require("./Controllers/volunteer_user_profile_Controller.js")
 
@@ -71,6 +75,11 @@ const fetch = require("node-fetch");
 
 // ----- LOGIN & SIGNUP API ROUTES (must be before static files) -----
 app.post('/login', validateLogin, loginUser);
+
+
+// NEW PHONE LOGIN ROUTE
+app.post('/auth/phone', phoneAuth); 
+
 
 // ----- SIGNUP ROUTES -----
 const { signupUser } = require('./Accounts/signup/signupController');
