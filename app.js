@@ -170,7 +170,8 @@ app.get('/volunteer/user/profile/:id',volunteerUserController.getPublicVolunteer
 app.post('/volunteer/friends/add', authenticate, userFriendController.addFriend);
 app.get('/volunteer/friends/followers/count', authenticate, userFriendController.getFollowersCount);
 app.get('/volunteer/friends/me', authenticate, userFriendController.getMyFriends);
-
+app.delete('/volunteer/friends/remove/:friendId', authenticate, userFriendController.remobeFriend);
+app.get('/volunteer/friends/check/:friendId', authenticate, userFriendController.checkIfFriend);
 // ----- VOLUNTEER EVENT FEED -----
 
 app.get('/volunteer/events', adminEventController.getAllEvents);

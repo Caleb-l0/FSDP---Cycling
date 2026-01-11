@@ -22,6 +22,23 @@ document.querySelectorAll(".hvop-nav-btn").forEach(btn => {
 /* =========================
    ADD FRIEND (UI ONLY)
 ========================= */
+async function checkIfFriend() {
+  try {
+    const res = await fetch(`${UserEndPoint}/volunteer/friends/check/${userId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+    const data = await res.json();
+    setFriendUI(data.isFriend);
+  }
+  catch (err) {
+    console.error("Check friend error", err);
+  }
+}
+
+checkIfFriend();
+
 const addBtn = document.getElementById("hvop-add-friend-btn");
 
 addBtn.onclick = async () => {
@@ -30,7 +47,7 @@ addBtn.onclick = async () => {
   try {
     if (state === "add") {
       // ➕ Add friend
-      const res = await fetch(`${API}/volunteer/friends/add`, {
+      const res = await fetch(`${UserEndPoint}/volunteer/friends/add`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -44,7 +61,7 @@ addBtn.onclick = async () => {
       setFriendUI(true);
     } else {
       // ❌ Remove friend
-      const res = await fetch(`${API}/volunteer/friends/${userId}`, {
+      const res = await fetch(`${UserEndPoint}/volunteer/friends/remove/${userId}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`
@@ -79,7 +96,7 @@ function setFriendUI(isFriend) {
 
 
 
-const API = "https://fsdp-cycling-ltey.onrender.com";
+
 const userId = new URLSearchParams(window.location.search).get("userId");
 
 
@@ -89,7 +106,7 @@ if (!userId) {
   location.href = "homepage_login_volunteer.html";
 }
 
-fetch(`${API}/volunteer/user/profile/${userId}`)
+fetch(`${UserEndPoint}/volunteer/user/profile/${userId}`)
   .then(res => res.json())
   .then(renderProfile)
   .catch(err => {

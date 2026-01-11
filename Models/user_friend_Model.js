@@ -75,9 +75,24 @@ async function remobeFriend(userId, friendId) {
   return result.rows[0];
 } 
 
+async function isFriend(userId, friendId) {
+  const result = await pool.query(
+    ` 
+      SELECT *
+      FROM userfriends
+      WHERE userid = $1 AND friendid = $2 AND status = 'active'
+    `,
+    [userId, friendId]
+  );
+  return result.rows.length > 0;
+}
+
+
+
 module.exports = {
   getUserFriends,
   addFriend,
   remobeFriend,
   getFollowersCount,
+  isFriend,
 };

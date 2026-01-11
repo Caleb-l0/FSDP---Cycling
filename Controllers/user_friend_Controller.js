@@ -36,6 +36,21 @@ async function addFriend(req, res) {
 
 }
 
+async function remobeFriend(req, res) {
+  try {
+    const userId = req.user.id;
+    const friendId = parseInt(req.params.friendId);
+    await userFriendsModel.removeFriend(userId, friendId);
+    return res.status(200).json({ message: "Friend removed" });
+  }
+  catch (error) {
+    console.error("Remove friend error:", error);
+    return res.status(500).json({
+      message: "Failed to remove friend"
+    });
+  }
+}
+
 async function getFollowersCount(req, res) {
   try {
     const userId = req.user.id; 
@@ -51,10 +66,27 @@ async function getFollowersCount(req, res) {
   } 
 }
 
+async function checkIfFriend(req, res) {
+  try {
+    const userId = req.user.id;
+    const friendId = parseInt(req.params.friendId);
+    const isFriend = await userFriendsModel.isFriend(userId, friendId);
+    return res.status(200).json({ isFriend });
+  }
+  catch (error) {
+    console.error("Check friend error:", error);
+    return res.status(500).json({
+      message: "Failed to check friendship status"
+    });
+  }
+}
+
 
 
 module.exports = {
   getMyFriends,
   addFriend,
   getFollowersCount,
+  checkIfFriend,
+  remobeFriend,
 };
