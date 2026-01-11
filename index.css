@@ -393,3 +393,62 @@ footer p {
         width: 100%;  
     }
 }
+
+.remember-row {
+  display: flex;
+  align-items: center;      
+  justify-content: flex-end; 
+  gap: 8px;                 
+  margin: -8px 16px 12px 0;    
+  font-size: 14px;
+  color: #555;
+}
+
+.remember-row input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: #f7a137; /* theme color */
+  cursor: pointer;
+}
+
+.remember-row label {
+  cursor: pointer;
+}
+
+.modal-content button,
+#googleLoginBtn {
+  width: 100%;
+  padding: 12px;
+  margin-top: 10px;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+/* Normal login button */
+.modal-content button[type="submit"] {
+  background: #f7a137;
+  border: none;
+  color: white;
+}
+
+.modal-content button[type="submit"]:hover {
+  background: #e88f20;
+}
+
+/* Google button */
+#googleLoginBtn {
+  background: white;
+  border: 2px solid #ddd;
+  color: #444;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#googleLoginBtn:hover {
+  background: #f9f9f9;
+}
+
+

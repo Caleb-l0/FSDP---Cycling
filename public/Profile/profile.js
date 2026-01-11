@@ -22,9 +22,14 @@ async function loadProfile() {
     if (!response.ok) throw new Error("Unauthorized");
 
     const data = await response.json();
-    document.getElementById("name").value = data.name;
-    document.getElementById("email").value = data.email;
-    document.getElementById("role").textContent = data.role;
+    console.log("PROFILE API:", data);  
+
+    const user = data.user || data; 
+
+    document.getElementById("name").value  = user.name || "";
+    document.getElementById("email").value = user.email || "";
+    document.getElementById("role").textContent = user.role || "";
+
 
     selectedTextSize = data.textSizePreference || selectedTextSize;
     updateTextSizeButtons(selectedTextSize);
@@ -200,11 +205,11 @@ function loadHeaderByRole() {
   if (role === "volunteer") {
     navHTML = `
       <ul>
-        <li><a href="../Volunteer/volunteer-events.html">Booking</a></li>
-        <li><a href="#">Community</a></li>
-        <li><a href="../Volunteer/volunteer_rewards.html">Reward</a></li>
-        <li><a href="#">Friends</a></li>
-        <li><a href="./profilepage.html">Profile</a></li>
+                <li><a href="./volunteer-events.html">Booking</a></li>
+                <li><a href="./volunteer_community_page.html">Community</a></li>
+                <li><a href="./volunteer_rewards.html">Reward</a></li>
+                <li><a href="./Volunteer_friend.html">Friends</a></li>
+                <li><a href="../Profile/profilepage.html">Profile</a></li>
       </ul>`;
     logoHref = "../Volunteer/homepage_login_volunteer.html";
   }
