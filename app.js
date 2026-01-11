@@ -78,7 +78,7 @@ app.post('/login', validateLogin, loginUser);
 
 
 // NEW PHONE LOGIN ROUTE
-app.post('/login/phone', getUserByPhone, createUserWithPhone, async (req, res) => {
+app.post('/login/phone', async (req, res) => {
   const { phone, firebaseUid } = req.body;
   if (!phone || !firebaseUid) {
     return res.status(400).json({ message: "Missing phone or firebaseUid" });
