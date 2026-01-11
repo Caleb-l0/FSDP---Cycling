@@ -19,6 +19,42 @@ async function getMyFriends(req, res) {
   }
 }
 
+
+async function addFriend(req, res) {
+  try {
+    const userId = req.user.id;
+    const { friendId } = req.body;
+    const newFriend = await userFriendsModel.addFriend(userId, friendId);
+    return res.status(201).json(newFriend);
+  }
+  catch (error) {
+    console.error("Add friend error:", error);
+    return res.status(500).json({
+      message: "Failed to add friend"
+    });
+  }
+
+}
+
+async function getFollowersCount(req, res) {
+  try {
+    const userId = req.user.id; 
+    const count = await userFriendsModel.getFollowersCount(userId);
+    return res.status(200).json({ followersCount: count });
+  }
+  catch (error) {
+    console.error("Get followers count error:", error);
+    return res.status(500).json({
+
+      message: "Failed to get followers count"
+    });
+  } 
+}
+
+
+
 module.exports = {
-  getMyFriends
+  getMyFriends,
+  addFriend,
+  getFollowersCount,
 };

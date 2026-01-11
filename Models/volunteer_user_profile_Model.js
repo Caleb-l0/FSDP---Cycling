@@ -105,10 +105,12 @@ async function getFollowersCount(userId) {
 
 
 
+
 module.exports = {
   getUserById,
   getUserExperience,
   getUserEvents,
   getUserBadges,
-  getFollowersCount
+  getFollowersCount,
+  
 };

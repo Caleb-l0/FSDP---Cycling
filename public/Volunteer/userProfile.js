@@ -23,13 +23,66 @@ document.querySelectorAll(".hvop-nav-btn").forEach(btn => {
    ADD FRIEND (UI ONLY)
 ========================= */
 const addBtn = document.getElementById("hvop-add-friend-btn");
-addBtn.onclick = () => {
-  if (addBtn.classList.contains("added")) return;
-  addBtn.textContent = "✔ Friends";
-  addBtn.classList.add("added");
+
+addBtn.onclick = async () => {
+  const state = addBtn.dataset.state;
+
+  try {
+    if (state === "add") {
+      // ➕ Add friend
+      const res = await fetch(`${API}/volunteer/friends/add`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({ friendId: userId })
+      });
+
+      if (!res.ok) throw new Error("Add failed");
+
+      setFriendUI(true);
+    } else {
+      // ❌ Remove friend
+      const res = await fetch(`${API}/volunteer/friends/${userId}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+
+      if (!res.ok) throw new Error("Remove failed");
+
+      setFriendUI(false);
+    }
+  } catch (err) {
+    alert("Action failed");
+    console.error(err);
+  }
 };
+
+function setFriendUI(isFriend) {
+  if (isFriend) {
+    addBtn.textContent = "❌ Remove Friend";
+    addBtn.classList.add("danger");
+    addBtn.dataset.state = "remove";
+  } else {
+    addBtn.textContent = "➕ Add Friend";
+    addBtn.classList.remove("danger");
+    addBtn.dataset.state = "add";
+  }
+}
+
+// =========================
+// FETCH AND RENDER PROFILE
+// =========================
+
+
+
 const API = "https://fsdp-cycling-ltey.onrender.com";
 const userId = new URLSearchParams(window.location.search).get("userId");
+
+
 
 if (!userId) {
   alert("Invalid profile");

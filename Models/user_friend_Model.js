@@ -36,6 +36,48 @@ async function getUserFriends(userId, sortBy = "date") {
   return result.rows;
 }
 
+
+async function addFriend(userId, friendId) {
+  const result = await pool.query(
+    `
+      INSERT INTO userfriends (userid, friendid, status, adddate)
+      VALUES ($1, $2, 'active', NOW())
+      RETURNING *
+    `,
+    [userId, friendId]
+  );  
+  return result.rows[0];
+} 
+
+
+async function  getFollowersCount(userId) {
+  const result = await pool.query(
+    `
+    SELECT COUNT(*)
+    FROM userfriends
+    WHERE friendid = $1 AND status = 'active'
+    `,
+    [userId]
+  );
+  return parseInt(result.rows[0].count);
+}
+
+async function remobeFriend(userId, friendId) {
+  const result = await pool.query(
+    `
+      UPDATE userfriends
+      SET status = 'inactive'
+      WHERE userid = $1 AND friendid = $2
+      RETURNING *
+    `,
+    [userId, friendId]
+  );  
+  return result.rows[0];
+} 
+
 module.exports = {
-  getUserFriends
+  getUserFriends,
+  addFriend,
+  remobeFriend,
+  getFollowersCount,
 };
