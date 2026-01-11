@@ -1,5 +1,6 @@
 const UserEndPoint = `https://fsdp-cycling-ltey.onrender.com`;
 const token = localStorage.getItem("token");
+const userId = new URLSearchParams(window.location.search).get("userId");
 
 if (!token) {
   window.location.href = "../../index.html";
@@ -97,7 +98,7 @@ function setFriendUI(isFriend) {
 
 
 
-const userId = new URLSearchParams(window.location.search).get("userId");
+
 
 
 
