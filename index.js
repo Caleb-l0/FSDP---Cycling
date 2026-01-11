@@ -315,5 +315,41 @@ async function handleGoogleCredential(response) {
   }
 }
 
+// OTP login
+let otpConfirmation = null;
+
+function sendOTP(phone) {
+  window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier(
+    "recaptcha-container",
+    { size: "normal" }
+  );
+
+  window.firebaseAuth
+    .signInWithPhoneNumber(phone, window.recaptchaVerifier)
+    .then((result) => {
+      otpConfirmation = result;
+      createWowToast("OTP sent!");
+    })
+    .catch((err) => {
+      console.error(err);
+      createWowToast(err.message, "error");
+    });
+}
+
+function verifyOTP(code) {
+  otpConfirmation
+    .confirm(code)
+    .then((res) => {
+      const user = res.user;
+      createWowToast("Phone verified!");
+      console.log("Firebase UID:", user.uid);
+    })
+    .catch(() => {
+      createWowToast("Wrong OTP", "error");
+    });
+}
+
+// ------------------
+
 
 document.addEventListener("DOMContentLoaded", initGoogleLogin);
