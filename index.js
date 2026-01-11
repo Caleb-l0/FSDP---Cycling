@@ -319,19 +319,28 @@ async function handleGoogleCredential(response) {
 
 
 
+
 // OTP login
 let otpConfirmation = null;
 
-function sendOTP(phone) {
-  window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier(
-    "recaptcha-container",
-    { size: "normal" }
+function startPhoneLogin() {
+  const phone = document.getElementById("phone").value;
+
+  if (!phone.startsWith("+")) {
+    createWowToast("Use format +6591234567", "error");
+    return;
+  }
+
+  const verifier = new firebase.auth.RecaptchaVerifier(
+    "recaptcha-container"
   );
 
   window.firebaseAuth
-    .signInWithPhoneNumber(phone, window.recaptchaVerifier)
+    .signInWithPhoneNumber(phone, verifier)
     .then((result) => {
       otpConfirmation = result;
+      document.querySelector("#loginModal form").style.display = "none";
+      document.getElementById("otpStep").style.display = "block";
       createWowToast("OTP sent!");
     })
     .catch((err) => {
@@ -339,58 +348,32 @@ function sendOTP(phone) {
       createWowToast(err.message, "error");
     });
 }
-
-function verifyOTP(code) {
-  otpConfirmation
-    .confirm(code)
-    .then((res) => {
-      const user = res.user;
-      createWowToast("Phone verified!");
-      console.log("Firebase UID:", user.uid);
-    })
-    .catch(() => {
-      createWowToast("Wrong OTP", "error");
-    });
-}
-
 // ------------------
 
 
 document.addEventListener("DOMContentLoaded", initGoogleLogin);
 
-// OTP login popup
+
 function showOtp() {
-  const loginModal = document.getElementById("loginModal");
-  const otpStep = document.getElementById("otpStep");
+  const emailInput = document.getElementById("email");
+  const email = emailInput.value.trim();
 
-  if (!loginModal || !otpStep) return;
-
-  loginModal.style.display = "none";  // hide login modal
-  otpStep.style.display = "block";    // show OTP step
-  alert("OTP sent!");
-}
-
-function backToLogin() {
-  const loginModal = document.getElementById("loginModal");
-  const otpStep = document.getElementById("otpStep");
-
-  if (!loginModal || !otpStep) return;
-
-  otpStep.style.display = "none";     // hide OTP step
-  loginModal.style.display = "block"; // show login modal
-}
-
-
-function verifyOtp() {
-  const otp = document.getElementById("otp").value;
-
-  if (otp.length !== 6) {
-    alert("Invalid OTP");
+  if (!email) {
+    alert("Please enter an email first");
     return;
   }
 
-  alert("Login successful!");
-  closeLogin(); 
+  // Hide login form, show OTP step
+  document.querySelector("#loginModal form").style.display = "none";
+  document.getElementById("otpStep").style.display = "block";
+
+  alert("OTP sent to " + email);
+}
+
+function backToLogin() {
+  document.getElementById("otpStep").style.display = "none";
+  document.querySelector("#loginModal form").style.display = "block";
+  
 }
 
 
