@@ -356,23 +356,26 @@ document.addEventListener("DOMContentLoaded", initGoogleLogin);
 
 // OTP login popup
 function showOtp() {
-  const email = document.getElementById("email").value;
+  const loginModal = document.getElementById("loginModal");
+  const otpStep = document.getElementById("otpStep");
 
-  if (!email) {
-    alert("Please enter email first");
-    return;
-  }
+  if (!loginModal || !otpStep) return;
 
-  document.getElementById("loginStep").style.display = "none";
-  document.getElementById("otpStep").style.display = "block";
-
-  alert("OTP sent to " + email); 
+  loginModal.style.display = "none";  // hide login modal
+  otpStep.style.display = "block";    // show OTP step
+  alert("OTP sent!");
 }
 
 function backToLogin() {
-  document.getElementById("otpStep").style.display = "none";
-  document.getElementById("loginStep").style.display = "block";
+  const loginModal = document.getElementById("loginModal");
+  const otpStep = document.getElementById("otpStep");
+
+  if (!loginModal || !otpStep) return;
+
+  otpStep.style.display = "none";     // hide OTP step
+  loginModal.style.display = "block"; // show login modal
 }
+
 
 function verifyOtp() {
   const otp = document.getElementById("otp").value;
