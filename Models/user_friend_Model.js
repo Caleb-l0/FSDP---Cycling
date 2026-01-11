@@ -25,7 +25,7 @@ async function getUserFriends(userId, sortBy = "date") {
       uf.description
     FROM userfriends uf
     JOIN users u
-      ON uf.friendid = u.id
+      ON uf. userfriendid = u.id
     WHERE uf.userid = $1
       AND uf.status = 'active'
     ORDER BY ${orderBy}
@@ -37,10 +37,11 @@ async function getUserFriends(userId, sortBy = "date") {
 }
 
 
+
 async function addFriend(userId, friendId) {
   const result = await pool.query(
     `
-      INSERT INTO userfriends (userid, friendid, status, adddate)
+      INSERT INTO userfriends (userid, userfriendid, status, adddate)
       VALUES ($1, $2, 'active', NOW())
       RETURNING *
     `,
@@ -67,7 +68,7 @@ async function remobeFriend(userId, friendId) {
     `
       UPDATE userfriends
       SET status = 'inactive'
-      WHERE userid = $1 AND friendid = $2
+      WHERE userid = $1 AND  userfriendid = $2
       RETURNING *
     `,
     [userId, friendId]
@@ -80,7 +81,7 @@ async function isFriend(userId, friendId) {
     ` 
       SELECT *
       FROM userfriends
-      WHERE userid = $1 AND friendid = $2 AND status = 'active'
+      WHERE userid = $1 AND  userfriendid = $2 AND status = 'active'
     `,
     [userId, friendId]
   );
