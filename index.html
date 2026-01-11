@@ -241,6 +241,14 @@
         <button type="submit">Login</button>
       </form>
       <button onclick="showOtp()">Login with OTP</button>
+      <!-- OTP Step  -->
+<div id="otpStep" style="display:none;">
+  <h2>Enter OTP</h2>
+  <input id="otp" type="text" maxlength="6" placeholder="6-digit OTP">
+  <button type="button" onclick="verifyOtp()">Verify OTP</button>
+  <p style="margin-top:10px;"><a href="#" onclick="backToLogin()">← Back</a></p>
+</div>
+
       <p style="font-size:15px;padding:3px;font-weight:10">Or</p>
       <div id="googleButtonContainer" style="margin-top:12px;">
   <button id="googleLoginBtn" type="button">
@@ -253,25 +261,7 @@
     </div>
   </div>  
 
-  <!-- OTP  -->
-  <div id="otpStep" style="display:none;">
-    <h2>Enter OTP</h2>
 
-    <input
-      id="otp"
-      type="text"
-      maxlength="6"
-      placeholder="6-digit OTP"
-    >
-
-    <button type="button" onclick="verifyOtp()">
-      Verify OTP
-    </button>
-
-    <p style="margin-top:10px;">
-      <a href="#" onclick="backToLogin()">← Back</a>
-    </p>
-  </div>
 
 
   <!-- Signup Modal -->
