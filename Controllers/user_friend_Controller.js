@@ -40,7 +40,7 @@ async function remobeFriend(req, res) {
   try {
     const userId = req.user.id;
     const friendId = parseInt(req.params.friendId);
-    await userFriendsModel.remobeFriend(userId, friendId);
+    await userFriendsModel.removeFriend(userId, friendId);
     return res.status(200).json({ message: "Friend removed" });
   }
   catch (error) {
