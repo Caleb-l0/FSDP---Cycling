@@ -36,7 +36,7 @@
   gap: 14px;
 }
 
-/* 每个朋友卡 */
+
 .friend-card {
   display: flex;
   align-items: center;
@@ -74,3 +74,36 @@
   font-size: 0.85rem;
   font-weight: 600;
 }
+
+
+
+.hv-friend-filters {
+  display: flex;
+  gap: 14px;
+  margin: 18px 0 28px;
+}
+
+.hv-pill {
+  padding: 12px 26px;
+  border-radius: 999px;
+  font-size: 1.05rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: 2px solid #facc15;     /* Yellow outline */
+  background: transparent;
+  color: #92400e;
+  transition: 0.2s;
+}
+
+/* Selected */
+.hv-pill.active {
+  background: #facc15;           /* Yellow fill */
+  color: #3f2c00;
+  box-shadow: 0 6px 14px rgba(250,204,21,.35);
+}
+
+
+.hv-pill:hover {
+  transform: translateY(-1px);
+}
+
