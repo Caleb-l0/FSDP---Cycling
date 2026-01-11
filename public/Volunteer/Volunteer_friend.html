@@ -6,9 +6,12 @@
     <title>Friends | Happy Volunteer</title>
 
     <!-- CSS -->
-    <link rel="stylesheet" href="./community.css">
+    
     <link rel="stylesheet" href="../homepage.css">
+    <link rel="stylesheet" href="./volunteer_friend.css">
+    <!-- FONT AWESOME -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+     
 </head>
 
 <body>
@@ -52,36 +55,30 @@
 
 
 <!-- ⭐ FRIENDS LIST SECTION ⭐ -->
-<section class="people-section">
-    <h2 class="section-title">People You May Know</h2>
+<section class="hv-friends">
 
-    <div class="people-scroll">
+  <div class="hv-friends-header">
+    <h2>👥 My Friends</h2>
 
-        <div class="people-card">
-            <img src="./default_user.png" class="people-avatar">
-            <h4 class="people-name">John Lim</h4>
-            <button class="btn-add">Add Friend</button>
-        </div>
+    <div class="hv-filters">
+      <button class="filter-btn active" data-filter="recent">
+        🕒 Newest
+      </button>
 
-        <div class="people-card">
-            <img src="./default_user.png" class="people-avatar">
-            <h4 class="people-name">Amelia Foo</h4>
-            <button class="btn-add">Add Friend</button>
-        </div>
+      <button class="filter-btn" data-filter="close">
+        ❤️ Closest
+      </button>
 
-        <div class="people-card">
-            <img src="./default_user.png" class="people-avatar">
-            <h4 class="people-name">Shawn Tay</h4>
-            <button class="btn-add">Add Friend</button>
-        </div>
-
-        <div class="people-card">
-            <img src="./default_user.png" class="people-avatar">
-            <h4 class="people-name">Nicole Tan</h4>
-            <button class="btn-add">Add Friend</button>
-        </div>
-
+      <button class="filter-btn" data-filter="alpha">
+        🔤 A–Z
+      </button>
     </div>
+  </div>
+
+  <div id="friendsList" class="hv-friends-list">
+    <!-- Friends will be injected here -->
+  </div>
+
 </section>
 
 

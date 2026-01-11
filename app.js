@@ -168,7 +168,8 @@ app.get('/volunteer/user/profile/:id',volunteerUserController.getPublicVolunteer
 // ------ VOLUNTEER FRIENDS CONTROLLER -----
 
 
-app.get('/volunteer/user/friends', authenticate, userFriendController.getMyFriends);
+app.get('/volunteer/friends/me', authenticate, userFriendController.getMyFriends);
+
 // ----- VOLUNTEER EVENT FEED -----
 
 app.get('/volunteer/events', adminEventController.getAllEvents);
