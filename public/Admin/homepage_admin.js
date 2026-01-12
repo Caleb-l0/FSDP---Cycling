@@ -118,210 +118,99 @@ async function GetLocation(eventID){
 
 //----------------------------------------------------------------
 // for dashboard 1
+// ------------------------------------------------
+// Dashboard 1 – Applications
+// ------------------------------------------------
 async function requestAll(choice) {
+  try {
+    const res = await fetch(
+      "https://fsdp-cycling-ltey.onrender.com/admin/applications",
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        }
+      }
+    );
 
-try{
-    const res = await fetch('https://fsdp-cycling-ltey.onrender.com/admin/applications', {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json', 
-      "Authorization": `Bearer ${token}` 
-    }
-
-  });
     if (!res.ok) {
-        throw new Error('Network response was not ok');
+      throw new Error("Network response was not ok");
     }
 
+    const data = await res.json();
+    console.log("Applications:", data);
 
-    const data =  await res.json();
-    console.log(data);
+    eventGrid1.innerHTML = "";
 
-    if(choice == "all"){
-   for (const application of data) {
-   
-  const locationObj = await GetLocation(parseInt(application.eventid));
-  const locationName = locationObj.eventlocation;
-
-  const date = new Date(application.eventdate);
-  const day = date.getDate();
-  const month = months[date.getMonth()];
-  const year = date.getFullYear();
-      
-        const date2 = new Date(application.createdat);
-         const day2 = date2.getDate();
-           const month2 = months[date2.getMonth()];
-           const year2 = date2.getFullYear();
-
-  const card = document.createElement("div");
-  card.className = "event-card";
-
-  card.innerHTML = `
-    <h3>${application.eventname}</h3>
-    <p><strong>Date:</strong> ${day} ${month} ${year}</p>
-    <p><strong>Location:</strong> ${locationName}</p>
-    <p><strong>Apply on:</strong> ${day2} ${month2} ${year2}</p>
-    <p><strong>Organization:</strong> ${application.organizationid}</p>
-    <span class="status-tag status-${application.status.toLowerCase()}">${application.status}</span>
-  `;
-
-  card.addEventListener("click", () => {
-    localStorage.setItem("currentRequest", JSON.stringify(application));
-    window.location.href = "./admin_request.html";
-  });
-
-  eventGrid1.appendChild(card);
-}}
-    else if (choice === "date") {
-      data.sort((a, b) =>   new Date(a.eventdate)-new Date(b.eventdate));
-        for (const application of data) {
-
-
-  const locationObj = await GetLocation(parseInt(application.eventid));
-  const locationName = locationObj.eventlocation;
-
-  const date = new Date(application.eventdate);
-  const day = date.getDate();
-  const month = months[date.getMonth()];
-  const year = date.getFullYear();
-      
-        const date2 = new Date(application.createdat);
-         const day2 = date2.getDate();
-           const month2 = months[date2.getMonth()];
-           const year2 = date2.getFullYear();
-
-  const card = document.createElement("div");
-  card.className = "event-card";
-
-  card.innerHTML = `
-<h3>${application.eventname}</h3>
-    <p><strong>Date:</strong> ${day} ${month} ${year}</p>
-    <p><strong>Location:</strong> ${locationName}</p>
-    <p><strong>Apply on:</strong> ${day2} ${month2} ${year2}</p>
-    <p><strong>Organization:</strong> ${application.organizationid}</p>
-    <span class="status-tag status-${application.status.toLowerCase()}">${application.status}</span>
-  `;
-
-  card.addEventListener("click", () => {
-    localStorage.setItem("currentRequest", JSON.stringify(application));
-    window.location.href = "./admin_request.html";
-  });
-
-  eventGrid1.appendChild(card);}
+    
+    if (choice === "date") {
+      data.sort(
+        (a, b) => new Date(a.eventdate) - new Date(b.eventdate)
+      );
     }
-    else if (choice === "approved") {
-       for (const application of data) {
-        if(application.status==="Approved"){
+
+    for (const application of data) {
    
-  const locationObj = await GetLocation(parseInt(application.eventid));
-  const locationName = locationObj.eventlocation;
+      if (
+        (choice === "approved" && application.status !== "Approved") ||
+        (choice === "rejected" && application.status !== "Rejected") ||
+        (choice === "history" &&
+          application.status !== "Approved" &&
+          application.status !== "Rejected")
+      ) {
+        continue;
+      }
 
-  const date = new Date(application.eventdate);
-  const day = date.getDate();
-  const month = months[date.getMonth()];
-  const year = date.getFullYear();
-      
-        const date2 = new Date(application.createdat);
-         const day2 = date2.getDate();
-           const month2 = months[date2.getMonth()];
-           const year2 = date2.getFullYear();
+     
+      const locationObj = await GetLocation(
+        Number(application.eventid)
+      );
+      const locationName =
+        locationObj?.eventlocation || "Unknown";
 
-  const card = document.createElement("div");
-  card.className = "event-card";
+     
+      const eventDate = new Date(application.eventdate);
+      const applyDate = new Date(application.createdat);
 
-  card.innerHTML = `
-    <h3>${application.eventname}</h3>
-    <p><strong>Date:</strong> ${day} ${month} ${year}</p>
-    <p><strong>Location:</strong> ${locationName}</p>
-    <p><strong>Apply on:</strong> ${day2} ${month2} ${year2}</p>
-    <p><strong>Organization:</strong> ${application.organizationid}</p>
-    <span class="status-tag status-${application.status.toLowerCase()}">${application.status}</span>
-  `;
+      const card = document.createElement("div");
+      card.className = "event-card";
 
-  card.addEventListener("click", () => {
-    localStorage.setItem("currentRequest", JSON.stringify(application));
-    window.location.href = "./admin_request.html";
-  });
+      card.innerHTML = `
+        <h3>${application.eventname}</h3>
+        <p><strong>Date:</strong>
+          ${eventDate.getDate()} 
+          ${months[eventDate.getMonth()]} 
+          ${eventDate.getFullYear()}
+        </p>
+        <p><strong>Location:</strong> ${locationName}</p>
+        <p><strong>Applied on:</strong>
+          ${applyDate.getDate()} 
+          ${months[applyDate.getMonth()]} 
+          ${applyDate.getFullYear()}
+        </p>
+        <p><strong>Organization:</strong> ${application.organizationid}</p>
+        <span class="status-tag status-${application.status.toLowerCase()}">
+          ${application.status}
+        </span>
+      `;
 
-  eventGrid1.appendChild(card);}}}
-
-    else if(choice == "rejected"){
-       for (const application of data) {
-        if(application.status === "Rejected"){
    
-  const locationObj = await GetLocation(parseInt(application.eventid));
-  const locationName = locationObj.eventlocation;
+      card.addEventListener("click", () => {
+        localStorage.setItem(
+          "currentApplication",
+          JSON.stringify(application)
+        );
+        window.location.href = "./admin_request.html";
+      });
 
-  const date = new Date(application.eventdate);
-  const day = date.getDate();
-  const month = months[date.getMonth()];
-  const year = date.getFullYear();
-      
-        const date2 = new Date(application.createdat);
-         const day2 = date2.getDate();
-           const month2 = months[date2.getMonth()];
-           const year2 = date2.getFullYear();
-
-  const card = document.createElement("div");
-  card.className = "event-card";
-
-  card.innerHTML = `
-    <h3>${application.eventname}</h3>
-    <p><strong>Date:</strong> ${day} ${month} ${year}</p>
-    <p><strong>Location:</strong> ${locationName}</p>
-    <p><strong>Apply on:</strong> ${day2} ${month2} ${year2}</p>
-    <p><strong>Organization:</strong> ${application.organizationid}</p>
-    <span class="status-tag status-${application.status.toLowerCase()}">${application.status}</span>
-  `;
-
-  card.addEventListener("click", () => {
-    localStorage.setItem("currentRequest", JSON.stringify(application));
-    window.location.href = "./admin_request.html";
-  });
-
-  eventGrid1.appendChild(card);}
-       }}
-      else if (choice ==  'history'){
-       for (const application of data) {
-        if(application.status === "Approved" || application.status === "Rejected"){
-   
-  const locationObj = await GetLocation(parseInt(application.eventid));
-  const locationName = locationObj.eventlocation;
-
-  const date = new Date(application.eventdate);
-  const day = date.getDate();
-  const month = months[date.getMonth()];
-  const year = date.getFullYear();
-      
-        const date2 = new Date(application.createdat);
-         const day2 = date2.getDate();
-           const month2 = months[date2.getMonth()];
-           const year2 = date2.getFullYear();
-
-  const card = document.createElement("div");
-  card.className = "event-card";
-
-  card.innerHTML = `
-    <h3>${application.eventname}</h3>
-    <p><strong>Date:</strong> ${day} ${month} ${year}</p>
-    <p><strong>Location:</strong> ${locationName}</p>
-    <p><strong>Apply on:</strong> ${day2} ${month2} ${year2}</p>
-    <p><strong>Organization:</strong> ${application.organizationid}</p>
-    <span class="status-tag status-${application.status.toLowerCase()}">${application.status}</span>
-  `;
-
-  card.addEventListener("click", () => {
-    localStorage.setItem("currentRequest", JSON.stringify(application));
-    window.location.href = "./admin_request.html";
-  });
-
-  eventGrid1.appendChild(card);
-}}}
-}
-catch(err){
+      eventGrid1.appendChild(card);
+    }
+  } catch (err) {
     console.error("Error fetching applications:", err);
+  }
 }
-}
+
 
 const requestallbt = document.getElementById("request_all");
 const requestdatebt = document.getElementById("request_date");
@@ -331,32 +220,25 @@ const requestrejectbt = document.getElementById("request_reject");
 const requestHistorybt = document.getElementById("request_history");
 
 requestallbt.addEventListener("click", () => {
-    eventGrid1.innerHTML = "";
-    requestAll("all");
-}
-);
+  requestAll("all");
+});
+
+requestdatebt.addEventListener("click", () => {
+  requestAll("date");
+});
 
 requestapprovedbt.addEventListener("click", () => {
-    eventGrid1.innerHTML = "";
-    requestAll("approved");
-}); 
-requestrejectbt.addEventListener("click", () => {
-    eventGrid1.innerHTML = "";
-    requestAll("rejected");
+  requestAll("approved");
 });
-requestdatebt.addEventListener("click", () => {
-   eventGrid1.innerHTML = ``
-    requestAll("date");
-}
-);
+
+requestrejectbt.addEventListener("click", () => {
+  requestAll("rejected");
+});
+
 requestHistorybt.addEventListener("click", () => {
-    eventGrid1.innerHTML = `
-  
-   
-   `;
-    requestAll("history");
-}
-);
+  requestAll("history");
+});
+
 
 
 
@@ -418,7 +300,7 @@ async function requestAll2(choice) {
 
             `;
              eventCard.addEventListener('click', () => {
-        localStorage.setItem('currentRequest', JSON.stringify(event));
+        localStorage.setItem('currentEvent', JSON.stringify(event));
         window.location.href = './admin_event.html';
 });
             eventGrid2.appendChild(eventCard);
@@ -449,7 +331,7 @@ async function requestAll2(choice) {
 
             `;
              eventCard.addEventListener('click', () => {
-        localStorage.setItem('currentRequest', JSON.stringify(event));
+        localStorage.setItem('currentEvent', JSON.stringify(event));
         window.location.href = './admin_event.html';
 });
             eventGrid2.appendChild(eventCard);
@@ -481,7 +363,7 @@ async function requestAll2(choice) {
 
             `;
              eventCard.addEventListener('click', () => {
-        localStorage.setItem('currentRequest', JSON.stringify(event));
+       localStorage.setItem('currentEvent', JSON.stringify(event));
         window.location.href = './admin_event.html';
 });
             eventGrid2.appendChild(eventCard);
@@ -513,7 +395,7 @@ async function requestAll2(choice) {
 
             `;
              eventCard.addEventListener('click', () => {
-        localStorage.setItem('currentRequest', JSON.stringify(event));
+       localStorage.setItem('currentEvent', JSON.stringify(event));
         window.location.href = './admin_event.html';
 });
             eventGrid2.appendChild(eventCard);
@@ -545,7 +427,7 @@ async function requestAll2(choice) {
 
             `;
              eventCard.addEventListener('click', () => {
-        localStorage.setItem('currentRequest', JSON.stringify(event));
+     localStorage.setItem('currentEvent', JSON.stringify(event));
         window.location.href = './admin_event.html';
 });
             eventGrid2.appendChild(eventCard);
@@ -579,7 +461,7 @@ async function requestAll2(choice) {
 
             `;
              eventCard.addEventListener('click', () => {
-        localStorage.setItem('currentRequest', JSON.stringify(event));
+       localStorage.setItem('currentEvent', JSON.stringify(event));
         window.location.href = './admin_event.html';
 });
             eventGrid2.appendChild(eventCard);
