@@ -32,9 +32,20 @@ function showGeoWeather() {
                 const res = await fetch(url);
                 const data = await res.json();
 
+                // Determine weather type based on icon code
+                const iconCode = data.weather[0].icon;
+                let weatherClass = '';
+                if (iconCode.startsWith('01')) {
+                    weatherClass = 'weather-sunny'; // Clear sky - sunny
+                } else if (iconCode.startsWith('09') || iconCode.startsWith('10') || iconCode.startsWith('11')) {
+                    weatherClass = 'weather-rainy'; // Rain or thunderstorm
+                } else if (iconCode.startsWith('03') || iconCode.startsWith('04') || iconCode.startsWith('02')) {
+                    weatherClass = 'weather-cloudy'; // Clouds
+                }
+
                 geoDiv.innerHTML = `
-                    <div class="service-icon">
-                        <img src="https://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png" alt="weather">
+                    <div class="service-icon ${weatherClass}">
+                        <img src="https://openweathermap.org/img/wn/${iconCode}@2x.png" alt="weather" class="weather-icon">
                     </div>
                     <div class="service-content">
                         <h3>${data.name}</h3>

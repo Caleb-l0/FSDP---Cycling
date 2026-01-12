@@ -5,7 +5,64 @@ if (!token) {
   window.location.href = '../../index.html';
 }
 
+/* =====================================================
+   WEATHER (DISPLAY BY CURRENT LOCATION ONLY)
+   ===================================================== */
+function showGeoWeather() {
+    const geoDiv = document.getElementById("geo-weather");
+    if (!geoDiv) return;
+
+    if (!navigator.geolocation) {
+        geoDiv.textContent = "Geolocation is not supported by your browser.";
+        return;
+    }
+
+    geoDiv.textContent = "Detecting your location...";
+
+    navigator.geolocation.getCurrentPosition(
+        async (position) => {
+            const lat = position.coords.latitude;
+            const lon = position.coords.longitude;
+
+            const apiKey = "3652b8b54e92c83d871ca9705153b07f";
+            const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=${apiKey}`;
+
+            try {
+                const res = await fetch(url);
+                const data = await res.json();
+
+                // Determine weather type based on icon code
+                const iconCode = data.weather[0].icon;
+                let weatherClass = '';
+                if (iconCode.startsWith('01')) {
+                    weatherClass = 'weather-sunny'; // Clear sky - sunny
+                } else if (iconCode.startsWith('09') || iconCode.startsWith('10') || iconCode.startsWith('11')) {
+                    weatherClass = 'weather-rainy'; // Rain or thunderstorm
+                } else if (iconCode.startsWith('03') || iconCode.startsWith('04') || iconCode.startsWith('02')) {
+                    weatherClass = 'weather-cloudy'; // Clouds
+                }
+
+                geoDiv.innerHTML = `
+                    <div class="service-icon ${weatherClass}">
+                        <img src="https://openweathermap.org/img/wn/${iconCode}@2x.png" alt="weather" class="weather-icon">
+                    </div>
+                    <div class="service-content">
+                        <h3>${data.name}</h3>
+                        <p>${data.main.temp}°C — ${data.weather[0].description}</p>
+                    </div>
+                `;
+            } catch (err) {
+                geoDiv.textContent = "Failed to load weather data.";
+            }
+        },
+        () => {
+            geoDiv.textContent = "Location permission denied.";
+        }
+    );
+}
+
 document.addEventListener('DOMContentLoaded', () => {
+  showGeoWeather(); // Load weather
   loadCalendar();
 });
 
