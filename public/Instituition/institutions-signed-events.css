@@ -1,6 +1,6 @@
 /* ======================================================
-   INSTITUTION EVENTS PAGE - Professional, Elderly-Friendly
-   Design System: Consistent with Admin & Volunteer pages
+   INSTITUTION SIGNED EVENTS PAGE - Professional, Elderly-Friendly
+   Design System: Consistent with Institution pages
 ====================================================== */
 
 /* ======================================================
@@ -25,7 +25,7 @@ body {
 }
 
 /* ======================================================
-   HEADER STYLES (if not using shared header)
+   HEADER STYLES
 ====================================================== */
 header {
   background: #ffffff;
@@ -151,7 +151,6 @@ h2 {
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
   border: 1px solid #e2e8f0;
   transition: all 0.3s ease;
-  cursor: pointer;
   display: flex;
   flex-direction: column;
   gap: 16px;
@@ -186,210 +185,44 @@ h2 {
 }
 
 /* ======================================================
-   BOOK BUTTON
+   PARTICIPANT LIST
 ====================================================== */
-.btn-book {
-  background: #10b981;
-  color: #ffffff;
-  border: none;
-  padding: 12px 24px;
+.participant-list {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid #e2e8f0;
+}
+
+.participant-item {
+  padding: 12px;
+  background: #f8fafc;
   border-radius: 8px;
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  margin-top: auto;
-  min-height: 44px;
-  width: 100%;
-}
-
-.btn-book:hover {
-  background: #059669;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
-}
-
-.btn-book:active {
-  transform: translateY(0);
-}
-
-/* ======================================================
-   BOOKING MODAL
-====================================================== */
-.booking-modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.6);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 2000;
-  padding: 20px;
-  backdrop-filter: blur(4px);
-}
-
-.modal-content {
-  background: #ffffff;
-  padding: 32px;
-  border-radius: 16px;
-  max-width: 560px;
-  width: 100%;
-  max-height: 90vh;
-  overflow-y: auto;
-  position: relative;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-}
-
-.close-modal {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  font-size: 2rem;
-  cursor: pointer;
-  color: #64748b;
-  line-height: 1;
-  width: 40px;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 8px;
-  transition: all 0.2s ease;
-  background: #f1f5f9;
-}
-
-.close-modal:hover {
-  color: #1e293b;
-  background: #e2e8f0;
-}
-
-.modal-content h2 {
-  font-size: 1.75rem;
-  margin: 0 0 24px 0;
-  color: #1e293b;
-}
-
-/* ======================================================
-   FORM STYLES
-====================================================== */
-.form-group {
-  margin-bottom: 20px;
-}
-
-.form-group label {
-  display: block;
   margin-bottom: 8px;
-  font-weight: 600;
-  color: #1e293b;
-  font-size: 1rem;
-}
-
-.form-group input[type="text"],
-.form-group input[type="number"],
-.form-group input[type="tel"],
-.form-group input[type="email"] {
-  width: 100%;
-  padding: 12px 16px;
-  border: 2px solid #e2e8f0;
-  border-radius: 8px;
-  font-size: 1rem;
-  box-sizing: border-box;
-  transition: all 0.2s ease;
-  background: #ffffff;
-  color: #1e293b;
-  min-height: 48px;
-}
-
-.form-group input:focus {
-  outline: none;
-  border-color: #ea8d2a;
-  box-shadow: 0 0 0 3px rgba(234, 141, 42, 0.1);
-}
-
-.form-group input[type="checkbox"] {
-  width: 20px;
-  height: 20px;
-  margin-right: 8px;
-  cursor: pointer;
-}
-
-.form-actions {
-  display: flex;
-  gap: 12px;
-  margin-top: 28px;
-  flex-wrap: wrap;
-}
-
-.btn-submit {
-  flex: 1;
-  min-width: 120px;
-  padding: 14px 24px;
-  background: #10b981;
-  color: #ffffff;
-  border: none;
-  border-radius: 8px;
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  min-height: 48px;
-}
-
-.btn-submit:hover {
-  background: #059669;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
-}
-
-.btn-cancel {
-  flex: 1;
-  min-width: 120px;
-  padding: 14px 24px;
-  background: #64748b;
-  color: #ffffff;
-  border: none;
-  border-radius: 8px;
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  min-height: 48px;
-}
-
-.btn-cancel:hover {
-  background: #475569;
-  transform: translateY(-2px);
-}
-
-/* ======================================================
-   MESSAGE STYLES
-====================================================== */
-.event-message {
-  padding: 32px;
-  text-align: center;
-  border-radius: 12px;
-  font-size: 1.1rem;
-  margin: 24px 0;
-}
-
-.event-message--loading {
-  background: #f1f5f9;
+  font-size: 0.95rem;
   color: #475569;
 }
 
-.event-message--empty {
-  background: #fef3c7;
-  color: #92400e;
-  border: 2px solid #fde68a;
+.participant-item strong {
+  color: #1e293b;
+  font-weight: 600;
 }
 
-.event-message--error {
-  background: #fee2e2;
-  color: #991b1b;
-  border: 2px solid #fecaca;
+/* ======================================================
+   EMPTY STATE
+====================================================== */
+.empty-state {
+  text-align: center;
+  padding: 48px 24px;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+  border: 1px solid #e2e8f0;
+}
+
+.empty-state p {
+  font-size: 1.1rem;
+  color: #64748b;
+  margin: 0;
 }
 
 /* ======================================================
@@ -471,21 +304,6 @@ footer {
   .event-card h3 {
     font-size: 1.25rem;
   }
-
-  .modal-content {
-    padding: 24px;
-    max-width: 100%;
-    margin: 20px;
-  }
-
-  .form-actions {
-    flex-direction: column;
-  }
-
-  .btn-submit,
-  .btn-cancel {
-    width: 100%;
-  }
 }
 
 @media (max-width: 480px) {
@@ -512,15 +330,6 @@ footer {
   .event-card {
     padding: 20px;
   }
-
-  .modal-content {
-    padding: 20px;
-    margin: 10px;
-  }
-
-  .modal-content h2 {
-    font-size: 1.5rem;
-  }
 }
 
 /* ======================================================
@@ -534,22 +343,15 @@ footer {
   }
 }
 
-/* Focus styles for keyboard navigation */
 button:focus-visible,
-a:focus-visible,
-input:focus-visible {
+a:focus-visible {
   outline: 3px solid #ea8d2a;
   outline-offset: 2px;
 }
 
-/* High contrast mode support */
 @media (prefers-contrast: high) {
   .event-card {
     border-width: 2px;
   }
-
-  .btn-book,
-  .btn-submit {
-    border: 2px solid #000;
-  }
 }
+

@@ -182,6 +182,15 @@ async function requestAll(choice) {
         (a, b) => new Date(a.eventdate) - new Date(b.eventdate)
       );
     }
+    else if (choice === "organization") {
+      data.sort((a, b) => {
+      
+        if (a.organizationid < b.organizationid) return -1;
+        if (a.organizationid > b.organizationid) return 1;
+        return 0;
+      });
+    }
+
 
     for (const application of data) {
    
@@ -251,6 +260,7 @@ const requestorganbt = document.getElementById("request_organ");
 const requestapprovedbt = document.getElementById("request_approved");
 const requestrejectbt = document.getElementById("request_reject");
 const requestHistorybt = document.getElementById("request_history");
+const requestbyorganisation = document.getElementById("request_organ");
 
 requestallbt.addEventListener("click", () => {
   requestAll("all");
@@ -270,6 +280,10 @@ requestrejectbt.addEventListener("click", () => {
 
 requestHistorybt.addEventListener("click", () => {
   requestAll("history");
+});
+
+requestorganbt.addEventListener("click", () => {
+  requestAll("organization"); 
 });
 
 
