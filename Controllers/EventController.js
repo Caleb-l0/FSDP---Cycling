@@ -10,23 +10,16 @@ async function getEventsByLocation(req, res) {
   try {
     const { location, date } = req.query;
 
-    const pool = await sql.connect(db);
-    const result = await pool.request()
-     .input("Location", sql.NVarChar, location || "")
-      .input("StartOfDay", sql.DateTime, new Date(date + " 00:00:00"))
-      .input("EndOfDay", sql.DateTime, new Date(date + " 23:59:59"))
-      .query(`
-        SELECT EventID, EventName, EventDate
-        FROM Events
-        WHERE Location = @Location
-        AND EventDate BETWEEN @StartOfDay AND @EndOfDay
-      `);
+    if (!location || !date) {
+      return res.status(400).json({ message: "Location and date are required" });
+    }
 
-    res.json(result.recordset);
+    const events = await EventModel.getEventsByLocation(location, date);
+    res.json(events);
 
   } catch (err) {
     console.error("getEventsByLocation Error:", err);
-    res.status(500).json({ message: "Server Error" });
+    res.status(500).json({ message: "Server Error", error: err.message });
   }
 }
 

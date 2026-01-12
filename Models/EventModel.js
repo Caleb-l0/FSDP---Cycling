@@ -3,12 +3,10 @@ const pool = require("../Postgres_config");
 /* =====================================================
    1. Get Events By Location + Date
    ===================================================== */
-async function getEventsByLocation(req, res) {
+async function getEventsByLocation(location, date) {
   try {
-    const { location, date } = req.query;
-
     if (!location || !date) {
-      return res.status(400).json({ message: "Location and date are required" });
+      throw new Error("Location and date are required");
     }
 
     const startOfDay = `${date} 00:00:00`;
@@ -25,10 +23,10 @@ async function getEventsByLocation(req, res) {
       [location, startOfDay, endOfDay]
     );
 
-    res.json(result.rows);
+    return result.rows;
   } catch (err) {
     console.error("getEventsByLocation error:", err);
-    res.status(500).json({ message: "Server error" });
+    throw err;
   }
 }
 

@@ -193,9 +193,11 @@ async function checkConflict(location, datetime) {
 
   const events = await response.json(); 
   return events.some(ev => {
-    const evDate = typeof ev.EventDate === 'string'
-      ? ev.EventDate
-      : new Date(ev.EventDate).toISOString();
+    // Handle both lowercase (PostgreSQL) and uppercase (legacy) field names
+    const eventDate = ev.eventdate || ev.EventDate;
+    const evDate = typeof eventDate === 'string'
+      ? eventDate
+      : new Date(eventDate).toISOString();
     const evTime = evDate.slice(11, 16);
     return evTime === time;
   });
@@ -253,11 +255,14 @@ function displayCalendar(events, date) {
     html += `<div class="slot">All time slots available ✔</div>`;
   } else {
     events.forEach(ev => {
-      const time = ev.EventDate.slice(11, 16); // HH:mm
+      // Handle both lowercase (PostgreSQL) and uppercase (legacy) field names
+      const eventDate = ev.eventdate || ev.EventDate;
+      const eventName = ev.eventname || ev.EventName;
+      const time = eventDate.slice(11, 16); // HH:mm
       html += `
         <div class="slot unavailable">
           ${time} — Unavailable 
-          <br>(${ev.EventName})
+          <br>(${eventName})
         </div>
       `;
     });
