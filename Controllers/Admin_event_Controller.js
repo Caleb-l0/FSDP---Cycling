@@ -128,12 +128,18 @@ async function deleteEvent(req, res) {
       return res.status(400).json({ message: "Invalid eventID" });
     }
 
+    // Check if event exists first
+    const eventCheck = await AdminEventModel.getEventById(id);
+    if (!eventCheck) {
+      return res.status(404).json({ message: "Event not found" });
+    }
+
     const result = await AdminEventModel.deleteEvent(id);
 
     if (!result.canDelete) {
       return res.status(400).json({
         canDelete: false,
-        message: "Cannot delete this event because it has bookings or participants signed up."
+        message: result.message || "Cannot delete this event because it has bookings or participants signed up."
       });
     }
 

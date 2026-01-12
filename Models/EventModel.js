@@ -90,10 +90,22 @@ async function checkAssigned(eventID) {
    4. Delete Event
    ===================================================== */
 async function deleteEvent(eventID) {
-  await pool.query(
-    `DELETE FROM events WHERE eventid = $1`,
-    [eventID]
-  );
+  try {
+    const eventIdInt = parseInt(eventID, 10);
+    if (Number.isNaN(eventIdInt)) {
+      throw new Error("Invalid eventID");
+    }
+    
+    const result = await pool.query(
+      `DELETE FROM events WHERE eventid = $1 RETURNING *`,
+      [eventIdInt]
+    );
+    
+    return result.rows.length > 0;
+  } catch (err) {
+    console.error("deleteEvent error:", err);
+    throw err;
+  }
 }
 
 /* =====================================================
@@ -108,7 +120,7 @@ async function updateEvent(eventID, data) {
   try {
     // Handle both uppercase (frontend format) and lowercase (database format) field names
     const eventName = data.eventname || data.EventName;
-    const eventDate = data.eventdate || data.EventDate;
+    let eventDate = data.eventdate || data.EventDate;
     const location = data.location || data.EventLocation || data.Location;
     const requiredVolunteers = data.requiredvolunteers || data.RequiredVolunteers;
     const description = data.description || data.Description;
@@ -117,11 +129,30 @@ async function updateEvent(eventID, data) {
       throw new Error("EventName and EventDate are required");
     }
 
+    // Convert date string to proper timestamp format if needed
+    // Handle various date formats
+    if (eventDate && typeof eventDate === 'string') {
+      // If it's ISO format with T (YYYY-MM-DDTHH:mm:ss), convert to space format
+      if (eventDate.includes('T')) {
+        eventDate = eventDate.replace('T', ' ').split('.')[0]; // Remove milliseconds if present
+      } else if (eventDate.match(/^\d{4}-\d{2}-\d{2}$/)) {
+        // Date only (YYYY-MM-DD), add default time (midnight)
+        eventDate = eventDate + ' 00:00:00';
+      }
+      // If it already has time format (YYYY-MM-DD HH:mm:ss), use as is
+    }
+
+    // Parse eventID to integer
+    const eventIdInt = parseInt(eventID, 10);
+    if (Number.isNaN(eventIdInt)) {
+      throw new Error("Invalid eventID");
+    }
+
     const result = await pool.query(
       `
       UPDATE events
       SET eventname = $1,
-          eventdate = $2,
+          eventdate = $2::timestamp,
           location = $3,
           requiredvolunteers = $4,
           description = $5,
@@ -132,12 +163,16 @@ async function updateEvent(eventID, data) {
       [
         eventName,
         eventDate,
-        location,
-        requiredVolunteers,
-        description,
-        eventID
+        location || null,
+        requiredVolunteers || null,
+        description || null,
+        eventIdInt
       ]
     );
+
+    if (result.rows.length === 0) {
+      throw new Error("Event not found or update failed");
+    }
 
     return result.rows[0];
   } catch (err) {

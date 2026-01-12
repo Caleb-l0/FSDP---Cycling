@@ -14,31 +14,53 @@ if (!eventID) {
   throw new Error("No event ID");
 }
 
+let originalEventDate = null;
+
 async function loadEvent() {
-  const res = await fetch(`https://fsdp-cycling-ltey.onrender.com/events/${eventID}`, {
-    method: "GET",
-    headers: { "Authorization": `Bearer ${token}` }
-  });
+  try {
+    const res = await fetch(`https://fsdp-cycling-ltey.onrender.com/events/${eventID}`, {
+      method: "GET",
+      headers: { "Authorization": `Bearer ${token}` }
+    });
 
-  const data = await res.json();
+    if (!res.ok) {
+      throw new Error("Failed to fetch event details");
+    }
 
-  // Handle both old format (EventName, EventDate, etc.) and new format (eventname, eventdate, etc.)
-  document.getElementById("ev-name").value = data.eventname || data.EventName || "";
-  document.getElementById("ev-date").value = (data.eventdate || data.EventDate || "").split("T")[0];
-  document.getElementById("ev-loc").value = data.location || data.Location || "";
-  document.getElementById("ev-needed").value = data.requiredvolunteers || data.RequiredVolunteers || "";
-  document.getElementById("ev-desc").value = data.description || data.Description || "";
+    const data = await res.json();
 
-  const assignedCheck = await fetch(`https://fsdp-cycling-ltey.onrender.com/events/checkAssigned/${eventID}`, {
-    method: "GET",
-    headers: { "Authorization": `Bearer ${token}` }
-  });
+    // Handle both old format (EventName, EventDate, etc.) and new format (eventname, eventdate, etc.)
+    document.getElementById("ev-name").value = data.eventname || data.EventName || "";
+    
+    // Store original date for time preservation
+    originalEventDate = data.eventdate || data.EventDate || "";
+    // Extract date part for date input (YYYY-MM-DD)
+    const dateValue = originalEventDate ? originalEventDate.split("T")[0] : "";
+    document.getElementById("ev-date").value = dateValue;
+    
+    document.getElementById("ev-loc").value = data.location || data.Location || "";
+    document.getElementById("ev-needed").value = data.requiredvolunteers || data.RequiredVolunteers || "";
+    document.getElementById("ev-desc").value = data.description || data.Description || "";
 
-  const assignedInfo = await assignedCheck.json();
+    const assignedCheck = await fetch(`https://fsdp-cycling-ltey.onrender.com/events/checkAssigned/${eventID}`, {
+      method: "GET",
+      headers: { "Authorization": `Bearer ${token}` }
+    });
 
-  if (assignedInfo.assigned) {
-    alert("❌ This event cannot be edited because an organisation is already assigned.");
-    disableEditing();
+    if (!assignedCheck.ok) {
+      console.error("Failed to check assignment status");
+      return;
+    }
+
+    const assignedInfo = await assignedCheck.json();
+
+    if (assignedInfo.assigned) {
+      alert("❌ This event cannot be edited because an organisation is already assigned.");
+      disableEditing();
+    }
+  } catch (error) {
+    console.error("Error loading event:", error);
+    alert("❌ Error loading event details: " + error.message);
   }
 }
 
@@ -49,12 +71,40 @@ function disableEditing() {
 
 document.getElementById("btn-save").addEventListener("click", async () => {
   try {
+    const eventName = document.getElementById("ev-name").value.trim();
+    const eventDateInput = document.getElementById("ev-date").value;
+    const eventLocation = document.getElementById("ev-loc").value.trim();
+    const requiredVolunteers = parseInt(document.getElementById("ev-needed").value);
+    const description = document.getElementById("ev-desc").value.trim();
+
+    // Validate required fields
+    if (!eventName) {
+      alert("❌ Event name is required");
+      return;
+    }
+
+    if (!eventDateInput) {
+      alert("❌ Event date is required");
+      return;
+    }
+
+    // Preserve time from original date if available, otherwise use midnight
+    let eventDate = eventDateInput;
+    if (originalEventDate && originalEventDate.includes("T")) {
+      // Extract time from original date
+      const originalTime = originalEventDate.split("T")[1] || "00:00:00";
+      eventDate = eventDateInput + "T" + originalTime.split(".")[0]; // Remove milliseconds if present
+    } else {
+      // No original time, use midnight
+      eventDate = eventDateInput + "T00:00:00";
+    }
+
     const body = {
-      EventName: document.getElementById("ev-name").value,
-      EventDate: document.getElementById("ev-date").value,
-      EventLocation: document.getElementById("ev-loc").value,
-      RequiredVolunteers: parseInt(document.getElementById("ev-needed").value),
-      Description: document.getElementById("ev-desc").value
+      EventName: eventName,
+      EventDate: eventDate,
+      EventLocation: eventLocation,
+      RequiredVolunteers: requiredVolunteers,
+      Description: description
     };
 
     const res = await fetch(`https://fsdp-cycling-ltey.onrender.com/events/update/${eventID}`, {
@@ -67,8 +117,8 @@ document.getElementById("btn-save").addEventListener("click", async () => {
     });
 
     if (!res.ok) {
-      const errorData = await res.json();
-      alert("❌ Error: " + (errorData.message || "Failed to update event"));
+      const errorData = await res.json().catch(() => ({ message: "Unknown error" }));
+      alert("❌ Error: " + (errorData.message || errorData.error || "Failed to update event"));
       return;
     }
 

@@ -1,56 +1,67 @@
 const token = localStorage.getItem('token');
 if (!token) {
-
- window.location.href = '../../index.html';}
-
-
-const title = document.getElementById("title1")
-const title2 = document.getElementById("title2")
-const title3 = document.getElementById("title3")
-const dashboard1 = document.getElementById("dashboard1")
-const dashboard2 = document.getElementById("dashboard2")
-const dashboard3 = document.getElementById("dashboard3")
-const createEventbt = document.getElementById('createEvent')
-const bookingGrid = document.getElementById("bookingGrid")
-
- const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", 
-                  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    window.location.href = '../../index.html';
+}
 
 
+const title = document.getElementById("title1"); 
+const title2 = document.getElementById("title2"); 
 
 
+const dashboard1 = document.getElementById("dashboard1"); 
+const dashboard2 = document.getElementById("dashboard2"); 
+const dashboard3 = document.getElementById("dashboard3"); 
+
+const bookingGrid = document.getElementById("bookingGrid");
+const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+
+if (dashboard1) dashboard1.style.display = "none"; 
+if (dashboard3) {
+    dashboard3.style.display = "block";
+    loadBookingRequests();
+}
+if (dashboard2) dashboard2.style.display = "none";
 
 
 title.addEventListener("click", function() {
-  if (title2.classList.contains("dashboard_title_selected")) {
-    title2.classList.remove("dashboard_title_selected");
-    title2.classList.add("dashboard_title_not_selected");
+    
+    if (title2.classList.contains("dashboard_title_selected")) {
+        
+        
+        title2.classList.remove("dashboard_title_selected");
+        title2.classList.add("dashboard_title_not_selected");
 
-    title.classList.remove("dashboard_title_not_selected");
-    title.classList.add("dashboard_title_selected");
-   
-    dashboard2.style.display = "none";
-    dashboard1.style.display = "block";
- 
-  } 
- 
+        title.classList.remove("dashboard_title_not_selected");
+        title.classList.add("dashboard_title_selected");
+        
+        
+        dashboard2.style.display = "none";
+        if(dashboard1) dashboard1.style.display = "none"; 
+        
+        if (dashboard3) {
+            dashboard3.style.display = "block"; 
+            loadBookingRequests(); 
+        }
+    } 
 });
 
 
-
 title2.addEventListener("click", function() {
-    if (title.classList.contains("dashboard_title_selected") || (title3 && title3.classList.contains("dashboard_title_selected"))) {
+    
+    if (title.classList.contains("dashboard_title_selected")) {
+        
+       
         title.classList.remove("dashboard_title_selected");
         title.classList.add("dashboard_title_not_selected");
-        if (title3) {
-          title3.classList.remove("dashboard_title_selected");
-          title3.classList.add("dashboard_title_not_selected");
-        }
+
         title2.classList.remove("dashboard_title_not_selected");
         title2.classList.add("dashboard_title_selected"); 
         
-        dashboard1.style.display = "none";
-        if (dashboard3) dashboard3.style.display = "none";
+        
+        if(dashboard1) dashboard1.style.display = "none";
+        if(dashboard3) dashboard3.style.display = "none"; 
+        
         dashboard2.style.display = "block";
     }
 });
