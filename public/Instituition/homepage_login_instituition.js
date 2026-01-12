@@ -34,14 +34,16 @@ async function getOrganizationId() {
     });
 
     if (!response.ok) {
-      throw new Error('Failed to get organization ID');
+      const errorData = await response.json().catch(() => ({ message: 'Unknown error' }));
+      console.warn('Failed to get organization ID:', errorData.message || `Status ${response.status}`);
+      return null; // Return null instead of throwing - institution might not have org yet
     }
 
     const data = await response.json();
-    return data.organizationId;
+    return data.organizationId || null;
   } catch (error) {
     console.error('Error getting organization ID:', error);
-    return null;
+    return null; // Return null on error - page should still work
   }
 }
 
@@ -176,6 +178,11 @@ async function loadMyApplications() {
     organizationId = await getOrganizationId();
   }
 
+  if (!organizationId) {
+    applicationsGrid.innerHTML = `<p style="text-align:center;color:orange;">You are not associated with an organization yet. Please contact support to set up your organization.</p>`;
+    return;
+  }
+
   try {
     const response = await fetch(`${API_BASE}/organization/events/my-bookings`, {
       method: 'GET',
@@ -215,6 +222,11 @@ async function loadMyApplications() {
 async function loadApprovedApplications() {
   if (!organizationId) {
     organizationId = await getOrganizationId();
+  }
+
+  if (!organizationId) {
+    approvedGrid.innerHTML = `<p style="text-align:center;color:orange;">You are not associated with an organization yet. Please contact support to set up your organization.</p>`;
+    return;
   }
 
   try {
@@ -266,7 +278,7 @@ function createEventCard(event) {
   const isAssigned = event.organizationid !== null;
 
   card.innerHTML = `
-    <img src="./Bali.jpg" class="event-img">
+    <div class="event-img" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 150px; display: flex; align-items: center; justify-content: center; color: white; font-size: 2rem;">🚴</div>
     <div class="event-info">
       <h3>${eventName}</h3>
       <p><strong>Time:</strong> ${formattedDate}</p>
@@ -350,11 +362,17 @@ function createApprovedApplicationCard(application) {
 
 // Initialize on page load
 document.addEventListener("DOMContentLoaded", async () => {
-  organizationId = await getOrganizationId();
-  if (!organizationId) {
-    alert("You are not associated with any organization. Please contact support.");
-    return;
+  try {
+    organizationId = await getOrganizationId();
+    if (!organizationId) {
+      console.warn("No organization ID found. Some features may be limited.");
+      // Still load events - they might be available to all institutions
+    }
+    loadAllEvents("all");
+  } catch (error) {
+    console.error("Error initializing page:", error);
+    // Still try to load events even if organization ID fetch fails
+    loadAllEvents("all");
   }
-  loadAllEvents("all");
 });
 

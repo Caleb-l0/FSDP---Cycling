@@ -17,6 +17,18 @@ ADD COLUMN phone VARCHAR(20) UNIQUE,
 ADD COLUMN firebase_uid VARCHAR(100);
 
 
+/* for institution user test */
+INSERT INTO userorganizations (userid, organizationid, orgemail, orgrole, joinedat)
+VALUES (
+    19,                                       
+    1,                                        
+    (SELECT email FROM users WHERE id = 19),  
+    'admin',                                  
+    NOW()
+);
+
+
+
 
 
 CREATE TABLE organizations (

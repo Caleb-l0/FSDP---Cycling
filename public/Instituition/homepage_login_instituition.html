@@ -288,7 +288,7 @@ async function loadAllEvents() {
       const formattedDate = new Date(event.EventDate).toLocaleString();
 
       card.innerHTML = `
-        <img src="./Bali.jpg" class="event-img">
+        <div class="event-img" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 150px; display: flex; align-items: center; justify-content: center; color: white; font-size: 2rem;">🚴</div>
         <div class="event-info">
           <h3>${event.EventName}</h3>
           <p><strong>Time:</strong> ${formattedDate}</p>
