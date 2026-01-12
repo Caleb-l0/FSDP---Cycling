@@ -6,14 +6,27 @@ async function loginUser(req, res) {
   try {
     const { email, password } = req.body;
     
+    console.log("Login attempt for email:", email);
+    
     if (!email || !password) {
+      console.error("Login attempt: Missing email or password");
       return res.status(400).json({ error: "Email and password are required" });
     }
 
-    const user = await loginModel.findUserByEmail(email);
+    // Normalize email to lowercase for case-insensitive comparison
+    const normalizedEmail = email.toLowerCase().trim();
+    const user = await loginModel.findUserByEmail(normalizedEmail);
 
     if (!user) {
-      console.error("Login attempt: User not found for email:", email);
+      console.error("Login attempt: User not found for email:", normalizedEmail);
+      return res.status(401).json({ error: "Invalid credentials" });
+    }
+
+    console.log("User found - ID:", user.id, "Role:", user.role, "Password exists:", !!user.password);
+
+    // Check if password field exists and is not null
+    if (!user.password) {
+      console.error("Login attempt: User has no password set for email:", normalizedEmail);
       return res.status(401).json({ error: "Invalid credentials" });
     }
 
@@ -21,15 +34,22 @@ async function loginUser(req, res) {
     const isPasswordHashed = user.password && (user.password.startsWith('$2a$') || user.password.startsWith('$2b$'));
     
     let passwordMatch = false;
-    if (isPasswordHashed) {
-      passwordMatch = await bcrypt.compare(password, user.password);
-    } else {
-      // If password is not hashed (legacy data), compare directly
-      passwordMatch = user.password === password;
+    try {
+      if (isPasswordHashed) {
+        passwordMatch = await bcrypt.compare(password, user.password);
+        console.log("Password comparison (hashed):", passwordMatch);
+      } else {
+        // If password is not hashed (legacy data), compare directly
+        passwordMatch = user.password === password;
+        console.log("Password comparison (plain):", passwordMatch);
+      }
+    } catch (compareError) {
+      console.error("Password comparison error:", compareError);
+      return res.status(401).json({ error: "Invalid credentials" });
     }
 
     if (!passwordMatch) {
-      console.error("Login attempt: Password mismatch for email:", email);
+      console.error("Login attempt: Password mismatch for email:", normalizedEmail);
       return res.status(401).json({ error: "Invalid credentials" });
     }
 
