@@ -200,7 +200,8 @@ app.post('/request-event', authenticate, organizationRequestController.createReq
 app.get('/admin/events', authenticate, adminEventController.getAllEvents); 
 app.get("/admin/events/location/:eventID",authenticate,adminEventController.getEventLocation);
 app.post('/admin/create_events', authenticate, adminEventController.createEvent);
-app.put('/admin/assign_events',authenticate,adminEventController.assignEventToOrgan)
+app.put('/admin/assign_events',authenticate,adminEventController.assignEventToOrgan);
+app.delete('/admin/events/:eventID', authenticate, adminEventController.deleteEvent);
 
 
 // ------ VOLUNTEER USER PROFILE --------
@@ -472,6 +473,37 @@ process.on('unhandledRejection', (err) => {
 // ----- START SERVER -----
 app.listen(port, () => {
   console.log(`✅ Server running on http://localhost:${port}`);
+  
+  // Schedule auto-delete task to run daily at 2 AM
+  const autoDeleteTask = require("./ScheduledTasks/autoDeleteEvents");
+  
+  // Run immediately on server start (for testing)
+  // autoDeleteTask.runAutoDelete();
+  
+  // Schedule to run daily at 2 AM (24 hours = 86400000 ms)
+  // In production, consider using a proper cron job or task scheduler
+  const runDaily = () => {
+    const now = new Date();
+    const hoursUntil2AM = (26 - now.getHours()) % 24; // Hours until next 2 AM
+    const msUntil2AM = hoursUntil2AM * 60 * 60 * 1000 - (now.getMinutes() * 60 * 1000) - (now.getSeconds() * 1000);
+    
+    setTimeout(() => {
+      autoDeleteTask.runAutoDelete().catch(err => {
+        console.error("Auto-delete task error:", err);
+      });
+      
+      // Then run every 24 hours
+      setInterval(() => {
+        autoDeleteTask.runAutoDelete().catch(err => {
+          console.error("Auto-delete task error:", err);
+        });
+      }, 24 * 60 * 60 * 1000);
+    }, msUntil2AM);
+  };
+  
+  // Uncomment to enable auto-delete scheduling
+  // runDaily();
+  console.log("ℹ️  Auto-delete task is available but not scheduled. Run manually or enable in app.js");
 });
 
 // ---------------- Camera access script for Volunteer page ----------------

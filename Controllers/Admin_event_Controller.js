@@ -133,7 +133,7 @@ async function deleteEvent(req, res) {
     if (!result.canDelete) {
       return res.status(400).json({
         canDelete: false,
-        message: "Cannot delete this event because an organisation has already signed up."
+        message: "Cannot delete this event because it has bookings or participants signed up."
       });
     }
 

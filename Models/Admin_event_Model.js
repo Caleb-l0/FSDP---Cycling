@@ -116,19 +116,32 @@ async function getEventLocation(eventID) {
 }
 
 // ----------------------------
-// 6. Check if Event Has Bookings
+// 6. Check if Event Can Be Deleted (no bookings AND no participants)
 // ----------------------------
 async function canDeleteEvent(eventID) {
   try {
-    const result = await pool.query(
+    // Check if event has bookings
+    const bookingResult = await pool.query(
       `SELECT COUNT(*) AS countbookings
        FROM eventbookings
+       WHERE eventid = $1 AND status = 'Approved'`,
+      [eventID]
+    );
+
+    const bookingCount = Number(bookingResult.rows[0].countbookings);
+    
+    // Check if event has participants
+    const eventResult = await pool.query(
+      `SELECT COALESCE(peoplesignup, 0) AS participants
+       FROM events
        WHERE eventid = $1`,
       [eventID]
     );
 
-    const count = Number(result.rows[0].countbookings);
-    return count === 0;
+    const participants = Number(eventResult.rows[0]?.participants || 0);
+
+    // Can delete if no approved bookings AND no participants
+    return bookingCount === 0 && participants === 0;
 
   } catch (err) {
     console.error("Model canDeleteEvent Error:", err);
@@ -143,7 +156,7 @@ async function deleteEvent(eventID) {
   try {
     const canDelete = await canDeleteEvent(eventID);
     if (!canDelete) {
-      return { canDelete: false };
+      return { canDelete: false, message: "Cannot delete event with bookings or participants" };
     }
 
     await pool.query(
@@ -160,6 +173,58 @@ async function deleteEvent(eventID) {
 }
 
 // ----------------------------
+// 8. Get Events Eligible for Auto-Delete (no participants, day before event)
+// ----------------------------
+async function getEventsForAutoDelete() {
+  try {
+    const result = await pool.query(
+      `
+      SELECT eventid, eventname, eventdate
+      FROM events
+      WHERE organizationid IS NULL
+        AND (peoplesignup IS NULL OR peoplesignup = 0)
+        AND eventdate > NOW() + INTERVAL '1 day'
+        AND eventdate < NOW() + INTERVAL '2 days'
+        AND status = 'Upcoming'
+        AND NOT EXISTS (
+          SELECT 1 
+          FROM eventbookings 
+          WHERE eventid = events.eventid 
+            AND status = 'Approved'
+        )
+      `
+    );
+
+    return result.rows;
+  } catch (err) {
+    console.error("getEventsForAutoDelete Error:", err);
+    throw err;
+  }
+}
+
+// ----------------------------
+// 9. Auto-Delete Events (run daily)
+// ----------------------------
+async function autoDeleteEventsWithNoParticipants() {
+  try {
+    const eventsToDelete = await getEventsForAutoDelete();
+    const deletedEvents = [];
+
+    for (const event of eventsToDelete) {
+      const result = await deleteEvent(event.eventid);
+      if (result.canDelete) {
+        deletedEvents.push(event);
+      }
+    }
+
+    return deletedEvents;
+  } catch (err) {
+    console.error("autoDeleteEventsWithNoParticipants Error:", err);
+    throw err;
+  }
+}
+
+// ----------------------------
 module.exports = {
   getAllEvents,
   createEvent,
@@ -168,6 +233,8 @@ module.exports = {
   checkOrganizationExists,
   canDeleteEvent,
   deleteEvent,
+  getEventsForAutoDelete,
+  autoDeleteEventsWithNoParticipants
 };
 
 

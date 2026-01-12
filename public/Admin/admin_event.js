@@ -66,14 +66,15 @@ function hideAllButtons() {
 function setupButtonsByRole(role) {
   hideAllButtons();
 
-  if (role === 'admin') {
-    btnEdit.style.display = 'inline-block';
-    btnDelete.style.display = 'inline-block';
-  } else if (role === 'volunteer') {
-    btnSignup.style.display = 'inline-block';
-    btnCancel.style.display = 'inline-block';
-  } else {
-    // organization or others → show nothing
+  // This is an admin page - always show edit and delete buttons
+  // (Access control is handled by authentication)
+  if (btnEdit) btnEdit.style.display = 'inline-block';
+  if (btnDelete) btnDelete.style.display = 'inline-block';
+  
+  // Also handle volunteer role if needed (shouldn't happen on admin page)
+  if (role === 'volunteer') {
+    if (btnSignup) btnSignup.style.display = 'inline-block';
+    if (btnCancel) btnCancel.style.display = 'inline-block';
   }
 }
 
@@ -115,35 +116,36 @@ descEl.textContent = event.description || 'No description';
 function initButtonHandlers() {
   if (btnEdit) {
     btnEdit.addEventListener('click', () => {
-      window.location.href = "./edit_event.html"
+      window.location.href = "./edit_event.html";
     });
   }
 
   if (btnDelete) {
-    document.getElementById("btn-delete").addEventListener("click", async function () {
-  const check = await fetch(`https://fsdp-cycling-ltey.onrender.com/events/checkAssigned/${currentEventId}`, {
-    method: "GET",
-    headers: { "Authorization": `Bearer ${token}` }
-  });
-  const data = await check.json();
+    btnDelete.addEventListener("click", async function () {
+      try {
+        const ok = confirm("Are you sure you want to delete this event?");
+        if (!ok) return;
 
-  if (data.assigned) {
-    alert("❌ This event cannot be deleted because an organisation has already requested or been assigned.");
-    return;
-  }
+        // Use admin delete endpoint (backend will check for bookings/participants)
+        const res = await fetch(`https://fsdp-cycling-ltey.onrender.com/admin/events/${currentEventId}`, {
+          method: "DELETE",
+          headers: { "Authorization": `Bearer ${token}` }
+        });
 
-  const ok = confirm("Are you sure you want to delete this event?");
-  if (!ok) return;
+        if (!res.ok) {
+          const errorData = await res.json();
+          alert("❌ " + (errorData.message || "Failed to delete event"));
+          return;
+        }
 
-  const res = await fetch(`https://fsdp-cycling-ltey.onrender.com/events/delete/${currentEventId}`, {
-    method: "DELETE",
-    headers: { "Authorization": `Bearer ${token}` }
-  });
-
-  const msg = await res.json();
-  alert("✔ Event deleted successfully");
-  window.location.href = "homepage_admin.html"; 
-});
+        const msg = await res.json();
+        alert("✔ Event deleted successfully");
+        window.location.href = "./homepage_login_Admin.html";
+      } catch (error) {
+        console.error("Error deleting event:", error);
+        alert("❌ Error: " + (error.message || "Failed to delete event"));
+      }
+    });
   }
 
   if (btnSignup) {
