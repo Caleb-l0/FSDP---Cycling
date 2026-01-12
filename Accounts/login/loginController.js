@@ -5,13 +5,36 @@ const loginModel = require("./loginModel");
 async function loginUser(req, res) {
   try {
     const { email, password } = req.body;
+    
+    if (!email || !password) {
+      return res.status(400).json({ error: "Email and password are required" });
+    }
+
     const user = await loginModel.findUserByEmail(email);
 
-    if (!user || !(await bcrypt.compare(password, user.password))) {
+    if (!user) {
+      console.error("Login attempt: User not found for email:", email);
       return res.status(401).json({ error: "Invalid credentials" });
     }
 
-    const textSizePreference = user.textSizePreference || 'normal';
+    // Check if password is hashed (starts with $2a$ or $2b$ for bcrypt)
+    const isPasswordHashed = user.password && (user.password.startsWith('$2a$') || user.password.startsWith('$2b$'));
+    
+    let passwordMatch = false;
+    if (isPasswordHashed) {
+      passwordMatch = await bcrypt.compare(password, user.password);
+    } else {
+      // If password is not hashed (legacy data), compare directly
+      passwordMatch = user.password === password;
+    }
+
+    if (!passwordMatch) {
+      console.error("Login attempt: Password mismatch for email:", email);
+      return res.status(401).json({ error: "Invalid credentials" });
+    }
+
+    // Handle both lowercase (PostgreSQL) and camelCase (legacy) field names
+    const textSizePreference = user.textsizepreference || user.textSizePreference || 'normal';
 
     const token = jwt.sign(
   { 
