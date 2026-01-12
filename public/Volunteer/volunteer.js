@@ -98,7 +98,6 @@ document.addEventListener("DOMContentLoaded", function () {
    HOMEPAGE EVENTS
    ===================================================== */
 document.addEventListener("DOMContentLoaded", () => {
-    showGeoWeather();       // ✅ WEATHER LOADS HERE
     loadHomepageEvents();
     loadVolunteersHomepage();
     
