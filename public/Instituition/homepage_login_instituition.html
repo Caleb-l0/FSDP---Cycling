@@ -267,7 +267,7 @@ async function loadAllEvents() {
   const grid = document.getElementById("eventGrid");
 
   try {
-    const response = await fetch("http://localhost:3000/institution/events/all");
+    const response = await fetch("https://fsdp-cycling-ltey.onrender.com/institution/events/all");
 
     if (!response.ok) {
       throw new Error("Failed to load events");
