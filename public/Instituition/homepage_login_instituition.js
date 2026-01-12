@@ -25,6 +25,11 @@ const approvedGrid = document.getElementById("approvedGrid");
 // Get organization ID
 async function getOrganizationId() {
   try {
+    if (!token) {
+      console.warn('No token available for organization ID request');
+      return null;
+    }
+
     const response = await fetch(`${API_BASE}/user/organization-id`, {
       method: 'GET',
       headers: {
@@ -34,8 +39,21 @@ async function getOrganizationId() {
     });
 
     if (!response.ok) {
-      const errorData = await response.json().catch(() => ({ message: 'Unknown error' }));
-      console.warn('Failed to get organization ID:', errorData.message || `Status ${response.status}`);
+      let errorData;
+      try {
+        errorData = await response.json();
+      } catch (jsonError) {
+        const textResponse = await response.text();
+        console.error('Failed to parse error response:', textResponse);
+        errorData = { message: `Status ${response.status}: ${textResponse.substring(0, 100)}` };
+      }
+      
+      // Only log as error if it's a 500, otherwise it's expected (user might not have org)
+      if (response.status === 500) {
+        console.error('Server error getting organization ID:', errorData);
+      } else {
+        console.warn('Failed to get organization ID:', errorData.message || `Status ${response.status}`);
+      }
       return null; // Return null instead of throwing - institution might not have org yet
     }
 
