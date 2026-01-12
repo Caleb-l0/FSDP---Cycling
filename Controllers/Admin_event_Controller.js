@@ -1,7 +1,7 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const AdminEventModel = require("../Models/Admin_event_Model");
-const requestModel = require('../Models/GetRequestModel')
+const OrganizationRequestModel = require('../Models/OrganizationRequestModel')
 
 
 
@@ -47,7 +47,7 @@ async function createEvent(req, res) {
     // Only approve request if VolunteerRequestID exists
     if (eventData.VolunteerRequestID) {
       try {
-        await requestModel.approveRequest(eventData.VolunteerRequestID);
+        await OrganizationRequestModel.approveRequest(eventData.VolunteerRequestID);
       } catch (approveError) {
         console.warn("Failed to approve request:", approveError);
         // Don't fail the event creation if request approval fails

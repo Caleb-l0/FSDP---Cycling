@@ -31,8 +31,8 @@ const EmailController = require("./Controllers/GetEmail_Controller")
 
 // ------ Event Controller for all event related -------
 const EventController = require("./Controllers/EventController");
-// ----- REQUEST CONTROLLER -----
-const requestController = require('./Controllers/GetRequestController');
+// ----- ORGANIZATION REQUEST CONTROLLER -----
+const organizationRequestController = require('./Controllers/OrganizationRequestController');
 
 // ----- ADMIN EVENT CONTROLLER -----
 const adminEventController = require('./Controllers/Admin_event_Controller');
@@ -44,7 +44,6 @@ const eventController = require('./Controllers/VolunteerEventController.js');
 const loginModel = require('./Accounts/login/loginModel');
 
 // ------ LOGIN WITH PHONE CONTROLLER --------------
-const { getUserByPhone, createUserWithPhone } = require("./Controllers/Login_With_phone_Controller.js");
 
 
 // ----------------- VOLUNTEER USER PROFILE CONTROLLER --------------
@@ -184,13 +183,14 @@ app.get('/signup', (req, res) => res.sendFile(path.join(__dirname, 'Accounts/vie
 // Serve root static files LAST (index.css, etc.) - after all routes
 app.use(express.static(__dirname)); // index.html, index.css, root images, etc.
 
-// ------ REQUEST ROUTES -----
-app.get('/admin/applications', authenticate,requestController.getAllRequests);
-app.get('/requests/details/:id', authenticate,requestController.getRequestById);
-app.delete('/request/delete/:id',authenticate,requestController.deleteRequest)
-app.put('/requests/approve/:id',authenticate,requestController.approveRequest)
-app.put('/requests/reject/:id',authenticate,requestController.rejectRequest)
-app.get('/requests/status/:id',authenticate,requestController.checkRequestStatus)
+// ------ ORGANIZATION REQUEST ROUTES -----
+app.get('/admin/applications', authenticate, organizationRequestController.getAllRequests);
+app.get('/requests/details/:id', authenticate, organizationRequestController.getRequestById);
+app.delete('/request/delete/:id', authenticate, organizationRequestController.deleteRequest);
+app.put('/requests/approve/:id', authenticate, organizationRequestController.approveRequest);
+app.put('/requests/reject/:id', authenticate, organizationRequestController.rejectRequest);
+app.get('/requests/status/:id', authenticate, organizationRequestController.checkRequestStatus);
+app.post('/request-event', authenticate, organizationRequestController.createRequest);
 
 
 
@@ -252,9 +252,7 @@ app.get("/history/:userId", authenticate, rewardsController.getHistory);
 
 
 
-const { requestEvent } = require("./Controllers/is.js");
-
-app.post("/request-event", authenticate, requestEvent);
+// Organization request creation is now handled by organizationRequestController.createRequest (defined earlier)
 
 // 404 handler for API routes - must be after static files
 app.use((req, res, next) => {
