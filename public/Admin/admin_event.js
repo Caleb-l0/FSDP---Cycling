@@ -3,13 +3,15 @@ if (!token) {
   window.location.href = '../../index.html';
 }
 
-const currentEventId = JSON.parse(localStorage.getItem('currentRequest')).EventID;
-const eventID = JSON.parse(localStorage.getItem('currentRequest')).EventID;
-if (!currentEventId) {
+const currentEvent = JSON.parse(localStorage.getItem('currentEvent'));
+
+if (!currentEvent || !currentEvent.id) {
   alert('No event selected');
-  
-  window.location.href = './homepage_login_Admin.html';
+  window.location.href = './homepage_admin.html';
 }
+
+const currentEventId = currentEvent.id;
+
 
 function getUserFromToken() {
   try {
@@ -89,16 +91,17 @@ async function fetchEventDetails() {
 
     const event = await response.json();
 
-    nameEl.textContent    = event.EventName;
-    dateEl.textContent    = new Date(event.EventDate).toLocaleDateString();
-    orgEl.textContent     = event.OrganizationID;
-    createdEl.textContent = event.CreatedAt
-      ? new Date(event.CreatedAt).toLocaleDateString()
-      : '-';
-    locEl.textContent     = event.Location || '-';
-    neededEl.textContent  = event.RequiredVolunteers;
-    idEl.textContent      = event.EventID;
-    descEl.textContent    = event.Description || 'No description';
+   nameEl.textContent = event.eventname;
+dateEl.textContent = new Date(event.eventdate).toLocaleDateString();
+orgEl.textContent = event.organizationid;
+createdEl.textContent = event.createdat
+  ? new Date(event.createdat).toLocaleDateString()
+  : '-';
+locEl.textContent = event.location || '-';
+neededEl.textContent = event.requiredvolunteers;
+idEl.textContent = event.id;
+descEl.textContent = event.description || 'No description';
+
 
     setupButtonsByRole(userRole);
   } catch (error) {
@@ -116,7 +119,7 @@ function initButtonHandlers() {
 
   if (btnDelete) {
     document.getElementById("btn-delete").addEventListener("click", async function () {
-  const check = await fetch(`https://fsdp-cycling-ltey.onrender.com/events/checkAssigned/${eventID}`, {
+  const check = await fetch(`https://fsdp-cycling-ltey.onrender.com/events/checkAssigned/${currentEventId}`, {
     method: "GET",
     headers: { "Authorization": `Bearer ${token}` }
   });
@@ -130,7 +133,7 @@ function initButtonHandlers() {
   const ok = confirm("Are you sure you want to delete this event?");
   if (!ok) return;
 
-  const res = await fetch(`https://fsdp-cycling-ltey.onrender.com/events/delete/${eventID}`, {
+  const res = await fetch(`https://fsdp-cycling-ltey.onrender.com/events/delete/${currentEventId}`, {
     method: "DELETE",
     headers: { "Authorization": `Bearer ${token}` }
   });

@@ -5,12 +5,17 @@ const pool = require("../Postgres_config");
 // 1. Get All Requests
 // ======================================================
 async function getAllRequests() {
-  const result = await pool.query(`
-    SELECT * FROM volunteerrequests
-    ORDER BY requestid ASC
-  `);
-
-  return result.rows;
+  try {
+    const result = await pool.query(`
+      SELECT *
+      FROM volunteerrequests
+      ORDER BY requestid ASC
+    `);
+    return result.rows;
+  } catch (err) {
+    console.error("getAllRequests SQL error:", err);
+    throw err;
+  }
 }
 
 
