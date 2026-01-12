@@ -211,7 +211,7 @@ try{
     }
     else if (choice === "approved") {
        for (const application of data) {
-        if(application.status="Approved"){
+        if(application.status==="Approved"){
    
   const locationObj = await GetLocation(parseInt(application.eventid));
   const locationName = locationObj.eventlocation;
@@ -247,7 +247,7 @@ try{
 
     else if(choice == "rejected"){
        for (const application of data) {
-        if(application.status = "Rejected"){
+        if(application.status === "Rejected"){
    
   const locationObj = await GetLocation(parseInt(application.eventid));
   const locationName = locationObj.eventlocation;

@@ -192,6 +192,7 @@ app.get('/requests/status/:id',authenticate,requestController.checkRequestStatus
 
 
 // ----- ADMIN EVENT FEED -----
+
 app.get('/admin/events', authenticate, adminEventController.getAllEvents); 
 app.get("/admin/events/location/:eventID",authenticate,adminEventController.getEventLocation);
 app.post('/admin/create_events', authenticate, adminEventController.createEvent);
