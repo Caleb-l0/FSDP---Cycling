@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Event Details</title>
+  <link rel="stylesheet" href="../Admin/request_detail.css">
+  <link rel="stylesheet" href="../homepage.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="./institutions-events.css">
+</head>
+<body>
+
+  <header class="hv-header">
+    <div class="container hv-header-content">
+      <div class="hv-logo">
+        <a href="./homepage_login_instituition.html" style="text-decoration: none; color: inherit;">
+          Happy Volunteer
+        </a>
+      </div>
+
+      <nav id="mainNav">
+        <ul>
+          <li><a href="./homepage_login_instituition.html">Home</a></li>
+          <li><a href="#">Community</a></li>
+          <li><a href="#">Notification</a></li>
+          <li><a href="../Profile/profilepage.html">Profile</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main class="request-wrapper container">
+    <div class="request-card">
+      <div class="request-img">
+        <img id="req-img" src="https://source.unsplash.com/800x500/?volunteer,event" alt="Event Image">
+      </div>
+
+      <div class="request-info">
+        <h2 id="req-name">Event Name</h2>
+        <div class="info-grid">
+          <p><strong>Date:</strong> <span id="req-date">-</span></p>
+          <p><strong>Location:</strong> <span id="req-loc">-</span></p>
+          <p><strong>Volunteers Needed:</strong> <span id="req-needed">-</span></p>
+          <p><strong>Participants:</strong> <span id="req-participant">-</span></p>
+          <p><strong>Status:</strong> <span id="req-status">-</span></p>
+          <p id="session-head-section" style="display:none;"><strong>Session Head:</strong> <span id="req-session-head">-</span></p>
+          <p id="session-contact-section" style="display:none;"><strong>Contact:</strong> <span id="req-session-contact">-</span></p>
+          <p id="session-email-section" style="display:none;"><strong>Email:</strong> <span id="req-session-email">-</span></p>
+        </div>
+        <div class="desc">
+          <p><strong>Description:</strong></p>
+          <p id="req-desc">-</p>
+        </div>
+        <div class="btn-group" id="action-buttons">
+          <!-- Buttons will be dynamically added based on event status -->
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-column">
+          <h3>Harry Volunteering</h3>
+          <ul>
+            <li><a href="#">About Us</a></li>
+            <li><a href="#">Our Team</a></li>
+            <li><a href="#">Opportunity</a></li>
+            <li><a href="#">Social Media</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="copyright">
+        <p>&copy; 2025 Harry Volunteering. Right reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="./institution_event_detail.js"></script>
+  <script src="../Translation.js"></script>
+</body>
+</html>
+

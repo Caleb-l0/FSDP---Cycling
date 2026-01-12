@@ -21,8 +21,12 @@ router.put("/requests/:bookingId/approve", authenticate, controller.approveBooki
 // Reject booking request (admin)
 router.put("/requests/:bookingId/reject", authenticate, controller.rejectBookingRequest);
 
-// Get organization's bookings
+// Get organization's bookings (can use organizationId param or auto-detect from user)
 router.get("/organization/:organizationId", authenticate, controller.getOrganizationBookings);
+router.get("/my-bookings", authenticate, controller.getOrganizationBookings);
+
+// Assign event head to approved booking
+router.put("/bookings/:bookingId/assign-head", authenticate, controller.assignEventHead);
 
 // Legacy route (keep for backward compatibility)
 router.post("/:eventId/book", authenticate, controller.createBookingRequest);

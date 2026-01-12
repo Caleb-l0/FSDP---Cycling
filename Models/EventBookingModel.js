@@ -248,7 +248,34 @@ async function getOrganizationBookings(organizationId) {
 }
 
 /* ------------------------------
-   9. Check if Event has Participants
+   9. Assign Event Head (Update session head info)
+------------------------------ */
+async function assignEventHead(bookingId, eventHeadData) {
+  const { eventHeadName, eventHeadContact, eventHeadEmail, eventHeadProfile } = eventHeadData;
+  
+  const result = await pool.query(
+    `
+    UPDATE eventbookings
+    SET session_head_name = $2,
+        session_head_contact = $3,
+        session_head_email = $4,
+        session_head_profile = $5,
+        updatedat = NOW()
+    WHERE bookingid = $1
+    RETURNING *
+    `,
+    [bookingId, eventHeadName, eventHeadContact, eventHeadEmail, eventHeadProfile || null]
+  );
+
+  if (result.rows.length === 0) {
+    throw new Error('Booking not found');
+  }
+
+  return result.rows[0];
+}
+
+/* ------------------------------
+   10. Check if Event has Participants
 ------------------------------ */
 async function hasParticipants(eventId) {
   const result = await pool.query(
@@ -291,6 +318,7 @@ module.exports = {
   approveBookingRequest,
   rejectBookingRequest,
   getOrganizationBookings,
+  assignEventHead,
   hasParticipants,
   deleteEventsWithNoParticipants
 };

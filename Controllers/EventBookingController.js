@@ -194,16 +194,83 @@ async function rejectBookingRequest(req, res) {
 ------------------------------ */
 async function getOrganizationBookings(req, res) {
   try {
-    const organizationId = req.user.organizationId || req.params.organizationId;
+    // Try to get organizationId from user's organization
+    let organizationId = req.params.organizationId;
     
     if (!organizationId) {
-      return res.status(400).json({ message: "organizationId is required" });
+      // Get from userorganizations table
+      const pool = require("../Postgres_config");
+      const orgResult = await pool.query(
+        `SELECT organizationid FROM userorganizations WHERE userid = $1 LIMIT 1`,
+        [req.user.id]
+      );
+      if (orgResult.rows.length === 0) {
+        return res.status(400).json({ message: "User is not associated with any organization" });
+      }
+      organizationId = orgResult.rows[0].organizationid;
     }
 
     const bookings = await EventBookingModel.getOrganizationBookings(organizationId);
     res.status(200).json(bookings);
   } catch (error) {
     console.error("getOrganizationBookings error:", error);
+    res.status(500).json({ message: "Server Error", error: error.message });
+  }
+}
+
+/* ------------------------------
+   8. Assign Event Head (for approved bookings)
+------------------------------ */
+async function assignEventHead(req, res) {
+  try {
+    const { bookingId } = req.params;
+    const { eventHeadName, eventHeadContact, eventHeadEmail, eventHeadProfile } = req.body;
+
+    if (!eventHeadName || !eventHeadContact || !eventHeadEmail) {
+      return res.status(400).json({ message: "Event head name, contact, and email are required" });
+    }
+
+    // Verify that the booking belongs to the user's organization
+    const pool = require("../Postgres_config");
+    const orgResult = await pool.query(
+      `SELECT organizationid FROM userorganizations WHERE userid = $1 LIMIT 1`,
+      [req.user.id]
+    );
+
+    if (orgResult.rows.length === 0) {
+      return res.status(400).json({ message: "User is not associated with any organization" });
+    }
+
+    const organizationId = orgResult.rows[0].organizationid;
+
+    // Check if booking belongs to this organization
+    const bookingCheck = await EventBookingModel.getBookingRequestById(bookingId);
+    if (!bookingCheck) {
+      return res.status(404).json({ message: "Booking not found" });
+    }
+
+    if (bookingCheck.organizationid !== organizationId) {
+      return res.status(403).json({ message: "You do not have permission to assign event head for this booking" });
+    }
+
+    if (bookingCheck.status !== 'Approved') {
+      return res.status(400).json({ message: "Event head can only be assigned to approved bookings" });
+    }
+
+    const updatedBooking = await EventBookingModel.assignEventHead(bookingId, {
+      eventHeadName,
+      eventHeadContact,
+      eventHeadEmail,
+      eventHeadProfile
+    });
+
+    res.status(200).json({
+      message: "Event head assigned successfully",
+      booking: updatedBooking
+    });
+
+  } catch (error) {
+    console.error("assignEventHead error:", error);
     res.status(500).json({ message: "Server Error", error: error.message });
   }
 }
@@ -215,5 +282,6 @@ module.exports = {
   getBookingRequestById,
   approveBookingRequest,
   rejectBookingRequest,
-  getOrganizationBookings
+  getOrganizationBookings,
+  assignEventHead
 };

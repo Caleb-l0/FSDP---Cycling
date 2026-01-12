@@ -16,6 +16,9 @@ ADD COLUMN IF NOT EXISTS session_head_contact VARCHAR(20);
 ALTER TABLE eventbookings 
 ADD COLUMN IF NOT EXISTS session_head_email VARCHAR(100);
 
+ALTER TABLE eventbookings 
+ADD COLUMN IF NOT EXISTS session_head_profile TEXT;
+
 -- Add reviewed by and review date for admin tracking
 ALTER TABLE eventbookings 
 ADD COLUMN IF NOT EXISTS reviewedby INT;
