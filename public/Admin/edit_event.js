@@ -48,26 +48,37 @@ function disableEditing() {
 }
 
 document.getElementById("btn-save").addEventListener("click", async () => {
-  const body = {
-    EventName: document.getElementById("ev-name").value,
-    EventDate: document.getElementById("ev-date").value,
-    EventLocation: document.getElementById("ev-loc").value,
-    RequiredVolunteers: parseInt(document.getElementById("ev-needed").value),
-    Description: document.getElementById("ev-desc").value
-  };
+  try {
+    const body = {
+      EventName: document.getElementById("ev-name").value,
+      EventDate: document.getElementById("ev-date").value,
+      EventLocation: document.getElementById("ev-loc").value,
+      RequiredVolunteers: parseInt(document.getElementById("ev-needed").value),
+      Description: document.getElementById("ev-desc").value
+    };
 
-  const res = await fetch(`https://fsdp-cycling-ltey.onrender.com/events/update/${eventID}`, {
-    method: "PUT",
-    headers: {
-      "Authorization": `Bearer ${token}`,
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify(body)
-  });
+    const res = await fetch(`https://fsdp-cycling-ltey.onrender.com/events/update/${eventID}`, {
+      method: "PUT",
+      headers: {
+        "Authorization": `Bearer ${token}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(body)
+    });
 
-  const r = await res.json();
-  alert("✔ Event updated!");
-  window.location.href = "./admin_event.html";
+    if (!res.ok) {
+      const errorData = await res.json();
+      alert("❌ Error: " + (errorData.message || "Failed to update event"));
+      return;
+    }
+
+    const r = await res.json();
+    alert("✔ Event updated successfully!");
+    window.location.href = "./admin_event.html";
+  } catch (error) {
+    console.error("Error updating event:", error);
+    alert("❌ Error: " + (error.message || "Failed to update event"));
+  }
 });
 
 document.getElementById("btn-cancel-edit").addEventListener("click", () => {

@@ -6,9 +6,12 @@ if (!token) {
 
 const title = document.getElementById("title1")
 const title2 = document.getElementById("title2")
+const title3 = document.getElementById("title3")
 const dashboard1 = document.getElementById("dashboard1")
 const dashboard2 = document.getElementById("dashboard2")
+const dashboard3 = document.getElementById("dashboard3")
 const createEventbt = document.getElementById('createEvent')
+const bookingGrid = document.getElementById("bookingGrid")
 
  const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", 
                   "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
@@ -36,22 +39,41 @@ title.addEventListener("click", function() {
 
 
 title2.addEventListener("click", function() {
-    if (title.classList.contains("dashboard_title_selected")) {
+    if (title.classList.contains("dashboard_title_selected") || (title3 && title3.classList.contains("dashboard_title_selected"))) {
         title.classList.remove("dashboard_title_selected");
         title.classList.add("dashboard_title_not_selected");
+        if (title3) {
+          title3.classList.remove("dashboard_title_selected");
+          title3.classList.add("dashboard_title_not_selected");
+        }
         title2.classList.remove("dashboard_title_not_selected");
         title2.classList.add("dashboard_title_selected"); 
         
-        
         dashboard1.style.display = "none";
+        if (dashboard3) dashboard3.style.display = "none";
         dashboard2.style.display = "block";
-
-
-
- 
-  } 
-
+    }
 });
+
+if (title3) {
+  title3.addEventListener("click", function() {
+      if (title.classList.contains("dashboard_title_selected") || title2.classList.contains("dashboard_title_selected")) {
+          title.classList.remove("dashboard_title_selected");
+          title.classList.add("dashboard_title_not_selected");
+          title2.classList.remove("dashboard_title_selected");
+          title2.classList.add("dashboard_title_not_selected");
+          title3.classList.remove("dashboard_title_not_selected");
+          title3.classList.add("dashboard_title_selected"); 
+          
+          dashboard1.style.display = "none";
+          dashboard2.style.display = "none";
+          if (dashboard3) {
+            dashboard3.style.display = "block";
+            loadBookingRequests();
+          }
+      }
+  });
+}
 
 
 // ------ DashBoard
@@ -621,6 +643,167 @@ function svcNextMonth() {
 
 
 loadAdminEvents();
+
+// ============================================
+// Booking Requests Management
+// ============================================
+async function loadBookingRequests(filter = "all") {
+  try {
+    const res = await fetch("https://fsdp-cycling-ltey.onrender.com/organization/events/requests", {
+      method: "GET",
+      headers: {
+        "Authorization": `Bearer ${token}`,
+        "Content-Type": "application/json"
+      }
+    });
+
+    if (!res.ok) {
+      throw new Error("Failed to fetch booking requests");
+    }
+
+    const requests = await res.json();
+    renderBookingRequests(requests, filter);
+  } catch (error) {
+    console.error("Error loading booking requests:", error);
+    bookingGrid.innerHTML = '<div class="event-message event-message--error">Failed to load booking requests</div>';
+  }
+}
+
+function renderBookingRequests(requests, filter = "all") {
+  bookingGrid.innerHTML = "";
+
+  if (!Array.isArray(requests) || requests.length === 0) {
+    bookingGrid.innerHTML = '<div class="event-message event-message--empty">No booking requests found</div>';
+    return;
+  }
+
+  // Filter requests
+  let filteredRequests = requests;
+  if (filter === "pending") {
+    filteredRequests = requests.filter(r => r.status === "Pending");
+  } else if (filter === "approved") {
+    filteredRequests = requests.filter(r => r.status === "Approved");
+  } else if (filter === "rejected") {
+    filteredRequests = requests.filter(r => r.status === "Rejected");
+  }
+
+  filteredRequests.forEach(request => {
+    const card = document.createElement("div");
+    card.className = "event-card";
+    
+    const eventName = request.eventname || request.EventName || "Unknown Event";
+    const orgName = request.orgname || "Unknown Organization";
+    const date = request.eventdate ? new Date(request.eventdate).toLocaleDateString() : "TBD";
+    const location = request.location || "TBD";
+    const status = request.status || "Pending";
+    const participants = request.participants || 0;
+    const sessionHead = request.session_head_name || "Not specified";
+    const sessionContact = request.session_head_contact || "Not specified";
+    const sessionEmail = request.session_head_email || "Not specified";
+
+    let statusClass = "status-pending";
+    if (status === "Approved") statusClass = "status-approved";
+    if (status === "Rejected") statusClass = "status-rejected";
+
+    card.innerHTML = `
+      <div class="event-details">
+        <h3>${eventName}</h3>
+        <p><strong>Organization:</strong> ${orgName}</p>
+        <p><strong>Date:</strong> ${date}</p>
+        <p><strong>Location:</strong> ${location}</p>
+        <p><strong>Participants:</strong> ${participants}</p>
+        <p><strong>Session Head:</strong> ${sessionHead}</p>
+        <p><strong>Contact:</strong> ${sessionContact}</p>
+        <p><strong>Email:</strong> ${sessionEmail}</p>
+        <span class="status-tag ${statusClass}">${status}</span>
+      </div>
+      <div class="event-actions">
+        ${status === "Pending" ? `
+          <button class="btn-approve" onclick="approveBooking(${request.bookingid})">Approve</button>
+          <button class="btn-reject" onclick="rejectBooking(${request.bookingid})">Reject</button>
+        ` : ''}
+        <button class="btn-view" onclick="viewBookingDetails(${request.bookingid})">View Details</button>
+      </div>
+    `;
+
+    bookingGrid.appendChild(card);
+  });
+}
+
+async function approveBooking(bookingId) {
+  if (!confirm("Are you sure you want to approve this booking request? This will automatically post to the community board.")) {
+    return;
+  }
+
+  try {
+    const res = await fetch(`https://fsdp-cycling-ltey.onrender.com/organization/events/requests/${bookingId}/approve`, {
+      method: "PUT",
+      headers: {
+        "Authorization": `Bearer ${token}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ postToCommunity: true })
+    });
+
+    if (!res.ok) {
+      const error = await res.json();
+      throw new Error(error.message || "Failed to approve booking");
+    }
+
+    alert("✅ Booking request approved successfully!");
+    loadBookingRequests();
+  } catch (error) {
+    console.error("Error approving booking:", error);
+    alert("❌ Error: " + error.message);
+  }
+}
+
+async function rejectBooking(bookingId) {
+  if (!confirm("Are you sure you want to reject this booking request?")) {
+    return;
+  }
+
+  try {
+    const res = await fetch(`https://fsdp-cycling-ltey.onrender.com/organization/events/requests/${bookingId}/reject`, {
+      method: "PUT",
+      headers: {
+        "Authorization": `Bearer ${token}`,
+        "Content-Type": "application/json"
+      }
+    });
+
+    if (!res.ok) {
+      const error = await res.json();
+      throw new Error(error.message || "Failed to reject booking");
+    }
+
+    alert("✅ Booking request rejected");
+    loadBookingRequests();
+  } catch (error) {
+    console.error("Error rejecting booking:", error);
+    alert("❌ Error: " + error.message);
+  }
+}
+
+function viewBookingDetails(bookingId) {
+  // Store booking ID and navigate to detail page (or show modal)
+  localStorage.setItem("currentBookingId", bookingId);
+  // For now, just show an alert with the booking ID
+  alert(`Booking ID: ${bookingId}\n\nView full details functionality can be added here.`);
+}
+
+// Filter buttons for booking requests
+document.addEventListener("DOMContentLoaded", () => {
+  const bookingAll = document.getElementById("booking_all");
+  const bookingPending = document.getElementById("booking_pending");
+  const bookingApproved = document.getElementById("booking_approved");
+  const bookingRejected = document.getElementById("booking_rejected");
+
+  if (bookingAll) bookingAll.addEventListener("click", () => loadBookingRequests("all"));
+  if (bookingPending) bookingPending.addEventListener("click", () => loadBookingRequests("pending"));
+  if (bookingApproved) bookingApproved.addEventListener("click", () => loadBookingRequests("approved"));
+  if (bookingRejected) bookingRejected.addEventListener("click", () => loadBookingRequests("rejected"));
+});
 
 
 

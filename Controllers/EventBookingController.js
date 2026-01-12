@@ -25,10 +25,23 @@ async function getAvailableEvents(req, res) {
 async function createBookingRequest(req, res) {
   try {
     const { eventId, participants, sessionHeadName, sessionHeadContact, sessionHeadEmail, postToCommunity } = req.body;
-    const organizationId = req.user.organizationId || req.body.organizationId;
+    
+    // Get organization ID from userorganizations table if not provided
+    let organizationId = req.body.organizationId;
+    if (!organizationId) {
+      const pool = require("../Postgres_config");
+      const orgResult = await pool.query(
+        `SELECT organizationid FROM userorganizations WHERE userid = $1 LIMIT 1`,
+        [req.user.id]
+      );
+      if (orgResult.rows.length === 0) {
+        return res.status(400).json({ message: "User is not associated with any organization" });
+      }
+      organizationId = orgResult.rows[0].organizationid;
+    }
 
-    if (!eventId || !participants || !organizationId) {
-      return res.status(400).json({ message: "eventId, participants, and organizationId are required" });
+    if (!eventId || !participants) {
+      return res.status(400).json({ message: "eventId and participants are required" });
     }
 
     // Check if event exists and is available

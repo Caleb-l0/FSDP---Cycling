@@ -157,6 +157,7 @@ app.use("/organization/events", eventBookingRoutes);
 // -------Email -------------
 app.get("/getOrganID",authenticate,EmailController.getOrganisationID)
 app.get("/getUserEmail/:orgID",authenticate,EmailController.getMemberEmailsByOrganizationID)
+app.get("/user/organization-id", authenticate, EmailController.getUserOrganizationID)
 app.get("/send-email",authenticate,EmailController.getMemberEmailsByOrganizationID)
 
 

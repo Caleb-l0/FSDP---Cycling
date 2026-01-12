@@ -67,7 +67,8 @@ body {
   border: 1px solid #e2e8f0;
 }
 
-#dashboard2 {
+#dashboard2,
+#dashboard3 {
   display: none;
 }
 
@@ -191,6 +192,85 @@ body {
 .status-open {
   background: #dbeafe;
   color: #1e40af;
+}
+
+/* ======================================================
+   EVENT ACTIONS (Buttons)
+====================================================== */
+.event-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 16px;
+  flex-wrap: wrap;
+}
+
+.btn-approve,
+.btn-reject,
+.btn-view {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  letter-spacing: 0.3px;
+}
+
+.btn-approve {
+  background: #10b981;
+  color: white;
+}
+
+.btn-approve:hover {
+  background: #059669;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.btn-reject {
+  background: #ef4444;
+  color: white;
+}
+
+.btn-reject:hover {
+  background: #dc2626;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+.btn-view {
+  background: #3b82f6;
+  color: white;
+}
+
+.btn-view:hover {
+  background: #2563eb;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.event-message {
+  padding: 2rem;
+  text-align: center;
+  border-radius: 12px;
+  font-size: 1.1rem;
+  margin: 2rem 0;
+}
+
+.event-message--loading {
+  background: #f3f4f6;
+  color: #6b7280;
+}
+
+.event-message--empty {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.event-message--error {
+  background: #fee2e2;
+  color: #991b1b;
 }
 
 /* ======================================================
