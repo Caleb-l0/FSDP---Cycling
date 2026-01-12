@@ -85,88 +85,9 @@ async function deleteEvent(eventID) {
 }
 
 /* =====================================================
-volunteer logic
+   NOTE: Volunteer signup logic has been moved to VolunteerSignupModel.js
+   This model now only handles event-related operations (not signups)
    ===================================================== */
-
-   
-async function signup(userID, eventID) {
-  // check existing signup
-  const check = await pool.query(
-    `
-    SELECT 1 FROM eventsignups
-    WHERE userid = $1 AND eventid = $2 AND status = 'Active'
-    `,
-    [userID, eventID]
-  );
-
-  if (check.rows.length > 0) {
-    throw new Error("User already signed up");
-  }
-
-  // insert signup
-  await pool.query(
-    `
-    INSERT INTO eventsignups (userid, eventid)
-    VALUES ($1, $2)
-    `,
-    [userID, eventID]
-  );
-
-  // increment people signup count
-  await pool.query(
-    `
-    UPDATE events
-    SET peoplesignup = peoplesignup + 1
-    WHERE eventid = $1
-    `,
-    [eventID]
-  );
-}
-
-/* =====================================================
-   6. Cancel Signup
-   ===================================================== */
-async function cancel(userID, eventID) {
-  const result = await pool.query(
-    `
-    UPDATE eventsignups
-    SET status = 'Cancelled'
-    WHERE userid = $1 AND eventid = $2 AND status = 'Active'
-    RETURNING *
-    `,
-    [userID, eventID]
-  );
-
-  if (result.rowCount > 0) {
-    await pool.query(
-      `
-      UPDATE events
-      SET peoplesignup = GREATEST(peoplesignup - 1, 0)
-      WHERE eventid = $1
-      `,
-      [eventID]
-    );
-  }
-
-  return result; // ⭐⭐⭐ 必须 return
-}
-
-
-/* =====================================================
-   7. Check If User Already Signed Up
-   ===================================================== */
-async function isSignedUp(userID, eventID) {
-  const result = await pool.query(
-    `
-    SELECT 1
-    FROM eventsignups
-    WHERE userid = $1 AND eventid = $2 AND status = 'Active'
-    `,
-    [userID, eventID]
-  );
-
-  return result.rows.length > 0;
-}
 
 /* =====================================================
    8. Update Event
@@ -199,9 +120,6 @@ module.exports = {
   getEventById,
   checkAssigned,
   deleteEvent,
-  signup,
-  cancel,
-  isSignedUp,
   updateEvent
 };
 

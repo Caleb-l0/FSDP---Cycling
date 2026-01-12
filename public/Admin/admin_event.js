@@ -5,12 +5,14 @@ if (!token) {
 
 const currentEvent = JSON.parse(localStorage.getItem('currentEvent'));
 
-if (!currentEvent || !currentEvent.id) {
+// Check for eventid (database field) or id (fallback)
+if (!currentEvent || (!currentEvent.eventid && !currentEvent.id)) {
   alert('No event selected');
   window.location.href = './homepage_admin.html';
 }
 
-const currentEventId = currentEvent.id;
+// Use eventid (database field) or fallback to id
+const currentEventId = currentEvent.eventid || currentEvent.id;
 
 
 function getUserFromToken() {
@@ -99,7 +101,7 @@ createdEl.textContent = event.createdat
   : '-';
 locEl.textContent = event.location || '-';
 neededEl.textContent = event.requiredvolunteers;
-idEl.textContent = event.id;
+idEl.textContent = event.eventid || event.id;
 descEl.textContent = event.description || 'No description';
 
 

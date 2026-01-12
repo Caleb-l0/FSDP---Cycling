@@ -77,6 +77,7 @@ CREATE TABLE volunterrequests (
     FOREIGN KEY (eventid) REFERENCES events(eventid)
 );
 
+
 CREATE TABLE eventsignups (
     signupid SERIAL PRIMARY KEY,
     eventid INT NOT NULL,
@@ -86,6 +87,7 @@ CREATE TABLE eventsignups (
     FOREIGN KEY (eventid) REFERENCES events(eventid),
     FOREIGN KEY (userid) REFERENCES users(id)
 );
+
 
 CREATE TABLE userevents (
     usereventid SERIAL PRIMARY KEY,
