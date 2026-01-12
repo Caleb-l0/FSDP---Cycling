@@ -410,11 +410,65 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+  position: relative;
+  overflow: hidden;
 }
 
 .service-icon i {
   font-size: 2.8rem;
   color: var(--primary);
+}
+
+.weather-icon {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+}
+
+/* Weather Animations */
+.weather-sunny .weather-icon {
+  animation: rotateSun 8s linear infinite;
+}
+
+.weather-rainy .weather-icon {
+  animation: rainDrop 1.5s ease-in-out infinite;
+}
+
+.weather-cloudy .weather-icon {
+  animation: cloudFloat 4s ease-in-out infinite;
+}
+
+/* Sunny - Rotating sun */
+@keyframes rotateSun {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Rainy - Rain drop animation */
+@keyframes rainDrop {
+  0%, 100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-5px) scale(1.05);
+  }
+}
+
+/* Cloudy - Floating cloud */
+@keyframes cloudFloat {
+  0%, 100% {
+    transform: translateX(0) translateY(0);
+  }
+  33% {
+    transform: translateX(5px) translateY(-3px);
+  }
+  66% {
+    transform: translateX(-5px) translateY(3px);
+  }
 }
 
 .service-content {
