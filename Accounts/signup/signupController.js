@@ -6,7 +6,8 @@ async function signupUser(req, res) {
   try {
     const { name, email, password, role } = req.body;
 
-    if (!name || !email || !password) {
+    // Validation already handled by middleware, but double-check
+    if (!name || !email || !password || !role) {
       return res.status(400).json({ message: "Missing required fields" });
     }
 
@@ -21,14 +22,14 @@ async function signupUser(req, res) {
       name,
       email,
       hashedPassword,
-      role || "user"
+      role
     );
 
     res.status(201).json({ message: "User created successfully" });
 
   } catch (err) {
     console.error("Signup error full:", err);
-    res.status(500).json({ message: "Signup failed" });
+    res.status(500).json({ message: "Signup failed", error: err.message });
   }
 }
 

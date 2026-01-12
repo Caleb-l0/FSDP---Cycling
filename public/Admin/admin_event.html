@@ -9,28 +9,55 @@
    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
   <style>
-
+    /* ======================================================
+       Action Buttons – Professional, Simple Design
+    ====================================================== */
     .btn-action {
-  border: 1.5px solid #1f1f1e;
-  background: #FFF8E1;
-  color: #4E342E;    
-  min-width: 150px;
-  padding: 8px 18px;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.3s;
-  font-weight: 500;
-}
+      border: none;
+      background: #ea8d2a;
+      color: #ffffff;
+      min-width: 160px;
+      padding: 14px 28px;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-weight: 600;
+      font-size: 1rem;
+      letter-spacing: 0.3px;
+      box-shadow: 0 4px 12px rgba(234, 141, 42, 0.25);
+    }
+
+    .btn-action:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(234, 141, 42, 0.3);
+    }
 
     .btn-create {
-  background: #4CAF50; /* Green */
-  color: white;
-}
+      background: #10b981;
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
+    }
 
-.btn-reject {
-  background: #E53935; /* Red */
-  color: white;
-}
+    .btn-create:hover {
+      background: #059669;
+      box-shadow: 0 6px 16px rgba(16, 185, 129, 0.3);
+    }
+
+    .btn-reject {
+      background: #ef4444;
+      box-shadow: 0 4px 12px rgba(239, 68, 68, 0.25);
+    }
+
+    .btn-reject:hover {
+      background: #dc2626;
+      box-shadow: 0 6px 16px rgba(239, 68, 68, 0.3);
+    }
+
+    @media (max-width: 768px) {
+      .btn-action {
+        width: 100%;
+        min-width: auto;
+      }
+    }
   </style>
 </head>
 <body>

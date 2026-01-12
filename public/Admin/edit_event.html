@@ -11,104 +11,129 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
   <style>
-    /* -----------------------------
-       Edit Page Styling Upgrade
-       senior-friendly & consistent
-    --------------------------------*/
+    /* ======================================================
+       Edit Page Styling – Professional, Simple, Elderly-Friendly
+    ====================================================== */
     .edit-wrapper {
-      background: #FFFDF7;
+      background: #ffffff;
       padding: 40px;
       margin: 40px auto;
-      border-radius: 14px;
-      border: 1.5px solid #E5D3B3;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      border-radius: 20px;
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
     }
 
     .edit-title {
       text-align: center;
-      font-size: 2rem;
-      color: #3E2723;
+      font-size: 1.875rem;
+      color: #1e293b;
       font-weight: 700;
-      margin-bottom: 30px;
+      margin-bottom: 32px;
     }
 
     .info-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 25px;
-      margin-bottom: 25px;
+      gap: 24px;
+      margin-bottom: 24px;
     }
 
     .info-grid p,
     .desc p {
-      font-size: 1.15rem;
+      font-size: 1rem;
       font-weight: 600;
-      color: #4E342E;
+      color: #1e293b;
       margin-bottom: 8px;
     }
 
     .edit-input {
       width: 100%;
-      padding: 14px 15px;
-      background: #FFF8E1;
-      border-radius: 10px;
-      border: 1.6px solid #E5D3B3;
-      font-size: 1.05rem;
-      color: #3E2723;
-      transition: 0.25s;
+      padding: 14px 18px;
+      background: #ffffff;
+      border-radius: 12px;
+      border: 1px solid #e2e8f0;
+      font-size: 1rem;
+      color: #1e293b;
+      transition: all 0.2s ease;
     }
 
     .edit-input:focus {
-      border-color: #E69A2A;
-      box-shadow: 0 0 0 3px rgba(230,154,42,0.25);
+      border-color: #ea8d2a;
+      box-shadow: 0 0 0 3px rgba(234, 141, 42, 0.1);
       outline: none;
     }
 
     textarea.edit-input {
-      resize: none;
-      height: 150px;
+      resize: vertical;
+      min-height: 120px;
+      line-height: 1.6;
     }
 
     .btn-row {
-      margin-top: 30px;
+      margin-top: 32px;
       display: flex;
       justify-content: center;
-      gap: 25px;
+      gap: 16px;
       flex-wrap: wrap;
     }
 
     .btn-main {
-      background: #E69A2A;
-      color: white;
+      background: #ea8d2a;
+      color: #ffffff;
       padding: 14px 28px;
-      border-radius: 10px;
-      font-size: 1.15rem;
-      font-weight: 700;
+      border-radius: 999px;
+      font-size: 1rem;
+      font-weight: 600;
       border: none;
       cursor: pointer;
-      transition: 0.25s;
+      transition: all 0.2s ease;
+      letter-spacing: 0.3px;
+      box-shadow: 0 4px 12px rgba(234, 141, 42, 0.25);
     }
 
     .btn-main:hover {
-      background: #c47a17;
+      background: #d97a1f;
       transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(234, 141, 42, 0.3);
     }
 
     .btn-cancel {
-      background: #B33A3A;
-      color: white;
+      background: #64748b;
+      color: #ffffff;
       padding: 14px 28px;
-      border-radius: 10px;
-      font-size: 1.15rem;
-      font-weight: 700;
+      border-radius: 999px;
+      font-size: 1rem;
+      font-weight: 600;
       border: none;
       cursor: pointer;
-      transition: 0.25s;
+      transition: all 0.2s ease;
+      letter-spacing: 0.3px;
+      box-shadow: 0 4px 12px rgba(100, 116, 139, 0.2);
     }
 
     .btn-cancel:hover {
-      background: #8e2d2d;
+      background: #475569;
       transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(100, 116, 139, 0.3);
+    }
+
+    @media (max-width: 768px) {
+      .edit-wrapper {
+        padding: 32px 24px;
+      }
+
+      .edit-title {
+        font-size: 1.5rem;
+      }
+
+      .btn-row {
+        flex-direction: column;
+      }
+
+      .btn-main,
+      .btn-cancel {
+        width: 100%;
+      }
     }
 
   </style>
