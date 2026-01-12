@@ -1,21 +1,33 @@
 const token = localStorage.getItem("token");
-const eventID = JSON.parse(localStorage.getItem("currentRequest")).EventID;
+const currentEvent = JSON.parse(localStorage.getItem("currentEvent"));
 
-if (!token || !eventID) window.location.href = "../../index.html";
+// Check for eventid (database field) or id (fallback), or legacy EventID
+if (!token || !currentEvent) {
+  window.location.href = "../../index.html";
+  throw new Error("No event data");
+}
+
+const eventID = currentEvent.eventid || currentEvent.id || currentEvent.EventID;
+
+if (!eventID) {
+  window.location.href = "../../index.html";
+  throw new Error("No event ID");
+}
 
 async function loadEvent() {
-  const res = await fetch(`https://fsdp-cycling-ltey.onrender.com/${eventID}`, {
+  const res = await fetch(`https://fsdp-cycling-ltey.onrender.com/events/${eventID}`, {
     method: "GET",
     headers: { "Authorization": `Bearer ${token}` }
   });
 
   const data = await res.json();
 
-  document.getElementById("ev-name").value = data.EventName;
-  document.getElementById("ev-date").value = data.EventDate.split("T")[0];
-  document.getElementById("ev-loc").value = data.Location;
-  document.getElementById("ev-needed").value = data.RequiredVolunteers;
-  document.getElementById("ev-desc").value = data.Description;
+  // Handle both old format (EventName, EventDate, etc.) and new format (eventname, eventdate, etc.)
+  document.getElementById("ev-name").value = data.eventname || data.EventName || "";
+  document.getElementById("ev-date").value = (data.eventdate || data.EventDate || "").split("T")[0];
+  document.getElementById("ev-loc").value = data.location || data.Location || "";
+  document.getElementById("ev-needed").value = data.requiredvolunteers || data.RequiredVolunteers || "";
+  document.getElementById("ev-desc").value = data.description || data.Description || "";
 
   const assignedCheck = await fetch(`https://fsdp-cycling-ltey.onrender.com/events/checkAssigned/${eventID}`, {
     method: "GET",

@@ -4,7 +4,8 @@ const pool = require("../Postgres_config");
 // ======================================================
 // Organization Request Model
 // Purpose: Handle organization requests for events
-// Table: volunteerrequests (organizations request events to be created)
+// Table: volunterrequests (organizations request events to be created)
+// Note: Table name is misspelled in database (missing 'e' in volunteer)
 // ======================================================
 
 
@@ -17,7 +18,7 @@ async function createRequest(requestData) {
     
     const result = await pool.query(
       `
-      INSERT INTO volunteerrequests 
+      INSERT INTO volunterrequests 
         (organizationid, requesterid, eventname, eventdate, description, requiredvolunteers, status)
       VALUES ($1, $2, $3, $4, $5, $6, 'Pending')
       RETURNING *
@@ -40,7 +41,7 @@ async function getAllRequests() {
   try {
     const result = await pool.query(`
       SELECT *
-      FROM volunteerrequests
+      FROM volunterrequests
       ORDER BY requestid ASC
     `);
     return result.rows;
@@ -56,7 +57,7 @@ async function getAllRequests() {
 // ======================================================
 async function getRequestById(id) {
   const result = await pool.query(
-    `SELECT * FROM volunteerrequests WHERE requestid = $1`,
+    `SELECT * FROM volunterrequests WHERE requestid = $1`,
     [id]
   );
 
@@ -70,7 +71,7 @@ async function getRequestById(id) {
 async function approveRequest(requestID) {
   await pool.query(
     `
-    UPDATE volunteerrequests
+    UPDATE volunterrequests
     SET status = 'Approved'
     WHERE requestid = $1
     `,
@@ -87,7 +88,7 @@ async function approveRequest(requestID) {
 async function rejectRequest(requestID) {
   await pool.query(
     `
-    UPDATE volunteerrequests
+    UPDATE volunterrequests
     SET status = 'Rejected'
     WHERE requestid = $1
     `,
@@ -105,7 +106,7 @@ async function checkRequestStatus(requestID) {
   const result = await pool.query(
     `
     SELECT status
-    FROM volunteerrequests
+    FROM volunterrequests
     WHERE requestid = $1
     `,
     [requestID]
@@ -120,7 +121,7 @@ async function checkRequestStatus(requestID) {
 // ======================================================
 async function deleteRequest(requestID) {
   const result = await pool.query(
-    `DELETE FROM volunteerrequests WHERE requestid = $1 RETURNING *`,
+    `DELETE FROM volunterrequests WHERE requestid = $1 RETURNING *`,
     [requestID]
   );
 

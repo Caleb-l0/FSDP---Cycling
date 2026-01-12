@@ -115,7 +115,7 @@ descEl.textContent = event.description || 'No description';
 function initButtonHandlers() {
   if (btnEdit) {
     btnEdit.addEventListener('click', () => {
-      window.location.href = "\edit_event.html"
+      window.location.href = "./edit_event.html"
     });
   }
 
