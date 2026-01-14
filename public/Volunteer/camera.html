@@ -19,43 +19,47 @@
 
   <!-- ZXing library -->
   <script type="module">
-    import { BrowserMultiFormatReader } from 'https://cdn.jsdelivr.net/npm/@zxing/library@0.19.1/esm/index.min.js';
+  import { BrowserMultiFormatReader } from 'https://cdn.jsdelivr.net/npm/@zxing/library@0.19.1/esm/index.min.js';
 
-    const video = document.getElementById('video');
-    const flipBtn = document.getElementById('flipBtn');
-    let usingFront = false;
+  const video = document.getElementById('video');
+  const flipBtn = document.getElementById('flipBtn');
 
-    const codeReader = new BrowserMultiFormatReader();
+  let usingFront = false;
+  let codeReader = new BrowserMultiFormatReader();
 
-    async function startScanner() {
-      try {
-        const constraints = { video: { facingMode: usingFront ? 'user' : 'environment' } };
-        const stream = await navigator.mediaDevices.getUserMedia(constraints);
-        video.srcObject = stream;
+  async function startScanner() {
+    codeReader.reset();
 
-        // Start decoding continuously
-        codeReader.decodeFromVideoElement(video, (result, err) => {
-          if (result) {
-            console.log('QR detected:', result.getText());
-            alert('QR detected: ' + result.getText());
-            // Stop scanning if you want
-            // codeReader.reset();
-          }
-        });
-      } catch (err) {
-        console.error(err);
-        alert('Cannot access camera');
+    const constraints = {
+      video: {
+        facingMode: usingFront ? 'user' : 'environment'
       }
+    };
+
+    try {
+      await codeReader.decodeFromConstraints(
+        constraints,
+        video,
+        (result, err) => {
+          if (result) {
+            console.log("QR:", result.getText());
+            alert("QR detected:\n" + result.getText());
+
+            // Stop scanning after success
+            codeReader.reset();
+          }
+        }
+      );
+    } catch (e) {
+      console.error(e);
+      alert("Camera error");
     }
+  }
 
-    flipBtn.addEventListener('click', () => {
-      usingFront = !usingFront;
-      codeReader.reset();
-      startScanner();
-    });
-
+  flipBtn.onclick = () => {
+    usingFront = !usingFront;
     startScanner();
-  </script>
-</body>
-</html>
+  };
 
+  startScanner();
+</script>
