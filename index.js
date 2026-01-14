@@ -319,6 +319,73 @@ async function handleGoogleCredential(response) {
 document.addEventListener("DOMContentLoaded", initGoogleLogin);
 
 
+let generatedOtp = null;
+let otpExpiry = null;
+
+function generateOtp() {
+  return Math.floor(100000 + Math.random() * 900000).toString();
+}
+
+function showOtp() {
+  const email = document.getElementById("email").value.trim();
+
+  if (!email) {
+    alert("Please enter an email first");
+    return;
+  }
+
+  generatedOtp = generateOtp();
+  otpExpiry = Date.now() + 5 * 60 * 1000; // 5 minutes
+
+  emailjs.send(
+    "service_mbk5pgl",
+    "template_w5klqcn",     
+    {
+      to_email: email,
+      otp: generatedOtp
+    }
+  )
+  .then(() => {
+    createWowToast("OTP sent to your email", "success");
+
+    document.querySelector("#loginModal form").style.display = "none";
+    document.getElementById("otpStep").style.display = "block";
+  })
+  .catch(err => {
+    console.error(err);
+    createWowToast("Failed to send OTP", "error");
+  });
+}
+
+function verifyOtp() {
+  const userOtp = document.getElementById("otp").value.trim();
+
+  if (!generatedOtp) {
+    createWowToast("No OTP generated", "error");
+    return;
+  }
+
+  if (Date.now() > otpExpiry) {
+    createWowToast("OTP expired", "error");
+    return;
+  }
+
+  if (userOtp === generatedOtp) {
+    createWowToast("OTP verified! Login successful", "success");
+
+    
+    generatedOtp = null;
+
+    setTimeout(() => {
+      window.location.href = "/public/Volunteer/homepage_login_volunteer.html";
+    }, 1200);
+  } else {
+    createWowToast("Invalid OTP", "error");
+  }
+}
+
+
+
 function showOtp() {
   const emailInput = document.getElementById("email");
   const email = emailInput.value.trim();
@@ -340,3 +407,5 @@ function backToLogin() {
   document.querySelector("#loginModal form").style.display = "block";
   
 }
+
+
