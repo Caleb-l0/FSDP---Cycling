@@ -31,8 +31,8 @@ const EmailController = require("./Controllers/GetEmail_Controller")
 
 // ------ Event Controller for all event related -------
 const EventController = require("./Controllers/EventController");
-// ----- REQUEST CONTROLLER -----
-const requestController = require('./Controllers/GetRequestController');
+// ----- ORGANIZATION REQUEST CONTROLLER -----
+const organizationRequestController = require('./Controllers/OrganizationRequestController');
 
 // ----- ADMIN EVENT CONTROLLER -----
 const adminEventController = require('./Controllers/Admin_event_Controller');
@@ -43,18 +43,25 @@ const eventController = require('./Controllers/VolunteerEventController.js');
 // ----- LOGIN MODEL (for text size updates) -----
 const loginModel = require('./Accounts/login/loginModel');
 
+// ------ LOGIN WITH PHONE CONTROLLER --------------
+
+
 // ----------------- VOLUNTEER USER PROFILE CONTROLLER --------------
 const volunteerUserController = require("./Controllers/volunteer_user_profile_Controller.js")
 
 
 // ------ VOLUNTEER FRIENDS CONTROLLER --------------
 const userFriendController = require("./Controllers/user_friend_Controller.js");
+
+
+
 // --------------- translation
 
 
 
-
 // !!!!!!!!!!!!!1!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
 
 const fetch = require("node-fetch");
 
@@ -71,6 +78,38 @@ const fetch = require("node-fetch");
 
 // ----- LOGIN & SIGNUP API ROUTES (must be before static files) -----
 app.post('/login', validateLogin, loginUser);
+
+
+// NEW PHONE LOGIN ROUTE
+app.post('/login/phone', async (req, res) => {
+  const { phone, firebaseUid } = req.body;
+  if (!phone || !firebaseUid) {
+    return res.status(400).json({ message: "Missing phone or firebaseUid" });
+  } 
+  try {
+    let user = await getUserByPhone(phone);
+    if (!user) {
+      // REGISTER
+      user = await createUserWithPhone(phone, firebaseUid);
+    }
+    // LOGIN
+    const token = jwt.sign(
+      { id: user.id, role: user.role },
+      process.env.JWT_SECRET,
+      { expiresIn: "7d" }
+    );  
+    res.json({
+      token,
+      userId: user.id,
+      name: user.name,
+      role: user.role
+    });  
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Phone login failed" });
+  }
+});
+
 
 // ----- SIGNUP ROUTES -----
 const { signupUser } = require('./Accounts/signup/signupController');
@@ -118,6 +157,7 @@ app.use("/organization/events", eventBookingRoutes);
 // -------Email -------------
 app.get("/getOrganID",authenticate,EmailController.getOrganisationID)
 app.get("/getUserEmail/:orgID",authenticate,EmailController.getMemberEmailsByOrganizationID)
+app.get("/user/organization-id", authenticate, EmailController.getUserOrganizationID)
 app.get("/send-email",authenticate,EmailController.getMemberEmailsByOrganizationID)
 
 
@@ -144,22 +184,25 @@ app.get('/signup', (req, res) => res.sendFile(path.join(__dirname, 'Accounts/vie
 // Serve root static files LAST (index.css, etc.) - after all routes
 app.use(express.static(__dirname)); // index.html, index.css, root images, etc.
 
-// ------ REQUEST ROUTES -----
-app.get('/admin/applications', authenticate,requestController.getAllRequests);
-app.get('/requests/details/:id', authenticate,requestController.getRequestById);
-app.delete('/request/delete/:id',authenticate,requestController.deleteRequest)
-app.put('/requests/approve/:id',authenticate,requestController.approveRequest)
-app.put('/requests/reject/:id',authenticate,requestController.rejectRequest)
-app.get('/requests/status/:id',authenticate,requestController.checkRequestStatus)
+// ------ ORGANIZATION REQUEST ROUTES -----
+app.get('/admin/applications', authenticate, organizationRequestController.getAllRequests);
+app.get('/requests/details/:id', authenticate, organizationRequestController.getRequestById);
+app.delete('/request/delete/:id', authenticate, organizationRequestController.deleteRequest);
+app.put('/requests/approve/:id', authenticate, organizationRequestController.approveRequest);
+app.put('/requests/reject/:id', authenticate, organizationRequestController.rejectRequest);
+app.get('/requests/status/:id', authenticate, organizationRequestController.checkRequestStatus);
+app.post('/request-event', authenticate, organizationRequestController.createRequest);
 
 
 
 
 // ----- ADMIN EVENT FEED -----
+
 app.get('/admin/events', authenticate, adminEventController.getAllEvents); 
 app.get("/admin/events/location/:eventID",authenticate,adminEventController.getEventLocation);
 app.post('/admin/create_events', authenticate, adminEventController.createEvent);
-app.put('/admin/assign_events',authenticate,adminEventController.assignEventToOrgan)
+app.put('/admin/assign_events',authenticate,adminEventController.assignEventToOrgan);
+app.delete('/admin/events/:eventID', authenticate, adminEventController.deleteEvent);
 
 
 // ------ VOLUNTEER USER PROFILE --------
@@ -211,9 +254,7 @@ app.get("/history/:userId", authenticate, rewardsController.getHistory);
 
 
 
-const { requestEvent } = require("./Controllers/is.js");
-
-app.post("/request-event", authenticate, requestEvent);
+// Organization request creation is now handled by organizationRequestController.createRequest (defined earlier)
 
 // 404 handler for API routes - must be after static files
 app.use((req, res, next) => {
@@ -433,6 +474,37 @@ process.on('unhandledRejection', (err) => {
 // ----- START SERVER -----
 app.listen(port, () => {
   console.log(`✅ Server running on http://localhost:${port}`);
+  
+  // Schedule auto-delete task to run daily at 2 AM
+  const autoDeleteTask = require("./ScheduledTasks/autoDeleteEvents");
+  
+  // Run immediately on server start (for testing)
+  // autoDeleteTask.runAutoDelete();
+  
+  // Schedule to run daily at 2 AM (24 hours = 86400000 ms)
+  // In production, consider using a proper cron job or task scheduler
+  const runDaily = () => {
+    const now = new Date();
+    const hoursUntil2AM = (26 - now.getHours()) % 24; // Hours until next 2 AM
+    const msUntil2AM = hoursUntil2AM * 60 * 60 * 1000 - (now.getMinutes() * 60 * 1000) - (now.getSeconds() * 1000);
+    
+    setTimeout(() => {
+      autoDeleteTask.runAutoDelete().catch(err => {
+        console.error("Auto-delete task error:", err);
+      });
+      
+      // Then run every 24 hours
+      setInterval(() => {
+        autoDeleteTask.runAutoDelete().catch(err => {
+          console.error("Auto-delete task error:", err);
+        });
+      }, 24 * 60 * 60 * 1000);
+    }, msUntil2AM);
+  };
+  
+  // Uncomment to enable auto-delete scheduling
+  // runDaily();
+  console.log("ℹ️  Auto-delete task is available but not scheduled. Run manually or enable in app.js");
 });
 
 // ---------------- Camera access script for Volunteer page ----------------

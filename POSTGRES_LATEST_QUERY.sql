@@ -12,6 +12,22 @@ ALTER TABLE users
 ADD COLUMN level INT DEFAULT 1 CHECK (level >= 1),
 ADD COLUMN joindate TIMESTAMP DEFAULT NOW();
 
+ALTER TABLE users
+ADD COLUMN phone VARCHAR(20) UNIQUE,
+ADD COLUMN firebase_uid VARCHAR(100);
+
+
+/* for institution user test */
+INSERT INTO userorganizations (userid, organizationid, orgemail, orgrole, joinedat)
+VALUES (
+    19,                                       
+    1,                                        
+    (SELECT email FROM users WHERE id = 19),  
+    'admin',                                  
+    NOW()
+);
+
+
 
 
 
@@ -73,6 +89,7 @@ CREATE TABLE volunterrequests (
     FOREIGN KEY (eventid) REFERENCES events(eventid)
 );
 
+
 CREATE TABLE eventsignups (
     signupid SERIAL PRIMARY KEY,
     eventid INT NOT NULL,
@@ -82,6 +99,7 @@ CREATE TABLE eventsignups (
     FOREIGN KEY (eventid) REFERENCES events(eventid),
     FOREIGN KEY (userid) REFERENCES users(id)
 );
+
 
 CREATE TABLE userevents (
     usereventid SERIAL PRIMARY KEY,

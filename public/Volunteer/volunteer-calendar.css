@@ -1,6 +1,73 @@
+/* Weather Background - Only for Weather Section */
+.features.weather-bg-sunny,
+.features.weather-bg-rainy,
+.features.weather-bg-cloudy {
+  position: relative;
+  overflow: hidden;
+  border-radius: 20px;
+  margin: 20px 0;
+  background: transparent !important; /* 覆盖homepage.css中的背景 */
+}
+
+.features.weather-bg-sunny::before,
+.features.weather-bg-rainy::before,
+.features.weather-bg-cloudy::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  background-image: var(--weather-bg-url);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 1; /* 完全不透明，让背景清晰可见 */
+}
+
+/* Semi-transparent overlay for readability */
+.features.weather-bg-sunny::after,
+.features.weather-bg-rainy::after,
+.features.weather-bg-cloudy::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  background: rgba(255, 255, 255, 0.25); /* 减少覆盖层透明度，让背景更明显 */
+  backdrop-filter: blur(1px); /* 减少模糊效果 */
+  border-radius: 20px;
+}
+
+/* Ensure content is above background */
+.features .section-title,
+.features .container {
+  position: relative;
+  z-index: 2;
+}
+
+/* Service card with weather background effect - Make it narrower */
+.features.weather-bg-sunny .container,
+.features.weather-bg-rainy .container,
+.features.weather-bg-cloudy .container {
+  max-width: 600px; /* 限制容器宽度，让天气框更窄 */
+  margin: 0 auto; /* 居中显示 */
+}
+
+.features.weather-bg-sunny .service-card,
+.features.weather-bg-rainy .service-card,
+.features.weather-bg-cloudy .service-card {
+  background: rgba(255, 255, 255, 0.85); /* 稍微透明的背景，让天气背景透过 */
+  backdrop-filter: blur(2px);
+  max-width: 100%; /* 确保不超出容器 */
+}
+
 /* Calendar Container */
 .calendar-container {
-  background: #ffffff;
+  background: #ffffff; /* 恢复纯白背景 */
   border-radius: 20px;
   padding: 32px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);

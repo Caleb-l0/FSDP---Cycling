@@ -88,14 +88,35 @@
  
     <section class="section section-light">
   <div class="container">
-    <div class="section-title">
-      <h2>Your Created Events</h2>
-      <p>Events that your organisation has created and published.</p>
-    </div>
+    <!-- Dashboard Tabs -->
+    <section class="dashboard">
+      <section class="dashboard_title">
+        <a class="dashboard_title_selected" id="title1">All Events</a>
+        <a class="dashboard_title_not_selected" id="title2">My Applications</a>
+        <a class="dashboard_title_not_selected" id="title3">Approved Applications</a>
+      </section>
 
-   <div class="event-grid" id="eventGrid"></div>
+      <!-- Dashboard 1: All Events -->
+      <section id="dashboard1">
+        <div class="filter-group" id="filter-group1">
+          <button class="filter-btn active" id="filter_all">All</button>
+          <button class="filter-btn" id="filter_assigned">Assigned</button>
+          <button class="filter-btn" id="filter_not_assigned">Not Assigned</button>
+          <button class="filter-btn" id="filter_expired">Expired</button>
+        </div>
+        <div class="event-grid" id="eventGrid"></div>
+      </section>
 
+      <!-- Dashboard 2: My Applications -->
+      <section id="dashboard2" style="display:none;">
+        <div class="event-grid" id="applicationsGrid"></div>
+      </section>
 
+      <!-- Dashboard 3: Approved Applications -->
+      <section id="dashboard3" style="display:none;">
+        <div class="event-grid" id="approvedGrid"></div>
+      </section>
+    </section>
   </div>
 </section>
 
@@ -246,7 +267,7 @@ async function loadAllEvents() {
   const grid = document.getElementById("eventGrid");
 
   try {
-    const response = await fetch("http://localhost:3000/institution/events/all");
+    const response = await fetch("https://fsdp-cycling-ltey.onrender.com/institution/events/all");
 
     if (!response.ok) {
       throw new Error("Failed to load events");
@@ -267,7 +288,7 @@ async function loadAllEvents() {
       const formattedDate = new Date(event.EventDate).toLocaleString();
 
       card.innerHTML = `
-        <img src="./Bali.jpg" class="event-img">
+        <div class="event-img" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 150px; display: flex; align-items: center; justify-content: center; color: white; font-size: 2rem;">🚴</div>
         <div class="event-info">
           <h3>${event.EventName}</h3>
           <p><strong>Time:</strong> ${formattedDate}</p>
@@ -291,8 +312,9 @@ async function loadAllEvents() {
     grid.innerHTML = `<p style="text-align:center;color:red;">Unable to load events.</p>`;
   }
 }
-
     </script>
+
+    <script src="./homepage_login_instituition.js"></script>
      <script src="../Translation.js"></script>
 </body>
 </html>

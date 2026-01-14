@@ -1,57 +1,55 @@
 const token = localStorage.getItem('token');
 if (!token) {
-
- window.location.href = '../../index.html';}
-
-
-const title = document.getElementById("title1")
-const title2 = document.getElementById("title2")
-const dashboard1 = document.getElementById("dashboard1")
-const dashboard2 = document.getElementById("dashboard2")
-const createEventbt = document.getElementById('createEvent')
-
- const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", 
-                  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    window.location.href = '../../index.html';
+}
 
 
+const title = document.getElementById("title1"); 
+const title2 = document.getElementById("title2"); 
+
+const dashboard1 = document.getElementById("dashboard1"); 
+const dashboard2 = document.getElementById("dashboard2");
+const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
 
+// Initial state: Show dashboard1 (Applications) by default
+if (dashboard1) dashboard1.style.display = "block"; 
+if (dashboard2) dashboard2.style.display = "none";
 
 
 title.addEventListener("click", function() {
-  if (title2.classList.contains("dashboard_title_selected")) {
-    title2.classList.remove("dashboard_title_selected");
-    title2.classList.add("dashboard_title_not_selected");
-
+    // Remove selected from title2
+    if (title2) {
+        title2.classList.remove("dashboard_title_selected");
+        title2.classList.add("dashboard_title_not_selected");
+    }
+    
+    // Add selected to title1
     title.classList.remove("dashboard_title_not_selected");
     title.classList.add("dashboard_title_selected");
-   
-    dashboard2.style.display = "none";
-    dashboard1.style.display = "block";
- 
-  } 
- 
+    
+    // Show dashboard1, hide dashboard2
+    if(dashboard1) dashboard1.style.display = "block"; 
+    if(dashboard2) dashboard2.style.display = "none";
 });
-
 
 
 title2.addEventListener("click", function() {
-    if (title.classList.contains("dashboard_title_selected")) {
+    // Remove selected from title1
+    if (title) {
         title.classList.remove("dashboard_title_selected");
         title.classList.add("dashboard_title_not_selected");
-        title2.classList.remove("dashboard_title_not_selected");
-        title2.classList.add("dashboard_title_selected"); 
-        
-        
-        dashboard1.style.display = "none";
-        dashboard2.style.display = "block";
-
-
-
- 
-  } 
-
+    }
+    
+    // Add selected to title2
+    title2.classList.remove("dashboard_title_not_selected");
+    title2.classList.add("dashboard_title_selected"); 
+    
+    // Show dashboard2, hide dashboard1
+    if(dashboard1) dashboard1.style.display = "none";
+    if(dashboard2) dashboard2.style.display = "block";
 });
+
 
 
 // ------ DashBoard
@@ -118,210 +116,109 @@ async function GetLocation(eventID){
 
 //----------------------------------------------------------------
 // for dashboard 1
+// ------------------------------------------------
+// Dashboard 1 – Applications
+// ------------------------------------------------
 async function requestAll(choice) {
+  try {
+    const res = await fetch(
+      "https://fsdp-cycling-ltey.onrender.com/admin/applications",
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        }
+      }
+    );
 
-try{
-    const res = await fetch('https://fsdp-cycling-ltey.onrender.com/admin/applications', {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json', 
-      "Authorization": `Bearer ${token}` 
-    }
-
-  });
     if (!res.ok) {
-        throw new Error('Network response was not ok');
+      throw new Error("Network response was not ok");
+    }
+
+    const data = await res.json();
+    console.log("Applications:", data);
+
+    eventGrid1.innerHTML = "";
+
+    
+    if (choice === "date") {
+      data.sort(
+        (a, b) => new Date(a.eventdate) - new Date(b.eventdate)
+      );
+    }
+    else if (choice === "organization") {
+      data.sort((a, b) => {
+      
+        if (a.organizationid < b.organizationid) return -1;
+        if (a.organizationid > b.organizationid) return 1;
+        return 0;
+      });
     }
 
 
-    const data =  await res.json();
-    console.log(data);
-
-    if(choice == "all"){
-   for (const application of data) {
+    for (const application of data) {
    
-  const locationObj = await GetLocation(parseInt(application.eventid));
-  const locationName = locationObj.eventlocation;
+      if (
+        (choice === "approved" && application.status !== "Approved") ||
+        (choice === "rejected" && application.status !== "Rejected") ||
+        (choice === "history" &&
+          application.status !== "Approved" &&
+          application.status !== "Rejected")
+      ) {
+        continue;
+      }
 
-  const date = new Date(application.eventdate);
-  const day = date.getDate();
-  const month = months[date.getMonth()];
-  const year = date.getFullYear();
-      
-        const date2 = new Date(application.createdat);
-         const day2 = date2.getDate();
-           const month2 = months[date2.getMonth()];
-           const year2 = date2.getFullYear();
+     
+      const locationObj = await GetLocation(
+        Number(application.eventid)
+      );
+      const locationName =
+        locationObj?.eventlocation || "Unknown";
 
-  const card = document.createElement("div");
-  card.className = "event-card";
+     
+      const eventDate = new Date(application.eventdate);
+      const applyDate = new Date(application.createdat);
 
-  card.innerHTML = `
-    <h3>${application.eventname}</h3>
-    <p><strong>Date:</strong> ${day} ${month} ${year}</p>
-    <p><strong>Location:</strong> ${locationName}</p>
-    <p><strong>Apply on:</strong> ${day2} ${month2} ${year2}</p>
-    <p><strong>Organization:</strong> ${application.organizationid}</p>
-    <span class="status-tag status-${application.status.toLowerCase()}">${application.status}</span>
-  `;
+      const card = document.createElement("div");
+      card.className = "event-card";
+      card.style.cursor = "pointer";
 
-  card.addEventListener("click", () => {
-    localStorage.setItem("currentRequest", JSON.stringify(application));
-    window.location.href = "./admin_request.html";
-  });
+      card.innerHTML = `
+        <h3>${application.eventname}</h3>
+        <p><strong>Date:</strong>
+          ${eventDate.getDate()} 
+          ${months[eventDate.getMonth()]} 
+          ${eventDate.getFullYear()}
+        </p>
+        <p><strong>Location:</strong> ${locationName}</p>
+        <p><strong>Applied on:</strong>
+          ${applyDate.getDate()} 
+          ${months[applyDate.getMonth()]} 
+          ${applyDate.getFullYear()}
+        </p>
+        <p><strong>Organization:</strong> ${application.organizationid}</p>
+        <span class="status-tag status-${application.status.toLowerCase()}">
+          ${application.status}
+        </span>
+      `;
 
-  eventGrid1.appendChild(card);
-}}
-    else if (choice === "date") {
-      data.sort((a, b) =>   new Date(a.eventdate)-new Date(b.eventdate));
-        for (const application of data) {
+   
+      card.addEventListener("click", () => {
+        localStorage.setItem(
+          "currentApplication",
+          JSON.stringify(application)
+        );
+        window.location.href = "./admin_request.html";
+      });
 
-
-  const locationObj = await GetLocation(parseInt(application.eventid));
-  const locationName = locationObj.eventlocation;
-
-  const date = new Date(application.eventdate);
-  const day = date.getDate();
-  const month = months[date.getMonth()];
-  const year = date.getFullYear();
-      
-        const date2 = new Date(application.createdat);
-         const day2 = date2.getDate();
-           const month2 = months[date2.getMonth()];
-           const year2 = date2.getFullYear();
-
-  const card = document.createElement("div");
-  card.className = "event-card";
-
-  card.innerHTML = `
-<h3>${application.eventname}</h3>
-    <p><strong>Date:</strong> ${day} ${month} ${year}</p>
-    <p><strong>Location:</strong> ${locationName}</p>
-    <p><strong>Apply on:</strong> ${day2} ${month2} ${year2}</p>
-    <p><strong>Organization:</strong> ${application.organizationid}</p>
-    <span class="status-tag status-${application.status.toLowerCase()}">${application.status}</span>
-  `;
-
-  card.addEventListener("click", () => {
-    localStorage.setItem("currentRequest", JSON.stringify(application));
-    window.location.href = "./admin_request.html";
-  });
-
-  eventGrid1.appendChild(card);}
+      eventGrid1.appendChild(card);
     }
-    else if (choice === "approved") {
-       for (const application of data) {
-        if(application.status="Approved"){
-   
-  const locationObj = await GetLocation(parseInt(application.eventid));
-  const locationName = locationObj.eventlocation;
-
-  const date = new Date(application.eventdate);
-  const day = date.getDate();
-  const month = months[date.getMonth()];
-  const year = date.getFullYear();
-      
-        const date2 = new Date(application.createdat);
-         const day2 = date2.getDate();
-           const month2 = months[date2.getMonth()];
-           const year2 = date2.getFullYear();
-
-  const card = document.createElement("div");
-  card.className = "event-card";
-
-  card.innerHTML = `
-    <h3>${application.eventname}</h3>
-    <p><strong>Date:</strong> ${day} ${month} ${year}</p>
-    <p><strong>Location:</strong> ${locationName}</p>
-    <p><strong>Apply on:</strong> ${day2} ${month2} ${year2}</p>
-    <p><strong>Organization:</strong> ${application.organizationid}</p>
-    <span class="status-tag status-${application.status.toLowerCase()}">${application.status}</span>
-  `;
-
-  card.addEventListener("click", () => {
-    localStorage.setItem("currentRequest", JSON.stringify(application));
-    window.location.href = "./admin_request.html";
-  });
-
-  eventGrid1.appendChild(card);}}}
-
-    else if(choice == "rejected"){
-       for (const application of data) {
-        if(application.status = "Rejected"){
-   
-  const locationObj = await GetLocation(parseInt(application.eventid));
-  const locationName = locationObj.eventlocation;
-
-  const date = new Date(application.eventdate);
-  const day = date.getDate();
-  const month = months[date.getMonth()];
-  const year = date.getFullYear();
-      
-        const date2 = new Date(application.createdat);
-         const day2 = date2.getDate();
-           const month2 = months[date2.getMonth()];
-           const year2 = date2.getFullYear();
-
-  const card = document.createElement("div");
-  card.className = "event-card";
-
-  card.innerHTML = `
-    <h3>${application.eventname}</h3>
-    <p><strong>Date:</strong> ${day} ${month} ${year}</p>
-    <p><strong>Location:</strong> ${locationName}</p>
-    <p><strong>Apply on:</strong> ${day2} ${month2} ${year2}</p>
-    <p><strong>Organization:</strong> ${application.organizationid}</p>
-    <span class="status-tag status-${application.status.toLowerCase()}">${application.status}</span>
-  `;
-
-  card.addEventListener("click", () => {
-    localStorage.setItem("currentRequest", JSON.stringify(application));
-    window.location.href = "./admin_request.html";
-  });
-
-  eventGrid1.appendChild(card);}
-       }}
-      else if (choice ==  'history'){
-       for (const application of data) {
-        if(application.status === "Approved" || application.status === "Rejected"){
-   
-  const locationObj = await GetLocation(parseInt(application.eventid));
-  const locationName = locationObj.eventlocation;
-
-  const date = new Date(application.eventdate);
-  const day = date.getDate();
-  const month = months[date.getMonth()];
-  const year = date.getFullYear();
-      
-        const date2 = new Date(application.createdat);
-         const day2 = date2.getDate();
-           const month2 = months[date2.getMonth()];
-           const year2 = date2.getFullYear();
-
-  const card = document.createElement("div");
-  card.className = "event-card";
-
-  card.innerHTML = `
-    <h3>${application.eventname}</h3>
-    <p><strong>Date:</strong> ${day} ${month} ${year}</p>
-    <p><strong>Location:</strong> ${locationName}</p>
-    <p><strong>Apply on:</strong> ${day2} ${month2} ${year2}</p>
-    <p><strong>Organization:</strong> ${application.organizationid}</p>
-    <span class="status-tag status-${application.status.toLowerCase()}">${application.status}</span>
-  `;
-
-  card.addEventListener("click", () => {
-    localStorage.setItem("currentRequest", JSON.stringify(application));
-    window.location.href = "./admin_request.html";
-  });
-
-  eventGrid1.appendChild(card);
-}}}
-}
-catch(err){
+  } catch (err) {
     console.error("Error fetching applications:", err);
+  }
 }
-}
+
 
 const requestallbt = document.getElementById("request_all");
 const requestdatebt = document.getElementById("request_date");
@@ -329,34 +226,32 @@ const requestorganbt = document.getElementById("request_organ");
 const requestapprovedbt = document.getElementById("request_approved");
 const requestrejectbt = document.getElementById("request_reject");
 const requestHistorybt = document.getElementById("request_history");
+const requestbyorganisation = document.getElementById("request_organ");
 
 requestallbt.addEventListener("click", () => {
-    eventGrid1.innerHTML = "";
-    requestAll("all");
-}
-);
+  requestAll("all");
+});
+
+requestdatebt.addEventListener("click", () => {
+  requestAll("date");
+});
 
 requestapprovedbt.addEventListener("click", () => {
-    eventGrid1.innerHTML = "";
-    requestAll("approved");
-}); 
-requestrejectbt.addEventListener("click", () => {
-    eventGrid1.innerHTML = "";
-    requestAll("rejected");
+  requestAll("approved");
 });
-requestdatebt.addEventListener("click", () => {
-   eventGrid1.innerHTML = ``
-    requestAll("date");
-}
-);
+
+requestrejectbt.addEventListener("click", () => {
+  requestAll("rejected");
+});
+
 requestHistorybt.addEventListener("click", () => {
-    eventGrid1.innerHTML = `
-  
-   
-   `;
-    requestAll("history");
-}
-);
+  requestAll("history");
+});
+
+requestorganbt.addEventListener("click", () => {
+  requestAll("organization"); 
+});
+
 
 
 
@@ -402,6 +297,7 @@ async function requestAll2(choice) {
   const year = date.getFullYear();
             const eventCard = document.createElement('div');
             eventCard.className = 'event-card';
+            eventCard.style.cursor = 'pointer';
             eventCard.innerHTML = `
                 <h3>${event.eventname}</h3>
                 <p><strong>Date:</strong> ${day} ${month} ${year}</p>
@@ -418,7 +314,7 @@ async function requestAll2(choice) {
 
             `;
              eventCard.addEventListener('click', () => {
-        localStorage.setItem('currentRequest', JSON.stringify(event));
+        localStorage.setItem('currentEvent', JSON.stringify(event));
         window.location.href = './admin_event.html';
 });
             eventGrid2.appendChild(eventCard);
@@ -436,6 +332,7 @@ async function requestAll2(choice) {
   const year = date.getFullYear();
             const eventCard = document.createElement('div');
             eventCard.className = 'event-card';
+            eventCard.style.cursor = 'pointer';
             eventCard.innerHTML = `
                 <h3>${event.eventname}</h3>
                 <p><strong>Date:</strong> ${day} ${month} ${year}</p>
@@ -449,7 +346,7 @@ async function requestAll2(choice) {
 
             `;
              eventCard.addEventListener('click', () => {
-        localStorage.setItem('currentRequest', JSON.stringify(event));
+        localStorage.setItem('currentEvent', JSON.stringify(event));
         window.location.href = './admin_event.html';
 });
             eventGrid2.appendChild(eventCard);
@@ -468,6 +365,7 @@ async function requestAll2(choice) {
   const year = date.getFullYear();
             const eventCard = document.createElement('div');
             eventCard.className = 'event-card';
+            eventCard.style.cursor = 'pointer';
             eventCard.innerHTML = `
                 <h3>${event.eventname}</h3>
                 <p><strong>Date:</strong> ${day} ${month} ${year}</p>
@@ -481,7 +379,7 @@ async function requestAll2(choice) {
 
             `;
              eventCard.addEventListener('click', () => {
-        localStorage.setItem('currentRequest', JSON.stringify(event));
+       localStorage.setItem('currentEvent', JSON.stringify(event));
         window.location.href = './admin_event.html';
 });
             eventGrid2.appendChild(eventCard);
@@ -500,6 +398,7 @@ async function requestAll2(choice) {
   const year = date.getFullYear();
             const eventCard = document.createElement('div');
             eventCard.className = 'event-card';
+            eventCard.style.cursor = 'pointer';
             eventCard.innerHTML = `
                 <h3>${event.eventname}</h3>
                 <p><strong>Date:</strong> ${day} ${month} ${year}</p>
@@ -513,7 +412,7 @@ async function requestAll2(choice) {
 
             `;
              eventCard.addEventListener('click', () => {
-        localStorage.setItem('currentRequest', JSON.stringify(event));
+       localStorage.setItem('currentEvent', JSON.stringify(event));
         window.location.href = './admin_event.html';
 });
             eventGrid2.appendChild(eventCard);
@@ -532,6 +431,7 @@ async function requestAll2(choice) {
   const year = date.getFullYear();
             const eventCard = document.createElement('div');
             eventCard.className = 'event-card';
+            eventCard.style.cursor = 'pointer';
             eventCard.innerHTML = `
                 <h3>${event.eventname}</h3>
                 <p><strong>Date:</strong> ${day} ${month} ${year}</p>
@@ -545,7 +445,7 @@ async function requestAll2(choice) {
 
             `;
              eventCard.addEventListener('click', () => {
-        localStorage.setItem('currentRequest', JSON.stringify(event));
+     localStorage.setItem('currentEvent', JSON.stringify(event));
         window.location.href = './admin_event.html';
 });
             eventGrid2.appendChild(eventCard);
@@ -566,6 +466,7 @@ async function requestAll2(choice) {
   const year = date.getFullYear();
             const eventCard = document.createElement('div');
             eventCard.className = 'event-card';
+            eventCard.style.cursor = 'pointer';
             eventCard.innerHTML = `
                 <h3>${event.eventname}</h3>
                 <p><strong>Date:</strong> ${day} ${month} ${year}</p>
@@ -579,7 +480,7 @@ async function requestAll2(choice) {
 
             `;
              eventCard.addEventListener('click', () => {
-        localStorage.setItem('currentRequest', JSON.stringify(event));
+       localStorage.setItem('currentEvent', JSON.stringify(event));
         window.location.href = './admin_event.html';
 });
             eventGrid2.appendChild(eventCard);
@@ -655,10 +556,23 @@ async function loadAdminEvents() {
       headers: { "Authorization": `Bearer ${token}` }
     });
 
+    if (!res.ok) {
+      throw new Error("Failed to fetch events");
+    }
+
     adminEvents = await res.json();
-    svcLoadCalendar();
+    
+    // Only load calendar if grid element exists
+    if (document.getElementById("svc-calendarGrid")) {
+      svcLoadCalendar();
+    }
   } catch (err) {
     console.error("Error loading admin events:", err);
+    // Show error in calendar if element exists
+    const grid = document.getElementById("svc-calendarGrid");
+    if (grid) {
+      grid.innerHTML = '<div style="padding: 20px; text-align: center; color: #ef4444;">Failed to load calendar events</div>';
+    }
   }
 }
 
@@ -666,6 +580,12 @@ async function loadAdminEvents() {
 function svcLoadCalendar() {
   const grid = document.getElementById("svc-calendarGrid");
   const title = document.getElementById("svc-monthYear");
+  
+  if (!grid || !title) {
+    console.warn("Calendar elements not found");
+    return;
+  }
+  
   grid.innerHTML = "";
 
   const year = svcCurrent.getFullYear();
@@ -686,22 +606,39 @@ function svcLoadCalendar() {
   for (let d = 1; d <= numDays; d++) {
     const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
 
-    const dailyEvents = adminEvents.filter(ev =>
-      
- ev.eventdate.slice(0, 10) === dateStr
-      
-    );
+    const dailyEvents = adminEvents.filter(ev => {
+      if (!ev.eventdate) return false;
+      // Handle both timestamp strings and Date objects
+      let eventDateStr;
+      if (typeof ev.eventdate === 'string') {
+        eventDateStr = ev.eventdate.slice(0, 10);
+      } else {
+        eventDateStr = new Date(ev.eventdate).toISOString().slice(0, 10);
+      }
+      return eventDateStr === dateStr;
+    });
 
     let eventHTML = "";
     dailyEvents.forEach(ev => {
-      const time = ev.eventdate.slice(11, 16);
+      // Extract time from eventdate
+      let time = "All Day";
+      if (ev.eventdate) {
+        if (typeof ev.eventdate === 'string' && ev.eventdate.includes('T')) {
+          time = ev.eventdate.slice(11, 16) || "All Day";
+        } else if (ev.eventdate instanceof Date || (typeof ev.eventdate === 'string' && ev.eventdate.length > 10)) {
+          const dateObj = new Date(ev.eventdate);
+          if (!isNaN(dateObj.getTime())) {
+            time = dateObj.toTimeString().slice(0, 5);
+          }
+        }
+      }
 
       eventHTML += `
         <div class="svc-event-box svc-event-click"
           data-event='${JSON.stringify(ev).replace(/'/g, "&apos;")}'>
 
-          <div class="svc-event-title">${ev.eventname}</div>
-          <div>${ev.location}</div>
+          <div class="svc-event-title">${ev.eventname || 'Untitled Event'}</div>
+          <div>${ev.location || 'Location TBD'}</div>
           <div class="svc-event-time">${time}</div>
         </div>`;
     });
@@ -714,16 +651,25 @@ function svcLoadCalendar() {
     `;
   }
 
-  document.querySelectorAll(".svc-event-click").forEach(box => {
-    box.addEventListener("click", () => {
-      const eventObj = JSON.parse(box.dataset.event);
+  // Add click handlers after a short delay to ensure DOM is ready
+  setTimeout(() => {
+    document.querySelectorAll(".svc-event-click").forEach(box => {
+      box.addEventListener("click", () => {
+        try {
+          const eventData = box.getAttribute("data-event");
+          const eventObj = JSON.parse(eventData.replace(/&apos;/g, "'"));
 
-      localStorage.setItem("currentRequest", JSON.stringify(eventObj));
-
-     
-      window.location.href = "./admin_event.html";
+          // Store event data for the detail page
+          localStorage.setItem("currentEvent", JSON.stringify(eventObj));
+          
+          // Navigate to event detail page
+          window.location.href = "./admin_event.html";
+        } catch (error) {
+          console.error("Error parsing event data:", error);
+        }
+      });
     });
-  });
+  }, 100);
 }
 
 
@@ -737,18 +683,18 @@ function svcNextMonth() {
   svcLoadCalendar();
 }
 
+// Note: Booking requests are the same as applications, so they're handled in dashboard1
 
-loadAdminEvents();
-
-
-
-    //
+// Initialize everything on page load
 document.addEventListener("DOMContentLoaded", () => {
- 
- requestAll("all");
- requestAll2("all");
-
- 
+  // Load initial data for dashboard1 (Applications) - shown by default
+  requestAll("all");
+  
+  // Load initial data for dashboard2 (Events) - but don't display yet
+  requestAll2("all");
+  
+  // Load calendar events
+  loadAdminEvents();
 });
 
 

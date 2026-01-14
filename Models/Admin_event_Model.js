@@ -116,19 +116,51 @@ async function getEventLocation(eventID) {
 }
 
 // ----------------------------
-// 6. Check if Event Has Bookings
+// 6. Check if Event Can Be Deleted (no bookings AND no participants)
 // ----------------------------
 async function canDeleteEvent(eventID) {
   try {
-    const result = await pool.query(
-      `SELECT COUNT(*) AS countbookings
-       FROM eventbookings
+    const eventIdInt = parseInt(eventID, 10);
+    if (Number.isNaN(eventIdInt)) {
+      throw new Error("Invalid eventID");
+    }
+
+    // Check if event exists
+    const eventResult = await pool.query(
+      `SELECT eventid, COALESCE(peoplesignup, 0) AS participants
+       FROM events
        WHERE eventid = $1`,
-      [eventID]
+      [eventIdInt]
     );
 
-    const count = Number(result.rows[0].countbookings);
-    return count === 0;
+    if (eventResult.rows.length === 0) {
+      return false; // Event doesn't exist
+    }
+
+    const participants = Number(eventResult.rows[0]?.participants || 0);
+
+    // Check if event has bookings (both approved and pending)
+    const bookingResult = await pool.query(
+      `SELECT COUNT(*) AS countbookings
+       FROM eventbookings
+       WHERE eventid = $1 AND status IN ('Approved', 'Pending')`,
+      [eventIdInt]
+    );
+
+    const bookingCount = Number(bookingResult.rows[0].countbookings);
+    
+    // Check if event has signups in eventsignups table
+    const signupResult = await pool.query(
+      `SELECT COUNT(*) AS countsignups
+       FROM eventsignups
+       WHERE eventid = $1 AND status = 'Active'`,
+      [eventIdInt]
+    );
+
+    const signupCount = Number(signupResult.rows[0]?.countsignups || 0);
+
+    // Can delete if no bookings AND no participants AND no active signups
+    return bookingCount === 0 && participants === 0 && signupCount === 0;
 
   } catch (err) {
     console.error("Model canDeleteEvent Error:", err);
@@ -141,17 +173,90 @@ async function canDeleteEvent(eventID) {
 // ----------------------------
 async function deleteEvent(eventID) {
   try {
-    const canDelete = await canDeleteEvent(eventID);
-    if (!canDelete) {
-      return { canDelete: false };
+    const eventIdInt = parseInt(eventID, 10);
+    if (Number.isNaN(eventIdInt)) {
+      throw new Error("Invalid eventID");
     }
 
-    await pool.query(
-      `DELETE FROM events WHERE eventid = $1`,
-      [eventID]
+    // First check if event exists
+    const eventCheck = await pool.query(
+      `SELECT eventid FROM events WHERE eventid = $1`,
+      [eventIdInt]
     );
 
-    return { canDelete: true };
+    if (eventCheck.rows.length === 0) {
+      return { canDelete: false, message: "Event not found" };
+    }
+
+    // Check if can be deleted (no bookings, no participants, no signups)
+    const canDelete = await canDeleteEvent(eventIdInt);
+    if (!canDelete) {
+      return { canDelete: false, message: "Cannot delete event with bookings, participants, or active signups" };
+    }
+
+    // Use a transaction to ensure all deletions succeed or none do
+    const client = await pool.connect();
+    try {
+      await client.query('BEGIN');
+
+      // Delete related records first (to avoid foreign key constraint violations)
+      // Delete from volunterrequests (organization requests for this event)
+      await client.query(
+        `DELETE FROM volunterrequests WHERE eventid = $1`,
+        [eventIdInt]
+      ).catch(err => {
+        console.warn("Error deleting volunterrequests:", err.message);
+        // Continue even if this fails
+      });
+
+      // Delete from eventbookings (all bookings - we already checked there are no approved/pending)
+      await client.query(
+        `DELETE FROM eventbookings WHERE eventid = $1`,
+        [eventIdInt]
+      ).catch(err => {
+        console.warn("Error deleting eventbookings:", err.message);
+        // Continue even if this fails
+      });
+
+      // Delete from eventsignups (all signups - we already checked there are no active ones)
+      await client.query(
+        `DELETE FROM eventsignups WHERE eventid = $1`,
+        [eventIdInt]
+      ).catch(err => {
+        console.warn("Error deleting eventsignups:", err.message);
+        // Continue even if this fails
+      });
+
+      // Delete from userevents (if any exist)
+      await client.query(
+        `DELETE FROM userevents WHERE eventid = $1`,
+        [eventIdInt]
+      ).catch(err => {
+        console.warn("Error deleting userevents:", err.message);
+        // Table might not exist, ignore error
+      });
+
+      // Finally delete the event
+      const result = await client.query(
+        `DELETE FROM events WHERE eventid = $1 RETURNING *`,
+        [eventIdInt]
+      );
+
+      if (result.rows.length === 0) {
+        await client.query('ROLLBACK');
+        return { canDelete: false, message: "Event deletion failed" };
+      }
+
+      await client.query('COMMIT');
+      return { canDelete: true };
+
+    } catch (err) {
+      await client.query('ROLLBACK');
+      console.error("Transaction error in deleteEvent:", err);
+      throw err;
+    } finally {
+      client.release();
+    }
 
   } catch (err) {
     console.error("Model deleteEvent Error:", err);
@@ -160,6 +265,80 @@ async function deleteEvent(eventID) {
 }
 
 // ----------------------------
+// 8. Get Events Eligible for Auto-Delete (no participants, day before event)
+// ----------------------------
+async function getEventsForAutoDelete() {
+  try {
+    const result = await pool.query(
+      `
+      SELECT eventid, eventname, eventdate
+      FROM events
+      WHERE organizationid IS NULL
+        AND (peoplesignup IS NULL OR peoplesignup = 0)
+        AND eventdate > NOW() + INTERVAL '1 day'
+        AND eventdate < NOW() + INTERVAL '2 days'
+        AND status = 'Upcoming'
+        AND NOT EXISTS (
+          SELECT 1 
+          FROM eventbookings 
+          WHERE eventid = events.eventid 
+            AND status = 'Approved'
+        )
+      `
+    );
+
+    return result.rows;
+  } catch (err) {
+    console.error("getEventsForAutoDelete Error:", err);
+    throw err;
+  }
+}
+
+// ----------------------------
+// 9. Auto-Delete Events (run daily)
+// ----------------------------
+async function autoDeleteEventsWithNoParticipants() {
+  try {
+    const eventsToDelete = await getEventsForAutoDelete();
+    const deletedEvents = [];
+
+    for (const event of eventsToDelete) {
+      const result = await deleteEvent(event.eventid);
+      if (result.canDelete) {
+        deletedEvents.push(event);
+      }
+    }
+
+    return deletedEvents;
+  } catch (err) {
+    console.error("autoDeleteEventsWithNoParticipants Error:", err);
+    throw err;
+  }
+}
+
+// ----------------------------
+// ----------------------------
+// 10. Get Event By ID
+// ----------------------------
+async function getEventById(eventID) {
+  try {
+    const eventIdInt = parseInt(eventID, 10);
+    if (Number.isNaN(eventIdInt)) {
+      throw new Error("Invalid eventID");
+    }
+
+    const result = await pool.query(
+      `SELECT * FROM events WHERE eventid = $1`,
+      [eventIdInt]
+    );
+
+    return result.rows[0] || null;
+  } catch (err) {
+    console.error("getEventById error:", err);
+    throw err;
+  }
+}
+
 module.exports = {
   getAllEvents,
   createEvent,
@@ -168,6 +347,9 @@ module.exports = {
   checkOrganizationExists,
   canDeleteEvent,
   deleteEvent,
+  getEventsForAutoDelete,
+  autoDeleteEventsWithNoParticipants,
+  getEventById
 };
 
 

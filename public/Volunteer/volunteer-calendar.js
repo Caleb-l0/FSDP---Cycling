@@ -5,7 +5,98 @@ if (!token) {
   window.location.href = '../../index.html';
 }
 
+/* =====================================================
+   WEATHER (DISPLAY BY CURRENT LOCATION ONLY)
+   ===================================================== */
+// Weather background GIF URLs
+// - Giphy.com
+// - Tenor.com
+// - Pixabay.com/gifs/
+const WEATHER_BACKGROUNDS = {
+    sunny: 'https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExbjBqbDFvbmxod2Z4bXF3bnI1eDljc2IzOTRndm92NTV6cjFvc2NtdSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/0Styincf6K2tvfjb5Q/giphy.gif', // 晴天 - 蓝色天空和太阳（备用：可在Giphy搜索"sunny sky blue"）
+    rainy: 'https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExeDY0bHNiZnNlcjRpdzc5cmI1b2VvZnNza3kwOWNnb2FtZGJ1d2dseCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/13ZEwDgIZtK1y/giphy.gif', // 雨天 - 下雨的动画（备用：可在Giphy搜索"rain animated"）
+    cloudy: 'https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHdzNjZiZHB4NndqcW5jdmZ0b3I3eXUxdmdhY2R1cWV3aGk3OHE2eSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/lOkbL3MJnEtHi/giphy.gif' // 多云 - 移动的云朵（备用：可在Giphy搜索"moving clouds"）
+};
+
+function setWeatherBackground(weatherType) {
+    const weatherSection = document.querySelector('.features');
+    if (!weatherSection) return;
+    
+    const bgUrl = WEATHER_BACKGROUNDS[weatherType] || WEATHER_BACKGROUNDS.sunny;
+    
+    // 移除之前的天气背景类
+    weatherSection.classList.remove('weather-bg-sunny', 'weather-bg-rainy', 'weather-bg-cloudy');
+    
+    // 添加新的天气背景类
+    weatherSection.classList.add(`weather-bg-${weatherType}`);
+    
+    // 设置背景图片到CSS变量
+    weatherSection.style.setProperty('--weather-bg-url', `url('${bgUrl}')`);
+}
+
+function showGeoWeather() {
+    const geoDiv = document.getElementById("geo-weather");
+    if (!geoDiv) return;
+
+    if (!navigator.geolocation) {
+        geoDiv.textContent = "Geolocation is not supported by your browser.";
+        return;
+    }
+
+    geoDiv.textContent = "Detecting your location...";
+
+    navigator.geolocation.getCurrentPosition(
+        async (position) => {
+            const lat = position.coords.latitude;
+            const lon = position.coords.longitude;
+
+            const apiKey = "3652b8b54e92c83d871ca9705153b07f";
+            const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=${apiKey}`;
+
+            try {
+                const res = await fetch(url);
+                const data = await res.json();
+
+                // Determine weather type based on icon code
+                const iconCode = data.weather[0].icon;
+                let weatherClass = '';
+                let weatherType = 'sunny'; // default
+                
+                if (iconCode.startsWith('01')) {
+                    weatherClass = 'weather-sunny'; // Clear sky - sunny
+                    weatherType = 'sunny';
+                } else if (iconCode.startsWith('09') || iconCode.startsWith('10') || iconCode.startsWith('11')) {
+                    weatherClass = 'weather-rainy'; // Rain or thunderstorm
+                    weatherType = 'rainy';
+                } else if (iconCode.startsWith('03') || iconCode.startsWith('04') || iconCode.startsWith('02')) {
+                    weatherClass = 'weather-cloudy'; // Clouds
+                    weatherType = 'cloudy';
+                }
+
+                // 设置动态背景
+                setWeatherBackground(weatherType);
+
+                geoDiv.innerHTML = `
+                    <div class="service-icon ${weatherClass}">
+                        <img src="https://openweathermap.org/img/wn/${iconCode}@2x.png" alt="weather" class="weather-icon">
+                    </div>
+                    <div class="service-content">
+                        <h3>${data.name}</h3>
+                        <p>${data.main.temp}°C — ${data.weather[0].description}</p>
+                    </div>
+                `;
+            } catch (err) {
+                geoDiv.textContent = "Failed to load weather data.";
+            }
+        },
+        () => {
+            geoDiv.textContent = "Location permission denied.";
+        }
+    );
+}
+
 document.addEventListener('DOMContentLoaded', () => {
+  showGeoWeather(); // Load weather
   loadCalendar();
 });
 

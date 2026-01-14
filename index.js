@@ -316,6 +316,41 @@ async function handleGoogleCredential(response) {
 }
 
 
+
+
+
+
+// OTP login
+let otpConfirmation = null;
+
+function startPhoneLogin() {
+  const phone = document.getElementById("phone").value;
+
+  if (!phone.startsWith("+")) {
+    createWowToast("Use format +6591234567", "error");
+    return;
+  }
+
+  const verifier = new firebase.auth.RecaptchaVerifier(
+    "recaptcha-container"
+  );
+
+  window.firebaseAuth
+    .signInWithPhoneNumber(phone, verifier)
+    .then((result) => {
+      otpConfirmation = result;
+      document.querySelector("#loginModal form").style.display = "none";
+      document.getElementById("otpStep").style.display = "block";
+      createWowToast("OTP sent!");
+    })
+    .catch((err) => {
+      console.error(err);
+      createWowToast(err.message, "error");
+    });
+}
+// ------------------
+
+
 document.addEventListener("DOMContentLoaded", initGoogleLogin);
 
 
@@ -409,3 +444,67 @@ function backToLogin() {
 }
 
 
+<<<<<<< HEAD
+=======
+async function verifyOtp() {
+  const otp = document.getElementById("otp").value;
+
+  if (otp.length !== 6) {
+    createWowToast("Invalid OTP", "error");
+    return;
+  }
+
+  try {
+    const result = await otpConfirmation.confirm(otp);
+
+    const firebaseUser = result.user;
+    const phone = firebaseUser.phoneNumber;
+    const firebaseUid = firebaseUser.uid;
+
+ 
+    const res = await fetch("https://fsdp-cycling-ltey.onrender.com/auth/phone", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        phone,
+        firebaseUid
+      })
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      createWowToast(data.message || "Phone login failed", "error");
+      return;
+    }
+
+ 
+    localStorage.setItem("token", data.token);
+    localStorage.setItem("userId", data.userId);
+    localStorage.setItem("name", data.name);
+    localStorage.setItem("role", data.role);
+
+    createWowToast("Login successful!");
+
+    setTimeout(() => {
+      switch (data.role) {
+        case "admin":
+          window.location.href = "/public/Admin/homepage_login_Admin.html";
+          break;
+        case "volunteer":
+          window.location.href = "/public/Volunteer/homepage_login_volunteer.html";
+          break;
+        case "institution":
+          window.location.href = "/public/Instituition/homepage_login_instituition.html";
+          break;
+      }
+    }, 800);
+
+  } catch (err) {
+    console.error(err);
+    createWowToast("Wrong OTP", "error");
+  }
+}
+
+// Firebase setup for OTP
+>>>>>>> 7df7eb3282076eccc9018ddd2a7dd7ebe4b00b76

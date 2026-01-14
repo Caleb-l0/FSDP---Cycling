@@ -1,7 +1,7 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const AdminEventModel = require("../Models/Admin_event_Model");
-const requestModel = require('../Models/GetRequestModel')
+const OrganizationRequestModel = require('../Models/OrganizationRequestModel')
 
 
 
@@ -47,7 +47,7 @@ async function createEvent(req, res) {
     // Only approve request if VolunteerRequestID exists
     if (eventData.VolunteerRequestID) {
       try {
-        await requestModel.approveRequest(eventData.VolunteerRequestID);
+        await OrganizationRequestModel.approveRequest(eventData.VolunteerRequestID);
       } catch (approveError) {
         console.warn("Failed to approve request:", approveError);
         // Don't fail the event creation if request approval fails
@@ -128,12 +128,18 @@ async function deleteEvent(req, res) {
       return res.status(400).json({ message: "Invalid eventID" });
     }
 
+    // Check if event exists first
+    const eventCheck = await AdminEventModel.getEventById(id);
+    if (!eventCheck) {
+      return res.status(404).json({ message: "Event not found" });
+    }
+
     const result = await AdminEventModel.deleteEvent(id);
 
     if (!result.canDelete) {
       return res.status(400).json({
         canDelete: false,
-        message: "Cannot delete this event because an organisation has already signed up."
+        message: result.message || "Cannot delete this event because it has bookings or participants signed up."
       });
     }
 

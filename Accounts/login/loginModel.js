@@ -4,15 +4,21 @@ const pool = require("../../Postgres_config");
 // 1. Find user by email
 // -------------------------------
 async function findUserByEmail(email) {
-  const query = `
-    SELECT *
-    FROM users
-    WHERE email = $1
-    LIMIT 1
-  `;
+  try {
+    // Use LOWER() for case-insensitive email comparison
+    const query = `
+      SELECT *
+      FROM users
+      WHERE LOWER(email) = LOWER($1)
+      LIMIT 1
+    `;
 
-  const result = await pool.query(query, [email]);
-  return result.rows[0];   // PostgreSQL uses rows
+    const result = await pool.query(query, [email]);
+    return result.rows[0];   // PostgreSQL uses rows
+  } catch (error) {
+    console.error("Error in findUserByEmail:", error);
+    throw error;
+  }
 }
 
 

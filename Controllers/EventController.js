@@ -1,6 +1,7 @@
 const sql = require("mssql");
 const db = require("../dbconfig");
 const EventModel = require("../Models/EventModel");
+const VolunteerSignupModel = require("../Models/VolunteerSignupModel");
 const { get } = require("mongoose");
 
 
@@ -9,23 +10,16 @@ async function getEventsByLocation(req, res) {
   try {
     const { location, date } = req.query;
 
-    const pool = await sql.connect(db);
-    const result = await pool.request()
-     .input("Location", sql.NVarChar, location || "")
-      .input("StartOfDay", sql.DateTime, new Date(date + " 00:00:00"))
-      .input("EndOfDay", sql.DateTime, new Date(date + " 23:59:59"))
-      .query(`
-        SELECT EventID, EventName, EventDate
-        FROM Events
-        WHERE Location = @Location
-        AND EventDate BETWEEN @StartOfDay AND @EndOfDay
-      `);
+    if (!location || !date) {
+      return res.status(400).json({ message: "Location and date are required" });
+    }
 
-    res.json(result.recordset);
+    const events = await EventModel.getEventsByLocation(location, date);
+    res.json(events);
 
   } catch (err) {
     console.error("getEventsByLocation Error:", err);
-    res.status(500).json({ message: "Server Error" });
+    res.status(500).json({ message: "Server Error", error: err.message });
   }
 }
 
@@ -35,7 +29,9 @@ async function getEventsByLocation(req, res) {
 
 async function getEventById(req, res) {
   try {
-    const event = await EventModel.getEventById(req.params.id);
+    // Route uses :eventID, so use req.params.eventID (fallback to req.params.id for compatibility)
+    const eventId = req.params.eventID || req.params.id;
+    const event = await EventModel.getEventById(eventId);
     res.status(200).json(event);
   } catch (error) {
     res.status(500).json({ message: "Server Error", error: error.message });
@@ -66,10 +62,10 @@ async function deleteEvent(req, res) {
 }
 
 
-// for volunteer
+// for volunteer (using VolunteerSignupModel)
 async function signup(req, res) {
   try {
-    await EventModel.signup(req.user.id, req.params.eventID);
+    await VolunteerSignupModel.signUpForEvent(req.user.id, req.params.eventID);
     res.json({ message: "Signed up" });
   } catch (error) {
     res.status(500).json({ message: "Server Error", error: error.message });
@@ -78,7 +74,7 @@ async function signup(req, res) {
 
 async function cancel(req, res) {
   try {
-    await EventModel.cancel(req.user.id, req.params.eventID);
+    await VolunteerSignupModel.cancelSignup(req.user.id, req.params.eventID);
     res.json({ message: "Canceled" });
   } catch (error) {
     res.status(500).json({ message: "Server Error", error: error.message });
@@ -90,7 +86,7 @@ async function isSignedUp(req, res) {
     const userID = req.user.id;              
     const { eventID } = req.params;          
 
-    const signedUp = await EventModel.isSignedUp(userID, eventID);
+    const signedUp = await VolunteerSignupModel.isSignedUp(userID, eventID);
 
     res.json({ signedUp });
   } catch (error) {
@@ -116,8 +112,7 @@ async function cancelSignup(req, res) {
     const userId = req.user.id;
     const { eventId } = req.params;
 
-    const result = await EventModel.cancel(userId, eventId);
-
+    const result = await VolunteerSignupModel.cancelSignup(userId, eventId);
 
     if (result.rowCount === 0) {
       return res.status(400).json({

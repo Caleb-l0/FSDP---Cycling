@@ -97,6 +97,14 @@ async function createEvent() {
 
 
   try {
+    // Check for conflicts BEFORE creating the event
+    const conflict = await checkConflict(Location, eventDate);
+    
+    if (conflict) {
+      alert("This time slot is unavailable for the selected location.");
+      return;
+    }
+
     const response = await fetch("https://fsdp-cycling-ltey.onrender.com/admin/create_events", {
       method: 'POST',
       headers: {
@@ -105,13 +113,6 @@ async function createEvent() {
       },
       body: JSON.stringify(eventData)
     });
-
-    const conflict = await checkConflict(Location, eventDate);
-
-if (conflict) {
-  alert("This time slot is unavailable for the selected location.");
-  return;
-}
 
     // Check if response is JSON
     const contentType = response.headers.get("content-type");
@@ -177,28 +178,73 @@ async function deleteRequest(id){
 // calendar logic
 
 async function checkConflict(location, datetime) {
-  const date = datetime.slice(0, 10);
-  const time = datetime.slice(11, 16);
+  try {
+    if (!location || !datetime) {
+      console.warn("checkConflict: Missing location or datetime");
+      return false; // No conflict if data is missing
+    }
 
-  const response = await fetch(
-    `https://fsdp-cycling-ltey.onrender.com/events/by-location?location=${encodeURIComponent(location)}&date=${date}`,
-    { headers: { 'Authorization': `Bearer ${token}` } }
-  );
+    const date = datetime.slice(0, 10);
+    const time = datetime.slice(11, 16);
 
-  if (!response.ok) {
+    if (!time || time.length !== 5) {
+      console.warn("checkConflict: Invalid time format");
+      return false;
+    }
+
+    const response = await fetch(
+      `https://fsdp-cycling-ltey.onrender.com/events/by-location?location=${encodeURIComponent(location)}&date=${date}`,
+      { headers: { 'Authorization': `Bearer ${token}` } }
+    );
+
+    if (!response.ok) {
+      console.error("checkConflict error status:", response.status);
+      // If we can't check, assume no conflict to allow creation
+      return false;
+    }
+
+    const contentType = response.headers.get("content-type");
+    if (!contentType || !contentType.includes("application/json")) {
+      const text = await response.text();
+      console.error("checkConflict: Non-JSON response:", text.substring(0, 200));
+      return false; // Assume no conflict if we can't parse
+    }
+
+    const events = await response.json();
     
-    console.error("checkConflict error status:", response.status);
+    if (!Array.isArray(events) || events.length === 0) {
+      return false; // No events = no conflict
+    }
+
+    // Check if any existing event has the same time
+    return events.some(ev => {
+      try {
+        // Handle both lowercase (PostgreSQL) and uppercase (legacy) field names
+        const eventDate = ev.eventdate || ev.EventDate;
+        if (!eventDate) return false;
+
+        let evDateStr;
+        if (typeof eventDate === 'string') {
+          evDateStr = eventDate;
+        } else {
+          evDateStr = new Date(eventDate).toISOString();
+        }
+
+        // Extract time portion (HH:mm)
+        const evTime = evDateStr.slice(11, 16);
+        
+        // Compare times exactly
+        return evTime === time;
+      } catch (err) {
+        console.error("Error comparing event time:", err);
+        return false;
+      }
+    });
+  } catch (error) {
+    console.error("checkConflict error:", error);
+    // On error, assume no conflict to allow creation
     return false;
   }
-
-  const events = await response.json(); 
-  return events.some(ev => {
-    const evDate = typeof ev.EventDate === 'string'
-      ? ev.EventDate
-      : new Date(ev.EventDate).toISOString();
-    const evTime = evDate.slice(11, 16);
-    return evTime === time;
-  });
 }
 
 
@@ -253,11 +299,14 @@ function displayCalendar(events, date) {
     html += `<div class="slot">All time slots available ✔</div>`;
   } else {
     events.forEach(ev => {
-      const time = ev.EventDate.slice(11, 16); // HH:mm
+      // Handle both lowercase (PostgreSQL) and uppercase (legacy) field names
+      const eventDate = ev.eventdate || ev.EventDate;
+      const eventName = ev.eventname || ev.EventName;
+      const time = eventDate.slice(11, 16); // HH:mm
       html += `
         <div class="slot unavailable">
           ${time} — Unavailable 
-          <br>(${ev.EventName})
+          <br>(${eventName})
         </div>
       `;
     });

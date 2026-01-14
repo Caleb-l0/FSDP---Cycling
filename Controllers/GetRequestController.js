@@ -26,7 +26,7 @@ async function getRequestById(req, res) {
 async function  deleteRequest(req,res) {
     const {id} = req.params;
     try{
-    const request = await RequestModel.deleteRequest(eventData.VolunteerRequestID);
+    const request = await RequestModel.deleteRequest(id);
     res.status(200).json(request);
 
     }
@@ -40,7 +40,7 @@ async function checkRequestStatus(req, res){
   try {
     const result = await RequestModel.checkRequestStatus(id);
 
-    res.status(200).json({ status: result.Status });
+   res.status(200).json({ status: result.status });
 
   } catch (error) {
     res.status(500).json({ message: "Server Error", error: error.message });
