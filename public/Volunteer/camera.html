@@ -12,6 +12,7 @@
 </head>
 <body>
   <h3>QR Scanner</h3>
+  <button id="startBtn">Start Scanner</button>
   <div id="cameraBox">
     <video id="video" autoplay playsinline></video>
   </div>
@@ -19,47 +20,42 @@
 
   <!-- ZXing library -->
   <script type="module">
-  import { BrowserMultiFormatReader } from 'https://cdn.jsdelivr.net/npm/@zxing/library@0.19.1/esm/index.min.js';
+  import { BrowserMultiFormatReader } from
+    'https://cdn.jsdelivr.net/npm/@zxing/library@0.19.1/esm/index.min.js';
 
   const video = document.getElementById('video');
+  const startBtn = document.getElementById('startBtn');
   const flipBtn = document.getElementById('flipBtn');
 
   let usingFront = false;
   let codeReader = new BrowserMultiFormatReader();
 
   async function startScanner() {
-    codeReader.reset();
-
-    const constraints = {
-      video: {
-        facingMode: usingFront ? 'user' : 'environment'
-      }
-    };
-
     try {
+      codeReader.reset();
+
       await codeReader.decodeFromConstraints(
-        constraints,
+        {
+          video: { facingMode: usingFront ? 'user' : 'environment' }
+        },
         video,
         (result, err) => {
           if (result) {
-            console.log("QR:", result.getText());
             alert("QR detected:\n" + result.getText());
-
-            // Stop scanning after success
             codeReader.reset();
           }
         }
       );
     } catch (e) {
       console.error(e);
-      alert("Camera error");
+      alert("Camera permission blocked or unavailable");
     }
   }
+
+  startBtn.onclick = () => startScanner();
 
   flipBtn.onclick = () => {
     usingFront = !usingFront;
     startScanner();
   };
-
-  startScanner();
 </script>
