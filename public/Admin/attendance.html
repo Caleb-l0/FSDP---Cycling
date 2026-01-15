@@ -2,32 +2,32 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Mark Attendance</title>
+  <title>Generate Attendance QR</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <style>
     body {
       font-family: Arial, sans-serif;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
+      text-align: center;
+      margin-top: 50px;
       background: #eef2f3;
-    }
-    button {
-      padding: 15px 30px;
-      font-size: 18px;
-      cursor: pointer;
     }
   </style>
 </head>
 <body>
-   Insert QR code here to mark attendance.
-  <button onclick="markAttendance()">Mark Attendance</button>
 
-  <script>
-    function markAttendance() {
-      alert('Attendance marked successfully!');
-    }
-  </script>
+<h2>Scan to Mark Attendance</h2>
+<div id="qrcode"></div>
+
+<script>
+  // Unique attendance link
+  const attendanceURL = "https://fsdp-cycling-ltey.onrender.com/public/Admin/attendance.html";
+
+  new QRCode(document.getElementById("qrcode"), {
+    text: attendanceURL,
+    width: 250,
+    height: 250
+  });
+</script>
 
 </body>
 </html>
