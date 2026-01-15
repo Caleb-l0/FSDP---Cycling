@@ -2,32 +2,58 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Generate Attendance QR</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      text-align: center;
-      margin-top: 50px;
-      background: #eef2f3;
-    }
-  </style>
+  <title>Volunteer Check-In</title>
 </head>
 <body>
 
-<h2>Scan to Mark Attendance</h2>
-<div id="qrcode"></div>
+<h2>Checking you in...</h2>
 
 <script>
-  // Unique attendance link
-  const attendanceURL = "https://fsdp-cycling-ltey.onrender.com/public/Admin/attendance.html";
+  const token = localStorage.getItem('token');
 
-  new QRCode(document.getElementById("qrcode"), {
-    text: attendanceURL,
-    width: 250,
-    height: 250
-  });
+  if (!token) {
+    alert("Please log in first");
+    window.location.href = "/index.html";
+  }
+
+  const params = new URLSearchParams(window.location.search);
+  const eventId = params.get("eventId");
+
+  if (!eventId) {
+    alert("Invalid QR code");
+    throw new Error("Missing eventId");
+  }
+
+  async function checkIn() {
+    try {
+      const res = await fetch(
+        `https://fsdp-cycling-ltey.onrender.com/events/${eventId}/checkin`,
+        {
+          method: "POST",
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json"
+          }
+        }
+      );
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        alert(data.message || "Check-in failed");
+        return;
+      }
+
+      document.body.innerHTML = "<h2>✅ Check-in successful</h2>";
+    } catch (err) {
+      console.error(err);
+      alert("Error checking in");
+    }
+  }
+
+  checkIn();
 </script>
 
 </body>
 </html>
+
