@@ -3,25 +3,34 @@
 <head>
   <meta charset="UTF-8">
   <title>Attendance</title>
-  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+
+  <!-- QR generator that works without globals/modules -->
+  <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js"></script>
+
   <style>
-    body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
-    canvas { border: 1px solid #ccc; margin: 20px; }
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 20px;
+    }
+    #qr-container svg {
+      margin: 20px auto;
+      display: block;
+    }
   </style>
 </head>
 <body>
 
 <h2 id="title">Loading...</h2>
 
-<div id="qr-section" style="display: none;">
+<div id="qr-section" style="display:none;">
   <p>Show this QR code to volunteers to check in:</p>
-  <canvas id="qr-canvas" width="256" height="256"></canvas>
-
+  <div id="qr-container"></div>
   <p>Or share this code: <strong id="event-code"></strong></p>
 </div>
 
 <script>
-  const token = localStorage.getItem('token');
+  const token = localStorage.getItem("token");
 
   if (!token) {
     alert("Please log in first");
@@ -29,24 +38,26 @@
   }
 
   function getUserFromToken() {
-  try {
-    const payloadBase64 = token.split('.')[1]
-      .replace(/-/g, '+')
-      .replace(/_/g, '/');
-    const payloadJson = atob(payloadBase64);
-    const payload = JSON.parse(payloadJson);
-    return {
-      id: payload.id,
-      role: payload.role
-    };
-  } catch (err) {
-    console.error('Failed to decode token', err);
-    return { id: null, role: null };
+    try {
+      const payloadBase64 = token
+        .split(".")[1]
+        .replace(/-/g, "+")
+        .replace(/_/g, "/");
+
+      const payloadJson = atob(payloadBase64);
+      const payload = JSON.parse(payloadJson);
+
+      return {
+        id: payload.id,
+        role: payload.role
+      };
+    } catch (err) {
+      console.error("Token decode failed", err);
+      return { id: null, role: null };
+    }
   }
-}
 
-
-  const { id: userId, role: userRole } = getUserFromToken();
+  const { role: userRole } = getUserFromToken();
 
   const params = new URLSearchParams(window.location.search);
   const eventId = params.get("eventId");
@@ -56,21 +67,31 @@
     window.location.href = "/index.html";
   }
 
-  if (userRole === 'admin' || true) { // Temporarily show for all
-    // Display QR code
-    document.getElementById('title').textContent = 'Attendance QR Code';
-    const qrSection = document.getElementById('qr-section');
-    qrSection.style.display = 'block';
-    document.getElementById('event-code').textContent = eventId;
-    const url = `https://fsdp-cycling-ltey.onrender.com/public/Admin/attendance.html?eventId=${eventId}`;
-    QRCode.toCanvas(document.getElementById('qr-canvas'), url, { width: 256, height: 256 }, function (error) {
-      if (error) console.error(error);
-      console.log('QR generated');
-    });
-  } else if (userRole === 'volunteer') {
-    // Check in
-    document.getElementById('title').textContent = 'Checking you in...';
+  /* =======================
+     ADMIN → SHOW QR
+     ======================= */
+  if (userRole === "admin") {
+    document.getElementById("title").textContent = "Attendance QR Code";
+    document.getElementById("qr-section").style.display = "block";
+    document.getElementById("event-code").textContent = eventId;
+
+    const url =
+      `https://fsdp-cycling-ltey.onrender.com/public/Admin/attendance.html?eventId=${eventId}`;
+
+    const qr = qrcode(0, "L");
+    qr.addData(url);
+    qr.make();
+
+    document.getElementById("qr-container").innerHTML =
+      qr.createSvgTag(6);
+
+  /* =======================
+     VOLUNTEER → CHECK IN
+     ======================= */
+  } else if (userRole === "volunteer") {
+    document.getElementById("title").textContent = "Checking you in...";
     checkIn();
+
   } else {
     alert("Unauthorized");
     window.location.href = "/index.html";
@@ -96,7 +117,7 @@
         return;
       }
 
-      document.body.innerHTML = "<h2> Check-in successful</h2>";
+      document.body.innerHTML = "<h2>✅ Check-in successful</h2>";
     } catch (err) {
       console.error(err);
       alert("Error checking in");
@@ -106,4 +127,5 @@
 
 </body>
 </html>
+
 
