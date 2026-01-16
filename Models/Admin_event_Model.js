@@ -2,6 +2,7 @@
 
 
 const pool = require("../Postgres_config");
+const transporter = require("../mailer");
 
 // ----------------------------
 // 1. Get All Events
@@ -42,6 +43,89 @@ async function createEvent(eventData) {
   } catch (err) {
     console.error("Error creating event model:", err);
     throw err;
+  }
+}
+
+// ----------------------------
+// Get All Organization Member Emails (PostgreSQL)
+// ----------------------------
+async function getOrganizationMemberEmails(organizationID) {
+  try {
+    const query = `
+      SELECT u.id, u.email, u.name
+      FROM userorganizations uo
+      JOIN users u ON uo.userid = u.id
+      WHERE uo.organizationid = $1
+    `;
+    
+    const result = await pool.query(query, [organizationID]);
+    return result.rows;
+  } catch (err) {
+    console.error("Error fetching organization member emails:", err);
+    throw err;
+  }
+}
+
+// ----------------------------
+// Send Email Notification to Organization Members
+// ----------------------------
+async function sendEventNotificationToOrganization(organizationID, eventData) {
+  try {
+    // Get all organization member emails
+    const members = await getOrganizationMemberEmails(organizationID);
+    
+    if (!members || members.length === 0) {
+      console.log(`No members found for organization ${organizationID}`);
+      return;
+    }
+
+    // Prepare email content
+    const eventName = eventData.EventName || eventData.eventname || "New Event";
+    const eventDate = eventData.EventDate || eventData.eventdate || "TBD";
+    const eventLocation = eventData.Location || eventData.location || "TBD";
+    const eventDescription = eventData.Description || eventData.description || "";
+
+    const emailSubject = `New Event Created: ${eventName}`;
+
+    // email HTML content
+    const emailHtml = `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <h2 style="color: #ea8d2a;">New Event Created!</h2>
+        <p>Hello, This is from Cycling Without Age.</p>
+        <p>A new event has been created and is now available for booking:</p>
+        <div style="background: #f8fafc; padding: 20px; border-radius: 8px; margin: 20px 0;">
+          <h3 style="color: #1e293b; margin-top: 0;">${eventName}</h3>
+          <p><strong>Date:</strong> ${new Date(eventDate).toLocaleString()}</p>
+          <p><strong>Location:</strong> ${eventLocation}</p>
+          ${eventDescription ? `<p><strong>Description:</strong> ${eventDescription}</p>` : ''}
+        </div>
+        <p>Please log in to your account to view and book this event.</p>
+        <p style="color: #64748b; font-size: 14px; margin-top: 30px;">Best regards,<br>Happy Volunteer Team</p>
+        <p style="font-size: 12px; color: #94a3b8;">This is an automated message, please do not reply.</p>
+      </div>
+    `;
+
+    // Send email to each member
+    const emailPromises = members.map(async (member) => {
+      try {
+        await transporter.sendMail({
+          from: process.env.EMAIL_USER,
+          to: member.email,
+          subject: emailSubject,
+          html: emailHtml,
+        });
+        console.log(`✅ Email sent to ${member.email}`);
+      } catch (emailError) {
+        console.error(`❌ Failed to send email to ${member.email}:`, emailError);
+      }
+    });
+
+    await Promise.all(emailPromises);
+    console.log(`✅ Event notification emails sent to ${members.length} organization members`);
+
+  } catch (err) {
+    console.error("Error sending event notification emails:", err);
+    // Don't throw error - email failure shouldn't break event creation
   }
 }
 
@@ -339,42 +423,6 @@ async function getEventById(eventID) {
   }
 }
 
-// ----------------------------
-// 11. Get Event Signups (with user details)
-// ----------------------------
-async function getEventSignups(eventID) {
-  try {
-    const eventIdInt = parseInt(eventID, 10);
-    if (Number.isNaN(eventIdInt)) {
-      throw new Error("Invalid eventID");
-    }
-
-    const result = await pool.query(
-      `
-      SELECT 
-        es.signupid,
-        es.signupdate,
-        es.status AS signupstatus,
-        u.id AS userid,
-        u.name,
-        u.email,
-        u.phone,
-        u.role
-      FROM eventsignups es
-      INNER JOIN users u ON es.userid = u.id
-      WHERE es.eventid = $1 AND es.status = 'Active'
-      ORDER BY es.signupdate ASC
-      `,
-      [eventIdInt]
-    );
-
-    return result.rows;
-  } catch (err) {
-    console.error("getEventSignups error:", err);
-    throw err;
-  }
-}
-
 module.exports = {
   getAllEvents,
   createEvent,
@@ -386,7 +434,7 @@ module.exports = {
   getEventsForAutoDelete,
   autoDeleteEventsWithNoParticipants,
   getEventById,
-  getEventSignups
+  sendEventNotificationToOrganization
 };
 
 
