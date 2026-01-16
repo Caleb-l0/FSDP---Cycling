@@ -1,31 +1,31 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Friends | Happy Volunteer</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Friends | Happy Volunteer</title>
+  
 
-    <!-- CSS -->
-    
-    <link rel="stylesheet" href="../homepage.css">
-    <link rel="stylesheet" href="./volunteer_friend.css">
-    <!-- FONT AWESOME -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-     
+  <link rel="stylesheet" href="./volunteer_friend.css">
+  <link rel="stylesheet" href="../homepage.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+  
 </head>
-
 <body>
 
-<!-- HEADER -->
+
 <header class="hv-header">
     <div class="container hv-header-content">
 
+        <!-- LEFT -->
         <div class="hv-logo">
             <a href="./homepage_login_volunteer.html" style="text-decoration: none; color: inherit;">
-                Cycling Without Age
+                Happy Volunteer
             </a>
         </div>
 
+        <!-- CENTER -->
         <nav id="mainNav">
             <ul>
                 <li><a href="./volunteer-events.html">Booking</a></li>
@@ -36,58 +36,74 @@
             </ul>
         </nav>
 
-        <button class="hv-nav-toggle" id="hvNavToggle">
-            <i class="fas fa-bars"></i>
-        </button>
+        <!-- RIGHT SIDE -->
+        <div class="hv-header-right">
 
-        <nav class="hv-nav" id="hvNav">
-            <ul>
-                <li><a href="./volunteer-events.html">Booking</a></li>
-                <li><a href="./volunteer_community_page.html">Community</a></li>
-                <li><a href="./volunteer_rewards.html">Reward</a></li>
-                <li><a href="./Volunteer_friend.html">Friends</a></li>
-                <li><a href="../Profile/profilepage.html">Profile</a></li>
-            </ul>
-        </nav>
+            <!-- Language -->
+            <div class="hv-lang-dropdown">
+                <button id="langButton">Language</button>
+                <div class="hv-lang-dropdown-content">
+                    <button onclick="changeLanguage('en')">English</button>
+                    <button onclick="changeLanguage('zh')">Chinese</button>
+                    <button onclick="changeLanguage('ms')">Malay</button>
+                    <button onclick="changeLanguage('ta')">Tamil</button>
+                </div>
+            </div>
+
+            <!-- Logged In Badge -->
+            <div class="hv-user-status" id="userStatus">
+                Logged in as Guest
+            </div>
+
+            <!-- Mobile Menu Button -->
+            <button class="hv-nav-toggle" id="hvNavToggle">
+                <i class="fas fa-bars"></i>
+            </button>
+
+        </div>
 
     </div>
+
+    <!-- Mobile Menu -->
+    <nav class="hv-nav" id="hvNav">
+        <ul>
+            <li><a href="./volunteer-events.html">Booking</a></li>
+            <li><a href="./volunteer_community_page.html">Community</a></li>
+            <li><a href="./volunteer_rewards.html">Reward</a></li>
+            <li><a href="./volunteer_friend.html">Friends</a></li>
+            <li><a href="../Profile/profilepage.html">Profile</a></li>
+        </ul>
+    </nav>
 </header>
 
 
-<!-- ⭐ FRIENDS LIST SECTION ⭐ -->
+<!-- FRIENDS SECTION -->
 <section class="hv-friends">
-
   <div class="hv-friends-header">
-    <h2>👥 My Friends</h2>
+    <h2>My Friends</h2>
 
-   <div class="hv-friend-filters">
-  <button class="hv-pill active" data-filter="recent">🕒 Newest</button>
-  <button class="hv-pill" data-filter="close">❤️ Closest</button>
-  <button class="hv-pill" data-filter="alpha">🔤 A–Z</button>
-</div>
+    <!-- FILTER BUTTONS -->
+    <div class="hvf-friend-filters">
+      <button class="hvf-pill hvf-active" data-filter="recent">Newest</button>
+      <button class="hvf-pill" data-filter="close">Closest</button>
+      <button class="hvf-pill" data-filter="alpha">A–Z</button>
+    </div>
   </div>
 
-  <div id="friendsList" class="hv-friends-list">
-    <!-- Friends will be injected here -->
+  <div id="friendsList" class="hvf-friends-list">
+    <!-- Cards injected by JS using hvf- prefixed classes -->
   </div>
-
 </section>
-
-
 
 <!-- FOOTER -->
 <footer>
-    <div class="container">
-        <p>&copy; 2025 Happy Volunteer. All rights reserved.</p>
-    </div>
+  <div class="container">
+    <p>&copy; 2025 Happy Volunteer. All rights reserved.</p>
+  </div>
 </footer>
-
-
 
 <script src="../homepage.js"></script>
 <script src="./volunteer_friend.js"></script>
- <script src="https://cdn.botpress.cloud/webchat/v3.5/inject.js"></script>
-<script src="https://files.bpcontent.cloud/2025/11/22/14/20251122142820-IG7UQ29V.js" defer></script>
 
 </body>
 </html>

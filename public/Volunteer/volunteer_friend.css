@@ -1,109 +1,255 @@
+/* ======================================================
+   BASE – Professional Public Service Standard
+   Consistent with Volunteer Events Page
+   Note: body and container styles are in homepage.css
+====================================================== */
+
+/* ======================================================
+   FRIENDS SECTION – Professional Layout
+====================================================== */
 .hv-friends {
-  max-width: 1000px;
-  margin: 120px auto 60px;
+  width: 92%;
+  max-width: 1280px;
+  margin: 40px auto 60px;
   padding: 0 24px;
 }
 
+/* ======================================================
+   SECTION HEADER – Consistent with Events Page
+====================================================== */
+.hv-friends-header {
+  margin-bottom: 48px;
+}
+
 .hv-friends-header h2 {
+  text-align: center;
+  margin: 40px 0 48px;
   font-size: 2rem;
-  margin-bottom: 12px;
+  font-weight: 700;
+  color: #1e293b;
+  letter-spacing: -0.5px;
 }
 
-.hv-filters {
+/* ======================================================
+   FILTER BUTTONS – Professional Style
+   Elderly-Friendly: Large, clear, high contrast
+====================================================== */
+.hvf-friend-filters {
   display: flex;
-  gap: 12px;
-  margin-bottom: 24px;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 40px;
 }
 
-.filter-btn {
-  padding: 10px 18px;
+.hvf-pill {
+  padding: 14px 32px;
+  min-height: 48px; /* Elderly-friendly: larger touch target */
   border-radius: 999px;
   border: none;
-  background: #e5e7eb;
-  font-size: 1rem;
+  background: #ffffff;
+  border: 3px solid #e2e8f0; /* Thicker border for better visibility */
+  color: #1e293b; /* Darker text for better readability */
+  font-size: 1.05rem; /* Slightly larger font for elderly users */
+  font-weight: 700; /* Bolder font for better visibility */
+  letter-spacing: 0.3px;
   cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); /* Subtle shadow for depth */
 }
 
-.filter-btn.active {
-  background: #4ade80;
-  color: #064e3b;
-  font-weight: 600;
+.hvf-pill:hover {
+  background: #fffbf0; /* Very light yellow tint on hover */
+  border-color: #fbbf24; /* Yellow border on hover */
+  color: #1e293b;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(251, 191, 36, 0.25);
 }
 
-.hv-friends-list {
+/* ACTIVE STATE - Bright Yellow for Maximum Visibility */
+.hvf-pill.hvf-active {
+  background: #fbbf24; /* Bright amber yellow - highly visible */
+  border-color: #f59e0b; /* Slightly darker yellow border for definition */
+  color: #1e293b; /* Dark text on yellow for high contrast */
+  box-shadow: 0 6px 20px rgba(251, 191, 36, 0.5); /* Prominent yellow shadow */
+  font-weight: 700; /* Extra bold when active */
+  transform: translateY(-1px); /* Slightly raised for tactile feedback */
+}
+
+.hvf-pill.hvf-active:hover {
+  background: #f59e0b; /* Slightly darker yellow on hover */
+  border-color: #d97706; /* Darker border on hover */
+  box-shadow: 0 8px 24px rgba(251, 191, 36, 0.6); /* Stronger shadow */
+  transform: translateY(-2px); /* More raised on hover */
+}
+
+/* ======================================================
+   FRIENDS GRID – Responsive Layout
+====================================================== */
+.hvf-friends-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 32px;
+  margin-top: 24px;
+}
+
+/* ======================================================
+   FRIEND CARD – Clean Professional Design
+   Consistent with Event Cards
+====================================================== */
+.hvf-friend-card {
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 28px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+  border: 1px solid #e2e8f0;
+  transition: all 0.3s ease;
   display: flex;
   flex-direction: column;
-  gap: 14px;
 }
 
+.hvf-friend-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
+}
 
-.friend-card {
+/* ======================================================
+   CARD CONTENT – Elderly-Friendly Spacing
+====================================================== */
+.hvf-friend-main {
   display: flex;
-  align-items: center;
-  gap: 16px;
-  padding: 16px 20px;
-  background: #ffffff;
-  border-radius: 18px;
-  box-shadow: 0 6px 18px rgba(0,0,0,.08);
+  gap: 20px;
+  align-items: flex-start;
 }
 
-.friend-avatar {
-  width: 56px;
-  height: 56px;
+.hvf-friend-avatar {
+  width: 80px;
+  height: 80px;
+  min-width: 80px; /* Prevents shrinking */
   border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #ea8d2a;
+  box-shadow: 0 2px 8px rgba(234, 141, 42, 0.2);
 }
 
-.friend-info {
+.hvf-friend-text {
   flex: 1;
+  min-width: 0; /* Allows text to wrap properly */
 }
 
-.friend-name {
-  font-size: 1.2rem;
-  margin: 0;
+.hvf-friend-name {
+  font-size: 1.35rem; /* Large, easy to read */
+  font-weight: 700;
+  margin: 0 0 10px 0;
+  color: #1e293b;
+  line-height: 1.3;
+  word-wrap: break-word;
 }
 
-.friend-meta {
-  color: #6b7280;
-  font-size: 0.9rem;
+.hvf-friend-meta {
+  font-size: 1rem;
+  color: #475569;
+  margin: 0 0 14px 0;
+  line-height: 1.5;
 }
 
-.friend-level {
-  padding: 6px 12px;
-  border-radius: 999px;
-  background: #fde68a;
-  font-size: 0.85rem;
+.hvf-friend-level {
+  display: inline-block;
+  font-size: 0.95rem;
   font-weight: 600;
-}
-
-
-
-.hv-friend-filters {
-  display: flex;
-  gap: 14px;
-  margin: 18px 0 28px;
-}
-
-.hv-pill {
-  padding: 12px 26px;
+  color: #ea8d2a;
+  background: #fff7ed;
+  padding: 8px 16px;
   border-radius: 999px;
-  font-size: 1.05rem;
-  font-weight: 600;
-  cursor: pointer;
-  border: 2px solid #facc15;     /* Yellow outline */
-  background: transparent;
-  color: #92400e;
-  transition: 0.2s;
+  border: 1px solid #fed7aa;
+  letter-spacing: 0.2px;
 }
 
-/* Selected */
-.hv-pill.active {
-  background: #facc15;           /* Yellow fill */
-  color: #3f2c00;
-  box-shadow: 0 6px 14px rgba(250,204,21,.35);
+/* ======================================================
+   EMPTY STATE – Professional Message
+====================================================== */
+.hvf-empty-state {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 48px 32px;
+  border-radius: 20px;
+  font-size: 1.1rem;
+  background: #ffffff;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+  border: 1px solid #e2e8f0;
+  color: #64748b;
 }
 
-
-.hv-pill:hover {
-  transform: translateY(-1px);
+/* ======================================================
+   RESPONSIVE DESIGN
+====================================================== */
+@media (max-width: 1024px) {
+  .hvf-friends-list {
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 28px;
+  }
 }
 
+@media (max-width: 768px) {
+  .hv-friends-header h2 {
+    font-size: 1.75rem;
+    margin: 32px 0 40px;
+  }
+
+  .hvf-friend-card {
+    padding: 24px;
+  }
+
+  .hvf-friend-name {
+    font-size: 1.25rem;
+  }
+
+  .hvf-friend-avatar {
+    width: 72px;
+    height: 72px;
+    min-width: 72px;
+  }
+
+  .hvf-pill {
+    padding: 12px 24px;
+    font-size: 0.95rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .hvf-friends-list {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+
+  .hvf-friend-card {
+    padding: 20px;
+  }
+
+  .hvf-friend-main {
+    gap: 16px;
+  }
+
+  .hvf-friend-avatar {
+    width: 68px;
+    height: 68px;
+    min-width: 68px;
+  }
+
+  .hvf-friend-name {
+    font-size: 1.2rem;
+  }
+
+  .hvf-pill {
+    padding: 12px 20px;
+    font-size: 0.95rem;
+    min-height: 44px; /* Maintain touch target size */
+  }
+
+  .hv-friends-header h2 {
+    font-size: 1.6rem;
+  }
+}

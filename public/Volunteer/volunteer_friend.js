@@ -1,8 +1,3 @@
-const token = localStorage.getItem("token");
-if (!token) {
-  alert("Please log in");
-  window.location.href = "../../index.html";
-}
 
 let friendsData = [];
 let currentFilter = "recent";
@@ -23,18 +18,31 @@ async function loadFriends() {
       }
     );
 
+    if (!res.ok) {
+      throw new Error(`HTTP error! status: ${res.status}`);
+    }
+
     friendsData = await res.json();
     renderFriends();
   } catch (err) {
     console.error("Load friends error", err);
+    const list = document.getElementById("friendsList");
+    list.innerHTML = `
+      <div class="hvf-empty-state">
+        <p>Unable to load friends. Please try again later.</p>
+      </div>
+    `;
   }
 }
 
 function setupFilters() {
-  document.querySelectorAll(".filter-btn").forEach(btn => {
+  // Fix: Use .hvf-pill instead of .filter-btn to match HTML
+  document.querySelectorAll(".hvf-pill").forEach(btn => {
     btn.addEventListener("click", () => {
-      document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
-      btn.classList.add("active");
+      // Remove active class from all pills
+      document.querySelectorAll(".hvf-pill").forEach(b => b.classList.remove("hvf-active"));
+      // Add active class to clicked pill
+      btn.classList.add("hvf-active");
       currentFilter = btn.dataset.filter;
       renderFriends();
     });
@@ -45,36 +53,52 @@ function renderFriends() {
   const list = document.getElementById("friendsList");
   list.innerHTML = "";
 
+  // Handle empty state
+  if (!friendsData || friendsData.length === 0) {
+    list.innerHTML = `
+      <div class="hvf-empty-state">
+        <p>You don't have any friends yet. Start connecting with other volunteers!</p>
+      </div>
+    `;
+    return;
+  }
+
   let sorted = [...friendsData];
 
+  // Sort based on current filter
   if (currentFilter === "recent") {
     sorted.sort((a, b) => new Date(b.adddate) - new Date(a.adddate));
-  }
-
-  if (currentFilter === "close") {
+  } else if (currentFilter === "close") {
     sorted.sort((a, b) => b.friend_level - a.friend_level);
+  } else if (currentFilter === "alpha") {
+    sorted.sort((a, b) => {
+      const nameA = (a.nickname || a.name || "").toLowerCase();
+      const nameB = (b.nickname || b.name || "").toLowerCase();
+      return nameA.localeCompare(nameB);
+    });
   }
 
-  if (currentFilter === "alpha") {
-    sorted.sort((a, b) => a.name.localeCompare(b.name));
-  }
-
+  // Render friend cards
   sorted.forEach(f => {
     const card = document.createElement("div");
-    card.className = "friend-card";
+    card.className = "hvf-friend-card";
+
+    const friendName = f.nickname || f.name || "Unknown";
+    const joinDate = f.joindate ? new Date(f.joindate).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    }) : "Date unknown";
+    const friendLevel = f.friend_level || 0;
 
     card.innerHTML = `
-      <img src="./default_user.png" class="friend-avatar">
-
-      <div class="friend-info">
-        <p class="friend-name">${f.nickname || f.name}</p>
-        <p class="friend-meta">
-          Joined ${new Date(f.joindate).toLocaleDateString()}
-        </p>
-      </div>
-
-      <div class="friend-level">
-        ❤️ Lv ${f.friend_level}
+      <div class="hvf-friend-main">
+        <img src="./default_user.png" class="hvf-friend-avatar" alt="${friendName}'s avatar">
+        <div class="hvf-friend-text">
+          <div class="hvf-friend-name">${friendName}</div>
+          <div class="hvf-friend-meta">Joined ${joinDate}</div>
+          <div class="hvf-friend-level">Level ${friendLevel}</div>
+        </div>
       </div>
     `;
 
