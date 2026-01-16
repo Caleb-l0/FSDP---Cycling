@@ -235,37 +235,53 @@
     <span class="close-btn" onclick="closeLogin()">&times;</span>
     <div class="modal-content">
       <h2>Login</h2>
-      <form onsubmit="login(event)">
+      
+      <!-- Default: OTP and Google (Password form hidden) -->
+      <div id="loginDefaultMode">
         <input type="email" id="email" placeholder="Email" required><br>
-        <input type="password" id="password" placeholder="Password" required><br>
+        
+        <!-- OTP Button - Bright Yellow, Visually Distinct for Elderly Users -->
+        <button type="button" class="otp-btn" onclick="showOtp()">Login with OTP</button>
+
+        <p style="font-size:15px;padding:3px;font-weight:10; margin: 16px 0;">Or</p>
+        
+        <div id="googleButtonContainer" style="margin-top:12px;">
+          <button id="googleLoginBtn" type="button">
+            Continue with Google
+          </button>
+        </div>
+
+        <button type="button" class="toggle-password-mode-btn" onclick="togglePasswordMode('login')" style="margin-top: 16px;">
+          Use Password Login
+        </button>
+      </div>
+
+      <!-- Password Mode: Password form visible -->
+      <form id="loginPasswordMode" onsubmit="login(event)" style="display:none;">
+        <input type="email" id="login-email" placeholder="Email" required><br>
+        <input type="password" id="login-password" placeholder="Password" required><br>
        
         <div class="remember-row">
           <input type="checkbox" id="rememberMe">
           <label for="rememberMe">Remember Me</label>
         </div>
 
-        <!-- OTP Button - Bright Yellow, Visually Distinct for Elderly Users -->
-        <button type="button" class="otp-btn" onclick="showOtp()">Login with OTP</button>
-
-        <!-- Normal Login Button -->
         <button type="submit">Login</button>
+        
+        <button type="button" class="toggle-password-mode-btn" onclick="togglePasswordMode('login')" style="margin-top: 12px;">
+          Use OTP/Google Login
+        </button>
       </form>
   
       <!-- OTP Step  -->
-<div id="otpStep" style="display:none;">
-  <h2 style="font-size: 1.5rem; color: #1e293b; margin-bottom: 20px;">Enter OTP Code</h2>
-  <p style="font-size: 1rem; color: #475569; margin-bottom: 16px;">Check your email for the 6-digit code</p>
-  <input id="otp" type="text" maxlength="6" placeholder="000000" pattern="[0-9]{6}">
-  <button type="button" onclick="verifyOtp()" style="margin-top: 20px;">Verify OTP</button>
-  <p style="margin-top:20px; font-size: 0.95rem;"><a href="#" onclick="backToLogin()" style="color: #ea8d2a; font-weight: 600;">← Back to Login</a></p>
-</div>
+      <div id="otpStep" style="display:none;">
+        <h2 style="font-size: 1.5rem; color: #1e293b; margin-bottom: 20px;">Enter OTP Code</h2>
+        <p style="font-size: 1rem; color: #475569; margin-bottom: 16px;">Check your email for the 6-digit code</p>
+        <input id="otp" type="text" maxlength="6" placeholder="000000" pattern="[0-9]{6}">
+        <button type="button" onclick="verifyOtp()" style="margin-top: 20px;">Verify OTP</button>
+        <p style="margin-top:20px; font-size: 0.95rem;"><a href="#" onclick="backToLogin()" style="color: #ea8d2a; font-weight: 600;">← Back to Login</a></p>
+      </div>
 
-      <p style="font-size:15px;padding:3px;font-weight:10">Or</p>
-      <div id="googleButtonContainer" style="margin-top:12px;">
-  <button id="googleLoginBtn" type="button">
-  Continue with Google
-</button>
-</div>
       <p style="margin-top:10px;">
         Don't have an account? <a href="#" onclick="switchToSignup()" >Sign Up</a>
       </p>
@@ -280,7 +296,29 @@
     <span class="close-btn" onclick="closeSignup()">&times;</span>
     <div class="modal-content">
       <h2>Sign Up</h2>
-      <form onsubmit="signup(event)">
+      
+      <!-- Default: OTP and Google (Password form hidden) -->
+      <div id="signupDefaultMode">
+        <input type="email" id="signup-email-otp" placeholder="Email" required><br>
+        
+        <!-- OTP Signup Button -->
+        <button type="button" class="otp-btn" onclick="showOtpSignup()">Sign Up with OTP</button>
+
+        <p style="font-size:15px;padding:3px;font-weight:10; margin: 16px 0;">Or</p>
+        
+        <div id="googleSignupButtonContainer" style="margin-top:12px;">
+          <button id="googleSignupBtn" type="button">
+            Continue with Google
+          </button>
+        </div>
+
+        <button type="button" class="toggle-password-mode-btn" onclick="togglePasswordMode('signup')" style="margin-top: 16px;">
+          Use Password Sign Up
+        </button>
+      </div>
+
+      <!-- Password Mode: Password form visible -->
+      <form id="signupPasswordMode" onsubmit="signup(event)" style="display:none;">
         <input type="text" id="signup-name" placeholder="Name" required><br>
         <input type="email" id="signup-email" placeholder="Email" required><br>
         <input type="password" id="signup-password" placeholder="Password" required><br>
@@ -294,7 +332,12 @@
           </select>
         </div>
         <button type="submit">Sign Up</button>
+        
+        <button type="button" class="toggle-password-mode-btn" onclick="togglePasswordMode('signup')" style="margin-top: 12px;">
+          Use OTP/Google Sign Up
+        </button>
       </form>
+      
       <p style="margin-top:10px;">
         Already have an account? <a href="#" onclick="switchToLogin()">Login</a>
       </p>

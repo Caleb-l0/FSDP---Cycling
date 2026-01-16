@@ -40,6 +40,98 @@ body {
   padding-top: 72px; 
 }
 
+/* Elderly Mode Text Sizing */
+body.elderly-mode {
+  font-size: 1.2rem; /* Slightly larger than normal, but not too big */
+  line-height: 1.7;
+}
+
+body.elderly-mode h1 {
+  font-size: 2.4rem;
+}
+
+body.elderly-mode h2 {
+  font-size: 2rem;
+}
+
+body.elderly-mode h3 {
+  font-size: 1.6rem;
+}
+
+body.elderly-mode .hv-logo {
+  font-size: 1.8rem;
+}
+
+body.elderly-mode nav a {
+  font-size: 1.1rem;
+  padding: 12px 20px;
+}
+
+/* Elderly User Detection Popup */
+.elderly-popup {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+}
+
+.elderly-popup-content {
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 40px;
+  max-width: 600px;
+  width: 90%;
+  text-align: center;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
+}
+
+.elderly-popup-buttons {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.elderly-choice-btn {
+  flex: 1;
+  min-width: 200px;
+  padding: 30px 20px;
+  border-radius: 16px;
+  border: 3px solid #e2e8f0;
+  background: #ffffff;
+  color: #1e293b;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.elderly-choice-btn:hover {
+  border-color: #fbbf24;
+  background: #fffbf0;
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(251, 191, 36, 0.3);
+}
+
+.elderly-choice-btn.elderly-btn:hover {
+  border-color: #fbbf24;
+  background: #fffbf0;
+}
+
+.elderly-choice-btn.normal-btn:hover {
+  border-color: #ea8d2a;
+  background: #fff7ed;
+}
+
 .container {
   width: 90%;
   max-width: 1200px;

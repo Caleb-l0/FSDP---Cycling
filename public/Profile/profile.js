@@ -28,8 +28,22 @@ async function loadProfile() {
 
     document.getElementById("name").value  = user.name || "";
     document.getElementById("email").value = user.email || "";
-    document.getElementById("role").textContent = user.role || "";
+    // Role removed - no longer displayed
 
+    // Load settings from profile data (handle both camelCase and lowercase)
+    if (user.homeAddress || user.homeaddress) {
+      document.getElementById("homeAddress").value = user.homeAddress || user.homeaddress || "";
+    }
+    if (user.phoneNumber || user.phonenumber || user.phone) {
+      document.getElementById("phoneNumber").value = user.phoneNumber || user.phonenumber || user.phone || "";
+    }
+    if (user.advantages) {
+      document.getElementById("advantages").value = user.advantages || "";
+    }
+
+    // Load additional data
+    loadEventsAttended();
+    loadUserBadges();
 
     selectedTextSize = data.textSizePreference || selectedTextSize;
     updateTextSizeButtons(selectedTextSize);
@@ -123,10 +137,22 @@ saveBtn.addEventListener("click", async () => {
   const newEmail = emailField.value;
 
   try {
+    // Get current settings values
+    const homeAddress = document.getElementById("homeAddress")?.value || null;
+    const phoneNumber = document.getElementById("phoneNumber")?.value || null;
+    const advantages = document.getElementById("advantages")?.value || null;
+
     const response = await fetch("https://fsdp-cycling-ltey.onrender.com/profile", {
       method: "PUT",
       headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
-      body: JSON.stringify({ name: newName, email: newEmail, textSizePreference: selectedTextSize })
+      body: JSON.stringify({ 
+        name: newName, 
+        email: newEmail, 
+        textSizePreference: selectedTextSize,
+        homeAddress: homeAddress,
+        phoneNumber: phoneNumber,
+        advantages: advantages
+      })
     });
 
     if (!response.ok) throw new Error("Update failed");
@@ -233,4 +259,226 @@ function loadHeaderByRole() {
 
 
   logo.href = logoHref;
+}
+
+// ======================================================
+// Switch Profile Sections
+// ======================================================
+function switchProfileSection(section) {
+  // Hide all sections
+  document.querySelectorAll('.profile-section').forEach(sec => {
+    sec.style.display = 'none';
+  });
+  
+  // Remove active class from all buttons
+  document.querySelectorAll('.profile-nav-btn').forEach(btn => {
+    btn.classList.remove('active');
+  });
+  
+  // Show selected section
+  const targetSection = document.getElementById(`section-${section}`);
+  if (targetSection) {
+    targetSection.style.display = 'block';
+  }
+  
+  // Add active class to clicked button
+  const activeBtn = document.querySelector(`[data-section="${section}"]`);
+  if (activeBtn) {
+    activeBtn.classList.add('active');
+  }
+  
+  // Scroll to top of section
+  if (targetSection) {
+    targetSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+}
+
+
+// ======================================================
+// Get Current Location for Address
+// ======================================================
+function getCurrentLocation() {
+  if (!navigator.geolocation) {
+    alert("Geolocation is not supported by your browser.");
+    return;
+  }
+
+  const addressInput = document.getElementById("homeAddress");
+  addressInput.value = "Getting your location...";
+  addressInput.disabled = true;
+
+  navigator.geolocation.getCurrentPosition(
+    async (position) => {
+      const lat = position.coords.latitude;
+      const lng = position.coords.longitude;
+      
+      try {
+        // Use reverse geocoding API (OpenStreetMap Nominatim - free)
+        const response = await fetch(
+          `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`,
+          {
+            headers: {
+              'User-Agent': 'HappyVolunteer/1.0'
+            }
+          }
+        );
+        
+        const data = await response.json();
+        if (data.address) {
+          const addressParts = [];
+          if (data.address.road) addressParts.push(data.address.road);
+          if (data.address.house_number) addressParts.push(data.address.house_number);
+          if (data.address.postcode) addressParts.push(data.address.postcode);
+          if (data.address.city || data.address.town) {
+            addressParts.push(data.address.city || data.address.town);
+          }
+          
+          addressInput.value = addressParts.join(", ") || data.display_name || `${lat}, ${lng}`;
+        } else {
+          addressInput.value = `${lat}, ${lng}`;
+        }
+      } catch (err) {
+        console.error("Geocoding error:", err);
+        addressInput.value = `${lat}, ${lng}`;
+      }
+      
+      addressInput.disabled = false;
+    },
+    (error) => {
+      console.error("Geolocation error:", error);
+      alert("Unable to get your location. Please enter it manually.");
+      addressInput.value = "";
+      addressInput.disabled = false;
+    }
+  );
+}
+
+// ======================================================
+// Edit/Save Settings
+// ======================================================
+const editSettingsBtn = document.getElementById("editSettingsBtn");
+const saveSettingsBtn = document.getElementById("saveSettingsBtn");
+
+if (editSettingsBtn) {
+  editSettingsBtn.addEventListener("click", () => {
+    document.getElementById("homeAddress").disabled = false;
+    document.getElementById("phoneNumber").disabled = false;
+    document.getElementById("advantages").disabled = false;
+    document.getElementById("getLocationBtn").disabled = false;
+    editSettingsBtn.style.display = "none";
+    saveSettingsBtn.style.display = "inline-block";
+  });
+}
+
+if (saveSettingsBtn) {
+  saveSettingsBtn.addEventListener("click", async () => {
+    const homeAddress = document.getElementById("homeAddress").value;
+    const phoneNumber = document.getElementById("phoneNumber").value;
+    const advantages = document.getElementById("advantages").value;
+
+    try {
+      const response = await fetch("https://fsdp-cycling-ltey.onrender.com/profile", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          homeAddress,
+          phoneNumber,
+          advantages
+        })
+      });
+
+      if (!response.ok) throw new Error("Update failed");
+
+      alert("Settings saved successfully!");
+      document.getElementById("homeAddress").disabled = true;
+      document.getElementById("phoneNumber").disabled = true;
+      document.getElementById("advantages").disabled = true;
+      document.getElementById("getLocationBtn").disabled = true;
+      editSettingsBtn.style.display = "inline-block";
+      saveSettingsBtn.style.display = "none";
+
+    } catch (err) {
+      console.error(err);
+      alert("Error saving settings.");
+    }
+  });
+}
+
+// ======================================================
+// Load Events Attended
+// ======================================================
+async function loadEventsAttended() {
+  const eventsList = document.getElementById("eventsAttendedList");
+  if (!eventsList) return;
+
+  try {
+    const response = await fetch("https://fsdp-cycling-ltey.onrender.com/volunteer/signed-events", {
+      headers: { "Authorization": `Bearer ${token}` }
+    });
+
+    if (!response.ok) throw new Error("Failed to load events");
+
+    const events = await response.json();
+    
+    if (!events || events.length === 0) {
+      eventsList.innerHTML = '<p class="empty-text">No events attended yet. Start volunteering to see your events here!</p>';
+      return;
+    }
+
+    eventsList.innerHTML = events.map(event => `
+      <div class="event-item-card">
+        <h4>${event.eventname || event.EventName || "Untitled Event"}</h4>
+        <p><strong>Date:</strong> ${new Date(event.eventdate || event.EventDate).toLocaleDateString()}</p>
+        <p><strong>Location:</strong> ${event.location || "TBA"}</p>
+        ${event.description ? `<p>${event.description}</p>` : ""}
+      </div>
+    `).join("");
+
+  } catch (err) {
+    console.error("Error loading events:", err);
+    eventsList.innerHTML = '<p class="empty-text">Unable to load events. Please try again later.</p>';
+  }
+}
+
+// ======================================================
+// Load User Badges
+// ======================================================
+async function loadUserBadges() {
+  const badgesList = document.getElementById("badgesList");
+  if (!badgesList) return;
+
+  try {
+    const userId = localStorage.getItem("userId");
+    if (!userId) {
+      badgesList.innerHTML = '<p class="empty-text">Please log in to see your badges.</p>';
+      return;
+    }
+
+    const response = await fetch(`https://fsdp-cycling-ltey.onrender.com/volunteer/user/profile/${userId}`);
+    
+    if (!response.ok) throw new Error("Failed to load badges");
+
+    const data = await response.json();
+    const badges = data.badges || [];
+    
+    if (!badges || badges.length === 0) {
+      badgesList.innerHTML = '<p class="empty-text">No badges earned yet. Keep volunteering to earn badges!</p>';
+      return;
+    }
+
+    badgesList.innerHTML = badges.map(badge => `
+      <div class="badge-card">
+        <div class="badge-icon">${badge.iconurl ? `<img src="${badge.iconurl}" alt="${badge.badgename}" style="width: 60px; height: 60px;">` : "🏅"}</div>
+        <div class="badge-name">${badge.badgename}</div>
+        ${badge.description ? `<div class="badge-description">${badge.description}</div>` : ""}
+      </div>
+    `).join("");
+
+  } catch (err) {
+    console.error("Error loading badges:", err);
+    badgesList.innerHTML = '<p class="empty-text">Unable to load badges. Please try again later.</p>';
+  }
 }

@@ -72,6 +72,28 @@
     </nav>
 </header>
 
+<!-- Elderly User Detection Popup -->
+<div id="elderlyUserPopup" class="elderly-popup" style="display:none;">
+  <div class="elderly-popup-content">
+    <h2 style="font-size: 1.5rem; margin-bottom: 20px; color: #1e293b;">Welcome! Please Select Your User Type</h2>
+    <p style="font-size: 1.1rem; color: #475569; margin-bottom: 30px;">This helps us customize the interface for you</p>
+    
+    <div class="elderly-popup-buttons">
+      <button class="elderly-choice-btn elderly-btn" onclick="selectUserType('elderly')">
+        <i class="fas fa-user-circle" style="font-size: 2rem; margin-bottom: 10px;"></i>
+        <span style="font-size: 1.1rem; font-weight: 600;">I am an Elderly User</span>
+        <span style="font-size: 0.9rem; color: #64748b; margin-top: 5px;">Larger text for easier reading</span>
+      </button>
+      
+      <button class="elderly-choice-btn normal-btn" onclick="selectUserType('normal')">
+        <i class="fas fa-user" style="font-size: 2rem; margin-bottom: 10px;"></i>
+        <span style="font-size: 1.1rem; font-weight: 600;">I am a Normal User</span>
+        <span style="font-size: 0.9rem; color: #64748b; margin-top: 5px;">Standard text size</span>
+      </button>
+    </div>
+  </div>
+</div>
+
 <!-- Hero Slider -->
 <section class="hero">
     <div class="hero-slider">

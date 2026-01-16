@@ -72,11 +72,44 @@
       }catch(err){ console.error(err); createWowToast('❌ Error connecting to server','error'); }
     }
 
+function showOtpSignup() {
+  const email = document.getElementById("signup-email-otp").value.trim();
+
+  if (!email) {
+    createWowToast("Please enter an email first", "error");
+    return;
+  }
+
+  // Use same OTP logic, but will create account via backend
+  generatedOtp = generateOtp();
+  otpExpiry = Date.now() + 5 * 60 * 1000; // 5 minutes
+
+  emailjs.send(
+    "service_mbk5pgl",
+    "template_w5klqcn",     
+    {
+      to_email: email,
+      otp: generatedOtp
+    }
+  )
+  .then(() => {
+    createWowToast("OTP sent to your email", "success");
+    document.getElementById("signupDefaultMode").style.display = "none";
+    document.getElementById("otpStep").style.display = "block";
+    // Store that this is signup mode
+    document.getElementById("otpStep").setAttribute("data-mode", "signup");
+  })
+  .catch(err => {
+    console.error(err);
+    createWowToast("Failed to send OTP", "error");
+  });
+}
+
     // Login
     async function login(event){
       event.preventDefault();
-      const email=document.getElementById('email').value;
-      const password=document.getElementById('password').value;
+      const email=document.getElementById('login-email').value;
+      const password=document.getElementById('login-password').value;
       try{
         const res=await fetch('https://fsdp-cycling-ltey.onrender.com/login',{
           method:'POST',
@@ -231,6 +264,7 @@ async function initGoogleLogin() {
       });
     }
 
+    // Google Login Button
     const googleBtn = document.getElementById("googleLoginBtn");
     if (googleBtn) {
       googleBtn.addEventListener("click", () => {
@@ -245,6 +279,35 @@ async function initGoogleLogin() {
             );
           }
         });
+      });
+    }
+
+    // Google Signup Button (same functionality - Google creates account if needed)
+    const googleSignupBtn = document.getElementById("googleSignupBtn");
+    if (googleSignupBtn) {
+      googleSignupBtn.addEventListener("click", () => {
+        google.accounts.id.prompt((notification) => {
+          if (
+            notification.isNotDisplayed() ||
+            notification.isSkippedMoment()
+          ) {
+            createWowToast(
+              "Google popup was blocked. Please use the Google button below.",
+              "error"
+            );
+          }
+        });
+      });
+    }
+
+    // Also render Google button in signup container if it exists
+    const signupContainer = document.getElementById("googleSignupButtonContainer");
+    if (signupContainer) {
+      google.accounts.id.renderButton(signupContainer, {
+        theme: "outline",
+        size: "large",
+        shape: "pill",
+        text: "continue_with"
       });
     }
 
@@ -328,11 +391,52 @@ function generateOtp() {
   return Math.floor(100000 + Math.random() * 900000).toString();
 }
 
+// Toggle between OTP/Google mode and Password mode
+function togglePasswordMode(mode) {
+  if (mode === 'login') {
+    const defaultMode = document.getElementById('loginDefaultMode');
+    const passwordMode = document.getElementById('loginPasswordMode');
+    
+    if (defaultMode.style.display === 'none') {
+      // Switch to OTP/Google mode
+      defaultMode.style.display = 'block';
+      passwordMode.style.display = 'none';
+      // Sync email if exists
+      const passwordEmail = document.getElementById('login-email').value;
+      if (passwordEmail) {
+        document.getElementById('email').value = passwordEmail;
+      }
+    } else {
+      // Switch to Password mode
+      defaultMode.style.display = 'none';
+      passwordMode.style.display = 'block';
+      // Sync email if exists
+      const defaultEmail = document.getElementById('email').value;
+      if (defaultEmail) {
+        document.getElementById('login-email').value = defaultEmail;
+      }
+    }
+  } else if (mode === 'signup') {
+    const defaultMode = document.getElementById('signupDefaultMode');
+    const passwordMode = document.getElementById('signupPasswordMode');
+    
+    if (defaultMode.style.display === 'none') {
+      // Switch to OTP/Google mode
+      defaultMode.style.display = 'block';
+      passwordMode.style.display = 'none';
+    } else {
+      // Switch to Password mode
+      defaultMode.style.display = 'none';
+      passwordMode.style.display = 'block';
+    }
+  }
+}
+
 function showOtp() {
   const email = document.getElementById("email").value.trim();
 
   if (!email) {
-    alert("Please enter an email first");
+    createWowToast("Please enter an email first", "error");
     return;
   }
 
@@ -361,7 +465,10 @@ function showOtp() {
 
 async function verifyOtp() {
   const userOtp = document.getElementById("otp").value.trim();
-  const email = document.getElementById("email").value.trim();
+  // Get email from either login or signup mode
+  const emailInput = document.getElementById("email") || document.getElementById("signup-email-otp");
+  const email = emailInput ? emailInput.value.trim() : "";
+  const mode = document.getElementById("otpStep").getAttribute("data-mode") || "login";
 
   if (!generatedOtp) {
     createWowToast("No OTP generated", "error");
@@ -441,8 +548,15 @@ async function verifyOtp() {
 
 function backToLogin() {
   document.getElementById("otpStep").style.display = "none";
-  document.querySelector("#loginModal form").style.display = "block";
+  const mode = document.getElementById("otpStep").getAttribute("data-mode") || "login";
   
+  if (mode === "login") {
+    document.getElementById("loginDefaultMode").style.display = "block";
+  } else {
+    document.getElementById("signupDefaultMode").style.display = "block";
+  }
+  
+  document.getElementById("otpStep").removeAttribute("data-mode");
 }
 
 

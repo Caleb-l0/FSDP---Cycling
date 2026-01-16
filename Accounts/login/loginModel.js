@@ -27,7 +27,7 @@ async function findUserByEmail(email) {
 // -------------------------------
 async function getUserById(id) {
   const query = `
-    SELECT id, name, email, role, textsizepreference
+    SELECT id, name, email, role, textsizepreference, homeaddress, phonenumber, advantages
     FROM users
     WHERE id = $1
     LIMIT 1
@@ -41,30 +41,51 @@ async function getUserById(id) {
 // -------------------------------
 // 3. Update user (dynamic fields)
 // -------------------------------
-async function updateUser(id, name, email, textSizePreference) {
+async function updateUser(id, name, email, textSizePreference, homeAddress, phoneNumber, advantages) {
 
   const updates = [];
   const values = [];
   let index = 1;
 
   // push name
-  if (name) {
+  if (name !== undefined) {
     updates.push(`name = $${index}`);
     values.push(name);
     index++;
   }
 
   // push email
-  if (email) {
+  if (email !== undefined) {
     updates.push(`email = $${index}`);
     values.push(email);
     index++;
   }
 
   // push textSizePreference
-  if (textSizePreference) {
+  if (textSizePreference !== undefined) {
     updates.push(`textsizepreference = $${index}`);
     values.push(textSizePreference);
+    index++;
+  }
+
+  // push homeAddress
+  if (homeAddress !== undefined) {
+    updates.push(`homeaddress = $${index}`);
+    values.push(homeAddress);
+    index++;
+  }
+
+  // push phoneNumber
+  if (phoneNumber !== undefined) {
+    updates.push(`phonenumber = $${index}`);
+    values.push(phoneNumber);
+    index++;
+  }
+
+  // push advantages
+  if (advantages !== undefined) {
+    updates.push(`advantages = $${index}`);
+    values.push(advantages);
     index++;
   }
 

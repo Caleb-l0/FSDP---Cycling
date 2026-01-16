@@ -579,4 +579,25 @@ footer p {
   color: #1e293b;
 }
 
+/* Toggle Password Mode Button - Subtle Style */
+.toggle-password-mode-btn {
+  background: transparent !important;
+  border: 2px solid #e2e8f0 !important;
+  color: #475569 !important;
+  font-size: 0.95rem !important;
+  font-weight: 600 !important;
+  padding: 10px 24px !important;
+  min-height: 44px !important;
+  width: 100% !important;
+  border-radius: 999px !important;
+  transition: all 0.2s ease !important;
+}
+
+.toggle-password-mode-btn:hover {
+  background: #f1f5f9 !important;
+  border-color: #cbd5e1 !important;
+  color: #1e293b !important;
+  transform: translateY(-1px) !important;
+}
+
 

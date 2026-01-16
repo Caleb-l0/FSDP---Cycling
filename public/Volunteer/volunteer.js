@@ -98,10 +98,124 @@ document.addEventListener("DOMContentLoaded", function () {
    HOMEPAGE EVENTS
    ===================================================== */
 document.addEventListener("DOMContentLoaded", () => {
+    // Only check elderly preference if user is logged in and is volunteer
+    const token = localStorage.getItem("token");
+    const role = localStorage.getItem("role");
+    
+    if (token && role === "volunteer") {
+        checkElderlyUserPreference();
+    }
+    
     loadHomepageEvents();
     loadVolunteersHomepage();
-    
 });
+
+// Elderly User Detection
+function checkElderlyUserPreference() {
+    const userType = localStorage.getItem('userType'); // 'elderly' or 'normal'
+    
+    // If user type not set, show popup (only show once per session)
+    if (!userType && !sessionStorage.getItem('elderlyPopupShown')) {
+        showElderlyUserPopup();
+        sessionStorage.setItem('elderlyPopupShown', 'true');
+    } else if (userType) {
+        // Apply saved preference
+        applyUserTypePreference(userType);
+    }
+}
+
+function showElderlyUserPopup() {
+    const popup = document.getElementById('elderlyUserPopup');
+    if (popup) {
+        popup.style.display = 'flex';
+    }
+}
+
+function selectUserType(type) {
+    localStorage.setItem('userType', type);
+    
+    // Set text size preference
+    const textPreference = type === 'elderly' ? 'elderly' : 'normal';
+    localStorage.setItem('textSizePreference', textPreference);
+    
+    // Apply text size immediately
+    if (type === 'elderly') {
+        applyElderlyTextSize();
+    } else {
+        applyNormalTextSize();
+    }
+    
+    // Hide popup
+    const popup = document.getElementById('elderlyUserPopup');
+    if (popup) {
+        popup.style.display = 'none';
+    }
+    
+    // Save to backend
+    saveTextSizePreference();
+}
+
+function applyUserTypePreference(type) {
+    if (type === 'elderly') {
+        applyElderlyTextSize();
+    } else {
+        applyNormalTextSize();
+    }
+}
+
+function applyElderlyTextSize() {
+    // Elderly text: slightly larger than large, but not too big
+    document.body.classList.add('elderly-mode');
+    document.body.classList.remove('normal-mode');
+    
+    // Also apply to all elements if needed
+    const style = document.createElement('style');
+    style.id = 'elderly-text-style';
+    style.textContent = `
+        body.elderly-mode {
+            font-size: 1.2rem !important;
+            line-height: 1.7 !important;
+        }
+        body.elderly-mode h1 { font-size: 2.4rem !important; }
+        body.elderly-mode h2 { font-size: 2rem !important; }
+        body.elderly-mode h3 { font-size: 1.6rem !important; }
+        body.elderly-mode .hv-logo { font-size: 1.8rem !important; }
+        body.elderly-mode nav a { font-size: 1.1rem !important; padding: 12px 20px !important; }
+        body.elderly-mode button { font-size: 1.05rem !important; min-height: 50px !important; }
+        body.elderly-mode input { font-size: 1.05rem !important; min-height: 50px !important; }
+    `;
+    
+    // Remove existing style if present
+    const existingStyle = document.getElementById('elderly-text-style');
+    if (existingStyle) existingStyle.remove();
+    
+    document.head.appendChild(style);
+}
+
+function applyNormalTextSize() {
+    document.body.classList.add('normal-mode');
+    document.body.classList.remove('elderly-mode');
+}
+
+async function saveTextSizePreference() {
+    const token = localStorage.getItem('token');
+    const preference = localStorage.getItem('textSizePreference') || 'normal';
+    
+    try {
+        await fetch('https://fsdp-cycling-ltey.onrender.com/profile', {
+            method: 'PUT',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                textSizePreference: preference
+            })
+        });
+    } catch (err) {
+        console.error('Failed to save text size preference:', err);
+    }
+}
 
 
 

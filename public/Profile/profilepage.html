@@ -113,45 +113,118 @@
     </div>
 </header>
 
-<section class="hero" style="height:900px">
-  <div class="profile-card">
-
-    <img src="https://cdn-icons-png.flaticon.com/512/847/847969.png" 
-         class="profile-avatar"
-         alt="Profile Picture">
-
-    <h2 id="profileTitle">Your Profile</h2>
-
-    <p><strong id="labelName">Name</strong><br>
-      <input type="text" id="name" disabled>
-    </p>
-
-    <p><strong id="labelEmail">Email</strong><br>
-      <input type="email" id="email" disabled>
-    </p>
-
-    <p><strong id="labelRole">Role:</strong>
-      <span id="role"></span>
-    </p>
-
-    <div class="text-size-section">
-      <p>Text size preference across the site:</p>
-      <div class="text-size-options" role="group" aria-label="Text size options">
-        <button type="button" class="text-size-option" data-text-size="normal" aria-pressed="false">
-          Normal
+<section class="hero profile-hero">
+  <div class="profile-container">
+    
+    <!-- Left Sidebar Navigation -->
+    <div class="profile-sidebar">
+      <h3 class="sidebar-title">Profile Menu</h3>
+      <nav class="profile-nav">
+        <button class="profile-nav-btn active" data-section="basic" onclick="switchProfileSection('basic')">
+          <i class="fas fa-user"></i>
+          <span>Basic Profile</span>
         </button>
-        <button type="button" class="text-size-option" data-text-size="large" aria-pressed="false">
-          Large
+        <button class="profile-nav-btn" data-section="settings" onclick="switchProfileSection('settings')">
+          <i class="fas fa-cog"></i>
+          <span>Information Settings</span>
         </button>
-      </div>
-      <small>Changes take effect immediately after saving.</small>
+        <button class="profile-nav-btn" data-section="events" onclick="switchProfileSection('events')">
+          <i class="fas fa-calendar-check"></i>
+          <span>Events Attended</span>
+        </button>
+        <button class="profile-nav-btn" data-section="badges" onclick="switchProfileSection('badges')">
+          <i class="fas fa-trophy"></i>
+          <span>Badges Gained</span>
+        </button>
+      </nav>
     </div>
 
-    <button class="btn" id="editBtn">Edit</button>
-    <button class="btn" id="saveBtn" style="display:none;">Save</button>
-    <button class="btn logout-btn" id="logoutBtn">Logout</button>
+    <!-- Main Content Area -->
+    <div class="profile-content">
+    
+    <!-- Section 1: Basic Profile Information -->
+    <div class="profile-section profile-basic" id="section-basic">
+      <img src="https://cdn-icons-png.flaticon.com/512/847/847969.png" 
+           class="profile-avatar"
+           alt="Profile Picture">
+      <h2 id="profileTitle">Your Profile</h2>
+      
+      <div class="profile-field">
+        <label><strong id="labelName">Name</strong></label>
+        <input type="text" id="name" disabled>
+      </div>
 
-  </div>
+      <div class="profile-field">
+        <label><strong id="labelEmail">Email</strong></label>
+        <input type="email" id="email" disabled>
+      </div>
+
+      <div class="text-size-section">
+        <p>Text size preference:</p>
+        <div class="text-size-options" role="group" aria-label="Text size options">
+          <button type="button" class="text-size-option" data-text-size="normal" aria-pressed="false">
+            Normal
+          </button>
+          <button type="button" class="text-size-option" data-text-size="large" aria-pressed="false">
+            Large
+          </button>
+        </div>
+        <small>Changes take effect immediately after saving.</small>
+      </div>
+
+      <div class="profile-actions">
+        <button class="btn" id="editBtn">Edit</button>
+        <button class="btn" id="saveBtn" style="display:none;">Save</button>
+        <button class="btn logout-btn" id="logoutBtn">Logout</button>
+      </div>
+    </div>
+
+    <!-- Section 2: Information Settings -->
+    <div class="profile-section profile-settings" id="section-settings" style="display:none;">
+      <h3 class="section-title">Information Settings</h3>
+      
+      <div class="profile-field">
+        <label><strong>Home Address</strong></label>
+        <div class="address-input-group">
+          <input type="text" id="homeAddress" placeholder="Enter your address" disabled>
+          <button type="button" class="location-btn" id="getLocationBtn" onclick="getCurrentLocation()" disabled>
+            <i class="fas fa-map-marker-alt"></i> Use Current Location
+          </button>
+        </div>
+      </div>
+
+      <div class="profile-field">
+        <label><strong>Phone Number</strong></label>
+        <input type="tel" id="phoneNumber" placeholder="Enter your phone number" disabled>
+      </div>
+
+      <div class="profile-field">
+        <label><strong>Advantages/Skills</strong></label>
+        <textarea id="advantages" placeholder="List your skills or advantages (e.g., First Aid Certified, Bilingual, etc.)" disabled></textarea>
+      </div>
+
+      <button class="btn" id="editSettingsBtn">Edit Settings</button>
+      <button class="btn" id="saveSettingsBtn" style="display:none;">Save Settings</button>
+    </div>
+
+    <!-- Section 3: Events Attended -->
+    <div class="profile-section profile-events" id="section-events" style="display:none;">
+      <h3 class="section-title">Events Attended</h3>
+      <div id="eventsAttendedList" class="events-list">
+        <p class="loading-text">Loading your events...</p>
+      </div>
+    </div>
+
+    <!-- Section 4: Badges Gained -->
+    <div class="profile-section profile-badges" id="section-badges" style="display:none;">
+      <h3 class="section-title">Badges Gained</h3>
+      <div id="badgesList" class="badges-grid">
+        <p class="loading-text">Loading your badges...</p>
+      </div>
+    </div>
+
+    </div> <!-- End profile-content -->
+  </div> <!-- End profile-container -->
 </section>
 
 </div>

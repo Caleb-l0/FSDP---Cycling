@@ -129,21 +129,30 @@ app.delete('/user/:id', authenticate, deleteUser);
 
 // ----- PROFILE PAGE -----
 app.get("/profile", authenticate, async (req, res) => {
-  res.json({
-    id: req.user.id,
-    name: req.user.name,
-    email: req.user.email,
-    role: req.user.role,
-    textSizePreference: req.user.textSizePreference || 'normal'
-  });
+  try {
+    const user = await loginModel.getUserById(req.user.id);
+    res.json({
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      textSizePreference: user.textsizepreference || 'normal',
+      homeAddress: user.homeaddress || null,
+      phoneNumber: user.phonenumber || null,
+      advantages: user.advantages || null
+    });
+  } catch (err) {
+    console.error("Profile fetch error:", err);
+    res.status(500).json({ message: "Failed to load profile." });
+  }
 });
 
 // ----- UPDATE PROFILE -----
 app.put("/profile", authenticate, async (req, res) => {
-  const { name, email, textSizePreference } = req.body;
+  const { name, email, textSizePreference, homeAddress, phoneNumber, advantages } = req.body;
 
   try {
-    await loginModel.updateUser(req.user.id, name, email, textSizePreference);
+    await loginModel.updateUser(req.user.id, name, email, textSizePreference, homeAddress, phoneNumber, advantages);
 
     res.json({ message: "Profile updated successfully!" });
   } catch (err) {
