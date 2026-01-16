@@ -46,45 +46,43 @@
 .hvf-pill {
   padding: 14px 32px;
   min-height: 48px; /* Elderly-friendly: larger touch target */
-  border-radius: 999px;
+  border-radius: 999px; /* Pill shape - consistent with other pages */
   border: none;
   background: #ffffff;
-  border: 3px solid #e2e8f0; /* Thicker border for better visibility */
-  color: #1e293b; /* Darker text for better readability */
-  font-size: 1.05rem; /* Slightly larger font for elderly users */
-  font-weight: 700; /* Bolder font for better visibility */
+  border: 2px solid #e2e8f0; /* Clean, professional border */
+  color: #475569;
+  font-size: 1rem;
+  font-weight: 600;
   letter-spacing: 0.3px;
   cursor: pointer;
   transition: all 0.2s ease;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); /* Subtle shadow for depth */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .hvf-pill:hover {
-  background: #fffbf0; /* Very light yellow tint on hover */
-  border-color: #fbbf24; /* Yellow border on hover */
+  background: #f1f5f9;
+  border-color: #264653;
   color: #1e293b;
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(251, 191, 36, 0.25);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
-/* ACTIVE STATE - Bright Yellow for Maximum Visibility */
+/* ACTIVE STATE - Clean Yellow Pill (Professional, Elderly-Friendly) */
 .hvf-pill.hvf-active {
   background: #fbbf24; /* Bright amber yellow - highly visible */
-  border-color: #f59e0b; /* Slightly darker yellow border for definition */
+  border: none; /* No border when active - cleaner look */
   color: #1e293b; /* Dark text on yellow for high contrast */
-  box-shadow: 0 6px 20px rgba(251, 191, 36, 0.5); /* Prominent yellow shadow */
-  font-weight: 700; /* Extra bold when active */
-  transform: translateY(-1px); /* Slightly raised for tactile feedback */
+  box-shadow: 0 6px 16px rgba(251, 191, 36, 0.4);
+  font-weight: 600;
 }
 
 .hvf-pill.hvf-active:hover {
   background: #f59e0b; /* Slightly darker yellow on hover */
-  border-color: #d97706; /* Darker border on hover */
-  box-shadow: 0 8px 24px rgba(251, 191, 36, 0.6); /* Stronger shadow */
-  transform: translateY(-2px); /* More raised on hover */
+  box-shadow: 0 8px 20px rgba(251, 191, 36, 0.5);
+  transform: translateY(-2px);
 }
 
 /* ======================================================

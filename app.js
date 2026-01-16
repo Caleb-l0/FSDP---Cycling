@@ -79,6 +79,9 @@ const fetch = require("node-fetch");
 // ----- LOGIN & SIGNUP API ROUTES (must be before static files) -----
 app.post('/login', validateLogin, loginUser);
 
+// ----- OTP LOGIN ROUTE -----
+const { otpLogin } = require('./Controllers/OTP_Login_Controller');
+app.post('/login/otp', otpLogin);
 
 // NEW PHONE LOGIN ROUTE
 app.post('/login/phone', async (req, res) => {

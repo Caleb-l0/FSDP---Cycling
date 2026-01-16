@@ -359,8 +359,9 @@ function showOtp() {
   });
 }
 
-function verifyOtp() {
+async function verifyOtp() {
   const userOtp = document.getElementById("otp").value.trim();
+  const email = document.getElementById("email").value.trim();
 
   if (!generatedOtp) {
     createWowToast("No OTP generated", "error");
@@ -372,17 +373,68 @@ function verifyOtp() {
     return;
   }
 
-  if (userOtp === generatedOtp) {
-    createWowToast("OTP verified! Login successful", "success");
+  if (userOtp !== generatedOtp) {
+    createWowToast("Invalid OTP", "error");
+    return;
+  }
 
-    
+  // OTP is valid - now call backend to login/create account
+  try {
+    const res = await fetch("https://fsdp-cycling-ltey.onrender.com/login/otp", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: email }),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      createWowToast(data.message || "Login failed", "error");
+      return;
+    }
+
+    // Store user data in localStorage
+    localStorage.setItem("token", data.token);
+    localStorage.setItem("userId", data.userId);
+    localStorage.setItem("name", data.name);
+    localStorage.setItem("email", data.email);
+    localStorage.setItem("role", data.role);
+
+    const preference = data.textSizePreference || localStorage.getItem(TEXT_SIZE_KEY) || "normal";
+    localStorage.setItem(TEXT_SIZE_KEY, preference);
+    if (window.applyTextSize) {
+      applyTextSize(preference);
+    }
+
+    // Show success message
+    if (data.isNewUser) {
+      createWowToast("Account created and logged in successfully!", "success");
+    } else {
+      createWowToast("OTP verified! Login successful", "success");
+    }
+
+    // Clear OTP
     generatedOtp = null;
 
+    // Redirect based on role
     setTimeout(() => {
-      window.location.href = "/public/Volunteer/homepage_login_volunteer.html";
-    }, 1200);
-  } else {
-    createWowToast("Invalid OTP", "error");
+      switch (data.role) {
+        case "admin":
+          window.location.href = "/public/Admin/homepage_login_Admin.html";
+          break;
+        case "volunteer":
+          window.location.href = "/public/Volunteer/homepage_login_volunteer.html";
+          break;
+        case "institution":
+          window.location.href = "/public/Instituition/homepage_login_instituition.html";
+          break;
+        default:
+          window.location.href = "/public/Volunteer/homepage_login_volunteer.html";
+      }
+    }, 1500);
+  } catch (err) {
+    console.error("OTP login error:", err);
+    createWowToast("Error connecting to server", "error");
   }
 }
 

@@ -1,4 +1,6 @@
 
+
+
 let friendsData = [];
 let currentFilter = "recent";
 

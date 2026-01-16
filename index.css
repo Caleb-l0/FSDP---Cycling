@@ -279,11 +279,21 @@ nav a:hover {
 }
 
 .modal-content input {
-  width: 90%;
-  padding: 10px;
+  width: 100%;
+  padding: 14px;
   margin: 8px 0;
-  border: 1px solid #ccc;
-  border-radius: 6px;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  font-size: 1rem;
+  min-height: 48px;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+}
+
+.modal-content input:focus {
+  border-color: #ea8d2a;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(234, 141, 42, 0.1);
 }
 
 .modal-content button {
@@ -418,37 +428,155 @@ footer p {
 .modal-content button,
 #googleLoginBtn {
   width: 100%;
-  padding: 12px;
+  padding: 14px 32px;
   margin-top: 10px;
-  border-radius: 8px;
-  font-size: 16px;
+  border-radius: 999px; /* Pill shape - consistent */
+  font-size: 1rem;
   cursor: pointer;
   font-weight: 600;
-}
-
-/* Normal login button */
-.modal-content button[type="submit"] {
-  background: #f7a137;
-  border: none;
-  color: white;
-}
-
-.modal-content button[type="submit"]:hover {
-  background: #e88f20;
-}
-
-/* Google button */
-#googleLoginBtn {
-  background: white;
-  border: 2px solid #ddd;
-  color: #444;
+  letter-spacing: 0.3px;
+  min-height: 48px;
+  transition: all 0.2s ease;
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 8px;
+}
+
+/* Normal login button - Professional Pill Style (Consistent with other pages) */
+.modal-content button[type="submit"] {
+  background: #ea8d2a;
+  border: none;
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 1rem;
+  letter-spacing: 0.3px;
+  padding: 14px 32px;
+  min-height: 48px;
+  border-radius: 999px; /* Pill shape like other pages */
+  box-shadow: 0 4px 12px rgba(234, 141, 42, 0.3);
+  transition: all 0.2s ease;
+}
+
+.modal-content button[type="submit"]:hover {
+  background: #d97a1f;
+  box-shadow: 0 6px 16px rgba(234, 141, 42, 0.3);
+  transform: translateY(-2px);
+}
+
+/* OTP Button - Yellow Pill Style (Elderly-Friendly, Professional) */
+.modal-content button.otp-btn {
+  background: #fbbf24;
+  border: none;
+  color: #1e293b; /* Dark text for high contrast on yellow */
+  font-weight: 600;
+  font-size: 1rem;
+  letter-spacing: 0.3px;
+  padding: 14px 32px;
+  min-height: 48px;
+  border-radius: 999px; /* Pill shape like other pages */
+  box-shadow: 0 6px 16px rgba(251, 191, 36, 0.4);
+  margin: 12px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+}
+
+.modal-content button.otp-btn:hover {
+  background: #f59e0b;
+  box-shadow: 0 8px 20px rgba(251, 191, 36, 0.5);
+  transform: translateY(-2px);
+}
+
+.modal-content button.otp-btn::before {
+  content: "✉️ ";
+  font-size: 1.1rem;
+}
+
+/* OTP Input - Larger for Elderly Users (Professional Style) */
+#otp {
+  font-size: 1.5rem; /* Large numbers for easy reading */
+  letter-spacing: 8px; /* Space between digits */
+  text-align: center;
+  padding: 16px;
+  min-height: 60px;
+  border: 2px solid #e2e8f0; /* Clean border like other inputs */
+  border-radius: 12px;
+  font-weight: 700;
+  transition: all 0.2s ease;
+  width: 100%;
+}
+
+#otp:focus {
+  outline: none;
+  border-color: #fbbf24; /* Yellow border when focused */
+  box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.15);
+}
+
+/* Verify OTP Button - Professional Pill Style */
+#otpStep button {
+  background: #fbbf24;
+  border: none;
+  color: #1e293b;
+  font-weight: 600;
+  font-size: 1rem;
+  letter-spacing: 0.3px;
+  padding: 14px 32px;
+  min-height: 48px;
+  border-radius: 999px; /* Pill shape */
+  box-shadow: 0 6px 16px rgba(251, 191, 36, 0.4);
+  transition: all 0.2s ease;
+  width: 100%;
+}
+
+#otpStep button:hover {
+  background: #f59e0b;
+  box-shadow: 0 8px 20px rgba(251, 191, 36, 0.5);
+  transform: translateY(-2px);
+}
+
+/* Google button - Professional Style */
+#googleLoginBtn {
+  background: #ffffff;
+  border: 2px solid #e2e8f0;
+  color: #475569;
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 #googleLoginBtn:hover {
-  background: #f9f9f9;
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transform: translateY(-2px);
+}
+
+/* Elderly-Friendly: Larger inputs and labels (Professional Style) */
+.modal-content input[type="email"],
+.modal-content input[type="password"] {
+  font-size: 1rem;
+  padding: 14px;
+  min-height: 48px;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  transition: all 0.2s ease;
+  width: 100%;
+}
+
+.modal-content input:focus {
+  border-color: #ea8d2a;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(234, 141, 42, 0.1);
+}
+
+.modal-content label {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1e293b;
 }
 
 

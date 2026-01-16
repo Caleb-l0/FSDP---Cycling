@@ -244,20 +244,20 @@
           <label for="rememberMe">Remember Me</label>
         </div>
 
-<button type="button" onclick="showOtp()">Login with OTP</button>
+        <!-- OTP Button - Bright Yellow, Visually Distinct for Elderly Users -->
+        <button type="button" class="otp-btn" onclick="showOtp()">Login with OTP</button>
 
-
-
-
+        <!-- Normal Login Button -->
         <button type="submit">Login</button>
       </form>
   
       <!-- OTP Step  -->
 <div id="otpStep" style="display:none;">
-  <h2>Enter OTP</h2>
-  <input id="otp" type="text" maxlength="6" placeholder="6-digit OTP">
-  <button type="button" onclick="verifyOtp()">Verify OTP</button>
-  <p style="margin-top:10px;"><a href="#" onclick="backToLogin()">← Back</a></p>
+  <h2 style="font-size: 1.5rem; color: #1e293b; margin-bottom: 20px;">Enter OTP Code</h2>
+  <p style="font-size: 1rem; color: #475569; margin-bottom: 16px;">Check your email for the 6-digit code</p>
+  <input id="otp" type="text" maxlength="6" placeholder="000000" pattern="[0-9]{6}">
+  <button type="button" onclick="verifyOtp()" style="margin-top: 20px;">Verify OTP</button>
+  <p style="margin-top:20px; font-size: 0.95rem;"><a href="#" onclick="backToLogin()" style="color: #ea8d2a; font-weight: 600;">← Back to Login</a></p>
 </div>
 
       <p style="font-size:15px;padding:3px;font-weight:10">Or</p>
