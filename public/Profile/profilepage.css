@@ -172,21 +172,20 @@ nav ul li a:hover {
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  padding: 120px 20px 80px;
-  min-height: auto;
+  padding: 120px 20px 60px;
   width: 100%;
+  min-height: calc(100vh - 90px);
 }
 
 .profile-container {
   width: 100%;
-  max-width: 1000px; /* Slightly wider for better layout */
-  margin: 0 auto; /* Center the container */
+  max-width: 1000px;
+  margin: 0 auto;
   display: grid;
-  grid-template-columns: 240px 1fr; /* Sidebar width */
-  gap: 28px;
-  align-items: start;
-  min-height: auto;
-  padding-bottom: 40px;
+  grid-template-columns: 240px 1fr;
+  gap: 24px;
+  align-items: stretch; /* Make sidebar and content same height */
+  min-height: calc(100vh - 200px);
 }
 
 /* ===============================
@@ -199,13 +198,9 @@ nav ul li a:hover {
   border-radius: 16px;
   box-shadow: 0 4px 20px rgba(0,0,0,0.06);
   border: 1px solid #e2e8f0;
-  position: sticky;
-  top: 100px;
-  height: fit-content;
-  
   display: flex;
   flex-direction: column;
-  overflow:visible;
+  height: 100%; /* Match content height */
 }
 
 .sidebar-title {
@@ -306,28 +301,27 @@ nav ul li a:hover {
   display: flex;
   flex-direction: column;
   gap: 24px;
-  
-   min-height: calc(100vh - 120px);
   width: 100%;
-  padding-bottom: 60px; /* Extra padding for scrolling */
+  min-height: 100%; /* Match sidebar height */
 }
 
 .profile-section {
   background: rgba(255,255,255,0.92);
   backdrop-filter: blur(12px);
-  padding: 28px; /* Smaller padding */
+  padding: 32px;
   border-radius: 16px;
   box-shadow: 0 4px 20px rgba(0,0,0,0.06);
   border: 1px solid #e2e8f0;
   animation: fadeIn 0.35s ease;
-  max-width: 100%;
-  margin: 0 auto; /* Center sections */
+  width: 100%;
+  min-height: 100%; /* Fill content area */
+  display: flex;
+  flex-direction: column;
 }
 
 .profile-basic {
   text-align: center;
-  max-width: 600px; /* Limit width for better readability */
-  margin: 0 auto;
+  width: 100%;
 }
 
 .profile-avatar {
@@ -365,8 +359,7 @@ nav ul li a:hover {
 .profile-settings,
 .profile-events,
 .profile-badges {
-  max-width: 100%;
-  margin: 0 auto;
+  width: 100%;
 }
 
 .profile-field label {
@@ -445,11 +438,12 @@ nav ul li a:hover {
 }
 
 .profile-actions {
-  margin-top: 24px;
+  margin-top: auto; /* Push to bottom of section */
   display: flex;
   gap: 12px;
   justify-content: center;
   flex-wrap: wrap;
+  padding-top: 24px;
 }
 
 /* ===============================
@@ -704,11 +698,15 @@ iframe.goog-te-banner-frame,
    RESPONSIVE PROFILE SECTIONS
 ================================= */
 @media (max-width: 1024px) {
+  .profile-hero {
+    padding: 110px 16px 50px;
+  }
+  
   .profile-container {
     max-width: 100%;
     grid-template-columns: 200px 1fr;
     gap: 20px;
-    padding: 0 16px;
+    min-height: auto;
   }
   
   .profile-section {
@@ -744,22 +742,22 @@ iframe.goog-te-banner-frame,
 
 @media (max-width: 768px) {
   .profile-hero {
-    padding: 100px 12px 60px;
+    padding: 100px 12px 50px;
+    min-height: auto;
   }
   
   .profile-container {
     max-width: 100%;
     grid-template-columns: 1fr;
     gap: 20px;
-    padding: 0 12px 40px;
+    min-height: auto;
+    align-items: start;
   }
   
   .profile-sidebar {
-    position: static;
     order: -1; /* Move sidebar to top on mobile */
     padding: 16px;
-    max-height: none;
-    top: auto;
+    height: auto;
   }
   
   .profile-nav {
@@ -826,7 +824,7 @@ iframe.goog-te-banner-frame,
   }
   
   .profile-content {
-    padding-bottom: 40px;
+    min-height: auto;
   }
 }
 
@@ -847,16 +845,17 @@ iframe.goog-te-banner-frame,
 
 @media (max-width: 480px) {
   .profile-hero {
-    padding: 90px 8px 50px;
+    padding: 90px 8px 40px;
+    min-height: auto;
   }
   
   .profile-container {
-    padding: 0 8px 30px;
     gap: 16px;
+    min-height: auto;
   }
   
   .profile-section {
-    padding: 18px;
+    padding: 20px;
   }
   
   .section-title {
@@ -866,6 +865,7 @@ iframe.goog-te-banner-frame,
   .profile-actions {
     flex-direction: column;
     gap: 10px;
+    margin-top: 20px;
   }
   
   .profile-actions .btn {
@@ -881,10 +881,6 @@ iframe.goog-te-banner-frame,
     min-width: 130px;
     padding: 12px 14px;
     font-size: 0.85rem;
-  }
-  
-  .profile-content {
-    padding-bottom: 30px;
   }
   
   .sidebar-logout-btn {
