@@ -685,6 +685,132 @@ function svcNextMonth() {
 
 // Note: Booking requests are the same as applications, so they're handled in dashboard1
 
+// Check In Modal functionality
+function initCheckInModal() {
+  const checkInLink = document.getElementById("checkin-link");
+  const checkInLinkMobile = document.getElementById("checkin-link-mobile");
+  const modal = document.getElementById("checkin-modal");
+  const closeBtn = document.querySelector(".checkin-modal-close");
+  const eventsList = document.getElementById("checkin-events-list");
+
+  function openModal() {
+    modal.style.display = "flex";
+    loadCheckInEvents();
+  }
+
+  function closeModal() {
+    modal.style.display = "none";
+  }
+
+  if (checkInLink) {
+    checkInLink.addEventListener("click", (e) => {
+      e.preventDefault();
+      openModal();
+    });
+  }
+
+  if (checkInLinkMobile) {
+    checkInLinkMobile.addEventListener("click", (e) => {
+      e.preventDefault();
+      openModal();
+    });
+  }
+
+  if (closeBtn) {
+    closeBtn.addEventListener("click", closeModal);
+  }
+
+  // Close modal when clicking outside
+  if (modal) {
+    modal.addEventListener("click", (e) => {
+      if (e.target === modal) {
+        closeModal();
+      }
+    });
+  }
+}
+
+async function loadCheckInEvents() {
+  const eventsList = document.getElementById("checkin-events-list");
+  
+  try {
+    eventsList.innerHTML = '<div class="loading">Loading events...</div>';
+
+    const response = await fetch("https://fsdp-cycling-ltey.onrender.com/admin/events", {
+      method: "GET",
+      headers: {
+        "Authorization": `Bearer ${token}`,
+        "Content-Type": "application/json"
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to load events");
+    }
+
+    const events = await response.json();
+
+    if (!Array.isArray(events) || events.length === 0) {
+      eventsList.innerHTML = '<div class="empty">No events found. Create an event to get started.</div>';
+      return;
+    }
+
+    // Sort by date (upcoming first, then past events)
+    const sortedEvents = [...events].sort((a, b) => {
+      const dateA = new Date(a.eventdate);
+      const dateB = new Date(b.eventdate);
+      return dateA - dateB;
+    });
+
+    eventsList.innerHTML = "";
+    sortedEvents.forEach(event => {
+      const eventItem = document.createElement("div");
+      eventItem.className = "checkin-event-item";
+      
+      const eventDate = new Date(event.eventdate);
+      const dateStr = eventDate.toLocaleDateString('en-US', { 
+        year: 'numeric', 
+        month: 'short', 
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+      
+      // Determine if event is upcoming or past
+      const isUpcoming = eventDate > new Date();
+      const signupCount = event.peoplesignup || 0;
+      const maxParticipants = event.maximumparticipant || "N/A";
+      
+      // Add visual indicator for events with signups
+      const hasSignups = signupCount > 0;
+      if (hasSignups) {
+        eventItem.style.borderLeft = "4px solid #ea8d2a";
+      }
+      
+      eventItem.innerHTML = `
+        <h3>${event.eventname || "Untitled Event"}</h3>
+        <p><strong>Date:</strong> ${dateStr}</p>
+        <p><strong>Location:</strong> ${event.location || "TBD"}</p>
+        <p class="signup-count"><strong>Signups:</strong> ${signupCount} / ${maxParticipants}</p>
+        ${!isUpcoming ? '<p style="color: #6b7280; font-size: 0.875rem;"><em>Past Event</em></p>' : ''}
+      `;
+
+      eventItem.addEventListener("click", () => {
+        // Store event and navigate to event details page
+        localStorage.setItem("currentEvent", JSON.stringify(event));
+        localStorage.setItem("openCheckInTab", "true");
+        window.location.href = "./admin_event.html";
+      });
+
+      eventsList.appendChild(eventItem);
+    });
+
+  } catch (error) {
+    console.error("Error loading check-in events:", error);
+    eventsList.innerHTML = '<div class="empty">Error loading events. Please try again.</div>';
+  }
+}
+
 // Initialize everything on page load
 document.addEventListener("DOMContentLoaded", () => {
   // Load initial data for dashboard1 (Applications) - shown by default
@@ -695,6 +821,9 @@ document.addEventListener("DOMContentLoaded", () => {
   
   // Load calendar events
   loadAdminEvents();
+  
+  // Initialize check-in modal
+  initCheckInModal();
 });
 
 
