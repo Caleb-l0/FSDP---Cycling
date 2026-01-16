@@ -16,6 +16,44 @@ body {
   overflow-x: hidden;
 }
 
+/* New Event Badge */
+.new-event-badge {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: linear-gradient(135deg, #fbbf24, #f59e0b);
+  color: #1e293b;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 6px 12px;
+  border-radius: 20px;
+  box-shadow: 0 4px 12px rgba(251, 191, 36, 0.4);
+  z-index: 10;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 0.9;
+  }
+}
+
+.event-card2 {
+  position: relative;
+  overflow: visible;
+}
+
+.event-img {
+  position: relative;
+}
+
 /* ===============================
    HEADER
 ================================= */

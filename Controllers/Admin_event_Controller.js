@@ -25,13 +25,11 @@ async function createEvent(req, res) {
       return res.status(400).json({ message: "Missing required fields: EventName and EventDate are required" });
     }
   console.log("RAW OrganizationID =", eventData.OrganizationID);
-    // OrganizationID is optional (can be null), but if provided, must be valid and exist
+   
   if (eventData.OrganizationID !== undefined && 
     eventData.OrganizationID !== null && 
     !Number.isNaN(Number(eventData.OrganizationID))) {
-    
     const orgID = parseInt(eventData.OrganizationID);
-    
     const orgExists = await AdminEventModel.checkOrganizationExists(orgID);
     if (!orgExists) {
       return res.status(400).json({
@@ -50,7 +48,18 @@ async function createEvent(req, res) {
         await OrganizationRequestModel.approveRequest(eventData.VolunteerRequestID);
       } catch (approveError) {
         console.warn("Failed to approve request:", approveError);
-        // Don't fail the event creation if request approval fails
+       
+      }
+    }
+
+    // Send email notification to organisation 
+    
+    if (eventData.OrganizationID) {
+      try {
+        await AdminEventModel.sendEventNotificationToOrganization(eventData.OrganizationID, newEvent);
+      } catch (emailError) {
+        console.warn("Failed to send email notifications:", emailError);
+     
       }
     }
 

@@ -84,9 +84,14 @@ function renderEvents(events) {
     const location = event.location || event.Location || 'Location TBD';
     const required = event.requiredvolunteers || event.RequiredVolunteers || 0;
     const maxParticipants = event.maximumparticipant || event.MaximumParticipant || 0;
+    
+    // Check if event is less than 3 days old (use createdat if available, otherwise eventdate)
+    const createdDate = event.createdat || event.CreatedAt || event.eventdate || event.EventDate;
+    const isNewEvent = isEventNew(createdDate);
 
     card.innerHTML = `
       <div class="event-details">
+        ${isNewEvent ? '<span class="new-event-badge">NEW</span>' : ''}
         <h3>${title}</h3>
         <p><strong>Date:</strong> ${date}</p>
         <p><strong>Location:</strong> ${location}</p>
@@ -221,4 +226,16 @@ function formatDate(rawDate) {
     hour: '2-digit',
     minute: '2-digit'
   });
+}
+
+// Check if event is less than 3 days old
+function isEventNew(eventDate) {
+  if (!eventDate) return false;
+  
+  const event = new Date(eventDate);
+  const now = new Date();
+  const diffTime = now - event;
+  const diffDays = diffTime / (1000 * 60 * 60 * 24);
+  
+  return diffDays < 3;
 }

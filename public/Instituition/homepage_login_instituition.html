@@ -286,9 +286,20 @@ async function loadAllEvents() {
       card.classList.add("event-card2");
 
       const formattedDate = new Date(event.EventDate).toLocaleString();
+      
+      // Check if event is less than 3 days old (use createdat if available, otherwise EventDate)
+      const createdDate = event.createdat || event.CreatedAt || event.EventDate;
+      const eventDate = new Date(createdDate);
+      const now = new Date();
+      const diffTime = now - eventDate;
+      const diffDays = diffTime / (1000 * 60 * 60 * 24);
+      const isNewEvent = diffDays < 3;
 
       card.innerHTML = `
-        <div class="event-img" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 150px; display: flex; align-items: center; justify-content: center; color: white; font-size: 2rem;">🚴</div>
+        <div class="event-img" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 150px; display: flex; align-items: center; justify-content: center; color: white; font-size: 2rem; position: relative;">
+          ${isNewEvent ? '<span class="new-event-badge">NEW</span>' : ''}
+          🚴
+        </div>
         <div class="event-info">
           <h3>${event.EventName}</h3>
           <p><strong>Time:</strong> ${formattedDate}</p>
