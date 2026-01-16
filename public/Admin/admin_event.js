@@ -201,10 +201,125 @@ function initButtonHandlers() {
 
 //--------------------
 
+// Tab switching functionality
+function initTabs() {
+  const tabButtons = document.querySelectorAll('.tab-button');
+  const tabContents = document.querySelectorAll('.tab-content');
 
+  tabButtons.forEach(button => {
+    button.addEventListener('click', () => {
+      const targetTab = button.getAttribute('data-tab');
+
+      // Remove active class from all buttons and contents
+      tabButtons.forEach(btn => btn.classList.remove('active'));
+      tabContents.forEach(content => content.classList.remove('active'));
+
+      // Add active class to clicked button and corresponding content
+      button.classList.add('active');
+      const targetContent = document.getElementById(`tab-${targetTab}`);
+      if (targetContent) {
+        targetContent.classList.add('active');
+      }
+
+      // If switching to check-in tab, fetch signups
+      if (targetTab === 'checkin') {
+        fetchEventSignups();
+      }
+    });
+  });
+}
+
+// Fetch event signups
+async function fetchEventSignups() {
+  const loadingEl = document.getElementById('signups-loading');
+  const contentEl = document.getElementById('signups-content');
+  const emptyEl = document.getElementById('signups-empty');
+  const tbodyEl = document.getElementById('signups-tbody');
+  const statTotalEl = document.getElementById('stat-total');
+  const statNeededEl = document.getElementById('stat-needed');
+
+  try {
+    // Show loading state
+    loadingEl.style.display = 'block';
+    contentEl.style.display = 'none';
+    emptyEl.style.display = 'none';
+
+    const response = await fetch(`https://fsdp-cycling-ltey.onrender.com/admin/events/${currentEventId}/signups`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch signups');
+    }
+
+    const data = await response.json();
+
+    // Update stats - API returns 'count' not 'totalSignups'
+    statTotalEl.textContent = data.count || 0;
+    // Get volunteers needed from the event details element or currentEvent
+    const volunteersNeeded = neededEl ? neededEl.textContent : (currentEvent ? (currentEvent.requiredvolunteers || '-') : '-');
+    statNeededEl.textContent = volunteersNeeded;
+
+    // Hide loading
+    loadingEl.style.display = 'none';
+
+    if (data.signups && data.signups.length > 0) {
+      // Populate table
+      tbodyEl.innerHTML = '';
+      data.signups.forEach((signup, index) => {
+        const row = document.createElement('tr');
+        const signupDate = new Date(signup.signupdate);
+        row.innerHTML = `
+          <td>${index + 1}</td>
+          <td>${signup.name || 'N/A'}</td>
+          <td>${signup.email || 'N/A'}</td>
+          <td>${signup.phonenumber || 'N/A'}</td>
+          <td>${signupDate.toLocaleDateString()} ${signupDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}</td>
+        `;
+        tbodyEl.appendChild(row);
+      });
+
+      contentEl.style.display = 'block';
+      emptyEl.style.display = 'none';
+    } else {
+      // Show empty state
+      contentEl.style.display = 'none';
+      emptyEl.style.display = 'block';
+    }
+  } catch (error) {
+    console.error('Error fetching signups:', error);
+    loadingEl.style.display = 'none';
+    contentEl.style.display = 'none';
+    emptyEl.style.display = 'block';
+    emptyEl.innerHTML = `
+      <i class="fas fa-exclamation-triangle"></i>
+      <p>Error loading signups. Please try again.</p>
+    `;
+  }
+}
 
 document.addEventListener('DOMContentLoaded', () => {
   hideAllButtons();
   fetchEventDetails();
   initButtonHandlers();
+  initTabs();
+  
+  // Check if we should open the check-in tab automatically
+  const openCheckInTab = localStorage.getItem('openCheckInTab');
+  if (openCheckInTab === 'true') {
+    // Clear the flag
+    localStorage.removeItem('openCheckInTab');
+    
+    // Wait a bit for the page to load, then switch to check-in tab
+    setTimeout(() => {
+      const checkInTabButton = document.querySelector('[data-tab="checkin"]');
+      if (checkInTabButton) {
+        checkInTabButton.click();
+      }
+    }, 500);
+  }
 });
