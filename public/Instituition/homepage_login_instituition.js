@@ -7,7 +7,7 @@ if (!token || role !== "institution") {
 }
 
 const API_BASE = 'https://fsdp-cycling-ltey.onrender.com';
-let organizationId = null;
+
 
 // Dashboard elements
 const title1 = document.getElementById("title1");
@@ -189,9 +189,52 @@ async function loadAllEvents(filter = "all") {
     eventGrid.innerHTML = `<p style="text-align:center;color:red;">Unable to load events.</p>`;
   }
 }
+async function getOrganizationId() {
+  try {
+    if (!token) {
+      console.warn('No token available for organization ID request');
+      return null;
+    }
+
+    const response = await fetch(`${API_BASE}/user/organization-id`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    });
+
+    if (!response.ok) {
+      let errorData;
+      try {
+        errorData = await response.json();
+      } catch (jsonError) {
+        const textResponse = await response.text();
+        console.error('Failed to parse error response:', textResponse);
+        errorData = { message: `Status ${response.status}: ${textResponse.substring(0, 100)}` };
+      }
+      
+      // Only log as error if it's a 500, otherwise it's expected (user might not have org)
+      if (response.status === 500) {
+        console.error('Server error getting organization ID:', error
+);      } else {
+        console.warn('Failed to get organization ID:', errorData.message || `Status ${response.status}`);
+      }
+      return null; // Return null instead of throwing - institution might not have org yet
+    }
+
+    const data = await response.json();
+    return data.organizationId || null;
+  } catch (error) {
+    console.error('Error getting organization ID:', error);
+    return null; // Return null on error - page should still work
+  }
+}
 
 // Load my applications (pending bookings)
 async function loadMyApplications() {
+  const organizationId = await getOrganizationId();
+
   if (!organizationId) {
     organizationId = await getOrganizationId();
   }

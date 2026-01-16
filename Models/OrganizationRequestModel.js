@@ -1,3 +1,4 @@
+const { get } = require("../mailer");
 const pool = require("../Postgres_config");
 
 
@@ -8,6 +9,21 @@ const pool = require("../Postgres_config");
 // Note: Table name is misspelled in database (missing 'e' in volunteer)
 // ======================================================
 
+
+async function getOrganizationIDByUserID(userID) {
+  const result = await pool.query(
+    `
+      SELECT organizationid
+      FROM organizations
+      WHERE userid = $1
+    `,
+    [userID]
+  );
+  if (result.rows.length === 0) {
+    return null;
+  }
+  return result.rows[0].organizationid;
+}
 
 // ======================================================
 // 1. Create Organization Request
@@ -137,6 +153,7 @@ module.exports = {
   approveRequest,
   rejectRequest,
   checkRequestStatus,
-  deleteRequest
+  deleteRequest,
+  getOrganizationIDByUserID,
 };
 
