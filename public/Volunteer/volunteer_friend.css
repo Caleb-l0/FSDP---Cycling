@@ -215,8 +215,9 @@
   }
 
   .hvf-pill {
-    padding: 12px 24px;
-    font-size: 0.95rem;
+    padding: 14px 28px; /* Keep larger padding on tablet */
+    font-size: 1rem; /* Keep readable font size */
+    min-height: 48px; /* Maintain large touch target */
   }
 }
 
@@ -244,10 +245,16 @@
     font-size: 1.2rem;
   }
 
+  .hvf-friend-filters {
+    gap: 16px; /* Slightly smaller gap on mobile but still spacious */
+  }
+
   .hvf-pill {
-    padding: 12px 20px;
-    font-size: 0.95rem;
-    min-height: 44px; /* Maintain touch target size */
+    padding: 14px 24px; /* Large padding for easy clicking */
+    font-size: 1rem; /* Keep large, readable font */
+    min-height: 50px; /* Even larger touch target on mobile */
+    width: 100%; /* Full width on very small screens for easier tapping */
+    max-width: 200px; /* But not too wide */
   }
 
   .hv-friends-header h2 {
