@@ -38,8 +38,9 @@
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
-  gap: 16px;
-  margin-bottom: 40px;
+  gap: 20px; /* Larger gap between buttons for easier clicking */
+  margin-bottom: 48px; /* More space below filters */
+  padding: 0 8px; /* Extra padding on sides for mobile */
 }
 
 .hvf-pill {
