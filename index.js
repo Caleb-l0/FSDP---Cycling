@@ -318,57 +318,74 @@ async function handleGoogleCredential(response) {
 
 
 
-
-
-// OTP login
-let otpConfirmation = null;
-
-function startPhoneLogin() {
-  const phone = document.getElementById("phone").value;
-
-  if (!phone.startsWith("+")) {
-    createWowToast("Use format +6591234567", "error");
-    return;
-  }
-
-  const verifier = new firebase.auth.RecaptchaVerifier(
-    "recaptcha-container"
-  );
-
-  window.firebaseAuth
-    .signInWithPhoneNumber(phone, verifier)
-    .then((result) => {
-      otpConfirmation = result;
-      document.querySelector("#loginModal form").style.display = "none";
-      document.getElementById("otpStep").style.display = "block";
-      createWowToast("OTP sent!");
-    })
-    .catch((err) => {
-      console.error(err);
-      createWowToast(err.message, "error");
-    });
-}
-// ------------------
-
-
 document.addEventListener("DOMContentLoaded", initGoogleLogin);
 
 
+let generatedOtp = null;
+let otpExpiry = null;
+
+function generateOtp() {
+  return Math.floor(100000 + Math.random() * 900000).toString();
+}
+
 function showOtp() {
-  const emailInput = document.getElementById("email");
-  const email = emailInput.value.trim();
+  const email = document.getElementById("email").value.trim();
 
   if (!email) {
     alert("Please enter an email first");
     return;
   }
 
-  // Hide login form, show OTP step
-  document.querySelector("#loginModal form").style.display = "none";
-  document.getElementById("otpStep").style.display = "block";
+  generatedOtp = generateOtp();
+  otpExpiry = Date.now() + 5 * 60 * 1000; // 5 minutes
 
-  alert("OTP sent to " + email);
+  emailjs.send(
+    "service_mbk5pgl",
+    "template_w5klqcn",     
+    {
+      to_email: email,
+      otp: generatedOtp
+    }
+  )
+  .then(() => {
+    createWowToast("OTP sent to your email", "success");
+
+    document.querySelector("#loginModal form").style.display = "none";
+    document.getElementById("otpStep").style.display = "block";
+  })
+  .catch(err => {
+    console.error(err);
+    createWowToast("Failed to send OTP", "error");
+  });
 }
+
+function verifyOtp() {
+  const userOtp = document.getElementById("otp").value.trim();
+
+  if (!generatedOtp) {
+    createWowToast("No OTP generated", "error");
+    return;
+  }
+
+  if (Date.now() > otpExpiry) {
+    createWowToast("OTP expired", "error");
+    return;
+  }
+
+  if (userOtp === generatedOtp) {
+    createWowToast("OTP verified! Login successful", "success");
+
+    
+    generatedOtp = null;
+
+    setTimeout(() => {
+      window.location.href = "/public/Volunteer/homepage_login_volunteer.html";
+    }, 1200);
+  } else {
+    createWowToast("Invalid OTP", "error");
+  }
+}
+
 
 function backToLogin() {
   document.getElementById("otpStep").style.display = "none";
@@ -377,64 +394,3 @@ function backToLogin() {
 }
 
 
-async function verifyOtp() {
-  const otp = document.getElementById("otp").value;
-
-  if (otp.length !== 6) {
-    createWowToast("Invalid OTP", "error");
-    return;
-  }
-
-  try {
-    const result = await otpConfirmation.confirm(otp);
-
-    const firebaseUser = result.user;
-    const phone = firebaseUser.phoneNumber;
-    const firebaseUid = firebaseUser.uid;
-
- 
-    const res = await fetch("https://fsdp-cycling-ltey.onrender.com/auth/phone", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        phone,
-        firebaseUid
-      })
-    });
-
-    const data = await res.json();
-
-    if (!res.ok) {
-      createWowToast(data.message || "Phone login failed", "error");
-      return;
-    }
-
- 
-    localStorage.setItem("token", data.token);
-    localStorage.setItem("userId", data.userId);
-    localStorage.setItem("name", data.name);
-    localStorage.setItem("role", data.role);
-
-    createWowToast("Login successful!");
-
-    setTimeout(() => {
-      switch (data.role) {
-        case "admin":
-          window.location.href = "/public/Admin/homepage_login_Admin.html";
-          break;
-        case "volunteer":
-          window.location.href = "/public/Volunteer/homepage_login_volunteer.html";
-          break;
-        case "institution":
-          window.location.href = "/public/Instituition/homepage_login_instituition.html";
-          break;
-      }
-    }, 800);
-
-  } catch (err) {
-    console.error(err);
-    createWowToast("Wrong OTP", "error");
-  }
-}
-
-// Firebase setup for OTP

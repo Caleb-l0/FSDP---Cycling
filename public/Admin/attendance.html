@@ -2,32 +2,58 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Mark Attendance</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      background: #eef2f3;
-    }
-    button {
-      padding: 15px 30px;
-      font-size: 18px;
-      cursor: pointer;
-    }
-  </style>
+  <title>Volunteer Check-In</title>
 </head>
 <body>
-   Insert QR code here to mark attendance.
-  <button onclick="markAttendance()">Mark Attendance</button>
 
-  <script>
-    function markAttendance() {
-      alert('Attendance marked successfully!');
+<h2>Checking you in...</h2>
+
+<script>
+  const token = localStorage.getItem('token');
+
+  if (!token) {
+    alert("Please log in first");
+    window.location.href = "/index.html";
+  }
+
+  const params = new URLSearchParams(window.location.search);
+  const eventId = params.get("eventId");
+
+  if (!eventId) {
+    alert("Invalid QR code");
+    throw new Error("Missing eventId");
+  }
+
+  async function checkIn() {
+    try {
+      const res = await fetch(
+        `https://fsdp-cycling-ltey.onrender.com/events/${eventId}/checkin`,
+        {
+          method: "POST",
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json"
+          }
+        }
+      );
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        alert(data.message || "Check-in failed");
+        return;
+      }
+
+      document.body.innerHTML = "<h2>✅ Check-in successful</h2>";
+    } catch (err) {
+      console.error(err);
+      alert("Error checking in");
     }
-  </script>
+  }
+
+  checkIn();
+</script>
 
 </body>
 </html>
+
