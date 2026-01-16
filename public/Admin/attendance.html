@@ -15,7 +15,8 @@
 
 <div id="qr-section" style="display: none;">
   <p>Show this QR code to volunteers to check in:</p>
-  <canvas id="qr-canvas"></canvas>
+  <canvas id="qr-canvas" width="256" height="256"></canvas>
+
   <p>Or share this code: <strong id="event-code"></strong></p>
 </div>
 
@@ -28,19 +29,22 @@
   }
 
   function getUserFromToken() {
-    try {
-      const payloadBase64 = token.split('.')[1];
-      const payloadJson = atob(payloadBase64);
-      const payload = JSON.parse(payloadJson);
-      return {
-        id: payload.id,
-        role: payload.role
-      };
-    } catch (err) {
-      console.error('Failed to decode token', err);
-      return { id: null, role: null };
-    }
+  try {
+    const payloadBase64 = token.split('.')[1]
+      .replace(/-/g, '+')
+      .replace(/_/g, '/');
+    const payloadJson = atob(payloadBase64);
+    const payload = JSON.parse(payloadJson);
+    return {
+      id: payload.id,
+      role: payload.role
+    };
+  } catch (err) {
+    console.error('Failed to decode token', err);
+    return { id: null, role: null };
   }
+}
+
 
   const { id: userId, role: userRole } = getUserFromToken();
 
@@ -92,7 +96,7 @@
         return;
       }
 
-      document.body.innerHTML = "<h2>✅ Check-in successful</h2>";
+      document.body.innerHTML = "<h2> Check-in successful</h2>";
     } catch (err) {
       console.error(err);
       alert("Error checking in");
