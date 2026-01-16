@@ -202,11 +202,10 @@ nav ul li a:hover {
   position: sticky;
   top: 100px;
   height: fit-content;
-  max-height: calc(100vh - 110px);
+  
   display: flex;
   flex-direction: column;
-  overflow-y: auto;
-  overflow-x: hidden;
+  overflow:visible;
 }
 
 .sidebar-title {
@@ -307,7 +306,8 @@ nav ul li a:hover {
   display: flex;
   flex-direction: column;
   gap: 24px;
-  min-height: auto;
+  
+   min-height: calc(100vh - 120px);
   width: 100%;
   padding-bottom: 60px; /* Extra padding for scrolling */
 }

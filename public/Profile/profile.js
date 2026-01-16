@@ -527,3 +527,8 @@ async function loadUserBadges() {
     badgesList.innerHTML = '<p class="empty-text">Unable to load badges. Please try again later.</p>';
   }
 }
+
+window.scrollTo({
+  top: 0,
+  behavior: 'smooth'
+});
