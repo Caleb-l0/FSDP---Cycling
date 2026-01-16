@@ -12,6 +12,7 @@
 <div id="qr-section" style="display: none;">
   <p>Show this QR code to volunteers to check in:</p>
   <canvas id="qr-canvas"></canvas>
+  <p>Or share this code: <strong id="event-code"></strong></p>
 </div>
 
 <script>
@@ -52,6 +53,7 @@
     document.getElementById('title').textContent = 'Attendance QR Code';
     const qrSection = document.getElementById('qr-section');
     qrSection.style.display = 'block';
+    document.getElementById('event-code').textContent = eventId;
     const url = `https://fsdp-cycling-ltey.onrender.com/public/Admin/attendance.html?eventId=${eventId}`;
     QRCode.toCanvas(document.getElementById('qr-canvas'), url, { width: 256, height: 256 }, function (error) {
       if (error) console.error(error);
