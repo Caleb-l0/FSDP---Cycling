@@ -423,6 +423,42 @@ async function getEventById(eventID) {
   }
 }
 
+// ----------------------------
+// 11. Get Event Signups (who signed up for a specific event)
+// ----------------------------
+async function getEventSignups(eventID) {
+  try {
+    const eventIdInt = parseInt(eventID, 10);
+    if (Number.isNaN(eventIdInt)) {
+      throw new Error("Invalid eventID");
+    }
+
+    const result = await pool.query(
+      `
+      SELECT 
+        es.signupid,
+        es.userid,
+        es.signupdate,
+        es.status AS signupstatus,
+        u.id,
+        u.name,
+        u.email,
+        u.phonenumber
+      FROM eventsignups es
+      INNER JOIN users u ON es.userid = u.id
+      WHERE es.eventid = $1 AND es.status = 'Active'
+      ORDER BY es.signupdate ASC
+      `,
+      [eventIdInt]
+    );
+
+    return result.rows;
+  } catch (err) {
+    console.error("getEventSignups error:", err);
+    throw err;
+  }
+}
+
 module.exports = {
   getAllEvents,
   createEvent,
@@ -434,7 +470,8 @@ module.exports = {
   getEventsForAutoDelete,
   autoDeleteEventsWithNoParticipants,
   getEventById,
-  sendEventNotificationToOrganization
+  sendEventNotificationToOrganization,
+  getEventSignups
 };
 
 
