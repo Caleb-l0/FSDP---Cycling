@@ -54,6 +54,7 @@ CREATE TABLE organizations (
     contactphone VARCHAR(20),
     createdat TIMESTAMP DEFAULT NOW()
 );
+
 CREATE TABLE userorganizations (
     userorgid SERIAL PRIMARY KEY,
     userid INT NOT NULL,

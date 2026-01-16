@@ -14,7 +14,7 @@ async function getOrganizationIDByUserID(userID) {
   const result = await pool.query(
     `
       SELECT organizationid
-      FROM organizations
+      FROM userorganizations
       WHERE userid = $1
     `,
     [userID]
