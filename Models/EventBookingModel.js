@@ -1,4 +1,5 @@
 const pool = require("../Postgres_config");
+const transporter = require("../mailer");
 
 /* ======================================================
    Event Booking Model
@@ -204,6 +205,92 @@ async function approveBookingRequest(bookingId, reviewedBy) {
   }
 }
 
+// ----------------------------
+// Get All Volunteer Emails
+// ----------------------------
+async function getAllVolunteerEmails() {
+  try {
+    const query = `
+      SELECT id, email, name
+      FROM users
+      WHERE role = 'volunteer' AND email IS NOT NULL
+      ORDER BY name
+    `;
+    
+    const result = await pool.query(query);
+    return result.rows;
+  } catch (err) {
+    console.error("Error fetching volunteer emails:", err);
+    throw err;
+  }
+}
+
+// ----------------------------
+// Send Email Notification to All Volunteers
+// ----------------------------
+async function sendEventNotificationToVolunteers(eventData, bookingData) {
+  try {
+    // Get all volunteer emails
+    const volunteers = await getAllVolunteerEmails();
+    
+    if (!volunteers || volunteers.length === 0) {
+      console.log("No volunteers found to notify");
+      return;
+    }
+
+    // Prepare email content
+    const eventName = eventData.eventname || eventData.EventName || "New Event";
+    const eventDate = eventData.eventdate || eventData.EventDate || "TBD";
+    const eventLocation = eventData.location || eventData.Location || "TBD";
+    const eventDescription = eventData.description || eventData.Description || "";
+    const requiredVolunteers = eventData.requiredvolunteers || eventData.RequiredVolunteers || 0;
+    const organizationName = bookingData.organizationname || "Organization";
+
+    const emailSubject = `New Volunteer Opportunity: ${eventName}`;
+    const emailHtml = `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <h2 style="color: #ea8d2a;">🎉 New Volunteer Opportunity Available!</h2>
+        <p>Hello Volunteer,</p>
+        <p>A new event has been approved and is now available for volunteer sign-up:</p>
+        <div style="background: #f8fafc; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #fbbf24;">
+          <h3 style="color: #1e293b; margin-top: 0;">${eventName}</h3>
+          <p><strong>📅 Date:</strong> ${new Date(eventDate).toLocaleString()}</p>
+          <p><strong>📍 Location:</strong> ${eventLocation}</p>
+          <p><strong>👥 Volunteers Needed:</strong> ${requiredVolunteers}</p>
+          <p><strong>🏢 Organization:</strong> ${organizationName}</p>
+          ${eventDescription ? `<p><strong>📝 Description:</strong> ${eventDescription}</p>` : ''}
+        </div>
+        <p style="background: #fef3c7; padding: 15px; border-radius: 8px; margin: 20px 0;">
+          <strong>✨ This event is now live!</strong> Log in to your volunteer account to sign up and help make a difference in your community.
+        </p>
+        <p style="color: #64748b; font-size: 14px; margin-top: 30px;">Thank you for being part of our volunteer community!<br>Best regards,<br>Happy Volunteer Team</p>
+      </div>
+    `;
+
+    // Send email to each volunteer
+    const emailPromises = volunteers.map(async (volunteer) => {
+      try {
+        await transporter.sendMail({
+          from: process.env.EMAIL_USER,
+          to: volunteer.email,
+          subject: emailSubject,
+          html: emailHtml,
+        });
+        console.log(`✅ Email sent to volunteer ${volunteer.email}`);
+      } catch (emailError) {
+        console.error(`❌ Failed to send email to volunteer ${volunteer.email}:`, emailError);
+      }
+    });
+
+    await Promise.all(emailPromises);
+    console.log(`✅ Event notification emails sent to ${volunteers.length} volunteers`);
+
+  } catch (err) {
+    console.error("Error sending event notification emails to volunteers:", err);
+    // Don't throw error - email failure shouldn't break booking approval
+  }
+}
+
 /* ------------------------------
    7. Reject Booking Request
 ------------------------------ */
@@ -320,5 +407,7 @@ module.exports = {
   getOrganizationBookings,
   assignEventHead,
   hasParticipants,
-  deleteEventsWithNoParticipants
+  deleteEventsWithNoParticipants,
+  getAllVolunteerEmails,
+  sendEventNotificationToVolunteers
 };

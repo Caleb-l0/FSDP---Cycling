@@ -125,28 +125,57 @@ async function approveBookingRequest(req, res) {
       return res.status(404).json({ message: "Booking request not found" });
     }
 
+    // Get event details for notifications and community post
+    const event = await EventBookingModel.getUpcomingEvent(booking.eventid);
+    
+    if (!event) {
+      return res.status(404).json({ message: "Event not found" });
+    }
+
+    // Get organization name for email
+    const pool = require("../Postgres_config");
+    let organizationName = "Organization";
+    try {
+      const orgResult = await pool.query(
+        `SELECT orgname FROM organizations WHERE organizationid = $1`,
+        [booking.organizationid]
+      );
+      if (orgResult.rows.length > 0) {
+        organizationName = orgResult.rows[0].orgname;
+      }
+    } catch (orgError) {
+      console.warn("Could not fetch organization name:", orgError);
+    }
+
+    // Send email notification to all volunteers
+    try {
+      await EventBookingModel.sendEventNotificationToVolunteers(event, {
+        organizationname: organizationName,
+        ...booking
+      });
+    } catch (emailError) {
+      console.warn("Failed to send email notifications to volunteers:", emailError);
+      // Don't fail the approval if email sending fails
+    }
+
     // Optionally post to community board
     if (postToCommunity !== false) { // Default to true
       try {
-        // Get event details for the post
-        const event = await EventBookingModel.getUpcomingEvent(booking.eventid);
-        if (event) {
-          const postContent = `🎉 New Event: ${event.eventname}\n\n` +
-            `📅 Date: ${new Date(event.eventdate).toLocaleDateString()}\n` +
-            `📍 Location: ${event.location || 'TBA'}\n` +
-            `📝 ${event.description || ''}\n\n` +
-            (booking.session_head_name ? `👤 Session Head: ${booking.session_head_name}\n` : '') +
-            (booking.session_head_contact ? `📞 Contact: ${booking.session_head_contact}\n` : '') +
-            (booking.session_head_email ? `📧 Email: ${booking.session_head_email}\n` : '');
+        const postContent = `🎉 New Event: ${event.eventname}\n\n` +
+          `📅 Date: ${new Date(event.eventdate).toLocaleDateString()}\n` +
+          `📍 Location: ${event.location || 'TBA'}\n` +
+          `📝 ${event.description || ''}\n\n` +
+          (booking.session_head_name ? `👤 Session Head: ${booking.session_head_name}\n` : '') +
+          (booking.session_head_contact ? `📞 Contact: ${booking.session_head_contact}\n` : '') +
+          (booking.session_head_email ? `📧 Email: ${booking.session_head_email}\n` : '');
 
-          await CommunityModel.createPost({
-            userid: reviewedBy, // Admin or organization user
-            content: postContent,
-            photourl: null,
-            visibility: 'public',
-            taggedinstitutionid: booking.organizationid
-          });
-        }
+        await CommunityModel.createPost({
+          userid: reviewedBy, // Admin or organization user
+          content: postContent,
+          photourl: null,
+          visibility: 'public',
+          taggedinstitutionid: booking.organizationid
+        });
       } catch (communityError) {
         console.error("Error posting to community board:", communityError);
         // Don't fail the approval if community post fails
@@ -154,7 +183,7 @@ async function approveBookingRequest(req, res) {
     }
 
     res.status(200).json({
-      message: "Booking request approved successfully",
+      message: "Booking request approved successfully. Event posted and volunteers notified.",
       booking
     });
 
