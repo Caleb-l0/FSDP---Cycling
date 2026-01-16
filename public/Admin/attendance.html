@@ -4,6 +4,10 @@
   <meta charset="UTF-8">
   <title>Attendance</title>
   <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+  <style>
+    body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
+    canvas { border: 1px solid #ccc; margin: 20px; }
+  </style>
 </head>
 <body>
 
@@ -48,7 +52,7 @@
     window.location.href = "/index.html";
   }
 
-  if (userRole === 'admin') {
+  if (userRole === 'admin' || true) { // Temporarily show for all
     // Display QR code
     document.getElementById('title').textContent = 'Attendance QR Code';
     const qrSection = document.getElementById('qr-section');
@@ -57,6 +61,7 @@
     const url = `https://fsdp-cycling-ltey.onrender.com/public/Admin/attendance.html?eventId=${eventId}`;
     QRCode.toCanvas(document.getElementById('qr-canvas'), url, { width: 256, height: 256 }, function (error) {
       if (error) console.error(error);
+      console.log('QR generated');
     });
   } else if (userRole === 'volunteer') {
     // Check in
