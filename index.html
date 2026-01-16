@@ -279,7 +279,7 @@
         <p style="font-size: 1rem; color: #475569; margin-bottom: 16px;">Check your email for the 6-digit code</p>
         <input id="otp" type="text" maxlength="6" placeholder="000000" pattern="[0-9]{6}">
         <button type="button" onclick="verifyOtp()" style="margin-top: 20px;">Verify OTP</button>
-        <p style="margin-top:20px; font-size: 0.95rem;"><a href="#" onclick="backToLogin()" style="color: #ea8d2a; font-weight: 600;">← Back to Login</a></p>
+        <p style="margin-top:20px; font-size: 0.95rem;"><a href="#" onclick="backToLogin()" style="color: #ea8d2a; font-weight: 600; cursor: pointer;">← Back</a></p>
       </div>
 
       <p style="margin-top:10px;">
@@ -337,6 +337,15 @@
           Use OTP/Google Sign Up
         </button>
       </form>
+      
+      <!-- OTP Step for Signup -->
+      <div id="otpStepSignup" style="display:none;">
+        <h2 style="font-size: 1.5rem; color: #1e293b; margin-bottom: 20px;">Enter OTP Code</h2>
+        <p style="font-size: 1rem; color: #475569; margin-bottom: 16px;">Check your email for the 6-digit code</p>
+        <input id="otpSignup" type="text" maxlength="6" placeholder="000000" pattern="[0-9]{6}">
+        <button type="button" onclick="verifyOtp()" style="margin-top: 20px;">Verify OTP</button>
+        <p style="margin-top:20px; font-size: 0.95rem;"><a href="#" onclick="backToSignup()" style="color: #ea8d2a; font-weight: 600; cursor: pointer;">← Back</a></p>
+      </div>
       
       <p style="margin-top:10px;">
         Already have an account? <a href="#" onclick="switchToLogin()">Login</a>

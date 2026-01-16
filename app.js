@@ -83,6 +83,24 @@ app.post('/login', validateLogin, loginUser);
 const { otpLogin } = require('./Controllers/OTP_Login_Controller');
 app.post('/login/otp', otpLogin);
 
+// ----- CHECK EMAIL ENDPOINT (for signup) -----
+app.post('/check-email', async (req, res) => {
+  try {
+    const { email } = req.body;
+    if (!email) {
+      return res.status(400).json({ message: "Email is required" });
+    }
+
+    const normalizedEmail = email.toLowerCase().trim();
+    const user = await loginModel.findUserByEmail(normalizedEmail);
+    
+    res.json({ exists: !!user });
+  } catch (err) {
+    console.error("Check email error:", err);
+    res.status(500).json({ message: "Error checking email", exists: false });
+  }
+});
+
 // NEW PHONE LOGIN ROUTE
 app.post('/login/phone', async (req, res) => {
   const { phone, firebaseUid } = req.body;

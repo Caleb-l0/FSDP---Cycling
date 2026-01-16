@@ -72,7 +72,7 @@
       }catch(err){ console.error(err); createWowToast('❌ Error connecting to server','error'); }
     }
 
-function showOtpSignup() {
+async function showOtpSignup() {
   const email = document.getElementById("signup-email-otp").value.trim();
 
   if (!email) {
@@ -80,29 +80,58 @@ function showOtpSignup() {
     return;
   }
 
-  // Use same OTP logic, but will create account via backend
-  generatedOtp = generateOtp();
-  otpExpiry = Date.now() + 5 * 60 * 1000; // 5 minutes
+  // First, check if email already exists
+  try {
+    const checkRes = await fetch("https://fsdp-cycling-ltey.onrender.com/check-email", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: email })
+    });
 
-  emailjs.send(
-    "service_mbk5pgl",
-    "template_w5klqcn",     
-    {
-      to_email: email,
-      otp: generatedOtp
+    const checkData = await checkRes.json();
+
+    if (checkData.exists) {
+      createWowToast("Email already exists. Please use login instead.", "error");
+      return;
     }
-  )
-  .then(() => {
-    createWowToast("OTP sent to your email", "success");
-    document.getElementById("signupDefaultMode").style.display = "none";
-    document.getElementById("otpStep").style.display = "block";
-    // Store that this is signup mode
-    document.getElementById("otpStep").setAttribute("data-mode", "signup");
-  })
-  .catch(err => {
-    console.error(err);
-    createWowToast("Failed to send OTP", "error");
-  });
+
+    // Email doesn't exist - proceed with OTP
+    generatedOtp = generateOtp();
+    otpExpiry = Date.now() + 5 * 60 * 1000; // 5 minutes
+
+    emailjs.send(
+      "service_mbk5pgl",
+      "template_w5klqcn",     
+      {
+        to_email: email,
+        otp: generatedOtp
+      }
+    )
+    .then(() => {
+      createWowToast("OTP sent to your email", "success");
+      document.getElementById("signupDefaultMode").style.display = "none";
+      // Use the signup modal's OTP step if it exists, otherwise use the shared one
+      const otpStepSignup = document.getElementById("otpStepSignup");
+      if (otpStepSignup) {
+        otpStepSignup.style.display = "block";
+        otpStepSignup.setAttribute("data-mode", "signup");
+        otpStepSignup.setAttribute("data-email", email);
+      } else {
+        // Fallback to shared OTP step (in login modal)
+        document.getElementById("otpStep").style.display = "block";
+        document.getElementById("otpStep").setAttribute("data-mode", "signup");
+        document.getElementById("otpStep").setAttribute("data-email", email);
+      }
+    })
+    .catch(err => {
+      console.error(err);
+      createWowToast("Failed to send OTP", "error");
+    });
+
+  } catch (err) {
+    console.error("Error checking email:", err);
+    createWowToast("Error checking email. Please try again.", "error");
+  }
 }
 
     // Login
@@ -253,9 +282,9 @@ async function initGoogleLogin() {
       cancel_on_tap_outside: true
     });
 
-   
+    // Render Google button in login container
     const container = document.getElementById("googleButtonContainer");
-    if (container) {
+    if (container && !container.querySelector('div[role="button"]')) {
       google.accounts.id.renderButton(container, {
         theme: "outline",
         size: "large",
@@ -264,45 +293,9 @@ async function initGoogleLogin() {
       });
     }
 
-    // Google Login Button
-    const googleBtn = document.getElementById("googleLoginBtn");
-    if (googleBtn) {
-      googleBtn.addEventListener("click", () => {
-        google.accounts.id.prompt((notification) => {
-          if (
-            notification.isNotDisplayed() ||
-            notification.isSkippedMoment()
-          ) {
-            createWowToast(
-              "Google popup was blocked. Please use the Google button below.",
-              "error"
-            );
-          }
-        });
-      });
-    }
-
-    // Google Signup Button (same functionality - Google creates account if needed)
-    const googleSignupBtn = document.getElementById("googleSignupBtn");
-    if (googleSignupBtn) {
-      googleSignupBtn.addEventListener("click", () => {
-        google.accounts.id.prompt((notification) => {
-          if (
-            notification.isNotDisplayed() ||
-            notification.isSkippedMoment()
-          ) {
-            createWowToast(
-              "Google popup was blocked. Please use the Google button below.",
-              "error"
-            );
-          }
-        });
-      });
-    }
-
-    // Also render Google button in signup container if it exists
+    // Render Google button in signup container
     const signupContainer = document.getElementById("googleSignupButtonContainer");
-    if (signupContainer) {
+    if (signupContainer && !signupContainer.querySelector('div[role="button"]')) {
       google.accounts.id.renderButton(signupContainer, {
         theme: "outline",
         size: "large",
@@ -454,8 +447,10 @@ function showOtp() {
   .then(() => {
     createWowToast("OTP sent to your email", "success");
 
-    document.querySelector("#loginModal form").style.display = "none";
+    document.getElementById("loginDefaultMode").style.display = "none";
     document.getElementById("otpStep").style.display = "block";
+    document.getElementById("otpStep").setAttribute("data-mode", "login");
+    document.getElementById("otpStep").setAttribute("data-email", email);
   })
   .catch(err => {
     console.error(err);
@@ -464,11 +459,29 @@ function showOtp() {
 }
 
 async function verifyOtp() {
-  const userOtp = document.getElementById("otp").value.trim();
-  // Get email from either login or signup mode
-  const emailInput = document.getElementById("email") || document.getElementById("signup-email-otp");
-  const email = emailInput ? emailInput.value.trim() : "";
-  const mode = document.getElementById("otpStep").getAttribute("data-mode") || "login";
+  // Check which OTP input is being used (login or signup)
+  const otpInput = document.getElementById("otp") || document.getElementById("otpSignup");
+  const userOtp = otpInput ? otpInput.value.trim() : "";
+  
+  // Check which OTP step container is active
+  const otpStepSignup = document.getElementById("otpStepSignup");
+  const otpStep = document.getElementById("otpStep");
+  const activeOtpStep = otpStepSignup && otpStepSignup.style.display !== "none" ? otpStepSignup : otpStep;
+  
+  const mode = activeOtpStep ? activeOtpStep.getAttribute("data-mode") || "login" : "login";
+  
+  // Get email from stored attribute or input field
+  let email = activeOtpStep ? activeOtpStep.getAttribute("data-email") : "";
+  if (!email) {
+    // Fallback to input fields
+    const emailInput = document.getElementById("email") || document.getElementById("signup-email-otp");
+    email = emailInput ? emailInput.value.trim() : "";
+  }
+
+  if (!email) {
+    createWowToast("Email not found. Please start over.", "error");
+    return;
+  }
 
   if (!generatedOtp) {
     createWowToast("No OTP generated", "error");
@@ -522,6 +535,13 @@ async function verifyOtp() {
 
     // Clear OTP
     generatedOtp = null;
+    if (activeOtpStep) {
+      activeOtpStep.removeAttribute("data-email");
+      activeOtpStep.style.display = "none";
+    }
+    // Clear OTP inputs
+    if (document.getElementById("otp")) document.getElementById("otp").value = "";
+    if (document.getElementById("otpSignup")) document.getElementById("otpSignup").value = "";
 
     // Redirect based on role
     setTimeout(() => {
@@ -548,15 +568,25 @@ async function verifyOtp() {
 
 function backToLogin() {
   document.getElementById("otpStep").style.display = "none";
-  const mode = document.getElementById("otpStep").getAttribute("data-mode") || "login";
-  
-  if (mode === "login") {
-    document.getElementById("loginDefaultMode").style.display = "block";
-  } else {
-    document.getElementById("signupDefaultMode").style.display = "block";
-  }
-  
+  if (document.getElementById("otp")) document.getElementById("otp").value = "";
+  document.getElementById("loginDefaultMode").style.display = "block";
   document.getElementById("otpStep").removeAttribute("data-mode");
+  document.getElementById("otpStep").removeAttribute("data-email");
+  generatedOtp = null;
+}
+
+function backToSignup() {
+  const otpStepSignup = document.getElementById("otpStepSignup");
+  if (otpStepSignup) {
+    otpStepSignup.style.display = "none";
+    if (document.getElementById("otpSignup")) document.getElementById("otpSignup").value = "";
+  }
+  document.getElementById("signupDefaultMode").style.display = "block";
+  if (otpStepSignup) {
+    otpStepSignup.removeAttribute("data-mode");
+    otpStepSignup.removeAttribute("data-email");
+  }
+  generatedOtp = null;
 }
 
 
