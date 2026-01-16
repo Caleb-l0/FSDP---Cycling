@@ -1,4 +1,8 @@
-
+const token = localStorage.getItem("token");
+if (!token) {
+  alert("Please log in to access the volunteer friends page.");
+  window.location.href = "../../index.html";
+}
 
 
 let friendsData = [];
