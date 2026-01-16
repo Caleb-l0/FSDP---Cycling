@@ -2,11 +2,17 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Volunteer Check-In</title>
+  <title>Attendance</title>
+  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
 </head>
 <body>
 
-<h2>Checking you in...</h2>
+<h2 id="title">Loading...</h2>
+
+<div id="qr-section" style="display: none;">
+  <p>Show this QR code to volunteers to check in:</p>
+  <canvas id="qr-canvas"></canvas>
+</div>
 
 <script>
   const token = localStorage.getItem('token');
@@ -16,12 +22,47 @@
     window.location.href = "/index.html";
   }
 
+  function getUserFromToken() {
+    try {
+      const payloadBase64 = token.split('.')[1];
+      const payloadJson = atob(payloadBase64);
+      const payload = JSON.parse(payloadJson);
+      return {
+        id: payload.id,
+        role: payload.role
+      };
+    } catch (err) {
+      console.error('Failed to decode token', err);
+      return { id: null, role: null };
+    }
+  }
+
+  const { id: userId, role: userRole } = getUserFromToken();
+
   const params = new URLSearchParams(window.location.search);
   const eventId = params.get("eventId");
 
   if (!eventId) {
-    alert("Invalid QR code");
-    throw new Error("Missing eventId");
+    alert("Invalid access");
+    window.location.href = "/index.html";
+  }
+
+  if (userRole === 'admin') {
+    // Display QR code
+    document.getElementById('title').textContent = 'Attendance QR Code';
+    const qrSection = document.getElementById('qr-section');
+    qrSection.style.display = 'block';
+    const url = `https://fsdp-cycling-ltey.onrender.com/public/Admin/attendance.html?eventId=${eventId}`;
+    QRCode.toCanvas(document.getElementById('qr-canvas'), url, { width: 256, height: 256 }, function (error) {
+      if (error) console.error(error);
+    });
+  } else if (userRole === 'volunteer') {
+    // Check in
+    document.getElementById('title').textContent = 'Checking you in...';
+    checkIn();
+  } else {
+    alert("Unauthorized");
+    window.location.href = "/index.html";
   }
 
   async function checkIn() {
@@ -50,8 +91,6 @@
       alert("Error checking in");
     }
   }
-
-  checkIn();
 </script>
 
 </body>
