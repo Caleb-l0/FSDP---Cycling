@@ -3,7 +3,7 @@
 
 if (!token || role !== "institution") {
   alert("You do not have access to this page.");
-  window.location.href = "/index.html";
+  window.location.href = "../../index.html";
 }
 
 const API_BASE = 'https://fsdp-cycling-ltey.onrender.com';
@@ -216,7 +216,7 @@ async function getOrganizationId() {
       
       // Only log as error if it's a 500, otherwise it's expected (user might not have org)
       if (response.status === 500) {
-        console.error('Server error getting organization ID:', error
+        console.error('Server error getting organization ID:', errorData
 );      } else {
         console.warn('Failed to get organization ID:', errorData.message || `Status ${response.status}`);
       }
@@ -233,7 +233,7 @@ async function getOrganizationId() {
 
 // Load my applications (pending bookings)
 async function loadMyApplications() {
-  const organizationId = await getOrganizationId();
+  
 
   if (!organizationId) {
     organizationId = await getOrganizationId();
