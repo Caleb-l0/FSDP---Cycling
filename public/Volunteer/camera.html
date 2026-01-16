@@ -2,20 +2,48 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>Camera Test</title>
+  <title>QR Code Scanner</title>
+  <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
 </head>
 <body>
-  <h2>Camera Test</h2>
+  <h2>Scan QR Code for Attendance</h2>
   <video id="video" autoplay playsinline muted></video>
+  <canvas id="canvas" style="display:none;"></canvas>
+  <p id="result"></p>
 
   <script>
-    navigator.mediaDevices.getUserMedia({ video: true })
+    const video = document.getElementById('video');
+    const canvas = document.getElementById('canvas');
+    const result = document.getElementById('result');
+    const ctx = canvas.getContext('2d');
+
+    navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
       .then(stream => {
-        document.getElementById('video').srcObject = stream;
+        video.srcObject = stream;
+        video.play();
+        requestAnimationFrame(scan);
       })
       .catch(err => {
         alert("Camera error: " + err.name);
       });
+
+    function scan() {
+      if (video.readyState === video.HAVE_ENOUGH_DATA) {
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const code = jsQR(imageData.data, imageData.width, imageData.height);
+        if (code) {
+          result.textContent = 'QR Code detected: ' + code.data;
+          // Assuming the QR code contains a URL
+          if (code.data.startsWith('http')) {
+            window.location.href = code.data;
+          }
+        }
+      }
+      requestAnimationFrame(scan);
+    }
   </script>
 </body>
 </html>

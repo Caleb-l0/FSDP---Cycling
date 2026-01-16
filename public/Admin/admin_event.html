@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="request_detail.css">
    <link rel="stylesheet" href='../homepage.css'>
    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
 
   <style>
     /* ======================================================
@@ -286,6 +287,14 @@
           <div class="stat-card">
             <h3>Volunteers Needed</h3>
             <p class="stat-value" id="stat-needed">-</p>
+          </div>
+        </div>
+
+        <div class="qr-section" style="margin-bottom: 2rem; text-align: center;">
+          <button id="generate-qr" class="btn-action">Generate Attendance QR Code</button>
+          <div id="qr-code" style="margin-top: 1rem; display: none;">
+            <p>Scan this QR code to check in:</p>
+            <canvas id="qr-canvas"></canvas>
           </div>
         </div>
 

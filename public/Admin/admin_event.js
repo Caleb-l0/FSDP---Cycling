@@ -49,6 +49,9 @@ const btnEdit    = document.getElementById('btn-edit');
 const btnDelete  = document.getElementById('btn-delete');
 const btnSignup  = document.getElementById('btn-signup');
 const btnCancel  = document.getElementById('btn-cancel');
+const btnGenerateQR = document.getElementById('generate-qr');
+const qrCodeDiv = document.getElementById('qr-code');
+const qrCanvas = document.getElementById('qr-canvas');
 
 function hideAllButtons() {
   [
@@ -145,6 +148,16 @@ function initButtonHandlers() {
         console.error("Error deleting event:", error);
         alert("❌ Error: " + (error.message || "Failed to delete event"));
       }
+    });
+  }
+
+  if (btnGenerateQR) {
+    btnGenerateQR.addEventListener('click', () => {
+      const url = `https://fsdp-cycling-ltey.onrender.com/public/Admin/attendance.html?eventId=${currentEventId}`;
+      QRCode.toCanvas(qrCanvas, url, { width: 256, height: 256 }, function (error) {
+        if (error) console.error(error);
+        qrCodeDiv.style.display = 'block';
+      });
     });
   }
 
