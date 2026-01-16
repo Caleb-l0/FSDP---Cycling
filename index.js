@@ -425,7 +425,7 @@ function togglePasswordMode(mode) {
   }
 }
 
-function showOtp() {
+async function showOtp() {
   const email = document.getElementById("email").value.trim();
 
   if (!email) {
@@ -433,29 +433,50 @@ function showOtp() {
     return;
   }
 
-  generatedOtp = generateOtp();
-  otpExpiry = Date.now() + 5 * 60 * 1000; // 5 minutes
+  // For LOGIN, check if user exists first
+  try {
+    const checkRes = await fetch("https://fsdp-cycling-ltey.onrender.com/check-email", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: email })
+    });
 
-  emailjs.send(
-    "service_mbk5pgl",
-    "template_w5klqcn",     
-    {
-      to_email: email,
-      otp: generatedOtp
+    const checkData = await checkRes.json();
+
+    if (!checkData.exists) {
+      createWowToast("Email not found. Please sign up first.", "error");
+      return;
     }
-  )
-  .then(() => {
-    createWowToast("OTP sent to your email", "success");
 
-    document.getElementById("loginDefaultMode").style.display = "none";
-    document.getElementById("otpStep").style.display = "block";
-    document.getElementById("otpStep").setAttribute("data-mode", "login");
-    document.getElementById("otpStep").setAttribute("data-email", email);
-  })
-  .catch(err => {
-    console.error(err);
-    createWowToast("Failed to send OTP", "error");
-  });
+    // User exists - proceed with OTP
+    generatedOtp = generateOtp();
+    otpExpiry = Date.now() + 5 * 60 * 1000; // 5 minutes
+
+    emailjs.send(
+      "service_mbk5pgl",
+      "template_w5klqcn",     
+      {
+        to_email: email,
+        otp: generatedOtp
+      }
+    )
+    .then(() => {
+      createWowToast("OTP sent to your email", "success");
+
+      document.getElementById("loginDefaultMode").style.display = "none";
+      document.getElementById("otpStep").style.display = "block";
+      document.getElementById("otpStep").setAttribute("data-mode", "login");
+      document.getElementById("otpStep").setAttribute("data-email", email);
+    })
+    .catch(err => {
+      console.error(err);
+      createWowToast("Failed to send OTP", "error");
+    });
+
+  } catch (err) {
+    console.error("Error checking email:", err);
+    createWowToast("Error checking email. Please try again.", "error");
+  }
 }
 
 async function verifyOtp() {

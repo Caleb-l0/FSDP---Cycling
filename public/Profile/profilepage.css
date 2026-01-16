@@ -15,6 +15,8 @@ body {
   color: #333;
   line-height: 1.7;
   font-size: 18px;
+  overflow-x: hidden; /* Prevent horizontal scroll */
+  min-height: 100vh;
 }
 
 /* Elderly Mode Text Sizing - Apply to profile page */
@@ -165,17 +167,19 @@ nav ul li a:hover {
   justify-content: center;
   align-items: flex-start;
   padding: 120px 20px 60px;
-  min-height: auto;
+  min-height: calc(100vh - 90px);
+  padding-bottom: 100px; /* Extra padding at bottom for scrolling */
 }
 
 .profile-container {
   width: 100%;
-  max-width: 900px; /* Smaller, centered container */
+  max-width: 1000px; /* Slightly wider for better layout */
   margin: 0 auto; /* Center the container */
   display: grid;
-  grid-template-columns: 220px 1fr; /* Smaller sidebar */
-  gap: 24px;
+  grid-template-columns: 240px 1fr; /* Sidebar width */
+  gap: 28px;
   align-items: start;
+  min-height: calc(100vh - 200px);
 }
 
 /* ===============================
@@ -184,13 +188,16 @@ nav ul li a:hover {
 .profile-sidebar {
   background: rgba(255,255,255,0.92);
   backdrop-filter: blur(12px);
-  padding: 20px; /* Smaller padding */
+  padding: 24px 20px;
   border-radius: 16px;
   box-shadow: 0 4px 20px rgba(0,0,0,0.06);
   border: 1px solid #e2e8f0;
   position: sticky;
   top: 100px;
   height: fit-content;
+  max-height: calc(100vh - 120px);
+  display: flex;
+  flex-direction: column;
 }
 
 .sidebar-title {
@@ -211,20 +218,21 @@ nav ul li a:hover {
 
 .profile-nav-btn {
   width: 100%;
-  padding: 16px 20px;
+  padding: 14px 16px;
   border: 2px solid #e2e8f0;
   border-radius: 12px;
   background: #ffffff;
   color: #475569;
-  font-size: 1rem;
+  font-size: 0.95rem;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   text-align: left;
-  min-height: 56px; /* Elderly-friendly large button */
+  min-height: 50px;
+  justify-content: flex-start;
 }
 
 .profile-nav-btn i {
@@ -252,10 +260,46 @@ nav ul li a:hover {
   transform: translateX(4px);
 }
 
+/* Sidebar Footer with Logout */
+.sidebar-footer {
+  margin-top: auto;
+  padding-top: 20px;
+  border-top: 2px solid #e2e8f0;
+}
+
+.sidebar-logout-btn {
+  width: 100%;
+  padding: 14px 16px;
+  border-radius: 12px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 50px;
+  background: #dc2626;
+  color: #ffffff;
+  border: none;
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+}
+
+.sidebar-logout-btn:hover {
+  background: #b91c1c;
+  box-shadow: 0 6px 16px rgba(220, 38, 38, 0.4);
+  transform: translateY(-2px);
+}
+
+.sidebar-logout-btn i {
+  font-size: 1rem;
+}
+
 .profile-content {
   display: flex;
   flex-direction: column;
-  gap: 32px;
+  gap: 24px;
+  min-height: 100%;
+  padding-bottom: 40px; /* Extra padding for scrolling */
 }
 
 .profile-section {
@@ -678,6 +722,14 @@ iframe.goog-te-banner-frame,
   .sidebar-title {
     font-size: 1rem;
   }
+  
+  .sidebar-logout-btn span {
+    display: none;
+  }
+  
+  .sidebar-logout-btn i {
+    font-size: 1.2rem;
+  }
 }
 
 @media (max-width: 768px) {
@@ -692,6 +744,7 @@ iframe.goog-te-banner-frame,
     position: static;
     order: -1; /* Move sidebar to top on mobile */
     padding: 16px;
+    max-height: none;
   }
   
   .profile-nav {
@@ -700,6 +753,7 @@ iframe.goog-te-banner-frame,
     gap: 8px;
     padding-bottom: 8px;
     -webkit-overflow-scrolling: touch;
+    margin-bottom: 16px;
   }
   
   .profile-nav-btn {
@@ -721,6 +775,19 @@ iframe.goog-te-banner-frame,
   
   .sidebar-title {
     display: none; /* Hide title on mobile */
+  }
+  
+  .sidebar-footer {
+    margin-top: 16px;
+    padding-top: 16px;
+  }
+  
+  .sidebar-logout-btn {
+    width: 100%;
+  }
+  
+  .sidebar-logout-btn span {
+    display: inline;
   }
   
   .profile-section {
