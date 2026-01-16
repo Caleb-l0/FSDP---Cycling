@@ -17,6 +17,44 @@ body {
   font-size: 18px;
 }
 
+/* Elderly Mode Text Sizing - Apply to profile page */
+body.elderly-mode {
+  font-size: 1.2rem;
+  line-height: 1.7;
+}
+
+body.elderly-mode h1 {
+  font-size: 2.4rem;
+}
+
+body.elderly-mode h2 {
+  font-size: 2rem;
+}
+
+body.elderly-mode h3 {
+  font-size: 1.6rem;
+}
+
+body.elderly-mode .profile-section h2,
+body.elderly-mode .section-title {
+  font-size: 1.8rem;
+}
+
+body.elderly-mode .profile-field label {
+  font-size: 1.1rem;
+}
+
+body.elderly-mode .profile-field input,
+body.elderly-mode .profile-field textarea {
+  font-size: 1.05rem;
+  min-height: 50px;
+}
+
+body.elderly-mode .btn {
+  font-size: 1.05rem;
+  min-height: 50px;
+}
+
 /* ===============================
    FIXED HEADER
 ================================= */
@@ -132,10 +170,11 @@ nav ul li a:hover {
 
 .profile-container {
   width: 100%;
-  max-width: 1400px;
+  max-width: 900px; /* Smaller, centered container */
+  margin: 0 auto; /* Center the container */
   display: grid;
-  grid-template-columns: 280px 1fr;
-  gap: 32px;
+  grid-template-columns: 220px 1fr; /* Smaller sidebar */
+  gap: 24px;
   align-items: start;
 }
 
@@ -145,8 +184,8 @@ nav ul li a:hover {
 .profile-sidebar {
   background: rgba(255,255,255,0.92);
   backdrop-filter: blur(12px);
-  padding: 24px;
-  border-radius: 20px;
+  padding: 20px; /* Smaller padding */
+  border-radius: 16px;
   box-shadow: 0 4px 20px rgba(0,0,0,0.06);
   border: 1px solid #e2e8f0;
   position: sticky;
@@ -222,15 +261,19 @@ nav ul li a:hover {
 .profile-section {
   background: rgba(255,255,255,0.92);
   backdrop-filter: blur(12px);
-  padding: 32px;
-  border-radius: 20px;
+  padding: 28px; /* Smaller padding */
+  border-radius: 16px;
   box-shadow: 0 4px 20px rgba(0,0,0,0.06);
   border: 1px solid #e2e8f0;
   animation: fadeIn 0.35s ease;
+  max-width: 100%;
+  margin: 0 auto; /* Center sections */
 }
 
 .profile-basic {
   text-align: center;
+  max-width: 600px; /* Limit width for better readability */
+  margin: 0 auto;
 }
 
 .profile-avatar {
@@ -262,6 +305,14 @@ nav ul li a:hover {
 .profile-field {
   margin-bottom: 20px;
   text-align: left;
+  max-width: 100%;
+}
+
+.profile-settings,
+.profile-events,
+.profile-badges {
+  max-width: 100%;
+  margin: 0 auto;
 }
 
 .profile-field label {
@@ -600,17 +651,19 @@ iframe.goog-te-banner-frame,
 ================================= */
 @media (max-width: 1024px) {
   .profile-container {
-    grid-template-columns: 240px 1fr;
-    gap: 24px;
+    max-width: 100%;
+    grid-template-columns: 200px 1fr;
+    gap: 20px;
+    padding: 0 16px;
   }
   
   .profile-section {
-    padding: 28px;
+    padding: 24px;
   }
   
   .profile-nav-btn {
-    padding: 14px 16px;
-    font-size: 0.95rem;
+    padding: 12px 14px;
+    font-size: 0.9rem;
   }
   
   .profile-nav-btn span {
@@ -618,24 +671,27 @@ iframe.goog-te-banner-frame,
   }
   
   .profile-nav-btn i {
-    font-size: 1.4rem;
+    font-size: 1.3rem;
     width: auto;
   }
   
   .sidebar-title {
-    font-size: 1.1rem;
+    font-size: 1rem;
   }
 }
 
 @media (max-width: 768px) {
   .profile-container {
+    max-width: 100%;
     grid-template-columns: 1fr;
-    gap: 24px;
+    gap: 20px;
+    padding: 0 12px;
   }
   
   .profile-sidebar {
     position: static;
     order: -1; /* Move sidebar to top on mobile */
+    padding: 16px;
   }
   
   .profile-nav {
@@ -643,13 +699,15 @@ iframe.goog-te-banner-frame,
     overflow-x: auto;
     gap: 8px;
     padding-bottom: 8px;
+    -webkit-overflow-scrolling: touch;
   }
   
   .profile-nav-btn {
-    min-width: 140px;
+    min-width: 120px;
     flex-shrink: 0;
     justify-content: center;
-    padding: 14px 20px;
+    padding: 12px 16px;
+    font-size: 0.85rem;
   }
   
   .profile-nav-btn span {
@@ -657,11 +715,20 @@ iframe.goog-te-banner-frame,
   }
   
   .profile-nav-btn i {
-    font-size: 1.1rem;
+    font-size: 1rem;
+    margin-right: 4px;
   }
   
   .sidebar-title {
     display: none; /* Hide title on mobile */
+  }
+  
+  .profile-section {
+    padding: 20px;
+  }
+  
+  .profile-basic {
+    max-width: 100%;
   }
 }
 
@@ -682,19 +749,25 @@ iframe.goog-te-banner-frame,
 
 @media (max-width: 480px) {
   .profile-hero {
-    padding: 100px 10px 40px;
+    padding: 90px 8px 30px;
+  }
+  
+  .profile-container {
+    padding: 0 8px;
+    gap: 16px;
   }
   
   .profile-section {
-    padding: 24px;
+    padding: 18px;
   }
   
   .section-title {
-    font-size: 1.3rem;
+    font-size: 1.2rem;
   }
   
   .profile-actions {
     flex-direction: column;
+    gap: 10px;
   }
   
   .profile-actions .btn {
@@ -703,5 +776,12 @@ iframe.goog-te-banner-frame,
   
   .badges-grid {
     grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+  
+  .profile-nav-btn {
+    min-width: 100px;
+    padding: 10px 12px;
+    font-size: 0.8rem;
   }
 }

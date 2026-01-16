@@ -64,4 +64,50 @@ document.addEventListener("DOMContentLoaded", () => {
     if (name && userStatus) {
         userStatus.textContent = "Logged in as " + name;
     }
+    
+    // Load text size preference for volunteer pages
+    loadTextSizePreference();
 });
+
+// ======================================================
+// Load and Apply Text Size Preference
+// ======================================================
+function loadTextSizePreference() {
+    const token = localStorage.getItem("token");
+    const role = localStorage.getItem("role");
+    
+    // Only apply to volunteer pages
+    if (!token || role !== "volunteer") return;
+    
+    // Check localStorage first (faster)
+    const localPreference = localStorage.getItem("happyVolunteerTextSize");
+    if (localPreference) {
+        applyTextSizeToPage(localPreference);
+        return;
+    }
+    
+    // If not in localStorage, fetch from backend
+    fetch("https://fsdp-cycling-ltey.onrender.com/profile", {
+        headers: { "Authorization": `Bearer ${token}` }
+    })
+    .then(res => res.ok ? res.json() : null)
+    .then(data => {
+        if (data && data.textSizePreference) {
+            const preference = data.textSizePreference;
+            localStorage.setItem("happyVolunteerTextSize", preference);
+            applyTextSizeToPage(preference);
+        }
+    })
+    .catch(err => console.log("Could not load text size preference:", err));
+}
+
+// Apply text size to current page
+function applyTextSizeToPage(mode) {
+    if (mode === 'large' || mode === 'elderly') {
+        document.body.classList.add('elderly-mode');
+        document.documentElement.setAttribute('data-text-size', 'large');
+    } else {
+        document.body.classList.remove('elderly-mode');
+        document.documentElement.setAttribute('data-text-size', 'normal');
+    }
+}

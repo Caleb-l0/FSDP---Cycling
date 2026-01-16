@@ -52,9 +52,17 @@ async function loadProfile() {
     } else {
       localStorage.setItem("happyVolunteerTextSize", selectedTextSize);
     }
+    
+    // Apply text size to current page
+    applyTextSizeToPage(selectedTextSize);
 
     userRole = data.role.toLowerCase();
     loadHeaderByRole();
+    
+    // Hide volunteer-only sections for admin and institution
+    if (userRole !== 'volunteer') {
+      hideVolunteerOnlySections();
+    }
 
   } catch (err) {
     console.error(err);
@@ -62,6 +70,28 @@ async function loadProfile() {
     window.location.href='../../index.html'
   }
 }
+
+// Hide volunteer-only sections for admin/institution
+function hideVolunteerOnlySections() {
+  // Hide sidebar buttons for volunteer-only sections
+  const settingsBtn = document.querySelector('[data-section="settings"]');
+  const eventsBtn = document.querySelector('[data-section="events"]');
+  const badgesBtn = document.querySelector('[data-section="badges"]');
+  
+  if (settingsBtn) settingsBtn.style.display = 'none';
+  if (eventsBtn) eventsBtn.style.display = 'none';
+  if (badgesBtn) badgesBtn.style.display = 'none';
+  
+  // Hide the sections themselves
+  const settingsSection = document.getElementById('section-settings');
+  const eventsSection = document.getElementById('section-events');
+  const badgesSection = document.getElementById('section-badges');
+  
+  if (settingsSection) settingsSection.style.display = 'none';
+  if (eventsSection) eventsSection.style.display = 'none';
+  if (badgesSection) badgesSection.style.display = 'none';
+}
+
 loadProfile();
 
 // Dynamic header based on role
@@ -117,10 +147,25 @@ async function handleTextSizeChange(mode) {
     } else {
       localStorage.setItem("happyVolunteerTextSize", mode);
     }
-    alert("Text size updated across the site.");
+    
+    // Apply text size to current page
+    applyTextSizeToPage(mode);
+    
+    alert("Text size updated across all volunteer pages.");
   } catch (err) {
     console.error(err);
     alert("Unable to update text size.");
+  }
+}
+
+// Apply text size preference to current page
+function applyTextSizeToPage(mode) {
+  if (mode === 'large') {
+    document.body.classList.add('elderly-mode');
+    document.documentElement.setAttribute('data-text-size', 'large');
+  } else {
+    document.body.classList.remove('elderly-mode');
+    document.documentElement.setAttribute('data-text-size', 'normal');
   }
 }
 
