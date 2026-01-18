@@ -246,18 +246,20 @@ async function fetchEventSignups() {
   const statNeededEl = document.getElementById('stat-needed');
 
   try {
-    // Show loading state
     loadingEl.style.display = 'block';
     contentEl.style.display = 'none';
     emptyEl.style.display = 'none';
 
-    const response = await fetch(`https://fsdp-cycling-ltey.onrender.com/admin/events/${currentEventId}/signups`, {
-      method: 'GET',
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json'
+    const response = await fetch(
+      `https://fsdp-cycling-ltey.onrender.com/admin/events/${currentEventId}/signups`,
+      {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
       }
-    });
+    );
 
     if (!response.ok) {
       throw new Error('Failed to fetch signups');
@@ -265,38 +267,48 @@ async function fetchEventSignups() {
 
     const data = await response.json();
 
-    // Update stats - API returns 'count' not 'totalSignups'
     statTotalEl.textContent = data.count || 0;
-    // Get volunteers needed from the event details element or currentEvent
-    const volunteersNeeded = neededEl ? neededEl.textContent : (currentEvent ? (currentEvent.requiredvolunteers || '-') : '-');
-    statNeededEl.textContent = volunteersNeeded;
+    statNeededEl.textContent =
+      neededEl ? neededEl.textContent : (currentEvent?.requiredvolunteers || '-');
 
-    // Hide loading
     loadingEl.style.display = 'none';
 
     if (data.signups && data.signups.length > 0) {
-      // Populate table
       tbodyEl.innerHTML = '';
+
       data.signups.forEach((signup, index) => {
-        const row = document.createElement('tr');
         const signupDate = new Date(signup.signupdate);
+        const checkedIn = signup.checkedin === true;
+
+        const row = document.createElement('tr');
         row.innerHTML = `
           <td>${index + 1}</td>
           <td>${signup.name || 'N/A'}</td>
           <td>${signup.email || 'N/A'}</td>
-          <td>${signup.phonenumber || 'N/A'}</td>
-          <td>${signupDate.toLocaleDateString()} ${signupDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}</td>
+          <td>
+            ${signupDate.toLocaleDateString()} 
+            ${signupDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
+          </td>
+          <td style="text-align:center;">
+            <input 
+              type="checkbox" 
+              ${checkedIn ? 'checked' : ''} 
+              data-signup-id="${signup.id}"
+              class="checkin-checkbox"
+            />
+          </td>
         `;
+
         tbodyEl.appendChild(row);
       });
 
       contentEl.style.display = 'block';
       emptyEl.style.display = 'none';
     } else {
-      // Show empty state
       contentEl.style.display = 'none';
       emptyEl.style.display = 'block';
     }
+
   } catch (error) {
     console.error('Error fetching signups:', error);
     loadingEl.style.display = 'none';
@@ -308,6 +320,7 @@ async function fetchEventSignups() {
     `;
   }
 }
+
 
 document.addEventListener('DOMContentLoaded', () => {
   hideAllButtons();
