@@ -234,6 +234,7 @@ app.get("/admin/events/location/:eventID",authenticate,adminEventController.getE
 app.post('/admin/create_events', authenticate, adminEventController.createEvent);
 app.put('/admin/assign_events',authenticate,adminEventController.assignEventToOrgan);
 app.delete('/admin/events/:eventID', authenticate, adminEventController.deleteEvent);
+app.get('/admin/events/:eventID/signups', authenticate, adminEventController.getEventSignups);
 
 
 // ------ VOLUNTEER USER PROFILE --------

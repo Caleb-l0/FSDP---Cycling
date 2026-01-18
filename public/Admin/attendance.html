@@ -2,26 +2,99 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Volunteer Check-In</title>
+  <title>Attendance</title>
+
+  <!-- QR generator that works without globals/modules -->
+  <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js"></script>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 20px;
+    }
+    #qr-container svg {
+      margin: 20px auto;
+      display: block;
+    }
+  </style>
 </head>
 <body>
 
-<h2>Checking you in...</h2>
+<h2 id="title">Loading...</h2>
+
+<div id="qr-section" style="display:none;">
+  <p>Show this QR code to volunteers to check in:</p>
+  <div id="qr-container"></div>
+  <p>Or share this code: <strong id="event-code"></strong></p>
+</div>
 
 <script>
-  const token = localStorage.getItem('token');
+  const token = localStorage.getItem("token");
 
   if (!token) {
     alert("Please log in first");
     window.location.href = "/index.html";
   }
 
+  function getUserFromToken() {
+    try {
+      const payloadBase64 = token
+        .split(".")[1]
+        .replace(/-/g, "+")
+        .replace(/_/g, "/");
+
+      const payloadJson = atob(payloadBase64);
+      const payload = JSON.parse(payloadJson);
+
+      return {
+        id: payload.id,
+        role: payload.role
+      };
+    } catch (err) {
+      console.error("Token decode failed", err);
+      return { id: null, role: null };
+    }
+  }
+
+  const { role: userRole } = getUserFromToken();
+
   const params = new URLSearchParams(window.location.search);
   const eventId = params.get("eventId");
 
   if (!eventId) {
-    alert("Invalid QR code");
-    throw new Error("Missing eventId");
+    alert("Invalid access");
+    window.location.href = "/index.html";
+  }
+
+  /* =======================
+     ADMIN → SHOW QR
+     ======================= */
+  if (userRole === "admin") {
+    document.getElementById("title").textContent = "Attendance QR Code";
+    document.getElementById("qr-section").style.display = "block";
+    document.getElementById("event-code").textContent = eventId;
+
+    const url =
+      `https://fsdp-cycling-ltey.onrender.com/public/Admin/attendance.html?eventId=${eventId}`;
+
+    const qr = qrcode(0, "L");
+    qr.addData(url);
+    qr.make();
+
+    document.getElementById("qr-container").innerHTML =
+      qr.createSvgTag(6);
+
+  /* =======================
+     VOLUNTEER → CHECK IN
+     ======================= */
+  } else if (userRole === "volunteer") {
+    document.getElementById("title").textContent = "Checking you in...";
+    checkIn();
+
+  } else {
+    alert("Unauthorized");
+    window.location.href = "/index.html";
   }
 
   async function checkIn() {
@@ -50,10 +123,9 @@
       alert("Error checking in");
     }
   }
-
-  checkIn();
 </script>
 
 </body>
 </html>
+
 

@@ -49,6 +49,7 @@ const btnEdit    = document.getElementById('btn-edit');
 const btnDelete  = document.getElementById('btn-delete');
 const btnSignup  = document.getElementById('btn-signup');
 const btnCancel  = document.getElementById('btn-cancel');
+const btnGenerateQR = document.getElementById('generate-qr');
 
 function hideAllButtons() {
   [
@@ -148,6 +149,12 @@ function initButtonHandlers() {
     });
   }
 
+  if (btnGenerateQR) {
+    btnGenerateQR.addEventListener('click', () => {
+      window.location.href = `attendance.html?eventId=${currentEventId}`;
+    });
+  }
+
   if (btnSignup) {
     btnSignup.addEventListener('click', async () => {
       try {
@@ -201,10 +208,138 @@ function initButtonHandlers() {
 
 //--------------------
 
+// Tab switching functionality
+function initTabs() {
+  const tabButtons = document.querySelectorAll('.tab-button');
+  const tabContents = document.querySelectorAll('.tab-content');
+
+  tabButtons.forEach(button => {
+    button.addEventListener('click', () => {
+      const targetTab = button.getAttribute('data-tab');
+
+      // Remove active class from all buttons and contents
+      tabButtons.forEach(btn => btn.classList.remove('active'));
+      tabContents.forEach(content => content.classList.remove('active'));
+
+      // Add active class to clicked button and corresponding content
+      button.classList.add('active');
+      const targetContent = document.getElementById(`tab-${targetTab}`);
+      if (targetContent) {
+        targetContent.classList.add('active');
+      }
+
+      // If switching to check-in tab, fetch signups
+      if (targetTab === 'checkin') {
+        fetchEventSignups();
+      }
+    });
+  });
+}
+
+// Fetch event signups
+async function fetchEventSignups() {
+  const loadingEl = document.getElementById('signups-loading');
+  const contentEl = document.getElementById('signups-content');
+  const emptyEl = document.getElementById('signups-empty');
+  const tbodyEl = document.getElementById('signups-tbody');
+  const statTotalEl = document.getElementById('stat-total');
+  const statNeededEl = document.getElementById('stat-needed');
+
+  try {
+    loadingEl.style.display = 'block';
+    contentEl.style.display = 'none';
+    emptyEl.style.display = 'none';
+
+    const response = await fetch(
+      `https://fsdp-cycling-ltey.onrender.com/admin/events/${currentEventId}/signups`,
+      {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch signups');
+    }
+
+    const data = await response.json();
+
+    statTotalEl.textContent = data.count || 0;
+    statNeededEl.textContent =
+      neededEl ? neededEl.textContent : (currentEvent?.requiredvolunteers || '-');
+
+    loadingEl.style.display = 'none';
+
+    if (data.signups && data.signups.length > 0) {
+      tbodyEl.innerHTML = '';
+
+      data.signups.forEach((signup, index) => {
+        const signupDate = new Date(signup.signupdate);
+        const checkedIn = signup.checkedin === true;
+
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${index + 1}</td>
+          <td>${signup.name || 'N/A'}</td>
+          <td>${signup.email || 'N/A'}</td>
+          <td>
+            ${signupDate.toLocaleDateString()} 
+            ${signupDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
+          </td>
+          <td style="text-align:center;">
+            <input 
+              type="checkbox"
+              ${checkedIn ? 'checked' : ''}
+              disabled
+            />
+          </td>
+        `;
+
+        tbodyEl.appendChild(row);
+      });
+
+      contentEl.style.display = 'block';
+      emptyEl.style.display = 'none';
+    } else {
+      contentEl.style.display = 'none';
+      emptyEl.style.display = 'block';
+    }
+
+  } catch (error) {
+    console.error('Error fetching signups:', error);
+    loadingEl.style.display = 'none';
+    contentEl.style.display = 'none';
+    emptyEl.style.display = 'block';
+    emptyEl.innerHTML = `
+      <i class="fas fa-exclamation-triangle"></i>
+      <p>Error loading signups. Please try again.</p>
+    `;
+  }
+}
 
 
 document.addEventListener('DOMContentLoaded', () => {
   hideAllButtons();
   fetchEventDetails();
   initButtonHandlers();
+  initTabs();
+  
+  // Check if we should open the check-in tab automatically
+  const openCheckInTab = localStorage.getItem('openCheckInTab');
+  if (openCheckInTab === 'true') {
+    // Clear the flag
+    localStorage.removeItem('openCheckInTab');
+    
+    // Wait a bit for the page to load, then switch to check-in tab
+    setTimeout(() => {
+      const checkInTabButton = document.querySelector('[data-tab="checkin"]');
+      if (checkInTabButton) {
+        checkInTabButton.click();
+      }
+    }, 500);
+  }
 });
+
