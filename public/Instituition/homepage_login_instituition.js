@@ -1,6 +1,4 @@
-// Get token and role from localStorage
-const token = localStorage.getItem("token");
-const role = localStorage.getItem("role");
+
 
 if (!token || role !== "institution") {
   alert("You do not have access to this page.");

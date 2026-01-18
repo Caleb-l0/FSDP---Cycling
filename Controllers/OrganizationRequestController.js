@@ -8,21 +8,9 @@ const OrganizationRequestModel = require("../Models/OrganizationRequestModel");
 // ======================================================
 
 
-async function getUserOrganizationID(req, res) {
-  try {
-    const userId = req.user.id; 
-    const organizationID = await OrganizationRequestModel.getOrganizationIDByUserID(userId);
-    if (!organizationID) {
-      return res.status(404).json({ message: "Organization not found for user" });
-    }
-    res.status(200).json({ organizationID });
-  } catch (error) { 
-    console.error("Error in getUserOrganizationID controller:", error);
-    res.status(500).json({ message: "Server error", error });
-  }
-}
-
-
+// ======================================================
+// Note: getUserOrganizationID has been moved to GetEmail_Controller.js
+// All organization ID requests should use /user/organization-id endpoint
 // ======================================================
 // 1. Create Organization Request
 // ======================================================
@@ -150,7 +138,6 @@ module.exports = {
   approveRequest,
   rejectRequest,
   checkRequestStatus,
-  deleteRequest,
-  getUserOrganizationID
+  deleteRequest
 };
 

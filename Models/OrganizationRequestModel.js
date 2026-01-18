@@ -10,21 +10,10 @@ const pool = require("../Postgres_config");
 // ======================================================
 
 
-async function getOrganizationIDByUserID(userID) {
-  const result = await pool.query(
-    `
-      SELECT organizationid
-      FROM userorganizations
-      WHERE userid = $1
-    `,
-    [userID]
-  );
-  if (result.rows.length === 0) {
-    return null;
-  }
-  return result.rows[0].organizationid;
-}
-
+// ======================================================
+// Note: getOrganizationIDByUserID has been removed
+// All organization ID logic is now centralized in GetEmail_Controller.js
+// Use /user/organization-id endpoint instead
 // ======================================================
 // 1. Create Organization Request
 // ======================================================
@@ -153,7 +142,6 @@ module.exports = {
   approveRequest,
   rejectRequest,
   checkRequestStatus,
-  deleteRequest,
-  getOrganizationIDByUserID,
+  deleteRequest
 };
 
