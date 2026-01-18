@@ -291,10 +291,9 @@ async function fetchEventSignups() {
           </td>
           <td style="text-align:center;">
             <input 
-              type="checkbox" 
-              ${checkedIn ? 'checked' : ''} 
-              data-signup-id="${signup.id}"
-              class="checkin-checkbox"
+              type="checkbox"
+              ${checkedIn ? 'checked' : ''}
+              disabled
             />
           </td>
         `;
@@ -343,3 +342,4 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 500);
   }
 });
+
