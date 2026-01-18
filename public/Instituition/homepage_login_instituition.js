@@ -196,7 +196,7 @@ async function getOrganizationId() {
       return null;
     }
 
-    const response = await fetch(`${API_BASE}/user/organization-id`, {
+    const response = await fetch(`${API_BASE}/institution/get/organization-id`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -208,7 +208,7 @@ async function getOrganizationId() {
       let errorData;
       try {
         errorData = await response.json();
-      } catch (jsonError) {
+      } catch (error) {
         const textResponse = await response.text();
         console.error('Failed to parse error response:', textResponse);
         errorData = { message: `Status ${response.status}: ${textResponse.substring(0, 100)}` };

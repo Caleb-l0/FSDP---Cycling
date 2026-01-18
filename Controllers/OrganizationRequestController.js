@@ -10,7 +10,7 @@ const OrganizationRequestModel = require("../Models/OrganizationRequestModel");
 
 async function getUserOrganizationID(req, res) {
   try {
-    const userId = req.user.id; // Assuming req.user is populated by authentication middleware
+    const userId = req.user.id; 
     const organizationID = await OrganizationRequestModel.getOrganizationIDByUserID(userId);
     if (!organizationID) {
       return res.status(404).json({ message: "Organization not found for user" });

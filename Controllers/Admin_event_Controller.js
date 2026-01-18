@@ -163,32 +163,9 @@ async function deleteEvent(req, res) {
   }
 }
 
-async function getEventSignups(req, res) {
-  try {
-    const { eventID } = req.params;
-    const id = parseInt(eventID, 10);
-
-    if (Number.isNaN(id)) {
-      return res.status(400).json({ message: "Invalid eventID" });
-    }
-
-    const signups = await AdminEventModel.getEventSignups(id);
-    
-    res.status(200).json({
-      eventID: id,
-      count: signups.length,
-      signups: signups
-    });
-
-  } catch (error) {
-    console.error("Error in getEventSignups controller:", error);
-    res.status(500).json({ message: "Server error", error: error.message });
-  }
-}
 
 
 
 
 
-
-module.exports = { getAllEvents,createEvent,assignEventToOrgan,getEventLocation,deleteEvent,getEventSignups };
+module.exports = { getAllEvents,createEvent,assignEventToOrgan,getEventLocation,deleteEvent };
