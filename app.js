@@ -215,7 +215,7 @@ app.get('/signup', (req, res) => res.sendFile(path.join(__dirname, 'Accounts/vie
 app.use(express.static(__dirname)); // index.html, index.css, root images, etc.
 
 // ------ ORGANIZATION REQUEST ROUTES -----
-app.get('/institution/get/organization-id', authenticate, organizationRequestController.getUserOrganizationID);
+app.get('/institution/organization-id', authenticate, organizationRequestController.getUserOrganizationID);
 app.get('/admin/applications', authenticate, organizationRequestController.getAllRequests);
 app.get('/requests/details/:id', authenticate, organizationRequestController.getRequestById);
 app.delete('/request/delete/:id', authenticate, organizationRequestController.deleteRequest);
@@ -234,7 +234,7 @@ app.get("/admin/events/location/:eventID",authenticate,adminEventController.getE
 app.post('/admin/create_events', authenticate, adminEventController.createEvent);
 app.put('/admin/assign_events',authenticate,adminEventController.assignEventToOrgan);
 app.delete('/admin/events/:eventID', authenticate, adminEventController.deleteEvent);
-app.get('/admin/events/:eventID/signups', authenticate, adminEventController.getEventSignups);
+// app.get('/admin/events/:eventID/signups', authenticate, adminEventController.get);
 
 
 // ------ VOLUNTEER USER PROFILE --------
