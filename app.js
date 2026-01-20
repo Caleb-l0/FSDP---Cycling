@@ -215,7 +215,7 @@ app.get('/signup', (req, res) => res.sendFile(path.join(__dirname, 'Accounts/vie
 app.use(express.static(__dirname)); // index.html, index.css, root images, etc.
 
 // ------ ORGANIZATION REQUEST ROUTES -----
-app.get('/organization/get/organization-id', authenticate, organizationRequestController.getOrganizationId);
+//app.get('/organization/get/organization-id', authenticate, organizationRequestController.getOrganizationId);
 app.get('/admin/applications', authenticate, organizationRequestController.getAllRequests);
 app.get('/requests/details/:id', authenticate, organizationRequestController.getRequestById);
 app.delete('/request/delete/:id', authenticate, organizationRequestController.deleteRequest);
