@@ -248,7 +248,7 @@ app.get('/volunteer/friends/followers/count', authenticate, userFriendController
 app.get('/volunteer/friends/me', authenticate, userFriendController.getMyFriends);
 app.delete('/volunteer/friends/remove/:friendId', authenticate, userFriendController.remobeFriend);
 app.get('/volunteer/friends/check/:friendId', authenticate, userFriendController.checkIfFriend);
-app.get('volunteer/friends/signup-events', authenticate, userFriendController.getFriendSignUpEvents);
+app.get('/volunteer/friends/signup-events', authenticate, userFriendController.getFriendSignUpEvents);
 // ----- VOLUNTEER EVENT FEED -----
 
 app.get('/volunteer/events', adminEventController.getAllEvents);
