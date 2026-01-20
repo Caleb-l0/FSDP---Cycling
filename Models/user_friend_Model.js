@@ -69,6 +69,18 @@ async function isFriend(userId, friendId) {
   return result.rows.length > 0;
 }
 
+
+async function getFriendSignUpEvents(friendId) {
+  const result = await pool.query(`
+    SELECT e.eventid, e.eventname, e.eventdate, es.signupdate, es.status, es.
+    FROM eventsignups es
+    JOIN events e ON es.eventid = e.eventid
+    WHERE es.userid = $1
+    ORDER BY e.eventdate DESC
+  `, [friendId]);
+  return result.rows;
+}
+
 module.exports = {
   getUserFriends,
   addFriend,

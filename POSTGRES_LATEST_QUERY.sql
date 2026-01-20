@@ -78,15 +78,16 @@ CREATE TABLE events (
     status VARCHAR(20) DEFAULT 'Upcoming',
     createdat TIMESTAMP DEFAULT NOW(),
     updatedat TIMESTAMP,
-    peoplesignup INT DEFAULT 0,
+    peoplesignup INT DEFAULT 0, 
     FOREIGN KEY (organizationid) REFERENCES organizations(organizationid)
 );
 ALTER TABLE events
 ADD COLUMN latitude DOUBLE PRECISION,
 ADD COLUMN longitude DOUBLE PRECISION;
+ADD COLUMN participantsignup INT DEFAULT 0;
 
 
-CREATE TABLE volunterrequests (
+CREATE TABLE volunterrequests (   /* supposed to be institution requests please ignore this error, because change make time */
     requestid SERIAL PRIMARY KEY,
     organizationid INT NOT NULL,
     requesterid INT,

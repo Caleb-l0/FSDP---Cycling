@@ -353,23 +353,21 @@ async function deleteEvent(eventID) {
 // ----------------------------
 async function getEventsForAutoDelete() {
   try {
-    const result = await pool.query(
-      `
+    const result = await pool.query(`
       SELECT eventid, eventname, eventdate
       FROM events
       WHERE organizationid IS NULL
-        AND (peoplesignup IS NULL OR peoplesignup = 0)
+        AND COALESCE(participantsignup, 0) < (maximumparticipant / 3.0)
         AND eventdate > NOW() + INTERVAL '1 day'
         AND eventdate < NOW() + INTERVAL '2 days'
         AND status = 'Upcoming'
         AND NOT EXISTS (
-          SELECT 1 
-          FROM eventbookings 
-          WHERE eventid = events.eventid 
+          SELECT 1
+          FROM eventbookings
+          WHERE eventid = events.eventid
             AND status = 'Approved'
         )
-      `
-    );
+    `);
 
     return result.rows;
   } catch (err) {
@@ -419,6 +417,17 @@ async function getEventById(eventID) {
     return result.rows[0] || null;
   } catch (err) {
     console.error("getEventById error:", err);
+    throw err;
+  }
+}
+
+
+async function autoDeleteEvent(eventID) {
+  try {
+    const deletedEvents = await autoDeleteEventsWithNoParticipants();
+    return deletedEvents;
+  } catch (err) {
+    console.error("autoDeleteEvent error:", err);
     throw err;
   }
 }

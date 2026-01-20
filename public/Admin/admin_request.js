@@ -54,7 +54,7 @@ function displayRequestDetails(data) {
   document.getElementById('req-name').textContent = eventName;
   document.getElementById('req-created').textContent = new Date(createdAt).toLocaleDateString();
   document.getElementById('req-desc').textContent = description || '';
-  document.getElementById("req-participant").textContent = data.participantnumber || data.ParticipantNumber || 'N/A';
+  document.getElementById("req-participant").textContent = `${data.maximumparticipant} / ${data.participantsignup || 'N/A'}`;
   document.getElementById('req-date').textContent = new Date(eventDate).toLocaleDateString();
   document.getElementById('req-needed').textContent = requiredVolunteers;
   document.getElementById('req-org').textContent = organizationId;

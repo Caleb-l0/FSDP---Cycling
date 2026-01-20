@@ -81,7 +81,20 @@ async function checkIfFriend(req, res) {
   }
 }
 
-
+async function getFriendSignUpEvents(req, res) {
+  try {
+    const userId = req.user.id;
+    const friendId = parseInt(req.params.friendId);
+    const events = await userFriendsModel.getFriendSignUpEvents(userId, friendId);
+    return res.status(200).json(events);
+  }
+  catch (error) {
+    console.error("Get friend's sign-up events error:", error);
+    return res.status(500).json({
+      message: "Failed to get friend's sign-up events"
+    });
+  }
+}
 
 module.exports = {
   getMyFriends,

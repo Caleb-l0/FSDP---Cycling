@@ -1,0 +1,27 @@
+name: Auto Delete Events
+
+on:
+  schedule:
+    - cron: "*/5 * * * *"
+  workflow_dispatch:
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run delete SQL
+        run: |
+          psql "${{ secrets.DATABASE_URL }}" -v ON_ERROR_STOP=1 -c "
+          DELETE FROM events e
+          WHERE e.organizationid IS NULL
+            AND COALESCE(e.participantsignup, 0) < (e.maximumparticipant / 3.0)
+            AND e.eventdate > NOW() + INTERVAL '1 day'
+            AND e.eventdate < NOW() + INTERVAL '2 days'
+            AND e.status = 'Upcoming'
+            AND NOT EXISTS (
+              SELECT 1
+              FROM eventbookings b
+              WHERE b.eventid = e.eventid
+                AND b.status = 'Approved'
+            );
+          "

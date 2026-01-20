@@ -167,5 +167,44 @@ async function deleteEvent(req, res) {
 
 
 
+// for auto delete event without participants signed up
+async function autoDeleteEvent(req, res) {
+  try {
+    const { eventID } = req.params;
+    const id = parseInt(eventID, 10);
 
-module.exports = { getAllEvents,createEvent,assignEventToOrgan,getEventLocation,deleteEvent };
+    if (Number.isNaN(id)) {
+      return res.status(400).json({ message: "Invalid eventID" });
+    }
+
+    // Check if event exists first
+    const eventCheck = await AdminEventModel.getEventById(id);
+    if (!eventCheck) {
+      return res.status(404).json({ message: "Event not found" });
+    }
+
+    const result = await AdminEventModel.autoDeleteEvent(id);
+
+    if (!result.canDelete) {
+      return res.status(400).json({
+        canDelete: false,
+        message: result.message || "Cannot delete this event because it has bookings or participants signed up."
+      });
+    }
+
+    return res.status(200).json({
+      canDelete: true,
+      message: "Event auto-deleted successfully"
+    });
+
+  } catch (error) {
+    console.error("Error in autoDeleteEvent controller:", error);
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+}
+
+
+
+module.exports = { getAllEvents,createEvent,assignEventToOrgan,getEventLocation,deleteEvent,autoDeleteEvent
+
+ };
