@@ -92,10 +92,10 @@ body {
     background: var(--bg-card, #ffffff);
     border-radius: var(--radius-lg, 18px);
     padding: 18px;
-    margin-bottom: 16px;
+    margin-bottom: 22px;
     border: 1px solid rgba(15, 23, 42, 0.10);
     box-shadow: var(--shadow-soft, 0 8px 24px rgba(0,0,0,0.06));
-    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    transition: transform 0.15s ease, opacity 0.2s ease, box-shadow 0.15s ease;
     width: 100%;
 }
 
@@ -103,21 +103,9 @@ body {
     animation: hvFadeUp 220ms ease both;
 }
 
-.post-body {
-    max-height: 2000px;
-    opacity: 1;
-    overflow: hidden;
-    transition: max-height 260ms ease, opacity 200ms ease;
-}
-
-.post-card.is-collapsed .post-body {
-    max-height: 0;
+.post-card.is-dismissed {
     opacity: 0;
-}
-
-.post-card.is-collapsed {
-    border-color: rgba(230, 154, 42, 0.22);
-    background: linear-gradient(180deg, #ffffff, #fff7ed);
+    transform: translateY(10px) scale(0.98);
 }
 
 .post-card:hover {

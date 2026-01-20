@@ -30,48 +30,18 @@ function getSectionElements(sectionId) {
     return { section, body };
 }
 
-function togglePostCollapsed(postCardEl) {
+function dismissPost(postCardEl) {
     if (!postCardEl) return;
-    const postId = postCardEl.getAttribute("data-post-id") || "sample";
-    const body = postCardEl.querySelector(".post-body");
-    if (!body) return;
+    postCardEl.classList.add("is-dismissed");
 
-    const collapsed = !postCardEl.classList.contains("is-collapsed");
-    postCardEl.classList.toggle("is-collapsed", collapsed);
+    const removeTimer = setTimeout(() => {
+        postCardEl.remove();
+    }, 260);
 
-    const btn = postCardEl.querySelector(".post-collapse-btn");
-    if (btn) {
-        btn.setAttribute("aria-expanded", (!collapsed).toString());
-        btn.setAttribute("title", collapsed ? "Expand post" : "Collapse post");
-        btn.textContent = collapsed ? "+" : "—";
-    }
-
-    try {
-        localStorage.setItem("hv_post_collapsed_" + postId, collapsed ? "1" : "0");
-    } catch (e) {
-        // ignore
-    }
-}
-
-function restorePostCollapsed(postCardEl) {
-    if (!postCardEl) return;
-    const postId = postCardEl.getAttribute("data-post-id") || "sample";
-    const body = postCardEl.querySelector(".post-body");
-    if (!body) return;
-
-    try {
-        const collapsed = localStorage.getItem("hv_post_collapsed_" + postId) === "1";
-        postCardEl.classList.toggle("is-collapsed", collapsed);
-
-        const btn = postCardEl.querySelector(".post-collapse-btn");
-        if (btn) {
-            btn.setAttribute("aria-expanded", (!collapsed).toString());
-            btn.setAttribute("title", collapsed ? "Expand post" : "Collapse post");
-            btn.textContent = collapsed ? "+" : "—";
-        }
-    } catch (e) {
-        // ignore
-    }
+    postCardEl.addEventListener("transitionend", () => {
+        clearTimeout(removeTimer);
+        postCardEl.remove();
+    }, { once: true });
 }
 
 
@@ -79,7 +49,7 @@ document.addEventListener("click", (e) => {
     const btn = e.target.closest?.(".post-collapse-btn");
     if (!btn) return;
     const card = btn.closest(".post-card");
-    togglePostCollapsed(card);
+    dismissPost(card);
 });
 
 
@@ -149,7 +119,7 @@ async function loadPosts() {
                 </div>
 
                 <div class="post-header-actions">
-                    <button class="post-collapse-btn" type="button" aria-expanded="true" aria-label="Collapse post">—</button>
+                    <button class="post-collapse-btn" type="button" aria-label="Hide this post">× Hide</button>
                 </div>
             </div>
 
@@ -182,7 +152,6 @@ async function loadPosts() {
     attachLikeEvents();
     attachCommentEvents();
 
-    document.querySelectorAll(".post-card").forEach(restorePostCollapsed);
 }
 
 

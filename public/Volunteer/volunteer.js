@@ -461,13 +461,30 @@ else if (choice === 'friend') {
       return;
     }
 
+    const flat = [];
+    friends.forEach(f => {
+      const friendName = f.friendName || "Friend";
+      (f.events || []).forEach(e => {
+        flat.push({ ...e, _friendName: friendName });
+      });
+    });
+
+    if (flat.length === 0) {
+      filterSection.innerHTML = `
+        <div class="soft-banner">
+          <div class="soft-title">No friend activity yet</div>
+          <div class="soft-sub">Your friends haven’t joined any events.</div>
+        </div>`;
+      return;
+    }
+
     filterSection.innerHTML = `
       <div class="soft-banner">
-        <div class="soft-title">Friends’ Joined Events</div>
-        <div class="soft-sub">Tap a friend’s name to see events</div>
+        <div class="soft-title">Friends Also Signed Up</div>
+        <div class="soft-sub">Tap an event to view details</div>
       </div>
-      <div class="friends-wrap">
-        ${friends.map((f, idx) => renderFriendGroup(f, idx === 0)).join("")}
+      <div class="friend-events-grid">
+        ${flat.slice(0, 12).map(e => renderFriendEventCard(e)).join("")}
       </div>
     `;
   } catch (err) {
@@ -476,29 +493,8 @@ else if (choice === 'friend') {
   }
 }
 
-function renderFriendGroup(friend, openByDefault = false) {
-  const friendName = friend.friendName || "Friend";
-  const events = friend.events || [];
-  const openAttr = openByDefault ? "open" : "";
-
-  return `
-    <details class="friend-group" ${openAttr}>
-      <summary class="friend-summary">
-        <div class="friend-left">
-          <span class="avatar">👤</span>
-          <span class="friend-name">${friendName}</span>
-        </div>
-        <span class="count-pill">${events.length}</span>
-      </summary>
-
-      <div class="cards-grid">
-        ${events.map(e => renderEventCard(e, friendName)).join("")}
-      </div>
-    </details>
-  `;
-}
-
-function renderEventCard(e, friendName) {
+function renderFriendEventCard(e) {
+  const friendName = e._friendName || "Friend";
   const dateStr = new Date(e.eventdate).toLocaleDateString(undefined, {
     year: "numeric", month: "short", day: "numeric"
   });
@@ -508,7 +504,7 @@ function renderEventCard(e, friendName) {
     : `<div class="thumb ph" aria-hidden="true">🎉</div>`;
 
   return `
-    <div class="event-card" onclick="goToEventDetail(${e.eventid})" role="button" tabindex="0">
+    <div class="friend-event-card" onclick="goToEventDetail(${e.eventid})" role="button" tabindex="0">
       ${img}
       <div class="card-text">
         <div class="card-title">${e.eventname}</div>
@@ -516,10 +512,7 @@ function renderEventCard(e, friendName) {
           <span class="pill">📅 ${dateStr}</span>
           <span class="pill">📍 ${e.location || "TBA"}</span>
         </div>
-        <div class="friend-line">
-          <span class="dot"></span>
-          <span><strong>${friendName}</strong> joined</span>
-        </div>
+        <div class="friend-tag">${friendName} also signed up</div>
       </div>
     </div>
   `;

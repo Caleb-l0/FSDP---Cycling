@@ -108,11 +108,17 @@
   transition: all 0.3s ease;
   display: flex;
   flex-direction: column;
+  cursor: pointer;
 }
 
 .hvf-friend-card:hover {
   transform: translateY(-4px);
   box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
+}
+
+.hvf-friend-card:focus {
+  outline: 4px solid rgba(234, 141, 42, 0.22);
+  outline-offset: 4px;
 }
 
 /* ======================================================

@@ -15,16 +15,42 @@ if (!token) {
 // Load profile
 async function loadProfile() {
   try {
-    const response = await fetch("https://fsdp-cycling-ltey.onrender.com/profile", {
-      method: "GET",
-      headers: { "Authorization": `Bearer ${token}` }
-    });
-    if (!response.ok) throw new Error("Unauthorized");
+    const params = new URLSearchParams(window.location.search);
+    const viewUserId = params.get('userId');
 
-    const data = await response.json();
-    console.log("PROFILE API:", data);  
+    let data;
+    let user;
 
-    const user = data.user || data; 
+    if (viewUserId) {
+      const response = await fetch(`https://fsdp-cycling-ltey.onrender.com/volunteer/user/profile/${encodeURIComponent(viewUserId)}`);
+      if (!response.ok) throw new Error("Failed to load user profile");
+      data = await response.json();
+      user = data.user || data;
+
+      const title = document.getElementById('profileTitle');
+      if (title) title.textContent = 'User Profile';
+
+      if (editBtn) editBtn.style.display = 'none';
+      if (saveBtn) saveBtn.style.display = 'none';
+      if (editSettingsBtn) editSettingsBtn.style.display = 'none';
+      if (saveSettingsBtn) saveSettingsBtn.style.display = 'none';
+
+      const logoutBtn = document.getElementById('logoutBtn');
+      if (logoutBtn) logoutBtn.style.display = 'none';
+
+      hideVolunteerOnlySections();
+    } else {
+      const response = await fetch("https://fsdp-cycling-ltey.onrender.com/profile", {
+        method: "GET",
+        headers: { "Authorization": `Bearer ${token}` }
+      });
+      if (!response.ok) throw new Error("Unauthorized");
+
+      data = await response.json();
+      console.log("PROFILE API:", data);  
+
+      user = data.user || data; 
+    }
 
     document.getElementById("name").value  = user.name || "";
     document.getElementById("email").value = user.email || "";
@@ -41,27 +67,31 @@ async function loadProfile() {
       document.getElementById("advantages").value = user.advantages || "";
     }
 
-    // Load additional data
-    loadEventsAttended();
-    loadUserBadges();
+    // Load additional data (only for own profile)
+    if (!viewUserId) {
+      loadEventsAttended();
+      loadUserBadges();
 
-    selectedTextSize = data.textSizePreference || selectedTextSize;
-    updateTextSizeButtons(selectedTextSize);
-    if (window.setTextSizePreference) {
-      window.setTextSizePreference(selectedTextSize);
-    } else {
-      localStorage.setItem("happyVolunteerTextSize", selectedTextSize);
-    }
-    
-    // Apply text size to current page
-    applyTextSizeToPage(selectedTextSize);
+      selectedTextSize = data.textSizePreference || selectedTextSize;
+      updateTextSizeButtons(selectedTextSize);
+      if (window.setTextSizePreference) {
+        window.setTextSizePreference(selectedTextSize);
+      } else {
+        localStorage.setItem("happyVolunteerTextSize", selectedTextSize);
+      }
+      
+      // Apply text size to current page
+      applyTextSizeToPage(selectedTextSize);
 
-    userRole = data.role.toLowerCase();
-    loadHeaderByRole();
-    
-    // Hide volunteer-only sections for admin and institution
-    if (userRole !== 'volunteer') {
-      hideVolunteerOnlySections();
+      if (data.role) {
+        userRole = data.role.toLowerCase();
+        loadHeaderByRole();
+      }
+
+      // Hide volunteer-only sections for admin and institution
+      if (userRole && userRole !== 'volunteer') {
+        hideVolunteerOnlySections();
+      }
     }
 
   } catch (err) {

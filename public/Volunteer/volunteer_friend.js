@@ -88,6 +88,8 @@ function renderFriends() {
   sorted.forEach(f => {
     const card = document.createElement("div");
     card.className = "hvf-friend-card";
+    card.setAttribute("role", "button");
+    card.setAttribute("tabindex", "0");
 
     const friendName = f.nickname || f.name || "Unknown";
     const joinDate = f.joindate ? new Date(f.joindate).toLocaleDateString('en-US', {
@@ -107,6 +109,20 @@ function renderFriends() {
         </div>
       </div>
     `;
+
+    const friendId = f.friendid ?? f.friendId ?? f.userid ?? f.userId ?? f.id;
+    if (friendId != null) {
+      const go = () => {
+        window.location.href = `../Profile/profilepage.html?userId=${encodeURIComponent(friendId)}`;
+      };
+      card.addEventListener("click", go);
+      card.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          go();
+        }
+      });
+    }
 
     list.appendChild(card);
   });

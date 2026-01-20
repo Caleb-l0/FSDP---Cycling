@@ -21,8 +21,13 @@ body {
   line-height: 1.7;
   font-size: 18px;
   overflow-x: hidden; /* Prevent horizontal scroll */
+  overflow-y: auto;
   min-height: 100%;
   height: auto;
+}
+
+#translate {
+  min-height: 100vh;
 }
 
 /* Elderly Mode Text Sizing - Apply to profile page */

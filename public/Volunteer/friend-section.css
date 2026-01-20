@@ -10,53 +10,16 @@
 .soft-title{ font-size:1.35rem; font-weight:900; margin-bottom:6px; }
 .soft-sub{ font-size:1.05rem; opacity:.85; }
 
-.friends-wrap{ display:grid; gap:14px; }
 
-/* Friend group */
-.friend-group{
-  background:#fff;
-  border:1px solid rgba(0,0,0,.08);
-  border-radius:18px;
-  box-shadow:0 6px 18px rgba(0,0,0,.06);
-  overflow:hidden;
-}
-.friend-summary{
-  padding:14px 16px;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  cursor:pointer;
-  list-style:none;
-}
-.friend-summary::-webkit-details-marker{ display:none; }
-.friend-left{ display:flex; align-items:center; gap:12px; }
-.avatar{
-  width:44px;height:44px;border-radius:14px;
-  display:grid;place-items:center;
-  background:rgba(11,107,255,.10);
-  font-size:1.4rem;
-}
-.friend-name{ font-size:1.25rem; font-weight:900; }
-.count-pill{
-  min-width:44px;
-  text-align:center;
-  font-size:1.05rem;
-  font-weight:800;
-  padding:8px 10px;
-  border-radius:999px;
-  background:rgba(0,0,0,.06);
-}
-
-/* Cards grid: mobile 1 column, tablet+ 2 columns */
-.cards-grid{
-  padding:6px 14px 16px;
+.friend-events-grid{
   display:grid;
   grid-template-columns:1fr;
-  gap:12px;
+  gap:14px;
+  margin-top: 10px;
 }
 
 /* Event card (more breathing space) */
-.event-card{
+.friend-event-card{
   display:grid;
   grid-template-columns:86px 1fr;
   gap:12px;
@@ -68,6 +31,11 @@
   padding:12px;
   box-shadow:0 8px 18px rgba(0,0,0,.07);
   cursor:pointer;
+}
+
+.friend-event-card:focus{
+  outline:4px solid rgba(234,141,42,.22);
+  outline-offset:4px;
 }
 
 .thumb{
@@ -99,6 +67,18 @@
   box-shadow:0 0 0 4px rgba(11,107,255,.15);
 }
 
+.friend-tag{
+  display:inline-block;
+  margin-top: 10px;
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #1e293b;
+  background: rgba(251,191,36,.22);
+  border: 1px solid rgba(251,191,36,.45);
+  padding: 8px 12px;
+  border-radius: 999px;
+}
+
 /* Not too full on large screens: max width */
 #filter-section{
   max-width: 980px;
@@ -106,5 +86,5 @@
 }
 
 @media (min-width: 860px){
-  .cards-grid{ grid-template-columns:1fr 1fr; }
+  .friend-events-grid{ grid-template-columns:1fr 1fr; }
 }
