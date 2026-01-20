@@ -72,7 +72,7 @@ async function isFriend(userId, friendId) {
 
 async function getFriendSignUpEvents(friendId) {
   const result = await pool.query(`
-    SELECT e.eventid, e.eventname, e.eventdate, es.signupdate, es.status, es.
+    SELECT e.eventid, e.eventname, e.eventdate, es.signupdate, es.status, es.event
     FROM eventsignups es
     JOIN events e ON es.eventid = e.eventid
     WHERE es.userid = $1

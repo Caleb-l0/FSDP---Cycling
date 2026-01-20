@@ -305,7 +305,7 @@ async function requestAll2(choice) {
                 <p><strong>Organization:</strong> ${event.organizationid}</p>
                 
 
-                 <p><strong>Participants:</strong> ${event.maximumparticipant || 'No people Sign Up for this event'} / ${event.participantsignup}</p>
+                 <p><strong>Participants:</strong> ${event.participantsignup || 'No people Sign Up for this event'} / ${event.maximumparticipant}</p>
                  <p><strong>Location:</strong> ${event.location}</p>
    
                  

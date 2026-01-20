@@ -85,6 +85,7 @@ ALTER TABLE events
 ADD COLUMN latitude DOUBLE PRECISION,
 ADD COLUMN longitude DOUBLE PRECISION;
 ADD COLUMN participantsignup INT DEFAULT 0;
+ADD COLUMN eventimage VARCHAR(255);
 
 
 CREATE TABLE volunterrequests (   /* supposed to be institution requests please ignore this error, because change make time */
