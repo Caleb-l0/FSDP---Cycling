@@ -13,6 +13,28 @@ document.addEventListener('DOMContentLoaded', () => {
   loadEvents();
 });
 
+function showEventSkeleton(count = 4) {
+  if (!eventList) return;
+  eventList.innerHTML = '';
+  for (let i = 0; i < count; i += 1) {
+    const sk = document.createElement('div');
+    sk.className = 'event-skeleton';
+    sk.setAttribute('aria-hidden', 'true');
+    sk.innerHTML = `
+      <div class="evsk-hero"></div>
+      <div class="evsk-body">
+        <div class="evsk-line evsk-line--title"></div>
+        <div class="evsk-line"></div>
+        <div class="evsk-line"></div>
+        <div class="evsk-actions">
+          <div class="evsk-pill"></div>
+        </div>
+      </div>
+    `;
+    eventList.appendChild(sk);
+  }
+}
+
 function bindFilterButtons() {
   document.querySelectorAll('.event-filter-btn').forEach(btn => {
     btn.addEventListener('click', async () => {
@@ -23,7 +45,7 @@ function bindFilterButtons() {
 }
 
 async function loadEvents() {
-  setStatusMessage('loading', 'Loading volunteer events...');
+  showEventSkeleton(4);
 
   try {
     const response = await fetch(EVENTS_ENDPOINT);
@@ -138,6 +160,8 @@ async function applyFilter(filter) {
   activeFilter = filter;
   setActiveFilterButton(filter);
 
+  showEventSkeleton(4);
+
   if (!Array.isArray(allEvents) || allEvents.length === 0) {
     setStatusMessage('empty', 'No events available.');
     return;
@@ -208,32 +232,61 @@ function renderEvents(events) {
       ? `Required Volunteers: ${event.requiredvolunteers}`
       : '';
 
-    const isSignedUp = signedEventIds.has(String(event.eventid));
+    const eventId = event.eventid;
+    const isSignedUp = signedEventIds.has(String(eventId));
     const distanceText = event._distanceKm != null ? `<p><strong>Distance:</strong> ${event._distanceKm.toFixed(1)} km</p>` : '';
 
     card.innerHTML = `
-      <div class="event-details" role="button" tabindex="0">
-        ${isSignedUp ? `<div class="signup-badge" aria-label="You have signed up">You Have Signed Up</div>` : ''}
-        <h3>${title}</h3>
-        <p><strong>Date:</strong> ${date}</p>
-        <p><strong>Location:</strong> ${location}</p>
-        ${distanceText}
-        <p>${description}</p>
-        ${required ? `<p>${required}</p>` : ''}
-        <div class="event-actions"></div>
+      <div class="event-details" role="button" tabindex="0" data-event-id="${eventId}">
+        <div class="event-head-row">
+          ${isSignedUp ? `<div class="signup-badge" aria-label="You have signed up">You Have Signed Up</div>` : ''}
+          <button class="event-collapse-btn" type="button" aria-expanded="true" aria-label="Minimise event">
+            <span class="event-collapse-icon" aria-hidden="true">—</span>
+            <span class="event-collapse-label">Minimise</span>
+          </button>
+        </div>
+
+        <div class="event-body">
+          <h3>${title}</h3>
+          <p><strong>Date:</strong> ${date}</p>
+          <p><strong>Location:</strong> ${location}</p>
+          ${distanceText}
+          <p>${description}</p>
+          ${required ? `<p>${required}</p>` : ''}
+          <div class="event-actions"></div>
+          <div class="signup-feedback" aria-live="polite"></div>
+        </div>
       </div>
     `;
 
     const actions = card.querySelector('.event-actions');
 
     const details = card.querySelector('.event-details');
-    details.addEventListener('click', () => openEventDetail(event.eventid));
+    details.addEventListener('click', () => openEventDetail(eventId));
     details.addEventListener('keydown', (e) => {
       if (e.key === 'Enter' || e.key === ' ') {
         e.preventDefault();
-        openEventDetail(event.eventid);
+        openEventDetail(eventId);
       }
     });
+
+    const collapseBtn = card.querySelector('.event-collapse-btn');
+    const body = card.querySelector('.event-body');
+    if (collapseBtn && body) {
+      collapseBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        const collapsed = !card.classList.contains('is-collapsed');
+        card.classList.toggle('is-collapsed', collapsed);
+
+        collapseBtn.setAttribute('aria-expanded', (!collapsed).toString());
+        const icon = collapseBtn.querySelector('.event-collapse-icon');
+        const label = collapseBtn.querySelector('.event-collapse-label');
+        if (icon) icon.textContent = collapsed ? '+' : '—';
+        if (label) label.textContent = collapsed ? 'Expand' : 'Minimise';
+      });
+    }
 
     const button = document.createElement('button');
     button.classList.add('signup-btn');
@@ -244,7 +297,7 @@ function renderEvents(events) {
     button.addEventListener('click', (e) => {
       e.stopPropagation();
       if (isSignedUp) return;
-      signUp(title, event.eventid);
+      signUp(title, eventId, button, card);
     });
 
     actions.appendChild(button);
@@ -315,13 +368,28 @@ function formatDate(rawDate) {
   });
 }
 
-async function signUp(eventTitle, eventId) {
+async function signUp(eventTitle, eventId, buttonEl, cardEl) {
   const token = localStorage.getItem('token');
 
   if (!token) {
     alert('Please login first');
     window.location.href = '../../index.html';
     return;
+  }
+
+  if (buttonEl) {
+    buttonEl.disabled = true;
+    buttonEl.classList.add('is-loading');
+    buttonEl.dataset.originalText = buttonEl.textContent;
+    buttonEl.textContent = 'Signing up...';
+  }
+
+  if (cardEl) {
+    const feedback = cardEl.querySelector('.signup-feedback');
+    if (feedback) {
+      feedback.textContent = '';
+      feedback.classList.remove('is-success', 'is-error');
+    }
   }
 
   try {
@@ -343,13 +411,54 @@ async function signUp(eventTitle, eventId) {
       throw new Error(data.message || 'Signup failed');
     }
 
-    alert(`🎉 You have successfully signed up for "${eventTitle}"!`);
-
     signedEventIds.add(String(eventId));
-    await applyFilter(activeFilter);
+
+    if (cardEl) {
+      const feedback = cardEl.querySelector('.signup-feedback');
+      if (feedback) {
+        feedback.textContent = 'Sign up successfully.';
+        feedback.classList.add('is-success');
+      }
+
+      const headRow = cardEl.querySelector('.event-head-row');
+      const existingBadge = cardEl.querySelector('.signup-badge');
+      if (headRow && !existingBadge) {
+        const badge = document.createElement('div');
+        badge.className = 'signup-badge';
+        badge.setAttribute('aria-label', 'You have signed up');
+        badge.textContent = 'You Have Signed Up';
+        headRow.insertBefore(badge, headRow.firstChild);
+      }
+    }
+
+    if (buttonEl) {
+      buttonEl.classList.remove('is-loading');
+      buttonEl.textContent = 'You Have Signed Up';
+      buttonEl.disabled = true;
+      buttonEl.classList.add('is-success');
+    }
+
+    setTimeout(() => {
+      const feedback = cardEl?.querySelector('.signup-feedback');
+      if (feedback) feedback.textContent = '';
+    }, 5000);
 
   } catch (error) {
     console.error('Signup error:', error);
+
+    if (buttonEl) {
+      buttonEl.classList.remove('is-loading');
+      buttonEl.disabled = false;
+      buttonEl.textContent = buttonEl.dataset.originalText || 'Sign Up';
+    }
+
+    if (cardEl) {
+      const feedback = cardEl.querySelector('.signup-feedback');
+      if (feedback) {
+        feedback.textContent = 'Failed to sign up.';
+        feedback.classList.add('is-error');
+      }
+    }
 
     if (error.message?.includes('already')) {
       alert('You already signed up for this event.');

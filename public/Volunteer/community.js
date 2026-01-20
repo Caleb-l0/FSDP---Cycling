@@ -1,3 +1,8 @@
+const token = localStorage.getItem("token");
+
+if (!token) {
+    window.location.href = "../../index.html";
+}
 
 document.querySelectorAll(".btn-create-post, #openPostForm").forEach(btn => {
     if (!btn) return;
@@ -38,10 +43,7 @@ function togglePostCollapsed(postCardEl) {
     if (btn) {
         btn.setAttribute("aria-expanded", (!collapsed).toString());
         btn.setAttribute("title", collapsed ? "Expand post" : "Collapse post");
-        const icon = btn.querySelector(".post-collapse-icon");
-        const label = btn.querySelector(".post-collapse-label");
-        if (icon) icon.textContent = collapsed ? "+" : "—";
-        if (label) label.textContent = collapsed ? "Expand" : "Minimise";
+        btn.textContent = collapsed ? "+" : "—";
     }
 
     try {
@@ -65,10 +67,7 @@ function restorePostCollapsed(postCardEl) {
         if (btn) {
             btn.setAttribute("aria-expanded", (!collapsed).toString());
             btn.setAttribute("title", collapsed ? "Expand post" : "Collapse post");
-            const icon = btn.querySelector(".post-collapse-icon");
-            const label = btn.querySelector(".post-collapse-label");
-            if (icon) icon.textContent = collapsed ? "+" : "—";
-            if (label) label.textContent = collapsed ? "Expand" : "Minimise";
+            btn.textContent = collapsed ? "+" : "—";
         }
     } catch (e) {
         // ignore
@@ -129,64 +128,13 @@ async function submitPost() {
 }
 
 async function loadPosts() {
-    const container = document.querySelector(".feed-list");
-    if (container) {
-        container.innerHTML = `
-            <div class="post-skeleton" aria-hidden="true">
-                <div class="sk-row">
-                    <div class="sk-avatar"></div>
-                    <div class="sk-lines">
-                        <div class="sk-line sk-line-short"></div>
-                        <div class="sk-line sk-line-mid"></div>
-                    </div>
-                </div>
-                <div class="sk-line"></div>
-                <div class="sk-line"></div>
-                <div class="sk-actions">
-                    <div class="sk-pill"></div>
-                    <div class="sk-pill"></div>
-                </div>
-            </div>
-            <div class="post-skeleton" aria-hidden="true">
-                <div class="sk-row">
-                    <div class="sk-avatar"></div>
-                    <div class="sk-lines">
-                        <div class="sk-line sk-line-short"></div>
-                        <div class="sk-line sk-line-mid"></div>
-                    </div>
-                </div>
-                <div class="sk-line"></div>
-                <div class="sk-line"></div>
-                <div class="sk-actions">
-                    <div class="sk-pill"></div>
-                    <div class="sk-pill"></div>
-                </div>
-            </div>
-            <div class="post-skeleton" aria-hidden="true">
-                <div class="sk-row">
-                    <div class="sk-avatar"></div>
-                    <div class="sk-lines">
-                        <div class="sk-line sk-line-short"></div>
-                        <div class="sk-line sk-line-mid"></div>
-                    </div>
-                </div>
-                <div class="sk-line"></div>
-                <div class="sk-line"></div>
-                <div class="sk-actions">
-                    <div class="sk-pill"></div>
-                    <div class="sk-pill"></div>
-                </div>
-            </div>
-        `;
-    }
-
     const res = await fetch("https://fsdp-cycling-ltey.onrender.com/community/browse/posts", {
         method: "GET",
         headers: { "Authorization": `Bearer ${token}` }
     });
 
     const posts = await res.json();
-    if (!container) return;
+    const container = document.querySelector(".feed-list");
     container.innerHTML = "";
 
     posts.forEach(p => {
@@ -201,10 +149,7 @@ async function loadPosts() {
                 </div>
 
                 <div class="post-header-actions">
-                    <button class="post-collapse-btn" type="button" aria-expanded="true" aria-label="Minimise post">
-                        <span class="post-collapse-icon" aria-hidden="true">—</span>
-                        <span class="post-collapse-label">Minimise</span>
-                    </button>
+                    <button class="post-collapse-btn" type="button" aria-expanded="true" aria-label="Collapse post">—</button>
                 </div>
             </div>
 

@@ -145,6 +145,63 @@ h2 {
   border: 1px solid #e2e8f0;
 }
 
+.event-body {
+  max-height: 2000px;
+  opacity: 1;
+  overflow: hidden;
+  transition: max-height 260ms ease, opacity 200ms ease;
+}
+
+.event-card.is-collapsed .event-body {
+  max-height: 0;
+  opacity: 0;
+}
+
+.event-head-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.event-collapse-btn {
+  min-height: 44px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  border: 2px solid #e2e8f0;
+  background: #ffffff;
+  color: #1e293b;
+  font-weight: 800;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+}
+
+.event-collapse-btn:hover {
+  transform: translateY(-1px);
+  border-color: rgba(234, 141, 42, 0.45);
+  box-shadow: 0 8px 18px rgba(234, 141, 42, 0.12);
+}
+
+.event-collapse-icon {
+  width: 26px;
+  height: 26px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  font-size: 1.1rem;
+  line-height: 1;
+}
+
+.event-collapse-label {
+  font-size: 0.95rem;
+}
+
 .event-card:hover {
   transform: translateY(-4px);
   box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
@@ -245,6 +302,107 @@ h2 {
   box-shadow: none;
 }
 
+.signup-btn.is-loading {
+  position: relative;
+  padding-left: 46px;
+}
+
+.signup-btn.is-loading::before {
+  content: "";
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 3px solid rgba(255, 255, 255, 0.35);
+  border-top-color: #ffffff;
+  animation: spin 0.9s linear infinite;
+}
+
+.signup-btn.is-success {
+  background: #16a34a;
+}
+
+.signup-feedback {
+  margin-top: 10px;
+  font-weight: 700;
+  color: #475569;
+}
+
+.signup-feedback.is-success {
+  color: #166534;
+}
+
+.signup-feedback.is-error {
+  color: #b91c1c;
+}
+
+/* ======================================================
+   EVENT LOADING SKELETON (Shimmer)
+====================================================== */
+.event-skeleton {
+  background: #ffffff;
+  border-radius: 20px;
+  overflow: hidden;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+}
+
+.evsk-hero {
+  height: 180px;
+  background: #e5e7eb;
+  position: relative;
+  overflow: hidden;
+}
+
+.evsk-body {
+  padding: 24px;
+}
+
+.evsk-line {
+  height: 12px;
+  border-radius: 999px;
+  background: #e5e7eb;
+  margin: 12px 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.evsk-line--title {
+  height: 16px;
+  width: 70%;
+}
+
+.evsk-actions {
+  margin-top: 18px;
+}
+
+.evsk-pill {
+  height: 44px;
+  width: 180px;
+  border-radius: 999px;
+  background: #e5e7eb;
+  position: relative;
+  overflow: hidden;
+}
+
+.evsk-hero::after,
+.evsk-line::after,
+.evsk-pill::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.65), transparent);
+  animation: hvShimmer 1.2s infinite;
+}
+
+@keyframes hvShimmer {
+  100% { transform: translateX(100%); }
+}
+
 /* ======================================================
    SYSTEM MESSAGES – Clean centered feedback
 ====================================================== */
@@ -329,6 +487,11 @@ h2 {
   }
 
   .event-filter-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .event-collapse-btn {
     width: 100%;
     justify-content: center;
   }

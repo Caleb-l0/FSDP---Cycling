@@ -76,11 +76,7 @@
 <script>
   // get token from localStorage
 
-  const token = localStorage.getItem("token");
-  if (!token) {
-    alert("Session expired, please log in again.");
-    window.location.href = "login.html";
-  }
+
 
   function decodeToken(token) {
     try {
@@ -99,6 +95,38 @@
   const pointsDisplay = document.getElementById("pointsDisplay");
   const rewardsList = document.getElementById("rewardsList");
   let currentPoints = 0;
+
+  if (rewardsList) {
+    rewardsList.innerHTML = `
+      <div class="reward-skeleton" aria-hidden="true">
+        <div class="rsk-hero"></div>
+        <div class="rsk-body">
+          <div class="rsk-line rsk-line--title"></div>
+          <div class="rsk-line"></div>
+          <div class="rsk-line"></div>
+          <div class="rsk-pill"></div>
+        </div>
+      </div>
+      <div class="reward-skeleton" aria-hidden="true">
+        <div class="rsk-hero"></div>
+        <div class="rsk-body">
+          <div class="rsk-line rsk-line--title"></div>
+          <div class="rsk-line"></div>
+          <div class="rsk-line"></div>
+          <div class="rsk-pill"></div>
+        </div>
+      </div>
+      <div class="reward-skeleton" aria-hidden="true">
+        <div class="rsk-hero"></div>
+        <div class="rsk-body">
+          <div class="rsk-line rsk-line--title"></div>
+          <div class="rsk-line"></div>
+          <div class="rsk-line"></div>
+          <div class="rsk-pill"></div>
+        </div>
+      </div>
+    `;
+  }
 
   //  Fetch user points + shop items 
   fetch(`https://fsdp-cycling-ltey.onrender.com/rewards/${userId}`, {
@@ -123,12 +151,24 @@
         <p>${item.Description}</p>
         <p>Cost: ${item.Cost} points</p>
         <button ${currentPoints < item.Cost ? "disabled" : ""}>Redeem</button>
+        <div class="redeem-feedback" aria-live="polite"></div>
       `;
       rewardsList.appendChild(div);
 
       const button = div.querySelector("button");
+      const feedback = div.querySelector(".redeem-feedback");
       button.addEventListener("click", () => {
         if (currentPoints < item.Cost) return;
+
+        if (feedback) {
+          feedback.textContent = '';
+          feedback.classList.remove('is-success', 'is-error');
+        }
+
+        button.disabled = true;
+        button.classList.add('is-loading');
+        button.dataset.originalText = button.textContent;
+        button.textContent = 'Redeeming...';
 
         fetch("https://fsdp-cycling-ltey.onrender.com/rewards/redeem", {
           method: "POST",
@@ -140,14 +180,25 @@
         })
         .then(res => res.json())
         .then(resData => {
-          alert(resData.message || "Item redeemed!");
+          if (feedback) {
+            feedback.textContent = resData.message || 'Redeemed successfully.';
+            feedback.classList.add('is-success');
+          }
           currentPoints -= item.Cost;
           pointsDisplay.textContent = currentPoints;
+          button.classList.remove('is-loading');
+          button.textContent = 'Redeemed';
           button.disabled = true;
         })
         .catch(err => {
           console.error("Redeem error:", err);
-          alert("Failed to redeem item.");
+          if (feedback) {
+            feedback.textContent = 'Failed to redeem item.';
+            feedback.classList.add('is-error');
+          }
+          button.classList.remove('is-loading');
+          button.disabled = false;
+          button.textContent = button.dataset.originalText || 'Redeem';
         });
       });
     });
