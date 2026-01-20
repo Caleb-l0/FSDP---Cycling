@@ -71,8 +71,8 @@ async function isFriend(userId, friendId) {
 }
 
 
-async function getFriendSignUpEvents(userId, friendId) {
- const result = await pool.query(`
+async function getAllFriendsSignUpEvents(userId) {
+  const result = await pool.query(`
     WITH friends AS (
       SELECT DISTINCT
         CASE 
@@ -86,25 +86,20 @@ async function getFriendSignUpEvents(userId, friendId) {
     SELECT
       f.friend_id,
       u.name AS friend_name,
-
       e.eventid,
       e.eventname,
       e.eventdate,
       e.location,
       e.eventimage,
       e.status AS event_status,
-
       es.signupdate AS signup_date,
       es.status AS signup_status
-
     FROM friends f
     JOIN users u ON u.id = f.friend_id
     JOIN eventsignups es ON es.userid = f.friend_id
     JOIN events e ON e.eventid = es.eventid
-
     ORDER BY u.name ASC, e.eventdate DESC, es.signupdate DESC
   `, [userId]);
-
 
   const map = new Map();
   for (const r of result.rows) {
@@ -137,5 +132,5 @@ module.exports = {
   addFriend,
   removeFriend,
   getFollowersCount,
-  isFriend,getFriendSignUpEvents
+  isFriend,getAllFriendsSignUpEvents,
 };
