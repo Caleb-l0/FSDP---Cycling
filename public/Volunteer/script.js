@@ -240,9 +240,9 @@ function renderEvents(events) {
       <div class="event-details" role="button" tabindex="0" data-event-id="${eventId}">
         <div class="event-head-row">
           ${isSignedUp ? `<div class="signup-badge" aria-label="You have signed up">You Have Signed Up</div>` : ''}
-          <button class="event-collapse-btn" type="button" aria-expanded="true" aria-label="Minimise event">
-            <span class="event-collapse-icon" aria-hidden="true">—</span>
-            <span class="event-collapse-label">Minimise</span>
+          <button class="event-collapse-btn" type="button" aria-label="Hide this event">
+            <span class="event-collapse-icon" aria-hidden="true">×</span>
+            <span class="event-collapse-label">Hide</span>
           </button>
         </div>
 
@@ -271,20 +271,21 @@ function renderEvents(events) {
     });
 
     const collapseBtn = card.querySelector('.event-collapse-btn');
-    const body = card.querySelector('.event-body');
-    if (collapseBtn && body) {
+    if (collapseBtn) {
       collapseBtn.addEventListener('click', (e) => {
         e.preventDefault();
         e.stopPropagation();
 
-        const collapsed = !card.classList.contains('is-collapsed');
-        card.classList.toggle('is-collapsed', collapsed);
+        card.classList.add('is-dismissed');
 
-        collapseBtn.setAttribute('aria-expanded', (!collapsed).toString());
-        const icon = collapseBtn.querySelector('.event-collapse-icon');
-        const label = collapseBtn.querySelector('.event-collapse-label');
-        if (icon) icon.textContent = collapsed ? '+' : '—';
-        if (label) label.textContent = collapsed ? 'Expand' : 'Minimise';
+        const removeTimer = setTimeout(() => {
+          card.remove();
+        }, 260);
+
+        card.addEventListener('transitionend', () => {
+          clearTimeout(removeTimer);
+          card.remove();
+        }, { once: true });
       });
     }
 

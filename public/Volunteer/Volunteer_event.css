@@ -145,16 +145,9 @@ h2 {
   border: 1px solid #e2e8f0;
 }
 
-.event-body {
-  max-height: 2000px;
-  opacity: 1;
-  overflow: hidden;
-  transition: max-height 260ms ease, opacity 200ms ease;
-}
-
-.event-card.is-collapsed .event-body {
-  max-height: 0;
+.event-card.is-dismissed {
   opacity: 0;
+  transform: translateY(10px) scale(0.98);
 }
 
 .event-head-row {

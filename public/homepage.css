@@ -38,6 +38,24 @@ body {
   line-height: 1.65;
   overflow-x: hidden;
   padding-top: 72px; 
+  animation: hvPageEnter 260ms ease-out both;
+}
+
+@keyframes hvPageEnter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body {
+    animation: none;
+  }
 }
 
 /* Elderly Mode Text Sizing */
