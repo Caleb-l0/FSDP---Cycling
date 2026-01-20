@@ -1,3 +1,4 @@
+const { get } = require("../mailer");
 const userFriendsModel = require("../Models/user_friend_Model");
 
 /**
@@ -83,16 +84,26 @@ async function checkIfFriend(req, res) {
 
 async function getFriendSignUpEvents(req, res) {
   try {
-    const userId = req.user.id;
-    const friendId = parseInt(req.params.friendId);
+    const userId = req.user?.id;
+    const friendId = Number(req.params.friendId);
+
+    if (!userId) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    if (!Number.isInteger(friendId)) {
+      return res.status(400).json({ message: "Invalid friendId" });
+    }
+
+    if (friendId === userId) {
+      return res.status(400).json({ message: "friendId cannot be the same as userId" });
+    }
+
     const events = await userFriendsModel.getFriendSignUpEvents(userId, friendId);
     return res.status(200).json(events);
-  }
-  catch (error) {
+  } catch (error) {
     console.error("Get friend's sign-up events error:", error);
-    return res.status(500).json({
-      message: "Failed to get friend's sign-up events"
-    });
+    return res.status(500).json({ message: "Failed to get friend's sign-up events" });
   }
 }
 
@@ -102,4 +113,5 @@ module.exports = {
   getFollowersCount,
   checkIfFriend,
   remobeFriend,
+  getFriendSignUpEvents,
 };

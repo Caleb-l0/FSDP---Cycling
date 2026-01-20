@@ -1,0 +1,110 @@
+/* Soft banner */
+.soft-banner{
+  background:#fff;
+  border:1px solid rgba(0,0,0,.08);
+  border-radius:18px;
+  padding:16px 18px;
+  margin:10px 0 14px;
+  box-shadow:0 6px 18px rgba(0,0,0,.06);
+}
+.soft-title{ font-size:1.35rem; font-weight:900; margin-bottom:6px; }
+.soft-sub{ font-size:1.05rem; opacity:.85; }
+
+.friends-wrap{ display:grid; gap:14px; }
+
+/* Friend group */
+.friend-group{
+  background:#fff;
+  border:1px solid rgba(0,0,0,.08);
+  border-radius:18px;
+  box-shadow:0 6px 18px rgba(0,0,0,.06);
+  overflow:hidden;
+}
+.friend-summary{
+  padding:14px 16px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  cursor:pointer;
+  list-style:none;
+}
+.friend-summary::-webkit-details-marker{ display:none; }
+.friend-left{ display:flex; align-items:center; gap:12px; }
+.avatar{
+  width:44px;height:44px;border-radius:14px;
+  display:grid;place-items:center;
+  background:rgba(11,107,255,.10);
+  font-size:1.4rem;
+}
+.friend-name{ font-size:1.25rem; font-weight:900; }
+.count-pill{
+  min-width:44px;
+  text-align:center;
+  font-size:1.05rem;
+  font-weight:800;
+  padding:8px 10px;
+  border-radius:999px;
+  background:rgba(0,0,0,.06);
+}
+
+/* Cards grid: mobile 1 column, tablet+ 2 columns */
+.cards-grid{
+  padding:6px 14px 16px;
+  display:grid;
+  grid-template-columns:1fr;
+  gap:12px;
+}
+
+/* Event card (more breathing space) */
+.event-card{
+  display:grid;
+  grid-template-columns:86px 1fr;
+  gap:12px;
+  align-items:center;
+
+  border:1px solid rgba(0,0,0,.08);
+  border-radius:18px;
+  background:#fff;
+  padding:12px;
+  box-shadow:0 8px 18px rgba(0,0,0,.07);
+  cursor:pointer;
+}
+
+.thumb{
+  width:86px;height:86px;
+  border-radius:16px;
+  object-fit:cover;
+  border:1px solid rgba(0,0,0,.08);
+}
+.thumb.ph{
+  display:grid;place-items:center;
+  font-size:2rem;
+  background:rgba(11,107,255,.08);
+}
+
+.card-title{ font-size:1.15rem; font-weight:900; margin-bottom:8px; line-height:1.25; }
+
+.meta{ display:flex; flex-wrap:wrap; gap:8px; margin-bottom:10px; }
+.pill{
+  font-size:1rem;
+  padding:8px 10px;
+  border-radius:999px;
+  background:rgba(0,0,0,.05);
+}
+
+.friend-line{ display:flex; align-items:center; gap:10px; font-size:1.03rem; }
+.dot{
+  width:12px;height:12px;border-radius:50%;
+  background:#0b6bff;
+  box-shadow:0 0 0 4px rgba(11,107,255,.15);
+}
+
+/* Not too full on large screens: max width */
+#filter-section{
+  max-width: 980px;
+  margin: 0 auto;
+}
+
+@media (min-width: 860px){
+  .cards-grid{ grid-template-columns:1fr 1fr; }
+}

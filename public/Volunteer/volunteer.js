@@ -439,33 +439,92 @@ async function loadfilterSection(choice) {
         }
     );
 }
- else if (choice === 'friend') {
-        if (!filterSection) return;
-        const res = await fetch(
-            "https://fsdp-cycling-ltey.onrender.com/volunteer/events",
-            { headers: { Authorization: `Bearer ${token}` } }
-        );
-        const events = await res.json();            
-        // For demo, randomly select 5 events as "friend-based"
-        const shuffledEvents = events.sort(() => 0.5 - Math.random()).slice(0, 5);
-        filterSection.innerHTML = "";   
-        shuffledEvents.forEach(e => {
-            filterSection.innerHTML += `
-                <div class="event-box">
-                    <div class="service-card"
-                         onclick="goToEventDetail(${e.eventid})">
-                        <div class="service-icon">
-                            <i class="fas fa-users"></i>
-                        </div>
-                        <div class="service-content">
-                            <h3>${e.eventname}</h3>
-                            <p>${e.location}</p>
-                        </div>
-                    </div>
-                </div>
-            `;
-        });
+else if (choice === 'friend') {
+  if (!filterSection) return;
+
+  filterSection.innerHTML = `<p class="loading-text">Loading friends’ joined events...</p>`;
+
+  try {
+    const res = await fetch(
+      "https://fsdp-cycling-ltey.onrender.com/volunteer/friends/signup-events",
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+
+    const friends = await res.json();
+
+    if (!Array.isArray(friends) || friends.length === 0) {
+      filterSection.innerHTML = `
+        <div class="soft-banner">
+          <div class="soft-title">No friend activity yet</div>
+          <div class="soft-sub">Your friends haven’t joined any events.</div>
+        </div>`;
+      return;
+    }
+
+    filterSection.innerHTML = `
+      <div class="soft-banner">
+        <div class="soft-title">Friends’ Joined Events</div>
+        <div class="soft-sub">Tap a friend’s name to see events</div>
+      </div>
+      <div class="friends-wrap">
+        ${friends.map((f, idx) => renderFriendGroup(f, idx === 0)).join("")}
+      </div>
+    `;
+  } catch (err) {
+    console.error(err);
+    filterSection.innerHTML = `<p class="error-text">Failed to load friends’ events.</p>`;
+  }
 }
+
+function renderFriendGroup(friend, openByDefault = false) {
+  const friendName = friend.friendName || "Friend";
+  const events = friend.events || [];
+  const openAttr = openByDefault ? "open" : "";
+
+  return `
+    <details class="friend-group" ${openAttr}>
+      <summary class="friend-summary">
+        <div class="friend-left">
+          <span class="avatar">👤</span>
+          <span class="friend-name">${friendName}</span>
+        </div>
+        <span class="count-pill">${events.length}</span>
+      </summary>
+
+      <div class="cards-grid">
+        ${events.map(e => renderEventCard(e, friendName)).join("")}
+      </div>
+    </details>
+  `;
+}
+
+function renderEventCard(e, friendName) {
+  const dateStr = new Date(e.eventdate).toLocaleDateString(undefined, {
+    year: "numeric", month: "short", day: "numeric"
+  });
+
+  const img = e.eventimage
+    ? `<img class="thumb" src="${e.eventimage}" alt="event image">`
+    : `<div class="thumb ph" aria-hidden="true">🎉</div>`;
+
+  return `
+    <div class="event-card" onclick="goToEventDetail(${e.eventid})" role="button" tabindex="0">
+      ${img}
+      <div class="card-text">
+        <div class="card-title">${e.eventname}</div>
+        <div class="meta">
+          <span class="pill">📅 ${dateStr}</span>
+          <span class="pill">📍 ${e.location || "TBA"}</span>
+        </div>
+        <div class="friend-line">
+          <span class="dot"></span>
+          <span><strong>${friendName}</strong> joined</span>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
 }
 
 

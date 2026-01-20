@@ -235,7 +235,7 @@ app.post('/admin/create_events', authenticate, adminEventController.createEvent)
 app.put('/admin/assign_events',authenticate,adminEventController.assignEventToOrgan);
 app.delete('/admin/events/:eventID', authenticate, adminEventController.deleteEvent);
 app.delete('/admin/events/auto-delete/:eventID', authenticate, adminEventController.autoDeleteEvent);
-// app.get('/admin/events/:eventID/signups', authenticate, adminEventController.get);
+
 
 
 // ------ VOLUNTEER USER PROFILE --------
@@ -248,6 +248,7 @@ app.get('/volunteer/friends/followers/count', authenticate, userFriendController
 app.get('/volunteer/friends/me', authenticate, userFriendController.getMyFriends);
 app.delete('/volunteer/friends/remove/:friendId', authenticate, userFriendController.remobeFriend);
 app.get('/volunteer/friends/check/:friendId', authenticate, userFriendController.checkIfFriend);
+app.get('volunteer/friends/signup-events', authenticate, userFriendController.getFriendSignUpEvents);
 // ----- VOLUNTEER EVENT FEED -----
 
 app.get('/volunteer/events', adminEventController.getAllEvents);

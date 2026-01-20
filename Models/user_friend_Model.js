@@ -1,3 +1,4 @@
+const { get } = require("../mailer");
 const pool = require("../Postgres_config");
 
 /**
@@ -70,21 +71,71 @@ async function isFriend(userId, friendId) {
 }
 
 
-async function getFriendSignUpEvents(friendId) {
-  const result = await pool.query(`
-    SELECT e.eventid, e.eventname, e.eventdate, es.signupdate, es.status, es.event
-    FROM eventsignups es
-    JOIN events e ON es.eventid = e.eventid
-    WHERE es.userid = $1
-    ORDER BY e.eventdate DESC
-  `, [friendId]);
-  return result.rows;
+async function getFriendSignUpEvents(userId, friendId) {
+ const result = await pool.query(`
+    WITH friends AS (
+      SELECT DISTINCT
+        CASE 
+          WHEN uf.userid = $1 THEN uf.friendid
+          ELSE uf.userid
+        END AS friend_id
+      FROM userfriends uf
+      WHERE (uf.userid = $1 OR uf.friendid = $1)
+        AND uf.status = 'active'
+    )
+    SELECT
+      f.friend_id,
+      u.name AS friend_name,
+
+      e.eventid,
+      e.eventname,
+      e.eventdate,
+      e.location,
+      e.eventimage,
+      e.status AS event_status,
+
+      es.signupdate AS signup_date,
+      es.status AS signup_status
+
+    FROM friends f
+    JOIN users u ON u.id = f.friend_id
+    JOIN eventsignups es ON es.userid = f.friend_id
+    JOIN events e ON e.eventid = es.eventid
+
+    ORDER BY u.name ASC, e.eventdate DESC, es.signupdate DESC
+  `, [userId]);
+
+
+  const map = new Map();
+  for (const r of result.rows) {
+    if (!map.has(r.friend_id)) {
+      map.set(r.friend_id, {
+        friendId: r.friend_id,
+        friendName: r.friend_name,
+        events: []
+      });
+    }
+    map.get(r.friend_id).events.push({
+      eventid: r.eventid,
+      eventname: r.eventname,
+      eventdate: r.eventdate,
+      location: r.location,
+      eventimage: r.eventimage,
+      status: r.event_status,
+      signup_date: r.signup_date,
+      signup_status: r.signup_status
+    });
+  }
+
+  return Array.from(map.values());
 }
+
+
 
 module.exports = {
   getUserFriends,
   addFriend,
   removeFriend,
   getFollowersCount,
-  isFriend
+  isFriend,getFriendSignUpEvents
 };
