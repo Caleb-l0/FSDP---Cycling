@@ -1,8 +1,3 @@
-const token = localStorage.getItem("token");
-if (!token) {
-    alert("Please log in first");
-    window.location.href = "../../index.html";
-}
 
 document.querySelectorAll(".btn-create-post, #openPostForm").forEach(btn => {
     if (!btn) return;
@@ -12,6 +7,80 @@ document.querySelectorAll(".btn-create-post, #openPostForm").forEach(btn => {
         form.style.display = form.style.display === "block" ? "none" : "block";
     });
     
+});
+
+const desktopCreatePostBtn = document.getElementById("openPostFormDesktop");
+if (desktopCreatePostBtn) {
+    desktopCreatePostBtn.addEventListener("click", () => {
+        const form = document.getElementById("postForm");
+        if (!form) return;
+        form.style.display = form.style.display === "block" ? "none" : "block";
+    });
+}
+
+function getSectionElements(sectionId) {
+    const section = document.getElementById(sectionId);
+    if (!section) return { section: null, body: null };
+    const body = section.querySelector(".section-body");
+    return { section, body };
+}
+
+function togglePostCollapsed(postCardEl) {
+    if (!postCardEl) return;
+    const postId = postCardEl.getAttribute("data-post-id") || "sample";
+    const body = postCardEl.querySelector(".post-body");
+    if (!body) return;
+
+    const collapsed = !postCardEl.classList.contains("is-collapsed");
+    postCardEl.classList.toggle("is-collapsed", collapsed);
+
+    const btn = postCardEl.querySelector(".post-collapse-btn");
+    if (btn) {
+        btn.setAttribute("aria-expanded", (!collapsed).toString());
+        btn.setAttribute("title", collapsed ? "Expand post" : "Collapse post");
+        const icon = btn.querySelector(".post-collapse-icon");
+        const label = btn.querySelector(".post-collapse-label");
+        if (icon) icon.textContent = collapsed ? "+" : "—";
+        if (label) label.textContent = collapsed ? "Expand" : "Minimise";
+    }
+
+    try {
+        localStorage.setItem("hv_post_collapsed_" + postId, collapsed ? "1" : "0");
+    } catch (e) {
+        // ignore
+    }
+}
+
+function restorePostCollapsed(postCardEl) {
+    if (!postCardEl) return;
+    const postId = postCardEl.getAttribute("data-post-id") || "sample";
+    const body = postCardEl.querySelector(".post-body");
+    if (!body) return;
+
+    try {
+        const collapsed = localStorage.getItem("hv_post_collapsed_" + postId) === "1";
+        postCardEl.classList.toggle("is-collapsed", collapsed);
+
+        const btn = postCardEl.querySelector(".post-collapse-btn");
+        if (btn) {
+            btn.setAttribute("aria-expanded", (!collapsed).toString());
+            btn.setAttribute("title", collapsed ? "Expand post" : "Collapse post");
+            const icon = btn.querySelector(".post-collapse-icon");
+            const label = btn.querySelector(".post-collapse-label");
+            if (icon) icon.textContent = collapsed ? "+" : "—";
+            if (label) label.textContent = collapsed ? "Expand" : "Minimise";
+        }
+    } catch (e) {
+        // ignore
+    }
+}
+
+
+document.addEventListener("click", (e) => {
+    const btn = e.target.closest?.(".post-collapse-btn");
+    if (!btn) return;
+    const card = btn.closest(".post-card");
+    togglePostCollapsed(card);
 });
 
 
@@ -60,13 +129,64 @@ async function submitPost() {
 }
 
 async function loadPosts() {
+    const container = document.querySelector(".feed-list");
+    if (container) {
+        container.innerHTML = `
+            <div class="post-skeleton" aria-hidden="true">
+                <div class="sk-row">
+                    <div class="sk-avatar"></div>
+                    <div class="sk-lines">
+                        <div class="sk-line sk-line-short"></div>
+                        <div class="sk-line sk-line-mid"></div>
+                    </div>
+                </div>
+                <div class="sk-line"></div>
+                <div class="sk-line"></div>
+                <div class="sk-actions">
+                    <div class="sk-pill"></div>
+                    <div class="sk-pill"></div>
+                </div>
+            </div>
+            <div class="post-skeleton" aria-hidden="true">
+                <div class="sk-row">
+                    <div class="sk-avatar"></div>
+                    <div class="sk-lines">
+                        <div class="sk-line sk-line-short"></div>
+                        <div class="sk-line sk-line-mid"></div>
+                    </div>
+                </div>
+                <div class="sk-line"></div>
+                <div class="sk-line"></div>
+                <div class="sk-actions">
+                    <div class="sk-pill"></div>
+                    <div class="sk-pill"></div>
+                </div>
+            </div>
+            <div class="post-skeleton" aria-hidden="true">
+                <div class="sk-row">
+                    <div class="sk-avatar"></div>
+                    <div class="sk-lines">
+                        <div class="sk-line sk-line-short"></div>
+                        <div class="sk-line sk-line-mid"></div>
+                    </div>
+                </div>
+                <div class="sk-line"></div>
+                <div class="sk-line"></div>
+                <div class="sk-actions">
+                    <div class="sk-pill"></div>
+                    <div class="sk-pill"></div>
+                </div>
+            </div>
+        `;
+    }
+
     const res = await fetch("https://fsdp-cycling-ltey.onrender.com/community/browse/posts", {
         method: "GET",
         headers: { "Authorization": `Bearer ${token}` }
     });
 
     const posts = await res.json();
-    const container = document.querySelector(".feed-list");
+    if (!container) return;
     container.innerHTML = "";
 
     posts.forEach(p => {
@@ -79,27 +199,36 @@ async function loadPosts() {
                     <h4 class="post-user">${p.username}</h4>
                     <p class="post-time">${new Date(p.createdat).toLocaleString()}</p>
                 </div>
+
+                <div class="post-header-actions">
+                    <button class="post-collapse-btn" type="button" aria-expanded="true" aria-label="Minimise post">
+                        <span class="post-collapse-icon" aria-hidden="true">—</span>
+                        <span class="post-collapse-label">Minimise</span>
+                    </button>
+                </div>
             </div>
 
-            <p class="post-text">${p.content}</p>
+            <div class="post-body">
+                <p class="post-text">${p.content}</p>
 
-            ${p.photourl ? `<img class="post-img" src="${p.photourl}">` : ""}
+                ${p.photourl ? `<img class="post-img" src="${p.photourl}">` : ""}
 
-            <div class="post-actions">
-                <button class="btn-like">
-                    <i class="fa-solid fa-heart"></i> Like
-                </button>
+                <div class="post-actions">
+                    <button class="btn-like">
+                        <i class="fa-solid fa-heart"></i> Like
+                    </button>
 
-                <div class="like-display">
-                    People Like: <span class="like-count">${p.likecount}</span>
+                    <div class="like-display">
+                        People Like: <span class="like-count">${p.likecount}</span>
+                    </div>
+
+                    <button class="btn-open-comments">
+                        <i class="fa-solid fa-comment"></i> Comment
+                    </button>
                 </div>
 
-                <button class="btn-open-comments">
-                    <i class="fa-solid fa-comment"></i> Comment
-                </button>
+                <div class="post-comments"></div>
             </div>
-
-            <div class="post-comments"></div>
 
         </div>
         `;
@@ -107,6 +236,8 @@ async function loadPosts() {
 
     attachLikeEvents();
     attachCommentEvents();
+
+    document.querySelectorAll(".post-card").forEach(restorePostCollapsed);
 }
 
 

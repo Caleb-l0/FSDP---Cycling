@@ -62,6 +62,51 @@ body {
   box-shadow: 0 6px 16px rgba(234, 141, 42, 0.3);
 }
 
+.event-filters {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin: 10px auto 18px;
+}
+
+.event-filter-btn {
+  min-height: 44px;
+  padding: 10px 16px;
+  border-radius: 999px;
+  border: 2px solid #e2e8f0;
+  background: #ffffff;
+  color: #1e293b;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease, border-color 0.15s ease;
+}
+
+.event-filter-btn:hover {
+  transform: translateY(-1px);
+  border-color: rgba(234, 141, 42, 0.45);
+  box-shadow: 0 8px 18px rgba(234, 141, 42, 0.12);
+}
+
+.event-filter-btn.active,
+.event-filter-btn[aria-pressed="true"] {
+  background: #ea8d2a;
+  border-color: #ea8d2a;
+  color: #ffffff;
+  box-shadow: 0 10px 20px rgba(234, 141, 42, 0.25);
+}
+
+.event-filter-btn--clear {
+  background: #264653;
+  border-color: #264653;
+  color: #ffffff;
+}
+
+.event-filter-btn--clear:hover {
+  box-shadow: 0 10px 20px rgba(38, 70, 83, 0.2);
+  border-color: #1f3a44;
+}
 
 /* ======================================================
    SECTION TITLE
@@ -131,6 +176,16 @@ h2 {
   gap: 12px;
 }
 
+.event-details[role="button"] {
+  cursor: pointer;
+}
+
+.event-details[role="button"]:focus {
+  outline: 4px solid rgba(234, 141, 42, 0.2);
+  outline-offset: 4px;
+  border-radius: 16px;
+}
+
 .event-details h3 {
   font-size: 1.35rem;
   font-weight: 700;
@@ -148,6 +203,16 @@ h2 {
 .event-details p strong {
   color: #1e293b;
   font-weight: 600;
+}
+
+.signup-badge {
+  width: fit-content;
+  padding: 8px 12px;
+  border-radius: 999px;
+  font-weight: 800;
+  background: #fff7ed;
+  color: #9a3412;
+  border: 1px solid rgba(234, 141, 42, 0.35);
 }
 
 /* ======================================================
@@ -173,6 +238,13 @@ h2 {
   box-shadow: 0 6px 16px rgba(234, 141, 42, 0.3);
 }
 
+.signup-btn:disabled {
+  background: #e2e8f0;
+  color: #475569;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
 /* ======================================================
    SYSTEM MESSAGES – Clean centered feedback
 ====================================================== */
@@ -190,6 +262,23 @@ h2 {
 
 .event-message--loading {
   color: #1e293b;
+}
+
+.event-message--loading::after {
+  content: "";
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  margin-left: 10px;
+  border-radius: 50%;
+  border: 3px solid rgba(234, 141, 42, 0.25);
+  border-top-color: #ea8d2a;
+  animation: spin 0.9s linear infinite;
+  vertical-align: -3px;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }
 
 .event-message--empty {
@@ -237,6 +326,11 @@ h2 {
     align-self: stretch;
     text-align: center;
     padding: 14px;
+  }
+
+  .event-filter-btn {
+    width: 100%;
+    justify-content: center;
   }
 }
 

@@ -9,48 +9,120 @@
 }
 
 body {
-    background: #FAF7F2;
-    color: #3E2723;
+    background: var(--bg-main, #f5f7fa);
+    color: var(--text-main, #1f2933);
     overflow-x: hidden;
-    line-height: 1.6;
+    line-height: 1.65;
+}
+
+.community-page {
+    width: 90%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 24px 0 40px;
+}
+
+/* =========================================================
+   SECTION HEADER (Facebook-like)
+========================================================= */
+.hv-section {
+    margin: 18px 0;
+}
+
+.section-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 16px 18px;
+    background: var(--bg-card, #ffffff);
+    border: 1px solid rgba(15, 23, 42, 0.10);
+    border-radius: var(--radius-lg, 18px);
+    box-shadow: var(--shadow-soft, 0 8px 24px rgba(0,0,0,0.06));
+}
+
+.section-head-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.section-body {
+    margin-top: 12px;
 }
 
 /* =========================================================
    SECTION TITLES
 ========================================================= */
 .section-title {
-    text-align: center;
-    font-size: 2rem;
-    font-weight: 700;
-    color: #D3881F;
-    margin-bottom: 30px;
+    text-align: left;
+    font-size: clamp(1.25rem, 1.6vw, 1.6rem);
+    font-weight: 800;
+    color: var(--text-main, #1f2933);
+    margin: 0;
+    line-height: 1.25;
 }
+
+.section-title::before {
+    content: "";
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--primary, #e69a2a);
+    margin-right: 10px;
+    vertical-align: middle;
+}
+
+
 
 /* =========================================================
    POST LIST (FEED)
 ========================================================= */
 .feed-list {
-    max-width: 1000px;
-    margin: auto;
+    max-width: 760px;
+    margin: 0 auto;
 }
 
 /* =========================================================
    POST CARD
 ========================================================= */
 .post-card {
-    background: white;
-    border-radius: 18px;
-    padding: 24px;
-    margin-bottom: 30px;
-    border: 1px solid #f1e3d3;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-    transition: 0.2s ease;
-    width:100%;
+    background: var(--bg-card, #ffffff);
+    border-radius: var(--radius-lg, 18px);
+    padding: 18px;
+    margin-bottom: 16px;
+    border: 1px solid rgba(15, 23, 42, 0.10);
+    box-shadow: var(--shadow-soft, 0 8px 24px rgba(0,0,0,0.06));
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    width: 100%;
+}
+
+.post-card {
+    animation: hvFadeUp 220ms ease both;
+}
+
+.post-body {
+    max-height: 2000px;
+    opacity: 1;
+    overflow: hidden;
+    transition: max-height 260ms ease, opacity 200ms ease;
+}
+
+.post-card.is-collapsed .post-body {
+    max-height: 0;
+    opacity: 0;
+}
+
+.post-card.is-collapsed {
+    border-color: rgba(230, 154, 42, 0.22);
+    background: linear-gradient(180deg, #ffffff, #fff7ed);
 }
 
 .post-card:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 25px rgba(0,0,0,0.12);
+    box-shadow: var(--shadow-hover, 0 14px 40px rgba(0,0,0,0.12));
 }
 
 /* HEADER */
@@ -60,32 +132,162 @@ body {
     align-items: center;
 }
 
+.post-header-actions {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+}
+
+.post-collapse-btn {
+    min-height: 44px;
+    padding: 8px 12px;
+    border-radius: 999px;
+    border: 2px solid rgba(15, 23, 42, 0.10);
+    background: #eef0f3;
+    color: var(--text-main, #1f2933);
+    font-weight: 900;
+    cursor: pointer;
+    transition: transform 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.post-collapse-btn:hover,
+.post-collapse-btn:focus {
+    background: rgba(230, 154, 42, 0.16);
+    box-shadow: 0 0 0 4px rgba(230, 154, 42, 0.18);
+    outline: none;
+}
+
+.post-collapse-icon {
+    width: 26px;
+    height: 26px;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #ffffff;
+    border: 1px solid rgba(15, 23, 42, 0.10);
+    font-size: 1.1rem;
+    line-height: 1;
+}
+
+.post-collapse-label {
+    font-size: 0.95rem;
+    font-weight: 800;
+}
+
+/* =========================================================
+   LOADING SKELETON (Facebook-like)
+========================================================= */
+.post-skeleton {
+    max-width: 760px;
+    margin: 0 auto 16px;
+    background: var(--bg-card, #ffffff);
+    border-radius: var(--radius-lg, 18px);
+    border: 1px solid rgba(15, 23, 42, 0.10);
+    box-shadow: var(--shadow-soft, 0 8px 24px rgba(0,0,0,0.06));
+    padding: 18px;
+    overflow: hidden;
+}
+
+.sk-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 14px;
+}
+
+.sk-avatar {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: #e5e7eb;
+    position: relative;
+    overflow: hidden;
+}
+
+.sk-lines {
+    flex: 1;
+}
+
+.sk-line {
+    height: 12px;
+    border-radius: 999px;
+    background: #e5e7eb;
+    margin: 10px 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.sk-line-short {
+    width: 40%;
+}
+
+.sk-line-mid {
+    width: 60%;
+}
+
+.sk-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 14px;
+}
+
+.sk-pill {
+    height: 44px;
+    width: 130px;
+    border-radius: 999px;
+    background: #e5e7eb;
+    position: relative;
+    overflow: hidden;
+}
+
+.sk-avatar::after,
+.sk-line::after,
+.sk-pill::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    transform: translateX(-100%);
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.65), transparent);
+    animation: hvShimmer 1.2s infinite;
+}
+
+@keyframes hvShimmer {
+    100% {
+        transform: translateX(100%);
+    }
+}
+
 .post-avatar {
-    width: 55px;
-    height: 55px;
+    width: 52px;
+    height: 52px;
     border-radius: 50%;
     object-fit: cover;
-    border: 2px solid #E6A542;
+    border: 2px solid rgba(230, 154, 42, 0.55);
 }
 
 .post-user {
-    font-size: 1.15rem;
-    font-weight: 700;
+    font-size: 1.05rem;
+    font-weight: 800;
 }
 
 .post-time {
-    font-size: 0.85rem;
-    color: #8e796c;
+    font-size: 0.9rem;
+    color: var(--text-muted, #6b7280);
 }
 
 /* TEXT + IMAGE */
 .post-text {
     margin-top: 15px;
+    font-size: 1.05rem;
 }
 
 .post-img {
     width: 100%;
-    border-radius: 14px;
+    border-radius: var(--radius-md, 12px);
     margin: 15px 0;
     box-shadow: 0 3px 12px rgba(0,0,0,0.09);
 }
@@ -95,18 +297,21 @@ body {
 ========================================================= */
 .post-actions {
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-start;
     align-items: center;
     margin-top: 12px;
+    gap: 10px;
+    flex-wrap: wrap;
 }
 
 .btn-like,
 .btn-open-comments {
-    padding: 10px 22px;
-    background: #FFD488;
-    border: none;
-    border-radius: 18px;
-    font-weight: 600;
+    min-height: 44px;
+    padding: 10px 18px;
+    background: #eef0f3;
+    border: 2px solid rgba(15, 23, 42, 0.08);
+    border-radius: 999px;
+    font-weight: 800;
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -115,18 +320,25 @@ body {
 
 .btn-like:hover,
 .btn-open-comments:hover {
-    background: #E6A542;
+    background: rgba(230, 154, 42, 0.15);
+    border-color: rgba(230, 154, 42, 0.35);
 }
 
 .btn-like.liked {
-    background: #E06A4A;
-    color: white;
+    background: rgba(231, 111, 81, 0.16);
+    border-color: rgba(231, 111, 81, 0.35);
+    color: #b42318;
 }
 
 /* Like Counter */
 .like-count {
     font-weight: 700;
-    color: #4E342E;
+    color: var(--text-main, #1f2933);
+}
+
+.like-display {
+    font-weight: 700;
+    color: var(--text-muted, #6b7280);
 }
 
 /* =========================================================
@@ -155,9 +367,9 @@ body {
     margin-bottom: 15px;
     padding: 12px;
     border-radius: 12px;
-    border: 1px solid #e2c8a6;
-    background: #FFF8E1;
-    font-size: 1rem;
+    border: 2px solid rgba(15, 23, 42, 0.10);
+    background: #f8fafc;
+    font-size: 1.05rem;
 }
 
 
@@ -170,7 +382,7 @@ body {
 
 .post-comments {
     margin-top: 14px;
-    border-left: 3px solid #f0ad4e;
+    border-left: 3px solid rgba(230, 154, 42, 0.65);
     padding-left: 12px;
     display: flex;
     flex-direction: column;
@@ -179,18 +391,18 @@ body {
 
 /* Each comment bubble */
 .comment-item {
-    background: #fff8e6;
+    background: #f8fafc;
     padding: 10px 14px;
     border-radius: 10px;
-    border: 1px solid #f3d19c;
+    border: 1px solid rgba(15, 23, 42, 0.10);
     box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-    font-size: 0.9rem;
+    font-size: 0.95rem;
     line-height: 1.3;
 }
 
 /* Username */
 .comment-item strong {
-    color: #d48a1e;
+    color: var(--primary, #e69a2a);
     font-weight: 700;
 }
 
@@ -262,7 +474,7 @@ body {
 
 .comment-close-btn {
     border: none;
-    background: #B33A3A;
+    background: #b91c1c;
     color: white;
     font-size: 1.3rem;
     width: 35px;
@@ -280,22 +492,26 @@ body {
     margin-bottom: 10px;
     padding: 12px;
     border-radius: 12px;
-    border: 1px solid #e2c8a6;
-    background: #FFF8E1;
-    font-size: 1rem;
+    border: 2px solid rgba(15, 23, 42, 0.10);
+    background: #f8fafc;
+    font-size: 1.05rem;
 }
 
 /* Button */
 .comment-send-btn {
     width: 100%;
     padding: 14px;
-    background: #E69A2A;
+    background: var(--primary, #e69a2a);
     border: none;
     border-radius: 12px;
     color: white;
     font-size: 1.1rem;
     font-weight: 700;
     cursor: pointer;
+}
+
+.comment-send-btn:hover {
+    background: var(--primary-dark, #c77a10);
 }
 
 
@@ -307,10 +523,10 @@ body {
     max-width: 750px;
     margin: 40px auto;
     padding: 22px;
-    background: #ffffff;
+    background: var(--bg-card, #ffffff);
     border-radius: 16px;
-    border: 1.5px solid #E5D3B3;
-    box-shadow: 0 4px 18px rgba(0,0,0,0.08);
+    border: 1px solid rgba(15, 23, 42, 0.10);
+    box-shadow: var(--shadow-soft, 0 8px 24px rgba(0,0,0,0.06));
     display: none;
 }
 
@@ -319,17 +535,17 @@ body {
 .post-form-container select {
     width: 100%;
     padding: 14px;
-    font-size: 1rem;
+    font-size: 1.05rem;
     border-radius: 12px;
-    background: #FFF8E1;
-    border: 1.5px solid #E5D3B3;
+    background: #f8fafc;
+    border: 2px solid rgba(15, 23, 42, 0.10);
     margin-bottom: 16px;
 }
 
 .post-submit-btn {
     width: 100%;
     padding: 14px;
-    background: #E69A2A;
+    background: var(--primary, #e69a2a);
     border: none;
     color: white;
     font-size: 1.1rem;
@@ -338,51 +554,60 @@ body {
     cursor: pointer;
 }
 
+.post-submit-btn:hover {
+    background: var(--primary-dark, #c77a10);
+}
+
 
 /* =========================================================
    PEOPLE YOU MAY KNOW
 ========================================================= */
 .people-scroll {
-  margin-left:7vw;
-  justify-content: center;
-   width:86vw;
     display: flex;
-    height:300px;
-    align-items: center;
-    gap: 20px;
-    overflow-x: hidden;
-    padding-bottom: 10px;
+    align-items: stretch;
+    gap: 12px;
+    overflow-x: auto;
+    padding: 6px 6px 14px;
+    scroll-snap-type: x mandatory;
+}
+
+.people-scroll::-webkit-scrollbar {
+    display: none;
 }
 
 .people-card {
-  width:200px;
-    flex: 0 0 170px;
-    background: white;
-    border-radius: 14px;
-    padding: 18px;
-    height:250px;
-    
+    width: 220px;
+    flex: 0 0 220px;
+    background: var(--bg-card, #ffffff);
+    border-radius: var(--radius-lg, 18px);
+    padding: 16px;
     text-align: center;
-    border: 1px solid #E5D3B3;
-    box-shadow: 0 3px 12px rgba(0,0,0,0.06);
+    border: 1px solid rgba(15, 23, 42, 0.10);
+    box-shadow: var(--shadow-soft, 0 8px 24px rgba(0,0,0,0.06));
+    scroll-snap-align: start;
 }
 
 .people-avatar {
-    width: 80px;
-    height: 100px;
+    width: 86px;
+    height: 86px;
     border-radius: 50%;
     object-fit: cover;
 }
 
 .btn-add {
-    margin-top: 10px;
-    padding: 8px 16px;
-    background: #E69A2A;
+    margin-top: 12px;
+    min-height: 44px;
+    padding: 10px 14px;
+    background: var(--primary, #e69a2a);
     border: none;
     color: white;
     border-radius: 8px;
     cursor: pointer;
-    margin-top: 20px;
+    font-weight: 800;
+}
+
+.btn-add:hover {
+    background: var(--primary-dark, #c77a10);
 }
 
 
@@ -392,8 +617,8 @@ body {
  *  INSTITUTION MAIN SECTION
  ********************************************/
 .institution-section {
-    padding: 20px;
-    margin-top: 20px;
+    padding: 0;
+    margin-top: 12px;
 }
 
 /********************************************
@@ -413,11 +638,12 @@ body {
 }
 
 .insti-btn {
-    padding: 8px 14px;
-    border: none;
-    background: #f0f0f0;
-    color: #444;
-    border-radius: 10px;
+    min-height: 44px;
+    padding: 10px 14px;
+    border: 2px solid rgba(15, 23, 42, 0.10);
+    background: #eef0f3;
+    color: var(--text-main, #1f2933);
+    border-radius: 999px;
     cursor: pointer;
     font-weight: 600;
     transition: 0.25s ease;
@@ -428,7 +654,7 @@ body {
 }
 
 .insti-btn.active {
-    background: #E69A2A;
+    background: var(--primary, #e69a2a);
     color: white;
     box-shadow: 0 3px 8px rgba(230,154,42,0.35);
 }
@@ -522,7 +748,7 @@ body {
 .stat-box span {
     font-size: 1.5rem;
     font-weight: 700;
-    color: #E69A2A;
+    color: var(--primary, #e69a2a);
 }
 
 .stat-box label {
@@ -538,7 +764,7 @@ body {
 .insti-view-events-btn {
     width: 100%;
     padding: 14px;
-    background: #E69A2A;
+    background: var(--primary, #e69a2a);
     color: white;
     font-weight: 700;
     border-radius: 12px;
@@ -550,7 +776,7 @@ body {
 }
 
 .insti-view-events-btn:hover {
-    background: #C97C19;
+    background: var(--primary-dark, #c77a10);
     transform: translateY(-2px);
 }
 
@@ -570,7 +796,7 @@ body {
 .back-btn {
     background: none;
     border: none;
-    color: #E69A2A;
+    color: var(--primary, #e69a2a);
     font-size: 1rem;
     margin-bottom: 12px;
     cursor: pointer;
@@ -610,7 +836,7 @@ body {
 }
 
 .event-card .btn {
-    background: #E69A2A;
+    background: var(--primary, #e69a2a);
     border: none;
     padding: 8px 14px;
     border-radius: 10px;
@@ -621,7 +847,7 @@ body {
 }
 
 .event-card .btn:hover {
-    background: #C97C19;
+    background: var(--primary-dark, #c77a10);
 }
 
 
@@ -629,16 +855,17 @@ body {
 
 
   .btn-create-post {
-    background: linear-gradient(135deg, #E69A2A, #D38B1F);
-    color: white;
-    padding: 10px 22px;
+    background: linear-gradient(135deg, var(--primary, #e69a2a), var(--accent, #e76f51));
+    color: #ffffff;
+    min-height: 44px;
+    padding: 10px 18px;
     font-size: 1rem;
-    font-weight: 700;
-    border-radius: 10px;
+    font-weight: 800;
+    border-radius: 999px;
     border: none;
     cursor: pointer;
-    transition: 0.25s ease;
-    box-shadow: 0 3px 8px rgba(230, 154, 42, 0.25);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    box-shadow: 0 8px 18px rgba(230, 154, 42, 0.22);
     white-space: nowrap;
 }
 
@@ -647,9 +874,8 @@ body {
 
 
 .btn-create-post:hover {
-    background: linear-gradient(135deg, #C97C19, #B56A11);
     transform: translateY(-2px);
-    box-shadow: 0 6px 14px rgba(230, 154, 42, 0.35);
+    box-shadow: var(--shadow-hover, 0 14px 40px rgba(0,0,0,0.12));
 }
 
 .btn-create-post:active {
@@ -682,6 +908,20 @@ body {
     .insti-stats {
         flex-direction: column;
     }
+
+    .section-head {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .section-head-actions {
+        width: 100%;
+    }
+
+    .btn-create-post {
+        width: 100%;
+        justify-content: center;
+    }
 }
 
 /* =========================================================
@@ -691,6 +931,7 @@ body {
     .post-actions {
         flex-direction: column;
         gap: 10px;
+        align-items: stretch;
     }
 
     .btn-like,
@@ -703,3 +944,29 @@ body {
         padding: 20px;
     }
 }
+
+@media (max-width: 480px) {
+    .community-page {
+        width: 94%;
+        padding-top: 18px;
+    }
+
+    .post-card {
+        padding: 16px;
+    }
+}
+
+@keyframes hvFadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+
+

@@ -78,10 +78,20 @@
 </div>
 
 
-<section class="community-feed">
+<main class="community-page">
 
-    <h2 class="section-title">Welcome!  
-      Share your experience in Community!</h2>
+<section id="communityFeed" class="community-feed hv-section" aria-label="Community Feed">
+
+    <div class="section-head">
+        <h2 class="section-title">Welcome!  
+          Share your experience in Community!</h2>
+
+        <div class="section-head-actions">
+            <button class="btn-create-post" id="openPostFormDesktop" type="button">Create Post</button>
+        </div>
+    </div>
+
+    <div class="section-body" id="communityFeedBody">
 
     <div class="feed-list">
 
@@ -122,6 +132,8 @@
 
     </div>
 
+    </div>
+
 </section>
 
 
@@ -130,12 +142,12 @@
 
 
 
+<section id="peopleSection" class="people-section hv-section" aria-label="People You May Know">
+    <div class="section-head">
+        <h2 class="section-title">People You May Know</h2>
+    </div>
 
-
-
-
-<section class="people-section">
-    <h2 class="section-title">People You May Know</h2>
+    <div class="section-body" id="peopleSectionBody">
 
     <div class="people-scroll">
         
@@ -150,20 +162,32 @@
         </div>
 
     </div>
-</section>
 
-
-<section class="institution-section">
-
-    <div class="insti-header">
-        <h2 class="section-title">Institutions</h2>
-
-        <div class="insti-tabs" id="instiTabs"></div>
     </div>
 
-    <div id="instiPanelsContainer"></div>
+</section>
+
+
+<section id="institutionSection" class="institution-section hv-section" aria-label="Institutions">
+
+    <div class="section-head">
+        <h2 class="section-title">Institutions</h2>
+    </div>
+
+    <div class="section-body" id="institutionSectionBody">
+
+        <div class="insti-header">
+            <div class="insti-tabs" id="instiTabs"></div>
+        </div>
+
+        <div id="instiPanelsContainer"></div>
+
+    </div>
 
 </section>
+
+
+</main>
 
 
 

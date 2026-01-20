@@ -21,6 +21,59 @@ async function getMyFriends(req, res) {
 }
 
 
+const { sendMail } = require("../mailer");
+
+async function sendFriendRequest(req, res) {
+  try {
+    const userId = req.user?.id;
+    const friendId = Number(req.body.friendId);
+
+    if (!userId) return res.status(401).json({ message: "Unauthorized" });
+    if (!Number.isInteger(friendId)) return res.status(400).json({ message: "Invalid friendId" });
+
+
+    const me = await pool.query(`SELECT id, name, email FROM users WHERE id=$1`, [userId]);
+    if (me.rowCount === 0) return res.status(401).json({ message: "Unauthorized" });
+
+    const result = await userFriendsModel.createFriendRequest(userId, friendId);
+
+    if (!result.ok) {
+
+      const status = (result.code === "ALREADY_FRIENDS") ? 409 : 400;
+      return res.status(status).json(result);
+    }
+
+  
+    if (!result.autoAccepted) {
+      const friendEmail = result.friend.email;
+      const friendName = result.friend.name || "there";
+      const myName = me.rows[0].name || "Someone";
+
+  
+      await sendMail({
+        to: friendEmail,
+        subject: "You received a friend request",
+        html: `
+        <h1>From Cycling Without Age</h1>
+          <div style="font-family:Arial,sans-serif;line-height:1.6">
+            <h2>Hi ${friendName},</h2>
+            <p><b>${myName}</b> sent you a friend request on <b>Happy Volunteer</b>.</p>
+            <p>Open the app to accept or reject the request.</p>
+            <p style="color:#666;font-size:12px">If you didn’t expect this, you can ignore this email.</p>
+          </div>
+        `
+      });
+    }
+
+    return res.status(201).json(result);
+  } catch (error) {
+    console.error("Send friend request error:", error);
+    return res.status(500).json({ message: "Failed to send friend request" });
+  }
+}
+
+
+
 async function addFriend(req, res) {
   try {
     const userId = req.user.id;
@@ -104,4 +157,5 @@ module.exports = {
   checkIfFriend,
   remobeFriend,
   getAllFriendsSignUpEvents,
+  sendFriendRequest,
 };

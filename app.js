@@ -243,7 +243,7 @@ app.get('/volunteer/user/profile/:id',volunteerUserController.getPublicVolunteer
 
 // ------ VOLUNTEER FRIENDS CONTROLLER -----
 
-app.post('/volunteer/friends/add', authenticate, userFriendController.addFriend);
+app.post('/volunteer/friends/add', authenticate, userFriendController.sendFriendRequest);
 app.get('/volunteer/friends/followers/count', authenticate, userFriendController.getFollowersCount);
 app.get('/volunteer/friends/me', authenticate, userFriendController.getMyFriends);
 app.delete('/volunteer/friends/remove/:friendId', authenticate, userFriendController.remobeFriend);

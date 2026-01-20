@@ -125,6 +125,95 @@ async function getAllFriendsSignUpEvents(userId) {
   return Array.from(map.values());
 }
 
+async function createFriendRequest(userId, friendId) {
+  if (userId === friendId) {
+    return { ok: false, code: "SELF", message: "You cannot friend request yourself." };
+  }
+
+
+  const target = await pool.query(`SELECT id, name, email FROM users WHERE id = $1`, [friendId]);
+  if (target.rowCount === 0) {
+    return { ok: false, code: "NOT_FOUND", message: "User not found." };
+  }
+
+
+  const alreadyFriend = await pool.query(
+    `SELECT 1 FROM userfriends 
+     WHERE (userid=$1 AND friendid=$2 AND status='active')
+        OR (userid=$2 AND friendid=$1 AND status='active')
+     LIMIT 1`,
+    [userId, friendId]
+  );
+  if (alreadyFriend.rowCount > 0) {
+    return { ok: false, code: "ALREADY_FRIENDS", message: "You are already friends." };
+  }
+
+  const incoming = await pool.query(
+    `SELECT requestid, status 
+     FROM friendrequests
+     WHERE userid=$2 AND friendid=$1 AND requesttype='friend'
+     ORDER BY requestdate DESC
+     LIMIT 1`,
+    [userId, friendId]
+  );
+
+  if (incoming.rowCount > 0 && incoming.rows[0].status === "pending") {
+
+    await pool.query("BEGIN");
+
+    try {
+      await pool.query(
+        `UPDATE friendrequests 
+         SET status='accepted'
+         WHERE requestid=$1`,
+        [incoming.rows[0].requestid]
+      );
+
+      await pool.query(
+        `INSERT INTO userfriends (userid, friendid, status)
+         VALUES ($1, $2, 'active')
+         ON CONFLICT (userid, friendid) DO UPDATE SET status='active'`,
+        [userId, friendId]
+      );
+      await pool.query(
+        `INSERT INTO userfriends (userid, friendid, status)
+         VALUES ($1, $2, 'active')
+         ON CONFLICT (userid, friendid) DO UPDATE SET status='active'`,
+        [friendId, userId]
+      );
+
+      await pool.query("COMMIT");
+
+      return {
+        ok: true,
+        autoAccepted: true,
+        friend: target.rows[0]
+      };
+    } catch (e) {
+      await pool.query("ROLLBACK");
+      throw e;
+    }
+  }
+
+ 
+  const inserted = await pool.query(
+    `INSERT INTO friendrequests (userid, friendid, requesttype, status)
+     VALUES ($1, $2, 'friend', 'pending')
+     ON CONFLICT (userid, friendid)
+     DO UPDATE SET status='pending', requestdate=NOW()
+     RETURNING requestid, userid, friendid, status, requestdate`,
+    [userId, friendId]
+  );
+
+  return {
+    ok: true,
+    autoAccepted: false,
+    request: inserted.rows[0],
+    friend: target.rows[0]
+  };
+}
+
+
 
 
 module.exports = {
@@ -133,4 +222,5 @@ module.exports = {
   removeFriend,
   getFollowersCount,
   isFriend,getAllFriendsSignUpEvents,
+  createFriendRequest,
 };

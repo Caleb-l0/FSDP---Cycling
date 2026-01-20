@@ -1,9 +1,26 @@
 const eventList = document.getElementById('eventList');
 const EVENTS_ENDPOINT = `https://fsdp-cycling-ltey.onrender.com/volunteer/events`;
+const SIGNED_EVENTS_ENDPOINT = `https://fsdp-cycling-ltey.onrender.com/volunteer/signed-events`;
+const FRIEND_SIGNUP_EVENTS_ENDPOINT = `https://fsdp-cycling-ltey.onrender.com/volunteer/friends/signup-events`;
+
+let allEvents = [];
+let signedEventIds = new Set();
+let friendSignedEventIds = null;
+let activeFilter = 'all';
 
 document.addEventListener('DOMContentLoaded', () => {
+  bindFilterButtons();
   loadEvents();
 });
+
+function bindFilterButtons() {
+  document.querySelectorAll('.event-filter-btn').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const filter = btn.dataset.filter;
+      await applyFilter(filter);
+    });
+  });
+}
 
 async function loadEvents() {
   setStatusMessage('loading', 'Loading volunteer events...');
@@ -16,8 +33,11 @@ async function loadEvents() {
     }
 
     const events = await response.json();
+    allEvents = Array.isArray(events) ? events : [];
 
-    if (!Array.isArray(events) || events.length === 0) {
+    signedEventIds = await fetchSignedUpEventIds();
+
+    if (!Array.isArray(allEvents) || allEvents.length === 0) {
       setStatusMessage(
         'empty',
         'No events available for sign up at the moment. Please check back later!'
@@ -25,7 +45,7 @@ async function loadEvents() {
       return;
     }
 
-    renderEvents(events);
+    await applyFilter('all');
 
   } catch (error) {
     console.error('Error loading events:', error);
@@ -34,6 +54,143 @@ async function loadEvents() {
       'Failed to load events. Please check your network or try again later.'
     );
   }
+}
+
+async function fetchSignedUpEventIds() {
+  const token = localStorage.getItem('token');
+  if (!token) return new Set();
+
+  try {
+    const response = await fetch(SIGNED_EVENTS_ENDPOINT, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    });
+
+    if (!response.ok) {
+      return new Set();
+    }
+
+    const signedEvents = await response.json();
+    if (!Array.isArray(signedEvents)) return new Set();
+
+    const ids = new Set();
+    signedEvents.forEach(e => {
+      const id = e.eventid ?? e.EventId ?? e.eventId;
+      if (id != null) ids.add(String(id));
+    });
+    return ids;
+  } catch (e) {
+    return new Set();
+  }
+}
+
+async function fetchFriendSignedEventIds() {
+  if (friendSignedEventIds) return friendSignedEventIds;
+
+  const token = localStorage.getItem('token');
+  if (!token) {
+    friendSignedEventIds = new Set();
+    return friendSignedEventIds;
+  }
+
+  try {
+    const response = await fetch(FRIEND_SIGNUP_EVENTS_ENDPOINT, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+
+    if (!response.ok) {
+      friendSignedEventIds = new Set();
+      return friendSignedEventIds;
+    }
+
+    const friends = await response.json();
+    const ids = new Set();
+
+    if (Array.isArray(friends)) {
+      friends.forEach(f => {
+        (f.events || []).forEach(e => {
+          if (e.eventid != null) ids.add(String(e.eventid));
+        });
+      });
+    }
+
+    friendSignedEventIds = ids;
+    return friendSignedEventIds;
+  } catch (e) {
+    friendSignedEventIds = new Set();
+    return friendSignedEventIds;
+  }
+}
+
+function setActiveFilterButton(filter) {
+  document.querySelectorAll('.event-filter-btn').forEach(b => {
+    const isActive = b.dataset.filter === filter;
+    b.classList.toggle('active', isActive);
+    b.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+  });
+}
+
+async function applyFilter(filter) {
+  activeFilter = filter;
+  setActiveFilterButton(filter);
+
+  if (!Array.isArray(allEvents) || allEvents.length === 0) {
+    setStatusMessage('empty', 'No events available.');
+    return;
+  }
+
+  let filtered = [...allEvents];
+
+  if (filter === 'latest') {
+    filtered.sort((a, b) => new Date(b.eventdate).getTime() - new Date(a.eventdate).getTime());
+  }
+
+  if (filter === 'weekend') {
+    filtered = filtered.filter(e => {
+      const d = new Date(e.eventdate);
+      const day = d.getDay();
+      return day === 0 || day === 6;
+    });
+  }
+
+  if (filter === 'near') {
+    const coords = await getUserCoords();
+    if (!coords) {
+      setStatusMessage('empty', 'Please allow location access to use “Near my house”.');
+      return;
+    }
+
+    const withDistance = filtered
+      .filter(e => e.latitude && e.longitude)
+      .map(e => ({
+        ...e,
+        _distanceKm: getDistance(coords.lat, coords.lng, e.latitude, e.longitude)
+      }))
+      .sort((a, b) => a._distanceKm - b._distanceKm);
+
+    if (withDistance.length === 0) {
+      setStatusMessage('empty', 'No events have location coordinates available for distance sorting.');
+      return;
+    }
+
+    filtered = withDistance;
+  }
+
+  if (filter === 'friends') {
+    const friendIds = await fetchFriendSignedEventIds();
+    filtered = filtered.filter(e => friendIds.has(String(e.eventid)));
+
+    if (filtered.length === 0) {
+      setStatusMessage('empty', 'No events found that your friends signed up for.');
+      return;
+    }
+  }
+
+  renderEvents(filtered);
 }
 
 function renderEvents(events) {
@@ -51,28 +208,90 @@ function renderEvents(events) {
       ? `Required Volunteers: ${event.requiredvolunteers}`
       : '';
 
+    const isSignedUp = signedEventIds.has(String(event.eventid));
+    const distanceText = event._distanceKm != null ? `<p><strong>Distance:</strong> ${event._distanceKm.toFixed(1)} km</p>` : '';
+
     card.innerHTML = `
-      <div class="event-details">
+      <div class="event-details" role="button" tabindex="0">
+        ${isSignedUp ? `<div class="signup-badge" aria-label="You have signed up">You Have Signed Up</div>` : ''}
         <h3>${title}</h3>
         <p><strong>Date:</strong> ${date}</p>
         <p><strong>Location:</strong> ${location}</p>
+        ${distanceText}
         <p>${description}</p>
         ${required ? `<p>${required}</p>` : ''}
+        <div class="event-actions"></div>
       </div>
     `;
+
+    const actions = card.querySelector('.event-actions');
+
+    const details = card.querySelector('.event-details');
+    details.addEventListener('click', () => openEventDetail(event.eventid));
+    details.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        openEventDetail(event.eventid);
+      }
+    });
 
     const button = document.createElement('button');
     button.classList.add('signup-btn');
     button.type = 'button';
-    button.textContent = 'Sign Up';
+    button.textContent = isSignedUp ? 'You Have Signed Up' : 'Sign Up';
+    button.disabled = isSignedUp;
 
-    button.addEventListener('click', () =>
-      signUp(title, event.eventid)
-    );
+    button.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (isSignedUp) return;
+      signUp(title, event.eventid);
+    });
 
-    card.querySelector('.event-details').appendChild(button);
+    actions.appendChild(button);
     eventList.appendChild(card);
   });
+}
+
+function openEventDetail(eventId) {
+  window.location.href = `./volunteer_event_detail.html?eventId=${eventId}`;
+}
+
+async function getUserCoords() {
+  const storedLat = parseFloat(localStorage.getItem('userLat'));
+  const storedLng = parseFloat(localStorage.getItem('userLng'));
+  if (!Number.isNaN(storedLat) && !Number.isNaN(storedLng)) {
+    return { lat: storedLat, lng: storedLng };
+  }
+
+  if (!navigator.geolocation) return null;
+
+  return new Promise((resolve) => {
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const lat = position.coords.latitude;
+        const lng = position.coords.longitude;
+        localStorage.setItem('userLat', String(lat));
+        localStorage.setItem('userLng', String(lng));
+        resolve({ lat, lng });
+      },
+      () => resolve(null),
+      { enableHighAccuracy: true, timeout: 8000 }
+    );
+  });
+}
+
+function getDistance(lat1, lon1, lat2, lon2) {
+  const R = 6371;
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLon = (lon2 - lon1) * Math.PI / 180;
+
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos(lat1 * Math.PI / 180) *
+    Math.cos(lat2 * Math.PI / 180) *
+    Math.sin(dLon / 2) ** 2;
+
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 }
 
 function setStatusMessage(type, message) {
@@ -125,6 +344,9 @@ async function signUp(eventTitle, eventId) {
     }
 
     alert(`🎉 You have successfully signed up for "${eventTitle}"!`);
+
+    signedEventIds.add(String(eventId));
+    await applyFilter(activeFilter);
 
   } catch (error) {
     console.error('Signup error:', error);
