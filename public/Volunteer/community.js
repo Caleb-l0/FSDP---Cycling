@@ -222,7 +222,9 @@ function attachCommentEvents() {
             const overlay = document.getElementById("globalCommentOverlay");
             const input = document.getElementById("globalCommentInput");
             if (panel) panel.classList.add("show");
+            
             if (overlay) overlay.style.display = "block";
+            document.body.style.overflow = "hidden";
             if (input) input.value = "";
         });
 
@@ -259,8 +261,11 @@ const globalOverlay = document.getElementById("globalCommentOverlay");
 if (globalOverlay) globalOverlay.addEventListener("click", closeCommentBox);
 
 function closeCommentBox() {
+
     document.getElementById("globalCommentPanel").classList.remove("show");
     document.getElementById("globalCommentOverlay").style.display = "none";
+        document.body.style.overflow = "";
+    
 }
 
 
