@@ -202,6 +202,8 @@ if (frSend) {
         setFriendUI('friends');
         setPhoneVisibility(true);
         showToast('You are already friends.');
+        showCongrats('You are already friends!');
+        setTimeout(() => window.location.reload(), 1400);
         return;
       }
 
@@ -224,13 +226,13 @@ if (frSend) {
         setPhoneVisibility(true);
         showToast('Friend added successfully.');
         showCongrats('Friend added successfully!');
-        setTimeout(() => window.location.reload(), 900);
+        setTimeout(() => window.location.reload(), 1400);
       } else {
         setFriendUI('pending_outgoing');
         setPhoneVisibility(false);
         showToast('Friend request sent successfully.');
         showCongrats('Friend request sent successfully!');
-        setTimeout(() => window.location.reload(), 900);
+        setTimeout(() => window.location.reload(), 1400);
       }
     } catch (err) {
       console.error(err);
@@ -309,6 +311,8 @@ if (rmConfirm) {
       setFriendUI('none');
       setPhoneVisibility(false);
       showToast('Removed friend successfully.');
+      showCongrats('Removed friend successfully.');
+      setTimeout(() => window.location.reload(), 1400);
     } catch (err) {
       console.error(err);
       showRemoveFriendError('Failed to remove friend. Please try again.');
