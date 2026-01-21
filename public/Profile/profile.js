@@ -18,6 +18,11 @@ async function loadProfile() {
     const params = new URLSearchParams(window.location.search);
     const viewUserId = params.get('userId');
 
+    const editBtnEl = document.getElementById("editBtn");
+    const saveBtnEl = document.getElementById("saveBtn");
+    const editSettingsBtnEl = document.getElementById("editSettingsBtn");
+    const saveSettingsBtnEl = document.getElementById("saveSettingsBtn");
+
     let data;
     let user;
 
@@ -30,10 +35,10 @@ async function loadProfile() {
       const title = document.getElementById('profileTitle');
       if (title) title.textContent = 'User Profile';
 
-      if (editBtn) editBtn.style.display = 'none';
-      if (saveBtn) saveBtn.style.display = 'none';
-      if (editSettingsBtn) editSettingsBtn.style.display = 'none';
-      if (saveSettingsBtn) saveSettingsBtn.style.display = 'none';
+      if (editBtnEl) editBtnEl.style.display = 'none';
+      if (saveBtnEl) saveBtnEl.style.display = 'none';
+      if (editSettingsBtnEl) editSettingsBtnEl.style.display = 'none';
+      if (saveSettingsBtnEl) saveSettingsBtnEl.style.display = 'none';
 
       const logoutBtn = document.getElementById('logoutBtn');
       if (logoutBtn) logoutBtn.style.display = 'none';
