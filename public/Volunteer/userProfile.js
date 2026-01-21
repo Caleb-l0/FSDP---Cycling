@@ -5,6 +5,28 @@ const userId = profileParams.get("userId");
 const openWa = profileParams.get('openWa') === '1';
 const waTextParam = profileParams.get('waText');
 
+const addBtn = document.getElementById("hvop-add-friend-btn");
+
+let hvAutoWaTried = false;
+
+function tryAutoOpenWhatsApp() {
+  if (hvAutoWaTried) return;
+  if (!openWa) return;
+  const waBtn = document.getElementById('hvop-whatsapp-btn');
+  const isFriend = addBtn?.dataset?.state === 'remove';
+  if (!waBtn || !isFriend || waBtn.style.display === 'none') return;
+  hvAutoWaTried = true;
+  setTimeout(() => {
+    waBtn.click();
+    try {
+      const newUrl = `${window.location.pathname}?userId=${encodeURIComponent(userId)}`;
+      window.history.replaceState({}, '', newUrl);
+    } catch (e) {
+      /* ignore */
+    }
+  }, 250);
+}
+
 console.log('[userProfile] Loaded with userId:', userId, 'token exists:', !!token);
 
 if (!token) {
@@ -45,15 +67,16 @@ async function checkIfFriend() {
 
     setFriendUI(data.status);
     setPhoneVisibility(data.status === 'friends');
+    tryAutoOpenWhatsApp();
   }
   catch (err) {
     console.error("Check friend error", err);
   }
 }
 
-checkIfFriend();
-
-const addBtn = document.getElementById("hvop-add-friend-btn");
+if (addBtn) {
+  checkIfFriend();
+}
 
 const frModal = document.getElementById('hvop-fr-modal');
 const frReason = document.getElementById('hvop-fr-reason');
@@ -557,17 +580,7 @@ function renderContact(p) {
   const isFriend = addBtn?.dataset?.state === 'remove';
   setPhoneVisibility(Boolean(isFriend));
 
-  if (openWa && waBtn && isFriend) {
-    setTimeout(() => {
-      waBtn.click();
-      try {
-        const newUrl = `${window.location.pathname}?userId=${encodeURIComponent(userId)}`;
-        window.history.replaceState({}, '', newUrl);
-      } catch (e) {
-        /* ignore */
-      }
-    }, 350);
-  }
+  tryAutoOpenWhatsApp();
 }
 
 function renderAdvantages(p) {
