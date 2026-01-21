@@ -10,6 +10,9 @@ async function getUserById(id) {
         id,
         name,
         email,
+        phone,
+        phonenumber,
+        advantages,
         role,
         level,
         joindate

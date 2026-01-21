@@ -49,14 +49,18 @@ async function getFollowersCount(userId) {
 }
 
 async function removeFriend(userId, friendId) {
-  const result = await pool.query(`
+  const result = await pool.query(
+    `
     UPDATE userfriends
     SET status = 'removed'
-    WHERE userid = $1 AND friendid = $2
+    WHERE (userid = $1 AND friendid = $2)
+       OR (userid = $2 AND friendid = $1)
     RETURNING *
-  `, [userId, friendId]);
+    `,
+    [userId, friendId]
+  );
 
-  return result.rows[0];
+  return result.rows;
 }
 
 async function isFriend(userId, friendId) {

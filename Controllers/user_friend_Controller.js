@@ -93,8 +93,39 @@ async function remobeFriend(req, res) {
   try {
     const userId = req.user.id;
     const friendId = parseInt(req.params.friendId);
+
+    const removeReason = (req.body?.removeReason ?? req.body?.reason ?? req.query?.reason ?? "").toString().trim();
+
+    const me = await pool.query(`SELECT id, name, email FROM users WHERE id=$1`, [userId]);
+    const friend = await pool.query(`SELECT id, name, email FROM users WHERE id=$1`, [friendId]);
+    if (me.rowCount === 0) return res.status(401).json({ message: "Unauthorized" });
+    if (friend.rowCount === 0) return res.status(404).json({ message: "User not found" });
+
     await userFriendsModel.removeFriend(userId, friendId);
-    return res.status(200).json({ message: "Friend removed" });
+
+    const friendEmail = friend.rows[0].email;
+    const friendName = friend.rows[0].name || "there";
+    const myName = me.rows[0].name || "Someone";
+
+    const reasonBlock = removeReason
+      ? `<p><b>Reason:</b> ${escapeHtml(removeReason)}</p>`
+      : "";
+
+    await transporter.sendMail({
+      to: friendEmail,
+      subject: "Friend removed",
+      html: `
+      <h1>From Cycling Without Age</h1>
+        <div style="font-family:Arial,sans-serif;line-height:1.6">
+          <h2>Hi ${friendName},</h2>
+          <p><b>${myName}</b> removed you from their friends list on <b>Happy Volunteer</b>.</p>
+          ${reasonBlock}
+          <p style="color:#666;font-size:12px">If you think this was a mistake, you can reach out or send a new friend request.</p>
+        </div>
+      `
+    });
+
+    return res.status(200).json({ message: "Friend removed successfully" });
   }
   catch (error) {
     console.error("Remove friend error:", error);

@@ -19,6 +19,9 @@ async function getPublicVolunteerProfile(req, res) {
       level: user.level,
       joindate: user.joindate,
       role: user.role,
+      email: user.email,
+      phone: user.phone ?? user.phonenumber ?? null,
+      advantages: user.advantages ?? null,
 
       total_events: exp.total_events,
       first_event_date: exp.first_event_date,

@@ -50,6 +50,25 @@ const frError = document.getElementById('hvop-fr-error');
 const frCancel = document.getElementById('hvop-fr-cancel');
 const frSend = document.getElementById('hvop-fr-send');
 
+const rmModal = document.getElementById('hvop-rm-modal');
+const rmReason = document.getElementById('hvop-rm-reason');
+const rmError = document.getElementById('hvop-rm-error');
+const rmCancel = document.getElementById('hvop-rm-cancel');
+const rmConfirm = document.getElementById('hvop-rm-confirm');
+
+const toastEl = document.getElementById('hvop-toast');
+let toastTimer;
+
+function showToast(message) {
+  if (!toastEl) return;
+  toastEl.textContent = message;
+  toastEl.classList.add('is-show');
+  if (toastTimer) clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => {
+    toastEl.classList.remove('is-show');
+  }, 2200);
+}
+
 function openFriendRequestModal() {
   if (!frModal) return;
   frModal.classList.add('is-open');
@@ -131,6 +150,81 @@ if (frSend) {
   });
 }
 
+function openRemoveFriendModal() {
+  if (!rmModal) return;
+  rmModal.classList.add('is-open');
+  rmModal.setAttribute('aria-hidden', 'false');
+  if (rmError) {
+    rmError.style.display = 'none';
+    rmError.textContent = '';
+  }
+  if (rmReason) rmReason.value = '';
+  setTimeout(() => rmReason?.focus(), 0);
+}
+
+function closeRemoveFriendModal() {
+  if (!rmModal) return;
+  rmModal.classList.remove('is-open');
+  rmModal.setAttribute('aria-hidden', 'true');
+}
+
+function showRemoveFriendError(message) {
+  if (!rmError) return;
+  rmError.textContent = message;
+  rmError.style.display = 'block';
+}
+
+if (rmModal) {
+  rmModal.addEventListener('click', (e) => {
+    if (e.target && e.target.dataset && e.target.dataset.close === 'true') {
+      closeRemoveFriendModal();
+    }
+  });
+}
+
+if (rmCancel) {
+  rmCancel.addEventListener('click', closeRemoveFriendModal);
+}
+
+if (rmConfirm) {
+  rmConfirm.addEventListener('click', async () => {
+    try {
+      rmConfirm.disabled = true;
+      if (rmCancel) rmCancel.disabled = true;
+      if (rmError) {
+        rmError.style.display = 'none';
+        rmError.textContent = '';
+      }
+
+      const reason = (rmReason?.value || '').trim();
+      const res = await fetch(`${UserEndPoint}/volunteer/friends/remove/${userId}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({ removeReason: reason })
+      });
+
+      if (!res.ok) {
+        showRemoveFriendError('Failed to remove friend. Please try again.');
+        return;
+      }
+
+      closeRemoveFriendModal();
+      setFriendUI('none');
+      setPhoneVisibility(false);
+      showToast('Removed friend successfully.');
+    } catch (err) {
+      console.error(err);
+      showRemoveFriendError('Failed to remove friend. Please try again.');
+    } finally {
+      rmConfirm.disabled = false;
+      if (rmCancel) rmCancel.disabled = false;
+    }
+  });
+}
+
 addBtn.onclick = async () => {
   const state = addBtn.dataset.state;
 
@@ -139,18 +233,8 @@ addBtn.onclick = async () => {
       openFriendRequestModal();
       return;
     } else {
-      // ❌ Remove friend
-      const res = await fetch(`${UserEndPoint}/volunteer/friends/remove/${userId}`, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-
-      if (!res.ok) throw new Error("Remove failed");
-
-      setFriendUI('none');
-      setPhoneVisibility(false);
+      openRemoveFriendModal();
+      return;
     }
   } catch (err) {
     alert("Action failed");
@@ -261,12 +345,24 @@ function renderProfile(p) {
 function renderContact(p) {
   const emailEl = document.getElementById('hvop-email');
   const phoneEl = document.getElementById('hvop-phone');
+  const emptyEl = document.getElementById('hvop-contact-empty');
+  const phoneNote = document.getElementById('hvop-phone-note');
 
-  if (emailEl) emailEl.textContent = p.email ?? p.Email ?? '—';
+  const email = (p.email ?? p.Email ?? '').toString().trim();
+  const phone = (p.phone ?? p.phonenumber ?? p.phoneNumber ?? p.PhoneNumber ?? p.Phone ?? '').toString().trim();
+
+  if (emailEl) emailEl.textContent = email || '—';
 
   if (phoneEl) {
-    const phone = p.phone ?? p.phonenumber ?? p.phoneNumber ?? p.PhoneNumber ?? p.Phone ?? '';
     phoneEl.dataset.value = phone;
+  }
+
+  if (emptyEl) {
+    emptyEl.style.display = (!email && !phone) ? 'block' : 'none';
+  }
+
+  if (!phone && phoneNote) {
+    phoneNote.style.display = 'none';
   }
 
   // Only show phone if mutual friends
@@ -276,18 +372,16 @@ function renderContact(p) {
 
 function renderAdvantages(p) {
   const list = document.getElementById('hvop-advantages');
+  const empty = document.getElementById('hvop-advantages-empty');
   if (!list) return;
 
-  const items = [];
-  const level = Number(p.level ?? 0);
-  const totalEvents = Number(p.total_events ?? 0);
-
-  items.push(`Reliable volunteer with ${totalEvents} completed events.`);
-  items.push(`Volunteer tier: ${getTier(level)}.`);
-  items.push('Friendly communication and patient support for seniors.');
-  items.push('Experienced in community programmes and teamwork.');
+  const raw = (p.advantages ?? '').toString().trim();
+  const items = raw
+    ? raw.split(/\n|\r\n/).map(s => s.trim()).filter(Boolean)
+    : [];
 
   list.innerHTML = items.map(i => `<li>${i}</li>`).join('');
+  if (empty) empty.style.display = items.length === 0 ? 'block' : 'none';
 }
 
 function setOverview(i, val) {
