@@ -1,5 +1,9 @@
 const OrganizationRequestModel = require("../Models/OrganizationRequestModel");
 
+const pool = require("../Postgres_config");
+const transporter = require("../mailer");
+const NotificationModel = require("../Models/notification_model");
+
 
 // ======================================================
 // Organization Request Controller
@@ -120,8 +124,68 @@ async function getRequestById(req, res) {
 async function approveRequest(req, res) {
   const { id } = req.params;
   try {
+    const request = await OrganizationRequestModel.getRequestById(id);
     await OrganizationRequestModel.approveRequest(id);
     res.status(200).json({ message: "Request approved successfully" });
+
+    // Email + notify institution users (background)
+    if (request?.organizationid) {
+      const orgId = request.organizationid;
+      const eventName = request.eventname || 'Event';
+      const eventDate = request.eventdate;
+
+      setImmediate(async () => {
+        try {
+          const orgUsers = await pool.query(
+            `
+              SELECT u.id, u.email, u.name
+              FROM userorganizations uo
+              JOIN users u ON uo.userid = u.id
+              WHERE uo.organizationid = $1
+                AND LOWER(TRIM(u.role)) = 'institution'
+            `,
+            [orgId]
+          );
+
+          const rows = orgUsers.rows || [];
+          if (rows.length === 0) return;
+
+          const userIds = rows.map(r => r.id).filter(Boolean);
+          await NotificationModel.createNotificationsForUsers({
+            userIds,
+            type: 'APPLICATION_APPROVED',
+            title: 'Application approved',
+            message: `Your application has been approved for: ${eventName}.`,
+            payload: { requestId: request.requestid || id, organizationId: orgId, eventName, eventDate }
+          });
+
+          const subject = `Application Approved: ${eventName}`;
+          const html = `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+              <h2 style="color:#16a34a;">Application Approved</h2>
+              <p>Your institution application has been approved.</p>
+              <div style="background:#f8fafc;padding:16px;border-radius:10px;border:1px solid #e2e8f0;">
+                <p><strong>Event:</strong> ${eventName}</p>
+                ${eventDate ? `<p><strong>Date:</strong> ${new Date(eventDate).toLocaleString()}</p>` : ''}
+              </div>
+              <p>You can now assign the event head and provide the head information.</p>
+              <p style="color:#64748b;font-size:12px;margin-top:24px;">Automated email, please do not reply.</p>
+            </div>
+          `;
+
+          for (const u of rows) {
+            if (!u.email) continue;
+            try {
+              await transporter.sendMail({ to: u.email, subject, html });
+            } catch (e) {
+              console.error('[approveRequest] Failed to email institution user:', u.email, e);
+            }
+          }
+        } catch (e) {
+          console.error('[approveRequest] background notify/email failed:', e);
+        }
+      });
+    }
   } catch (error) {
     res.status(500).json({ message: "Server Error", error: error.message });
   }
@@ -134,8 +198,68 @@ async function approveRequest(req, res) {
 async function rejectRequest(req, res) {
   const { id } = req.params;
   try {
+    const request = await OrganizationRequestModel.getRequestById(id);
     await OrganizationRequestModel.rejectRequest(id);
     res.status(200).json({ message: "Request rejected successfully" });
+
+    // Email + notify institution users (background)
+    if (request?.organizationid) {
+      const orgId = request.organizationid;
+      const eventName = request.eventname || 'Event';
+      const eventDate = request.eventdate;
+
+      setImmediate(async () => {
+        try {
+          const orgUsers = await pool.query(
+            `
+              SELECT u.id, u.email, u.name
+              FROM userorganizations uo
+              JOIN users u ON uo.userid = u.id
+              WHERE uo.organizationid = $1
+                AND LOWER(TRIM(u.role)) = 'institution'
+            `,
+            [orgId]
+          );
+
+          const rows = orgUsers.rows || [];
+          if (rows.length === 0) return;
+
+          const userIds = rows.map(r => r.id).filter(Boolean);
+          await NotificationModel.createNotificationsForUsers({
+            userIds,
+            type: 'APPLICATION_REJECTED',
+            title: 'Application rejected',
+            message: `Your application was rejected for: ${eventName}.`,
+            payload: { requestId: request.requestid || id, organizationId: orgId, eventName, eventDate }
+          });
+
+          const subject = `Application Rejected: ${eventName}`;
+          const html = `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+              <h2 style="color:#dc2626;">Application Rejected</h2>
+              <p>Your institution application has been rejected.</p>
+              <div style="background:#f8fafc;padding:16px;border-radius:10px;border:1px solid #e2e8f0;">
+                <p><strong>Event:</strong> ${eventName}</p>
+                ${eventDate ? `<p><strong>Date:</strong> ${new Date(eventDate).toLocaleString()}</p>` : ''}
+              </div>
+              <p>You may apply again if the event becomes available later.</p>
+              <p style="color:#64748b;font-size:12px;margin-top:24px;">Automated email, please do not reply.</p>
+            </div>
+          `;
+
+          for (const u of rows) {
+            if (!u.email) continue;
+            try {
+              await transporter.sendMail({ to: u.email, subject, html });
+            } catch (e) {
+              console.error('[rejectRequest] Failed to email institution user:', u.email, e);
+            }
+          }
+        } catch (e) {
+          console.error('[rejectRequest] background notify/email failed:', e);
+        }
+      });
+    }
   } catch (error) {
     res.status(500).json({ message: "Server Error", error: error.message });
   }

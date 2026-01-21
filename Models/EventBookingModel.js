@@ -206,6 +206,67 @@ async function approveBookingRequest(bookingId, reviewedBy) {
 }
 
 // ----------------------------
+// Send Email Notification to All Volunteers (Event Head Assigned)
+// ----------------------------
+async function sendEventHeadAssignedToVolunteers(eventData, bookingData) {
+  try {
+    const volunteers = await getAllVolunteerEmails();
+    if (!volunteers || volunteers.length === 0) {
+      console.log("No volunteers found to notify");
+      return;
+    }
+
+    const eventName = eventData?.eventname || eventData?.EventName || "Event";
+    const eventDate = eventData?.eventdate || eventData?.EventDate;
+    const eventLocation = eventData?.location || eventData?.Location || "TBD";
+
+    const headName = bookingData?.session_head_name || bookingData?.eventHeadName || "Event Head";
+    const headContact = bookingData?.session_head_contact || bookingData?.eventHeadContact || "";
+    const headEmail = bookingData?.session_head_email || bookingData?.eventHeadEmail || "";
+    const headProfile = bookingData?.session_head_profile || bookingData?.eventHeadProfile || "";
+
+    const emailSubject = `Event Head Assigned: ${eventName}`;
+    const emailHtml = `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <h2 style="color: #16a34a;">Event Head Assigned</h2>
+        <p>Hello Volunteer, this is from Cycling Without Age.</p>
+        <p>The institution has assigned an event head. You can contact them if needed.</p>
+        <div style="background:#f8fafc;padding:16px;border-radius:10px;border:1px solid #e2e8f0;">
+          <p><strong>Event:</strong> ${eventName}</p>
+          ${eventDate ? `<p><strong>Date:</strong> ${new Date(eventDate).toLocaleString()}</p>` : ''}
+          <p><strong>Location:</strong> ${eventLocation}</p>
+        </div>
+        <div style="margin-top:14px;background:#ffffff;padding:16px;border-radius:10px;border:1px solid #e2e8f0;">
+          <p style="margin-top:0;"><strong>Event Head:</strong> ${headName}</p>
+          ${headContact ? `<p><strong>Contact:</strong> ${headContact}</p>` : ''}
+          ${headEmail ? `<p><strong>Email:</strong> ${headEmail}</p>` : ''}
+          ${headProfile ? `<p><strong>Profile:</strong> ${headProfile}</p>` : ''}
+        </div>
+        <p style="color:#64748b;font-size:12px;margin-top:24px;">Automated email, please do not reply.</p>
+      </div>
+    `;
+
+    const emailPromises = volunteers.map(async (volunteer) => {
+      try {
+        await transporter.sendMail({
+          from: process.env.EMAIL_USER,
+          to: volunteer.email,
+          subject: emailSubject,
+          html: emailHtml
+        });
+      } catch (emailError) {
+        console.error(`❌ Failed to send head-assigned email to ${volunteer.email}:`, emailError);
+      }
+    });
+
+    await Promise.all(emailPromises);
+    console.log(`✅ Event head assigned emails sent to ${volunteers.length} volunteers`);
+  } catch (err) {
+    console.error("Error sending event head assigned emails:", err);
+  }
+}
+
+// ----------------------------
 // Get All Volunteer Emails
 // ----------------------------
 async function getAllVolunteerEmails() {
@@ -409,5 +470,6 @@ module.exports = {
   hasParticipants,
   deleteEventsWithNoParticipants,
   getAllVolunteerEmails,
-  sendEventNotificationToVolunteers
+  sendEventNotificationToVolunteers,
+  sendEventHeadAssignedToVolunteers
 };

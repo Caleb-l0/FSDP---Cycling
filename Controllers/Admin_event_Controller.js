@@ -3,6 +3,9 @@ const jwt = require("jsonwebtoken");
 const AdminEventModel = require("../Models/Admin_event_Model");
 const OrganizationRequestModel = require('../Models/OrganizationRequestModel')
 
+const transporter = require("../mailer");
+const NotificationModel = require("../Models/notification_model");
+
 
 
 
@@ -50,6 +53,64 @@ async function createEvent(req, res) {
         console.warn("Failed to approve request:", approveError);
        
       }
+    }
+
+    // Notify ALL institution users that a new event is created (email + in-app notification)
+    try {
+      const institutions = await AdminEventModel.getInstitutionUsers();
+      if (Array.isArray(institutions) && institutions.length > 0) {
+        const userIds = institutions.map(u => u.id).filter(Boolean);
+
+        const eventName = newEvent?.eventname || newEvent?.EventName || eventData?.EventName || 'New Event';
+        const eventDate = newEvent?.eventdate || newEvent?.EventDate || eventData?.EventDate;
+        const eventLocation = newEvent?.location || newEvent?.Location || eventData?.Location || 'TBD';
+
+        await NotificationModel.createNotificationsForUsers({
+          userIds,
+          type: 'EVENT_CREATED',
+          title: 'New event created',
+          message: `A new event has been created: ${eventName}.`,
+          payload: {
+            eventId: newEvent?.eventid || newEvent?.EventID || null,
+            eventName,
+            eventDate,
+            eventLocation
+          }
+        });
+
+        const emailSubject = `New Event Created: ${eventName}`;
+        const emailHtml = `
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+            <h2 style="color:#16a34a;">New Event Created</h2>
+            <p>Hello, this is from Cycling Without Age.</p>
+            <p>A new event has been created and is open for institutions to apply.</p>
+            <div style="background:#f8fafc;padding:16px;border-radius:10px;border:1px solid #e2e8f0;">
+              <p><strong>Event:</strong> ${eventName}</p>
+              ${eventDate ? `<p><strong>Date:</strong> ${new Date(eventDate).toLocaleString()}</p>` : ''}
+              <p><strong>Location:</strong> ${eventLocation}</p>
+            </div>
+            <p>Please log in to your institution account to apply for this event.</p>
+            <p style="color:#64748b;font-size:12px;margin-top:24px;">This is an automated email, please do not reply.</p>
+          </div>
+        `;
+
+        setImmediate(async () => {
+          for (const inst of institutions) {
+            if (!inst.email) continue;
+            try {
+              await transporter.sendMail({
+                to: inst.email,
+                subject: emailSubject,
+                html: emailHtml
+              });
+            } catch (e) {
+              console.error('[createEvent] Failed to email institution user:', inst.email, e);
+            }
+          }
+        });
+      }
+    } catch (e) {
+      console.warn('[createEvent] Failed to notify institution users:', e);
     }
 
     // Send email notification to organisation 

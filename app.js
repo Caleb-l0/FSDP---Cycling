@@ -53,6 +53,9 @@ const volunteerUserController = require("./Controllers/volunteer_user_profile_Co
 // ------ VOLUNTEER FRIENDS CONTROLLER --------------
 const userFriendController = require("./Controllers/user_friend_Controller.js");
 
+// ------ NOTIFICATIONS CONTROLLER --------------
+const notificationController = require("./Controllers/notification_controller.js");
+
 
 
 // --------------- translation
@@ -257,6 +260,16 @@ app.get('/volunteer/friends/requests/:requestId', authenticate, userFriendContro
 app.post('/volunteer/friends/requests/:requestId/accept', authenticate, userFriendController.acceptFriendRequest);
 app.post('/volunteer/friends/requests/:requestId/reject', authenticate, userFriendController.rejectFriendRequest);
 app.get('/volunteer/friends/status/:friendId', authenticate, userFriendController.getFriendStatus);
+
+// ----- VOLUNTEER NOTIFICATIONS -----
+app.get('/volunteer/notifications', authenticate, notificationController.listMyNotifications);
+app.post('/volunteer/notifications/:id/read', authenticate, notificationController.markNotificationRead);
+app.post('/volunteer/notifications/read-all', authenticate, notificationController.markAllNotificationsRead);
+
+// ----- GENERIC NOTIFICATIONS (for institution + volunteer UIs) -----
+app.get('/notifications', authenticate, notificationController.listMyNotifications);
+app.post('/notifications/:id/read', authenticate, notificationController.markNotificationRead);
+app.post('/notifications/read-all', authenticate, notificationController.markAllNotificationsRead);
 // ----- VOLUNTEER EVENT FEED -----
 
 app.get('/volunteer/events', adminEventController.getAllEvents);

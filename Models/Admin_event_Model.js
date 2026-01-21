@@ -63,6 +63,23 @@ async function getVolunteerEmails() {
   }
 }
 
+async function getInstitutionUsers() {
+  try {
+    const result = await pool.query(
+      `SELECT id, email, name
+       FROM users
+       WHERE LOWER(TRIM(role)) = 'institution'
+         AND email IS NOT NULL
+         AND TRIM(email) <> ''`
+    );
+    console.log(`Institution email broadcast: found ${result.rows.length} institution users`);
+    return result.rows;
+  } catch (err) {
+    console.error("Error fetching institution emails:", err);
+    throw err;
+  }
+}
+
 async function sendEventOpenNotificationToVolunteers(eventData) {
   try {
     const volunteers = await getVolunteerEmails();
@@ -514,6 +531,7 @@ module.exports = {
   createEvent,
   sendEventNotificationToOrganization,
   sendEventOpenNotificationToVolunteers,
+  getInstitutionUsers,
   assignEventToOrgan,
   checkOrganizationExists,
   getEventLocation,

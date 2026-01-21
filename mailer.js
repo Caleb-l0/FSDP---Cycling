@@ -13,6 +13,9 @@ const transporter = nodemailer.createTransport({
   host: "smtp.gmail.com",
   port: 465,
   secure: true,
+  defaults: {
+    from: EMAIL_USER
+  },
   auth: {
     user: EMAIL_USER,
     pass: EMAIL_PASSWORD
@@ -25,7 +28,15 @@ const transporter = nodemailer.createTransport({
 // Verify on startup so we can see auth / network issues in logs early
 transporter.verify((err) => {
   if (err) {
-    console.error("[mailer] Transport verify failed:", err);
+    console.error("[mailer] Transport verify failed:", {
+      message: err?.message,
+      code: err?.code,
+      command: err?.command,
+      response: err?.response
+    });
+    if (!EMAIL_USER || !EMAIL_PASSWORD) {
+      console.error("[mailer] EMAIL_USER / EMAIL_PASSWORD not set. Configure environment variables on the server.");
+    }
   } else {
     console.log("[mailer] Transport ready");
   }

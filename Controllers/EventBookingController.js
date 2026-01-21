@@ -1,6 +1,8 @@
 const EventBookingModel = require("../Models/EventBookingModel");
 const CommunityModel = require("../Models/Volunteer_Community_Model");
 
+const NotificationModel = require("../Models/notification_model");
+
 /* ======================================================
    Event Booking Controller
    Purpose: Handle organization booking requests for events
@@ -296,6 +298,44 @@ async function assignEventHead(req, res) {
     res.status(200).json({
       message: "Event head assigned successfully",
       booking: updatedBooking
+    });
+
+    // Notify + email ALL volunteers (background)
+    setImmediate(async () => {
+      try {
+        const event = await EventBookingModel.getUpcomingEvent(updatedBooking.eventid);
+        const eventName = event?.eventname || 'Event';
+
+        const volunteers = await EventBookingModel.getAllVolunteerEmails();
+        const userIds = (volunteers || []).map(v => v.id).filter(Boolean);
+
+        if (userIds.length > 0) {
+          await NotificationModel.createNotificationsForUsers({
+            userIds,
+            type: 'EVENT_HEAD_ASSIGNED',
+            title: 'Event head assigned',
+            message: `Event head assigned for ${eventName}: ${eventHeadName}.`,
+            payload: {
+              eventId: updatedBooking.eventid,
+              bookingId: updatedBooking.bookingid,
+              eventName,
+              eventHeadName,
+              eventHeadContact,
+              eventHeadEmail
+            }
+          });
+        }
+
+        await EventBookingModel.sendEventHeadAssignedToVolunteers(event, {
+          ...updatedBooking,
+          session_head_name: eventHeadName,
+          session_head_contact: eventHeadContact,
+          session_head_email: eventHeadEmail,
+          session_head_profile: eventHeadProfile
+        });
+      } catch (e) {
+        console.error('[assignEventHead] Failed to notify/email volunteers:', e);
+      }
     });
 
   } catch (error) {
