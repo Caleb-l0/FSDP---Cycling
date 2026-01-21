@@ -1,5 +1,6 @@
 :root{
   --hv-wa:#16a34a;
+  --hv-wa-dark:#166534;
   --hv-bg:#f9fafb;
   --hv-card:#ffffff;
   --hv-text:#0f172a;
@@ -17,17 +18,23 @@
   border-radius:24px;
   border:1px solid var(--hv-border);
   box-shadow:0 12px 36px rgba(0,0,0,.08);
-  padding:22px;
+  overflow:hidden;
 }
 
-.hvsc-head{
+.hvsc-topbar{
   display:flex;
-  align-items:flex-start;
+  align-items:center;
   justify-content:space-between;
-  gap:14px;
+  gap:12px;
+  padding:14px 14px;
+  background:linear-gradient(135deg, rgba(22,163,74,.12), rgba(34,197,94,.08));
   border-bottom:1px solid rgba(0,0,0,.06);
-  padding-bottom:14px;
-  margin-bottom:16px;
+}
+
+.hvsc-topbar-title{
+  display:flex;
+  flex-direction:column;
+  align-items:flex-end;
 }
 
 .hvsc-badge{
@@ -37,21 +44,16 @@
   padding:6px 12px;
   border-radius:999px;
   background:rgba(22,163,74,.12);
-  color:var(--hv-wa);
+  color:var(--hv-wa-dark);
   font-weight:900;
   font-size:.9rem;
 }
 
 .hvsc-title{
-  margin:8px 0 6px;
-  font-size:1.7rem;
+  margin-top:6px;
+  font-size:1.15rem;
   color:var(--hv-text);
-}
-
-.hvsc-sub{
-  margin:0;
-  color:var(--hv-sub);
-  font-weight:700;
+  font-weight:900;
 }
 
 .hvsc-back{
@@ -68,44 +70,50 @@
   cursor:pointer;
 }
 
-.hvsc-grid{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:16px;
+.hvsc-body{
+  padding:14px;
+  display:flex;
+  flex-direction:column;
+  gap:12px;
 }
 
-.hvsc-panel{
+.hvsc-section{
   background:var(--hv-bg);
-  border-radius:20px;
+  border-radius:18px;
   border:1px solid rgba(0,0,0,.06);
-  padding:16px;
+  padding:14px;
 }
 
-.hvsc-h2{
-  margin:0 0 12px;
-  font-size:1.2rem;
+.hvsc-section-title{
+  font-weight:900;
   color:var(--hv-text);
+  margin-bottom:10px;
 }
 
 .hvsc-row{
   display:flex;
-  gap:10px;
+  justify-content:space-between;
+  gap:12px;
   margin:10px 0;
   color:var(--hv-text);
   font-weight:750;
 }
 
 .hvsc-row strong{
-  width:90px;
   color:var(--hv-sub);
+  font-weight:900;
 }
 
 .hvsc-link{
   display:inline-flex;
   margin-top:8px;
   font-weight:900;
-  color:#2563eb;
+  color:#0f172a;
   text-decoration:none;
+  padding:10px 12px;
+  border-radius:14px;
+  border:1px solid rgba(0,0,0,.10);
+  background:#fff;
 }
 
 .hvsc-note{
@@ -149,7 +157,7 @@
 }
 
 .hvsc-divider{
-  margin:16px 0 10px;
+  margin:14px 0 10px;
   color:#94a3b8;
   font-weight:900;
   text-transform:uppercase;
@@ -171,8 +179,8 @@
 }
 
 @media (max-width: 900px){
-  .hvsc-grid{
-    grid-template-columns:1fr;
+  .hvsc{
+    margin-top:100px;
   }
 }
 
