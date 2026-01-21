@@ -369,40 +369,38 @@ body {
 ========================================================= */
 /* ===== COMMENT OVERLAY ===== */
 
-#globalCommentOverlay.comment-overlay {
-    position: fixed !important;
-    inset: 0;
-    z-index: 9998;
+/* ===== OVERLAY ===== */
+#globalCommentOverlay.comment-overlay{
+  position: fixed !important;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  display: none;
+  z-index: 9998;
 }
 
-#globalCommentPanel.comment-panel {
-    position: fixed !important;
-    left: 0;
-    bottom: -100%;
-    width: 100%;
-    z-index: 9999;
-    max-height: 72vh;
-    overflow: auto;
+/* ===== PANEL (CENTER MODAL) ===== */
+#globalCommentPanel.comment-panel{
+  position: fixed !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+
+  width: min(92vw, 640px);
+  max-height: 75vh;
+  overflow: auto;
+
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 18px 60px rgba(0,0,0,0.25);
+  padding: 22px;
+
+  z-index: 9999;
+  display: none; 
 }
 
-#globalCommentPanel.comment-panel.show {
-    bottom: 0;
-}
 
-/* ===== GLOBAL COMMENT PANEL ===== */
-
-
-#globalCommentInput {
-    width: 100%;
-    height: 90px;
-    resize: none;
-    margin-top: 15px;
-    margin-bottom: 15px;
-    padding: 12px;
-    border-radius: 12px;
-    border: 2px solid rgba(15, 23, 42, 0.10);
-    background: #f8fafc;
-    font-size: 1.05rem;
+#globalCommentPanel.comment-panel.show{
+  display: block;
 }
 
 
@@ -456,47 +454,9 @@ body {
          GLOBAL COMMENT PANEL
 =================================== */
 
-.comment-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0,0,0,0.35);
-    display: none;
-    z-index: 700;
-}
 
-/* Slide-up comment panel */
-/* ===== DARK OVERLAY ===== */
-.comment-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0,0,0,0.45);
-    display: none;
-    z-index: 900;
-}
 
-/* ===== SLIDE-UP COMMENT PANEL ===== */
-.comment-panel {
-    position: fixed;
-    left: 0;
-    bottom: -300px;
-    width: 100%;
-    background: #ffffff;
-    padding: 22px;
-    border-radius: 20px 20px 0 0;
-    box-shadow: 0 -6px 20px rgba(0,0,0,0.2);
-    transition: bottom 0.35s ease-in-out;
-    z-index: 1000;
-}
 
-.comment-panel.show {
-    bottom: 0;
-}
 
 /* Title Row */
 .comment-panel-header {
@@ -563,26 +523,26 @@ body {
     display: none;
 }
 
-.post-form-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(2, 6, 23, 0.45);
-    display: none;
-    z-index: 9996;
+.post-form-overlay{
+  position: fixed;
+  inset: 0;
+  background: rgba(2,6,23,0.45);
+  display: none;
+  z-index: 9996;
 }
 
-.post-form-container.is-open {
-    display: block;
-    position: fixed !important;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: min(92vw, 760px);
-    margin: 0;
-    z-index: 9997;
-    max-height: 85vh;
-    overflow: auto;
-    padding-bottom: 18px;
+.post-form-container.is-open{
+  display: block;
+  position: fixed !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+
+  width: min(92vw, 760px);
+  max-height: 85vh;
+  overflow: auto;
+
+  z-index: 9997;
 }
 
 #postForm.post-form-container {
@@ -1030,8 +990,8 @@ body {
         justify-content: center;
     }
 
-    .comment-panel {
-        padding: 20px;
+    #globalCommentPanel.comment-panel {
+    padding: 20px;
     }
 }
 
