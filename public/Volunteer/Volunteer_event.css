@@ -120,6 +120,39 @@ h2 {
   letter-spacing: -0.5px;
 }
 
+.event-new-banner{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin: -28px auto 18px;
+  padding: 14px 16px;
+  border-radius: 16px;
+  border: 1px solid rgba(234, 141, 42, 0.35);
+  background: rgba(234, 141, 42, 0.12);
+  color:#1e293b;
+  box-shadow: 0 10px 26px rgba(234, 141, 42, 0.14);
+}
+
+.event-new-banner__text{
+  font-weight: 800;
+  font-size: 1rem;
+}
+
+.event-new-banner__btn{
+  border:none;
+  border-radius: 999px;
+  padding: 10px 14px;
+  background: #ea8d2a;
+  color:#fff;
+  font-weight: 900;
+  cursor:pointer;
+}
+
+.event-new-banner__btn:hover{
+  background:#d97a1f;
+}
+
 /* ======================================================
    EVENT LIST – GRID SYSTEM (Improved responsiveness)
 ====================================================== */

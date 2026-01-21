@@ -56,6 +56,9 @@ const rmError = document.getElementById('hvop-rm-error');
 const rmCancel = document.getElementById('hvop-rm-cancel');
 const rmConfirm = document.getElementById('hvop-rm-confirm');
 
+let lastFocusBeforeFrModal = null;
+let lastFocusBeforeRmModal = null;
+
 const toastEl = document.getElementById('hvop-toast');
 let toastTimer;
 
@@ -142,8 +145,10 @@ function showToast(message) {
 
 function openFriendRequestModal() {
   if (!frModal) return;
+  lastFocusBeforeFrModal = document.activeElement;
   frModal.classList.add('is-open');
   frModal.setAttribute('aria-hidden', 'false');
+  try { frModal.inert = false; } catch (e) { /* ignore */ }
   if (frError) {
     frError.style.display = 'none';
     frError.textContent = '';
@@ -154,8 +159,16 @@ function openFriendRequestModal() {
 
 function closeFriendRequestModal() {
   if (!frModal) return;
+  const fallbackFocus = addBtn || document.body;
+  const targetFocus = lastFocusBeforeFrModal && document.contains(lastFocusBeforeFrModal)
+    ? lastFocusBeforeFrModal
+    : fallbackFocus;
+  if (targetFocus && typeof targetFocus.focus === 'function') {
+    targetFocus.focus();
+  }
   frModal.classList.remove('is-open');
   frModal.setAttribute('aria-hidden', 'true');
+  try { frModal.inert = true; } catch (e) { /* ignore */ }
 }
 
 function showFriendRequestError(message) {
@@ -247,8 +260,10 @@ if (frSend) {
 
 function openRemoveFriendModal() {
   if (!rmModal) return;
+  lastFocusBeforeRmModal = document.activeElement;
   rmModal.classList.add('is-open');
   rmModal.setAttribute('aria-hidden', 'false');
+  try { rmModal.inert = false; } catch (e) { /* ignore */ }
   if (rmError) {
     rmError.style.display = 'none';
     rmError.textContent = '';
@@ -259,8 +274,16 @@ function openRemoveFriendModal() {
 
 function closeRemoveFriendModal() {
   if (!rmModal) return;
+  const fallbackFocus = addBtn || document.body;
+  const targetFocus = lastFocusBeforeRmModal && document.contains(lastFocusBeforeRmModal)
+    ? lastFocusBeforeRmModal
+    : fallbackFocus;
+  if (targetFocus && typeof targetFocus.focus === 'function') {
+    targetFocus.focus();
+  }
   rmModal.classList.remove('is-open');
   rmModal.setAttribute('aria-hidden', 'true');
+  try { rmModal.inert = true; } catch (e) { /* ignore */ }
 }
 
 function showRemoveFriendError(message) {

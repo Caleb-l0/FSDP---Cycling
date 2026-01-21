@@ -8,6 +8,64 @@ let signedEventIds = new Set();
 let friendSignedEventIds = null;
 let activeFilter = 'all';
 
+const LAST_SEEN_EVENT_KEY = 'hv_last_seen_eventid';
+
+function getLatestEventId(events) {
+  if (!Array.isArray(events) || events.length === 0) return null;
+  const ids = events
+    .map(e => Number(e.eventid ?? e.EventID ?? e.EventId ?? e.id))
+    .filter(n => Number.isFinite(n));
+  if (ids.length === 0) return null;
+  return Math.max(...ids);
+}
+
+function showNewEventBanner(latestEventId) {
+  const banner = document.getElementById('eventNewBanner');
+  if (!banner) return;
+
+  const text = document.getElementById('eventNewBannerText');
+  if (text) text.textContent = 'New event available! Please refresh or browse below.';
+
+  const dismiss = document.getElementById('eventNewBannerDismiss');
+  if (dismiss) {
+    dismiss.onclick = () => {
+      try {
+        localStorage.setItem(LAST_SEEN_EVENT_KEY, String(latestEventId));
+      } catch (e) {
+        // ignore
+      }
+      banner.style.display = 'none';
+    };
+  }
+
+  banner.style.display = 'flex';
+}
+
+function handleNewEventNotification(events) {
+  const latestId = getLatestEventId(events);
+  if (!latestId) return;
+
+  let lastSeen = null;
+  try {
+    lastSeen = Number(localStorage.getItem(LAST_SEEN_EVENT_KEY));
+  } catch (e) {
+    lastSeen = null;
+  }
+
+  if (!Number.isFinite(lastSeen) || lastSeen <= 0) {
+    try {
+      localStorage.setItem(LAST_SEEN_EVENT_KEY, String(latestId));
+    } catch (e) {
+      // ignore
+    }
+    return;
+  }
+
+  if (latestId > lastSeen) {
+    showNewEventBanner(latestId);
+  }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   bindFilterButtons();
   loadEvents();
@@ -56,6 +114,8 @@ async function loadEvents() {
 
     const events = await response.json();
     allEvents = Array.isArray(events) ? events : [];
+
+    handleNewEventNotification(allEvents);
 
     signedEventIds = await fetchSignedUpEventIds();
 
