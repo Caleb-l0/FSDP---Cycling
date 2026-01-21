@@ -121,12 +121,16 @@ async function sendEventOpenNotificationToVolunteers(eventData) {
 async function getOrganizationMemberEmails(organizationID) {
   try {
     const query = `
-      SELECT u.id, u.email, u.name
+      SELECT DISTINCT
+        uo.userid AS id,
+        COALESCE(NULLIF(TRIM(u.email), ''), NULLIF(TRIM(uo.orgemail), '')) AS email,
+        u.name
       FROM userorganizations uo
-      JOIN users u ON uo.userid = u.id
+      LEFT JOIN users u ON uo.userid = u.id
       WHERE uo.organizationid = $1
+        AND COALESCE(NULLIF(TRIM(u.email), ''), NULLIF(TRIM(uo.orgemail), '')) IS NOT NULL
     `;
-    
+
     const result = await pool.query(query, [organizationID]);
     return result.rows;
   } catch (err) {

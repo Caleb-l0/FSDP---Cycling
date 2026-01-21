@@ -216,7 +216,7 @@ if (frSend) {
         setPhoneVisibility(true);
         showToast('You are already friends.');
         showCongrats('You are already friends!');
-        setTimeout(() => window.location.reload(), 1400);
+        setTimeout(() => window.location.reload(), 1600);
         return;
       }
 
@@ -239,13 +239,13 @@ if (frSend) {
         setPhoneVisibility(true);
         showToast('Friend added successfully.');
         showCongrats('Friend added successfully!');
-        setTimeout(() => window.location.reload(), 1400);
+        setTimeout(() => window.location.reload(), 1600);
       } else {
         setFriendUI('pending_outgoing');
         setPhoneVisibility(false);
         showToast('Friend request sent successfully.');
         showCongrats('Friend request sent successfully!');
-        setTimeout(() => window.location.reload(), 1400);
+        setTimeout(() => window.location.reload(), 1600);
       }
     } catch (err) {
       console.error(err);
