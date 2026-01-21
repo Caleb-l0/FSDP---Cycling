@@ -1,6 +1,14 @@
 /* ===============================
    SIGNED EVENT CARD (container) – Ultra Professional
 ================================= */
+.signed-events-page {
+  overflow-x: hidden;
+}
+
+.signed-events-main {
+  padding-bottom: 32px;
+}
+
 .signed-page-head {
   margin: 40px 0 18px;
   padding: 18px 20px;
@@ -81,7 +89,7 @@
 
 .event-list {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 24px;
   margin-top: 18px;
 }
@@ -299,6 +307,7 @@
   .signed-page-head {
     flex-direction: column;
     align-items: flex-start;
+    padding: 16px;
   }
 
   .signed-page-head__actions {
@@ -340,6 +349,18 @@
 }
 
 @media (max-width: 480px) {
+  .signed-page-head {
+    margin: 18px 0 12px;
+  }
+
+  .signed-page-title {
+    font-size: 1.55rem;
+  }
+
+  .signed-page-subtitle {
+    font-size: 1rem;
+  }
+
   .signed-event-card {
     padding: 20px;
     border-radius: 18px;

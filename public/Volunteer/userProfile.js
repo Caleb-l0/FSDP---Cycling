@@ -44,13 +44,59 @@ checkIfFriend();
 
 const addBtn = document.getElementById("hvop-add-friend-btn");
 
-addBtn.onclick = async () => {
-  const state = addBtn.dataset.state;
+const frModal = document.getElementById('hvop-fr-modal');
+const frReason = document.getElementById('hvop-fr-reason');
+const frError = document.getElementById('hvop-fr-error');
+const frCancel = document.getElementById('hvop-fr-cancel');
+const frSend = document.getElementById('hvop-fr-send');
 
-  try {
-    if (state === "add") {
-      const reason = (prompt("Request reason (optional):") || "").trim();
+function openFriendRequestModal() {
+  if (!frModal) return;
+  frModal.classList.add('is-open');
+  frModal.setAttribute('aria-hidden', 'false');
+  if (frError) {
+    frError.style.display = 'none';
+    frError.textContent = '';
+  }
+  if (frReason) frReason.value = '';
+  setTimeout(() => frReason?.focus(), 0);
+}
 
+function closeFriendRequestModal() {
+  if (!frModal) return;
+  frModal.classList.remove('is-open');
+  frModal.setAttribute('aria-hidden', 'true');
+}
+
+function showFriendRequestError(message) {
+  if (!frError) return;
+  frError.textContent = message;
+  frError.style.display = 'block';
+}
+
+if (frModal) {
+  frModal.addEventListener('click', (e) => {
+    if (e.target && e.target.dataset && e.target.dataset.close === 'true') {
+      closeFriendRequestModal();
+    }
+  });
+}
+
+if (frCancel) {
+  frCancel.addEventListener('click', closeFriendRequestModal);
+}
+
+if (frSend) {
+  frSend.addEventListener('click', async () => {
+    try {
+      frSend.disabled = true;
+      if (frCancel) frCancel.disabled = true;
+      if (frError) {
+        frError.style.display = 'none';
+        frError.textContent = '';
+      }
+
+      const reason = (frReason?.value || '').trim();
       const res = await fetch(`${UserEndPoint}/volunteer/friends/add`, {
         method: "POST",
         headers: {
@@ -60,11 +106,38 @@ addBtn.onclick = async () => {
         body: JSON.stringify({ friendId: userId, requestReason: reason })
       });
 
-      if (!res.ok) throw new Error("Add failed");
+      if (res.status === 409) {
+        closeFriendRequestModal();
+        setFriendUI('friends');
+        setPhoneVisibility(true);
+        return;
+      }
 
-      // After sending request, show Pending
+      if (!res.ok) {
+        showFriendRequestError('Failed to send request. Please try again.');
+        return;
+      }
+
+      closeFriendRequestModal();
       setFriendUI('pending_outgoing');
       setPhoneVisibility(false);
+    } catch (err) {
+      console.error(err);
+      showFriendRequestError('Failed to send request. Please try again.');
+    } finally {
+      frSend.disabled = false;
+      if (frCancel) frCancel.disabled = false;
+    }
+  });
+}
+
+addBtn.onclick = async () => {
+  const state = addBtn.dataset.state;
+
+  try {
+    if (state === "add") {
+      openFriendRequestModal();
+      return;
     } else {
       // ❌ Remove friend
       const res = await fetch(`${UserEndPoint}/volunteer/friends/remove/${userId}`, {

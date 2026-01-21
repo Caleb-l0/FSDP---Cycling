@@ -13,7 +13,7 @@ body {
     color: var(--text-main, #1f2933);
     overflow-x: hidden;
     line-height: 1.65;
-    animation: none !important;
+
 }
 
 :root {

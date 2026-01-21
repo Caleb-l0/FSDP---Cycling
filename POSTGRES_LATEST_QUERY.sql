@@ -272,6 +272,8 @@ CREATE TABLE friendrequests (
         UNIQUE (userid, friendid)
 );
 
+ALTER TABLE friendrequests
+ADD COLUMN IF NOT EXISTS requestreason TEXT;
 
 
 

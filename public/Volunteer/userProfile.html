@@ -201,6 +201,33 @@
 
 </main>
 
+<div class="hvop-modal" id="hvop-fr-modal" aria-hidden="true">
+  <div class="hvop-modal__backdrop" data-close="true"></div>
+  <div class="hvop-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="hvop-fr-title">
+    <div class="hvop-modal__header">
+      <h2 class="hvop-modal__title" id="hvop-fr-title">Send Friend Request</h2>
+      <button class="hvop-modal__close" type="button" aria-label="Close" data-close="true">&times;</button>
+    </div>
+
+    <div class="hvop-modal__body">
+      <label class="hvop-modal__label" for="hvop-fr-reason">Reason (optional)</label>
+      <textarea
+        id="hvop-fr-reason"
+        class="hvop-modal__textarea"
+        rows="4"
+        placeholder="E.g. I saw you signed up for the same event, let’s volunteer together."
+      ></textarea>
+      <div class="hvop-modal__hint">You can leave this blank.</div>
+      <div class="hvop-modal__error" id="hvop-fr-error" style="display:none;"></div>
+    </div>
+
+    <div class="hvop-modal__footer">
+      <button class="hvop-modal__btn hvop-modal__btn--secondary" type="button" id="hvop-fr-cancel">Back</button>
+      <button class="hvop-modal__btn hvop-modal__btn--primary" type="button" id="hvop-fr-send">Send</button>
+    </div>
+  </div>
+</div>
+
 <footer class="hv-footer">
   <div class="container">
     <div class="copyright">

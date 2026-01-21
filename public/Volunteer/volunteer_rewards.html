@@ -265,7 +265,7 @@ shopItems.forEach(item => {
         button.dataset.originalText = button.textContent;
         button.textContent = 'Redeeming...';
 
-        fetch("https://fsdp-cycling-ltey.onrender.com/rewards/redeem", {
+        fetch("https://fsdp-cycling-ltey.onrender.com/redeem", {
           method: "POST",
           headers: {
             "Authorization": `Bearer ${token}`,
@@ -371,7 +371,7 @@ shopItems.forEach(item => {
     renderHistorySkeleton(3);
 
     try {
-      const res = await fetch(`https://fsdp-cycling-ltey.onrender.com/rewards/history/${userId}`, {
+      const res = await fetch(`https://fsdp-cycling-ltey.onrender.com/history/${userId}`, {
         headers: { "Authorization": `Bearer ${token}` }
       });
 
