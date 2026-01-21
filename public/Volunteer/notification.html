@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Notifications | Happy Volunteer</title>
+  <link rel="stylesheet" href="../homepage.css" />
+  <link rel="stylesheet" href="./notification.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+</head>
+<body>
+  <header class="hv-header">
+    <div class="container hv-header-content">
+      <div class="hv-logo">
+        <a href="./homepage_login_volunteer.html" style="text-decoration: none; color: inherit;">Happy Volunteer</a>
+      </div>
+
+      <nav id="mainNav">
+        <ul>
+          <li><a href="./volunteer-events.html">Booking</a></li>
+          <li><a href="./volunteer_community_page.html">Community</a></li>
+          <li><a href="./volunteer_rewards.html">Reward</a></li>
+          <li><a href="./Volunteer_friend.html">Friends</a></li>
+          <li><a href="../Profile/profilepage.html">Profile</a></li>
+        </ul>
+      </nav>
+
+      <div class="hv-header-right">
+        <button class="hv-nav-toggle" id="hvNavToggle">
+          <i class="fas fa-bars"></i>
+        </button>
+      </div>
+    </div>
+
+    <nav class="hv-nav" id="hvNav">
+      <ul>
+        <li><a href="./volunteer-events.html">Booking</a></li>
+        <li><a href="./volunteer_community_page.html">Community</a></li>
+        <li><a href="./volunteer_rewards.html">Reward</a></li>
+        <li><a href="./Volunteer_friend.html">Friends</a></li>
+        <li><a href="../Profile/profilepage.html">Profile</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main class="noti-page">
+    <section class="noti-head">
+      <h1>Notifications</h1>
+      <p>Friend requests and updates.</p>
+    </section>
+
+    <section class="noti-card">
+      <div class="noti-card-head">
+        <h2>Friend Requests</h2>
+        <button id="btnRefresh" type="button" class="noti-btn">Refresh</button>
+      </div>
+
+      <div id="notiList" class="noti-list" aria-live="polite"></div>
+    </section>
+  </main>
+
+  <script src="../homepage.js"></script>
+  <script src="./notification.js"></script>
+</body>
+</html>

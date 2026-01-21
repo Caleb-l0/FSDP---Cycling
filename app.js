@@ -249,6 +249,14 @@ app.get('/volunteer/friends/me', authenticate, userFriendController.getMyFriends
 app.delete('/volunteer/friends/remove/:friendId', authenticate, userFriendController.remobeFriend);
 app.get('/volunteer/friends/check/:friendId', authenticate, userFriendController.checkIfFriend);
 app.get('/volunteer/friends/signup-events', authenticate, userFriendController.getAllFriendsSignUpEvents);
+
+// Friend request notifications
+app.get('/volunteer/friends/requests/incoming', authenticate, userFriendController.getIncomingFriendRequests);
+app.get('/volunteer/friends/requests/outgoing', authenticate, userFriendController.getOutgoingFriendRequests);
+app.get('/volunteer/friends/requests/:requestId', authenticate, userFriendController.getFriendRequestDetail);
+app.post('/volunteer/friends/requests/:requestId/accept', authenticate, userFriendController.acceptFriendRequest);
+app.post('/volunteer/friends/requests/:requestId/reject', authenticate, userFriendController.rejectFriendRequest);
+app.get('/volunteer/friends/status/:friendId', authenticate, userFriendController.getFriendStatus);
 // ----- VOLUNTEER EVENT FEED -----
 
 app.get('/volunteer/events', adminEventController.getAllEvents);

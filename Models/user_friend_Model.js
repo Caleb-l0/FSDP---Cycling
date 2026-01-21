@@ -1,4 +1,3 @@
-const { get } = require("../mailer");
 const pool = require("../Postgres_config");
 
 /**
@@ -125,7 +124,7 @@ async function getAllFriendsSignUpEvents(userId) {
   return Array.from(map.values());
 }
 
-async function createFriendRequest(userId, friendId) {
+async function createFriendRequest(userId, friendId, requestReason = "") {
   if (userId === friendId) {
     return { ok: false, code: "SELF", message: "You cannot friend request yourself." };
   }
@@ -197,12 +196,12 @@ async function createFriendRequest(userId, friendId) {
 
  
   const inserted = await pool.query(
-    `INSERT INTO friendrequests (userid, friendid, requesttype, status)
-     VALUES ($1, $2, 'friend', 'pending')
+    `INSERT INTO friendrequests (userid, friendid, requesttype, status, requestreason)
+     VALUES ($1, $2, 'friend', 'pending', $3)
      ON CONFLICT (userid, friendid)
-     DO UPDATE SET status='pending', requestdate=NOW()
-     RETURNING requestid, userid, friendid, status, requestdate`,
-    [userId, friendId]
+     DO UPDATE SET status='pending', requestdate=NOW(), requestreason=$3
+     RETURNING requestid, userid, friendid, status, requestdate, requestreason`,
+    [userId, friendId, requestReason]
   );
 
   return {
@@ -213,6 +212,198 @@ async function createFriendRequest(userId, friendId) {
   };
 }
 
+async function getIncomingFriendRequests(userId) {
+  const result = await pool.query(
+    `SELECT
+      fr.requestid,
+      fr.userid AS senderid,
+      su.name AS sendername,
+      su.email AS senderemail,
+      fr.friendid AS receiverid,
+      fr.status,
+      fr.requestdate,
+      fr.requestreason
+    FROM friendrequests fr
+    JOIN users su ON su.id = fr.userid
+    WHERE fr.friendid = $1
+      AND fr.requesttype = 'friend'
+      AND fr.status = 'pending'
+    ORDER BY fr.requestdate DESC`,
+    [userId]
+  );
+
+  return result.rows;
+}
+
+async function getOutgoingFriendRequests(userId) {
+  const result = await pool.query(
+    `SELECT
+      fr.requestid,
+      fr.friendid AS targetid,
+      tu.name AS targetname,
+      tu.email AS targetemail,
+      fr.status,
+      fr.requestdate,
+      fr.requestreason
+    FROM friendrequests fr
+    JOIN users tu ON tu.id = fr.friendid
+    WHERE fr.userid = $1
+      AND fr.requesttype = 'friend'
+    ORDER BY fr.requestdate DESC`,
+    [userId]
+  );
+
+  return result.rows;
+}
+
+async function getFriendRequestDetail(userId, requestId) {
+  const result = await pool.query(
+    `SELECT
+      fr.requestid,
+      fr.userid AS senderid,
+      su.name AS sendername,
+      su.email AS senderemail,
+      fr.friendid AS receiverid,
+      ru.name AS receivername,
+      ru.email AS receiveremail,
+      fr.status,
+      fr.requestdate,
+      fr.requestreason
+    FROM friendrequests fr
+    JOIN users su ON su.id = fr.userid
+    JOIN users ru ON ru.id = fr.friendid
+    WHERE fr.requestid = $1
+      AND (fr.userid = $2 OR fr.friendid = $2)
+      AND fr.requesttype = 'friend'`,
+    [requestId, userId]
+  );
+
+  return result.rows[0] || null;
+}
+
+async function acceptFriendRequest(userId, requestId) {
+  await pool.query("BEGIN");
+  try {
+    const reqRes = await pool.query(
+      `SELECT requestid, userid, friendid, status
+       FROM friendrequests
+       WHERE requestid=$1 AND friendid=$2 AND requesttype='friend'
+       FOR UPDATE`,
+      [requestId, userId]
+    );
+
+    if (reqRes.rowCount === 0) {
+      await pool.query("ROLLBACK");
+      return { ok: false, code: "NOT_FOUND", message: "Request not found." };
+    }
+
+    const fr = reqRes.rows[0];
+    if (fr.status !== "pending") {
+      await pool.query("ROLLBACK");
+      return { ok: false, code: "NOT_PENDING", message: "Request is not pending." };
+    }
+
+    await pool.query(
+      `UPDATE friendrequests SET status='accepted' WHERE requestid=$1`,
+      [requestId]
+    );
+
+    await pool.query(
+      `INSERT INTO userfriends (userid, friendid, status)
+       VALUES ($1, $2, 'active')
+       ON CONFLICT (userid, friendid) DO UPDATE SET status='active'`,
+      [fr.userid, fr.friendid]
+    );
+
+    await pool.query(
+      `INSERT INTO userfriends (userid, friendid, status)
+       VALUES ($1, $2, 'active')
+       ON CONFLICT (userid, friendid) DO UPDATE SET status='active'`,
+      [fr.friendid, fr.userid]
+    );
+
+    const meRes = await pool.query(`SELECT id, name, email FROM users WHERE id=$1`, [userId]);
+    const friendRes = await pool.query(`SELECT id, name, email FROM users WHERE id=$1`, [fr.userid]);
+
+    await pool.query("COMMIT");
+
+    return {
+      ok: true,
+      requestId,
+      me: meRes.rows[0],
+      friend: friendRes.rows[0]
+    };
+  } catch (e) {
+    await pool.query("ROLLBACK");
+    throw e;
+  }
+}
+
+async function rejectFriendRequest(userId, requestId) {
+  const reqRes = await pool.query(
+    `SELECT requestid, userid, friendid, status
+     FROM friendrequests
+     WHERE requestid=$1 AND friendid=$2 AND requesttype='friend'`,
+    [requestId, userId]
+  );
+
+  if (reqRes.rowCount === 0) {
+    return { ok: false, code: "NOT_FOUND", message: "Request not found." };
+  }
+
+  const fr = reqRes.rows[0];
+  if (fr.status !== "pending") {
+    return { ok: false, code: "NOT_PENDING", message: "Request is not pending." };
+  }
+
+  await pool.query(
+    `UPDATE friendrequests SET status='rejected' WHERE requestid=$1`,
+    [requestId]
+  );
+
+  const meRes = await pool.query(`SELECT id, name, email FROM users WHERE id=$1`, [userId]);
+  const friendRes = await pool.query(`SELECT id, name, email FROM users WHERE id=$1`, [fr.userid]);
+
+  return {
+    ok: true,
+    requestId,
+    me: meRes.rows[0],
+    friend: friendRes.rows[0]
+  };
+}
+
+async function getFriendStatus(userId, otherId) {
+  const active = await pool.query(
+    `SELECT 1 FROM userfriends WHERE userid=$1 AND friendid=$2 AND status='active' LIMIT 1`,
+    [userId, otherId]
+  );
+  if (active.rowCount > 0) return { status: "friends" };
+
+  const outgoing = await pool.query(
+    `SELECT requestid, status
+     FROM friendrequests
+     WHERE userid=$1 AND friendid=$2 AND requesttype='friend'
+     ORDER BY requestdate DESC LIMIT 1`,
+    [userId, otherId]
+  );
+  if (outgoing.rowCount > 0 && outgoing.rows[0].status === "pending") {
+    return { status: "pending_outgoing", requestId: outgoing.rows[0].requestid };
+  }
+
+  const incoming = await pool.query(
+    `SELECT requestid, status
+     FROM friendrequests
+     WHERE userid=$2 AND friendid=$1 AND requesttype='friend'
+     ORDER BY requestdate DESC LIMIT 1`,
+    [userId, otherId]
+  );
+  if (incoming.rowCount > 0 && incoming.rows[0].status === "pending") {
+    return { status: "pending_incoming", requestId: incoming.rows[0].requestid };
+  }
+
+  return { status: "none" };
+}
+
 
 
 
@@ -221,6 +412,13 @@ module.exports = {
   addFriend,
   removeFriend,
   getFollowersCount,
-  isFriend,getAllFriendsSignUpEvents,
+  isFriend,
+  getAllFriendsSignUpEvents,
   createFriendRequest,
+  getIncomingFriendRequests,
+  getOutgoingFriendRequests,
+  getFriendRequestDetail,
+  acceptFriendRequest,
+  rejectFriendRequest,
+  getFriendStatus,
 };

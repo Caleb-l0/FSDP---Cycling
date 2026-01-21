@@ -102,8 +102,12 @@ function renderFriends() {
     card.innerHTML = `
       <div class="hvf-friend-main">
         <img src="./default_user.png" class="hvf-friend-avatar" alt="${friendName}'s avatar">
+
         <div class="hvf-friend-text">
           <div class="hvf-friend-name">${friendName}</div>
+          <div class="hvf-friend-username">@${f.username || "unknown"}</div>
+          <div class="hvf-friend-bio">${f.bio || "No bio available."}</div>
+          <div class="hvf=friend-email">${f.email || "No email available."}</div>
           <div class="hvf-friend-meta">Joined ${joinDate}</div>
           <div class="hvf-friend-level">Level ${friendLevel}</div>
         </div>

@@ -25,14 +25,15 @@ document.querySelectorAll(".hvop-nav-btn").forEach(btn => {
 ========================= */
 async function checkIfFriend() {
   try {
-    const res = await fetch(`${UserEndPoint}/volunteer/friends/check/${userId}`, {
+    const res = await fetch(`${UserEndPoint}/volunteer/friends/status/${userId}`, {
       headers: {
         Authorization: `Bearer ${token}`
       }
     });
     const data = await res.json();
-    setFriendUI(data.isFriend);
-    setPhoneVisibility(Boolean(data.isFriend));
+
+    setFriendUI(data.status);
+    setPhoneVisibility(data.status === 'friends');
   }
   catch (err) {
     console.error("Check friend error", err);
@@ -48,20 +49,22 @@ addBtn.onclick = async () => {
 
   try {
     if (state === "add") {
-      // ➕ Add friend
+      const reason = (prompt("Request reason (optional):") || "").trim();
+
       const res = await fetch(`${UserEndPoint}/volunteer/friends/add`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`
         },
-        body: JSON.stringify({ friendId: userId })
+        body: JSON.stringify({ friendId: userId, requestReason: reason })
       });
 
       if (!res.ok) throw new Error("Add failed");
 
-      setFriendUI(true);
-      setPhoneVisibility(true);
+      // After sending request, show Pending
+      setFriendUI('pending_outgoing');
+      setPhoneVisibility(false);
     } else {
       // ❌ Remove friend
       const res = await fetch(`${UserEndPoint}/volunteer/friends/remove/${userId}`, {
@@ -73,7 +76,7 @@ addBtn.onclick = async () => {
 
       if (!res.ok) throw new Error("Remove failed");
 
-      setFriendUI(false);
+      setFriendUI('none');
       setPhoneVisibility(false);
     }
   } catch (err) {
@@ -82,16 +85,35 @@ addBtn.onclick = async () => {
   }
 };
 
-function setFriendUI(isFriend) {
-  if (isFriend) {
+function setFriendUI(status) {
+  addBtn.disabled = false;
+  addBtn.classList.remove("danger");
+
+  if (status === 'friends') {
     addBtn.textContent = "❌ Remove Friend";
     addBtn.classList.add("danger");
     addBtn.dataset.state = "remove";
-  } else {
-    addBtn.textContent = "➕ Add Friend";
-    addBtn.classList.remove("danger");
-    addBtn.dataset.state = "add";
+    return;
   }
+
+  if (status === 'pending_outgoing') {
+    addBtn.textContent = "⏳ Pending";
+    addBtn.dataset.state = "pending";
+    addBtn.disabled = true;
+    return;
+  }
+
+  if (status === 'pending_incoming') {
+    addBtn.textContent = "View Request";
+    addBtn.dataset.state = "view_request";
+    addBtn.onclick = () => {
+      window.location.href = './notification.html';
+    };
+    return;
+  }
+
+  addBtn.textContent = "➕ Add Friend";
+  addBtn.dataset.state = "add";
 }
 
 function setPhoneVisibility(isFriend) {

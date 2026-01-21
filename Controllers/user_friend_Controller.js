@@ -1,4 +1,3 @@
-const { get } = require("../mailer");
 const userFriendsModel = require("../Models/user_friend_Model");
 const pool = require("../Postgres_config");
 const transporter = require("../mailer");
@@ -21,7 +20,6 @@ async function getMyFriends(req, res) {
     });
   }
 }
-
 
 async function sendFriendRequest(req, res) {
   try {
@@ -176,6 +174,7 @@ async function getFriendRequestDetail(req, res) {
     const userId = req.user.id;
     const requestId = parseInt(req.params.requestId);
     const request = await userFriendsModel.getFriendRequestDetail(userId, requestId);
+    if (!request) return res.status(404).json({ message: "Request not found" });
     return res.status(200).json(request);
   } catch (error) {
     console.error("Get friend request detail error:", error);
@@ -256,11 +255,20 @@ async function getFriendStatus(req, res) {
     const userId = req.user.id;
     const friendId = parseInt(req.params.friendId);
     const status = await userFriendsModel.getFriendStatus(userId, friendId);
-    return res.status(200).json({ status });
+    return res.status(200).json(status);
   } catch (error) {
     console.error("Get friend status error:", error);
     return res.status(500).json({ message: "Failed to get friend status" });
   }
+}
+
+function escapeHtml(str) {
+  return String(str)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
 }
 
 module.exports = {
