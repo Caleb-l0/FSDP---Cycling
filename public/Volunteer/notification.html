@@ -49,10 +49,11 @@
       <p>Friend requests and updates.</p>
     </section>
 
-    <section class="noti-card" id="eventNotiCard" style="display:none;">
+    <section class="noti-card noti-card--event" id="eventNotiCard" style="display:none;">
       <div class="noti-card-head">
-        <h2>Event Updates</h2>
-        <button id="btnEventMarkRead" type="button" class="noti-btn">Mark as read</button>
+        <span class="noti-badge-dot" id="eventBadgeDot"></span>
+        <h2>🔔 Event Notifications</h2>
+        <button id="btnEventMarkRead" type="button" class="noti-btn noti-btn--small">Mark Read</button>
       </div>
       <div id="eventNotiList" class="noti-list" aria-live="polite"></div>
     </section>
@@ -60,7 +61,7 @@
     <section class="noti-card">
       <div class="noti-card-head">
         <h2>Friend Requests</h2>
-        <button id="btnRefresh" type="button" class="noti-btn">Refresh</button>
+        <button id="btnRefresh" type="button" class="noti-btn noti-btn--small">Refresh</button>
       </div>
 
       <div id="notiList" class="noti-list" aria-live="polite"></div>

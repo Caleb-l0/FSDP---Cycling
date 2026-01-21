@@ -124,19 +124,40 @@ async function fetchEvents() {
   return res.json();
 }
 
-function renderEventNotification(latestEventId) {
+function renderEventNotification(newEvents, latestEventId) {
   if (!eventCard || !eventListEl) return;
   eventCard.style.display = 'block';
+  
+  const count = Array.isArray(newEvents) ? newEvents.length : 1;
+  const eventText = count === 1 ? 'A new event has been approved!' : `${count} new events have been approved!`;
+  
+  let eventsHtml = '';
+  if (Array.isArray(newEvents) && newEvents.length > 0) {
+    eventsHtml = newEvents.slice(0, 5).map(e => {
+      const name = e.eventname || e.EventName || 'New Event';
+      const date = e.eventdate ? new Date(e.eventdate).toLocaleDateString() : '';
+      const loc = e.location || e.Location || '';
+      return `
+        <div class="noti-event-item">
+          <strong>📅 ${escapeHtml(name)}</strong>
+          ${date ? `<span class="noti-event-date">${date}</span>` : ''}
+          ${loc ? `<span class="noti-event-loc">📍 ${escapeHtml(loc)}</span>` : ''}
+        </div>
+      `;
+    }).join('');
+  }
+  
   eventListEl.innerHTML = `
     <div class="noti-item noti-item--event">
       <div class="noti-item-top">
         <div>
-          <div class="noti-from">New Event Available</div>
-          <div class="noti-meta">A new event has been approved and is open for signup.</div>
+          <div class="noti-from">${eventText}</div>
+          <div class="noti-meta">Admin has approved new events. Sign up now!</div>
         </div>
       </div>
+      ${eventsHtml ? `<div class="noti-event-list">${eventsHtml}</div>` : ''}
       <div class="noti-actions">
-        <button class="noti-action noti-action--accept" type="button" id="btnGoBooking">Go to Booking</button>
+        <button class="noti-action noti-action--accept" type="button" id="btnGoBooking">🎯 Go to Booking</button>
         <button class="noti-action" type="button" id="btnDismissEvent">Dismiss</button>
       </div>
     </div>
@@ -181,11 +202,17 @@ async function loadEventNotification() {
     }
 
     if (latestId > lastSeen) {
-      renderEventNotification(latestId);
+      // Filter to show only new events (id > lastSeen)
+      const newEvents = (events || []).filter(e => {
+        const id = Number(e.eventid ?? e.EventID ?? e.EventId ?? e.id);
+        return Number.isFinite(id) && id > lastSeen;
+      });
+      renderEventNotification(newEvents, latestId);
     } else {
       eventCard.style.display = 'none';
     }
   } catch (e) {
+    console.error('[loadEventNotification] Error:', e);
     eventCard.style.display = 'none';
   }
 }

@@ -43,6 +43,8 @@ async function sendFriendRequest(req, res) {
       return res.status(status).json(result);
     }
 
+    res.status(201).json(result);
+
     if (!result.autoAccepted) {
       const friendEmail = result.friend.email;
       const friendName = result.friend.name || "there";
@@ -52,29 +54,30 @@ async function sendFriendRequest(req, res) {
         ? `<p><b>Reason:</b> ${escapeHtml(requestReason)}</p>`
         : "";
 
-      try {
-        await transporter.sendMail({
-          to: friendEmail,
-          subject: "You received a friend request",
-          html: `
-          <h1>From Cycling Without Age</h1>
-            <div style="font-family:Arial,sans-serif;line-height:1.6">
-              <h2>Hi ${friendName},</h2>
-              <p><b>${myName}</b> sent you a friend request on <b>Happy Volunteer</b>.</p>
-              ${reasonBlock}
-              <p>Open the app to accept or reject the request.</p>
-              <p style="color:#666;font-size:12px">If you didn't expect this, you can ignore this email.</p>
-            </div>
-          `
-        });
-        console.log("[sendFriendRequest] Email sent to:", friendEmail);
-      } catch (emailErr) {
-        console.error("[sendFriendRequest] Failed to send email:", emailErr);
-        // Don't fail the request if email fails
-      }
+      setImmediate(async () => {
+        try {
+          await transporter.sendMail({
+            to: friendEmail,
+            subject: "You received a friend request",
+            html: `
+            <h1>From Cycling Without Age</h1>
+              <div style="font-family:Arial,sans-serif;line-height:1.6">
+                <h2>Hi ${friendName},</h2>
+                <p><b>${myName}</b> sent you a friend request on <b>Happy Volunteer</b>.</p>
+                ${reasonBlock}
+                <p>Open the app to accept or reject the request.</p>
+                <p style="color:#666;font-size:12px">If you didn't expect this, you can ignore this email.</p>
+              </div>
+            `
+          });
+          console.log("[sendFriendRequest] Email sent to:", friendEmail);
+        } catch (emailErr) {
+          console.error("[sendFriendRequest] Failed to send email:", emailErr);
+        }
+      });
     }
 
-    return res.status(201).json(result);
+    return;
   } catch (error) {
     console.error("[sendFriendRequest] Error:", error);
     return res.status(500).json({ message: "Failed to send friend request" });
@@ -114,6 +117,10 @@ async function remobeFriend(req, res) {
     await userFriendsModel.removeFriend(userId, friendId);
     console.log("[removeFriend] Friend removed from DB");
 
+    // Send response FIRST
+    res.status(200).json({ message: "Friend removed successfully" });
+
+    // Then send email in background
     const friendEmail = friend.rows[0].email;
     const friendName = friend.rows[0].name || "there";
     const myName = me.rows[0].name || "Someone";
@@ -122,27 +129,28 @@ async function remobeFriend(req, res) {
       ? `<p><b>Reason:</b> ${escapeHtml(removeReason)}</p>`
       : "";
 
-    try {
-      await transporter.sendMail({
-        to: friendEmail,
-        subject: "Friend removed",
-        html: `
-        <h1>From Cycling Without Age</h1>
-          <div style="font-family:Arial,sans-serif;line-height:1.6">
-            <h2>Hi ${friendName},</h2>
-            <p><b>${myName}</b> removed you from their friends list on <b>Happy Volunteer</b>.</p>
-            ${reasonBlock}
-            <p style="color:#666;font-size:12px">If you think this was a mistake, you can reach out or send a new friend request.</p>
-          </div>
-        `
-      });
-      console.log("[removeFriend] Email sent to:", friendEmail);
-    } catch (emailErr) {
-      console.error("[removeFriend] Failed to send email:", emailErr);
-      // Don't fail the request if email fails
-    }
+    setImmediate(async () => {
+      try {
+        await transporter.sendMail({
+          to: friendEmail,
+          subject: "Friend removed",
+          html: `
+          <h1>From Cycling Without Age</h1>
+            <div style="font-family:Arial,sans-serif;line-height:1.6">
+              <h2>Hi ${friendName},</h2>
+              <p><b>${myName}</b> removed you from their friends list on <b>Happy Volunteer</b>.</p>
+              ${reasonBlock}
+              <p style="color:#666;font-size:12px">If you think this was a mistake, you can reach out or send a new friend request.</p>
+            </div>
+          `
+        });
+        console.log("[removeFriend] Email sent to:", friendEmail);
+      } catch (emailErr) {
+        console.error("[removeFriend] Failed to send email:", emailErr);
+      }
+    });
 
-    return res.status(200).json({ message: "Friend removed successfully" });
+    return;
   }
   catch (error) {
     console.error("[removeFriend] Error:", error);
@@ -239,25 +247,36 @@ async function acceptFriendRequest(req, res) {
       return res.status(400).json(result);
     }
 
+    // Send response FIRST
+    res.status(200).json(result);
+
+    // Then send email in background
     const friendEmail = result.friend.email;
     const friendName = result.friend.name || "there";
     const myName = result.me.name || "Someone";
 
-    await transporter.sendMail({
-      to: friendEmail,
-      subject: "Friend request accepted",
-      html: `
-      <h1>From Cycling Without Age</h1>
-        <div style="font-family:Arial,sans-serif;line-height:1.6">
-          <h2>Hi ${friendName},</h2>
-          <p><b>${myName}</b> accepted your friend request on <b>Happy Volunteer</b>.</p>
-          <p>You are now friends!</p>
-          <p style="color:#666;font-size:12px">If you didn’t expect this, you can ignore this email.</p>
-        </div>
-      `
+    setImmediate(async () => {
+      try {
+        await transporter.sendMail({
+          to: friendEmail,
+          subject: "Friend request accepted",
+          html: `
+          <h1>From Cycling Without Age</h1>
+            <div style="font-family:Arial,sans-serif;line-height:1.6">
+              <h2>Hi ${friendName},</h2>
+              <p><b>${myName}</b> accepted your friend request on <b>Happy Volunteer</b>.</p>
+              <p>You are now friends!</p>
+              <p style="color:#666;font-size:12px">If you didn't expect this, you can ignore this email.</p>
+            </div>
+          `
+        });
+        console.log("[acceptFriendRequest] Email sent to:", friendEmail);
+      } catch (emailErr) {
+        console.error("[acceptFriendRequest] Failed to send email:", emailErr);
+      }
     });
 
-    return res.status(200).json(result);
+    return;
   } catch (error) {
     console.error("Accept friend request error:", error);
     return res.status(500).json({ message: "Failed to accept friend request" });
@@ -273,25 +292,36 @@ async function rejectFriendRequest(req, res) {
       return res.status(400).json(result);
     }
 
+    // Send response FIRST
+    res.status(200).json(result);
+
+    // Then send email in background
     const friendEmail = result.friend.email;
     const friendName = result.friend.name || "there";
     const myName = result.me.name || "Someone";
 
-    await transporter.sendMail({
-      to: friendEmail,
-      subject: "Friend request rejected",
-      html: `
-      <h1>From Cycling Without Age</h1>
-        <div style="font-family:Arial,sans-serif;line-height:1.6">
-          <h2>Hi ${friendName},</h2>
-          <p><b>${myName}</b> rejected your friend request on <b>Happy Volunteer</b>.</p>
-          <p>You can try sending another request if you want.</p>
-          <p style="color:#666;font-size:12px">If you didn’t expect this, you can ignore this email.</p>
-        </div>
-      `
+    setImmediate(async () => {
+      try {
+        await transporter.sendMail({
+          to: friendEmail,
+          subject: "Friend request rejected",
+          html: `
+          <h1>From Cycling Without Age</h1>
+            <div style="font-family:Arial,sans-serif;line-height:1.6">
+              <h2>Hi ${friendName},</h2>
+              <p><b>${myName}</b> rejected your friend request on <b>Happy Volunteer</b>.</p>
+              <p>You can try sending another request if you want.</p>
+              <p style="color:#666;font-size:12px">If you didn’t expect this, you can ignore this email.</p>
+            </div>
+          `
+        });
+        console.log("[rejectFriendRequest] Email sent to:", friendEmail);
+      } catch (emailErr) {
+        console.error("[rejectFriendRequest] Failed to send email:", emailErr);
+      }
     });
 
-    return res.status(200).json(result);
+    return;
   } catch (error) {
     console.error("Reject friend request error:", error);
     return res.status(500).json({ message: "Failed to reject friend request" });
