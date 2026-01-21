@@ -1,6 +1,9 @@
 const UserEndPoint = `https://fsdp-cycling-ltey.onrender.com`;
 const token = localStorage.getItem("token");
-const userId = new URLSearchParams(window.location.search).get("userId");
+const profileParams = new URLSearchParams(window.location.search);
+const userId = profileParams.get("userId");
+const openWa = profileParams.get('openWa') === '1';
+const waTextParam = profileParams.get('waText');
 
 console.log('[userProfile] Loaded with userId:', userId, 'token exists:', !!token);
 
@@ -534,7 +537,9 @@ function renderContact(p) {
       const phoneValue = phoneEl?.dataset?.value || '';
       const waPhone = sanitizePhoneForWhatsApp(phoneValue);
       if (!isFriend || !waPhone) return;
-      const msg = `Hi ${p.name || 'friend'}, this is from Happy Volunteer. Can we chat about volunteering?`;
+      const msg = (waTextParam && waTextParam.trim())
+        ? waTextParam
+        : `Hi ${p.name || 'friend'}, this is from Happy Volunteer. Can we chat about volunteering?`;
       const url = `https://wa.me/${waPhone}?text=${encodeURIComponent(msg)}`;
       window.open(url, '_blank', 'noopener');
     };
@@ -551,6 +556,18 @@ function renderContact(p) {
   // Only show phone if mutual friends
   const isFriend = addBtn?.dataset?.state === 'remove';
   setPhoneVisibility(Boolean(isFriend));
+
+  if (openWa && waBtn && isFriend) {
+    setTimeout(() => {
+      waBtn.click();
+      try {
+        const newUrl = `${window.location.pathname}?userId=${encodeURIComponent(userId)}`;
+        window.history.replaceState({}, '', newUrl);
+      } catch (e) {
+        /* ignore */
+      }
+    }, 350);
+  }
 }
 
 function renderAdvantages(p) {

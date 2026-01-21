@@ -168,6 +168,46 @@
     </div>
   </section>
 
+  <div class="hv-share" id="hvShareModal" aria-hidden="true">
+    <div class="hv-share__backdrop" data-close="true"></div>
+    <div class="hv-share__dialog" role="dialog" aria-modal="true" aria-label="Share event">
+      <div class="hv-share__head">
+        <div class="hv-share__title">
+          <div class="hv-share__badge">Share</div>
+          <h3>Do you want to share this event?</h3>
+        </div>
+        <button class="hv-share__close" type="button" data-close="true" aria-label="Close">&times;</button>
+      </div>
+
+      <div class="hv-share__body" id="hvShareStep1">
+        <p class="hv-share__sub">Choose how you want to share.</p>
+        <div class="hv-share__actions">
+          <button class="hv-share__btn hv-share__btn--primary" type="button" id="hvShareYes">Yes, share to friend</button>
+          <button class="hv-share__btn" type="button" id="hvShareNo">No, copy link</button>
+        </div>
+      </div>
+
+      <div class="hv-share__body" id="hvShareStep2" style="display:none;">
+        <p class="hv-share__sub">Pick a friend to open WhatsApp chat.</p>
+        <div class="hv-share__friends" id="hvShareFriends">
+          <div class="hv-share__loading" id="hvShareFriendsLoading">Loading friends...</div>
+        </div>
+
+        <div class="hv-share__divider">Or share to a phone number</div>
+
+        <div class="hv-share__phone">
+          <input class="hv-share__input" id="hvSharePhone" type="tel" placeholder="e.g. +65 9123 4567" />
+          <button class="hv-share__btn hv-share__btn--wa" type="button" id="hvSharePhoneBtn">Open WhatsApp</button>
+        </div>
+
+        <div class="hv-share__footer">
+          <button class="hv-share__btn" type="button" id="hvShareBack">Back</button>
+          <button class="hv-share__btn" type="button" id="hvShareClose">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </main>
 <footer>
     <div class="container">

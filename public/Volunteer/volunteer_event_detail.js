@@ -13,6 +13,8 @@ let currentEventAddress = '';
 let currentEventName = '';
 let currentEventDate = '';
 
+let currentEventLocation = '';
+
 
 // Get eventId
 const params = new URLSearchParams(window.location.search);
@@ -45,6 +47,7 @@ async function loadEventDetails(id) {
     const data = await res.json();
     currentEventName = data.eventname || '';
     currentEventDate = data.eventdate || '';
+    currentEventLocation = data.location || '';
     document.getElementById("req-name").textContent = data.eventname;
     document.getElementById("req-org").textContent = data.organizationid || "-";
     document.getElementById("req-date").textContent =
@@ -70,12 +73,11 @@ async function loadEventDetails(id) {
   }
 }
 
-async function shareEvent() {
+function buildSharePayload() {
   const title = currentEventName || 'Volunteer Event';
   const dateText = currentEventDate ? new Date(currentEventDate).toLocaleString() : '';
-  const locationText = currentEventAddress || '';
+  const locationText = currentEventLocation || currentEventAddress || '';
   const url = `${window.location.origin}${window.location.pathname}?eventId=${encodeURIComponent(eventId)}`;
-
   const lines = [
     `Event: ${title}`,
     dateText ? `Date: ${dateText}` : '',
@@ -83,23 +85,98 @@ async function shareEvent() {
     `Link: ${url}`,
     'Let’s join together!'
   ].filter(Boolean);
-  const text = lines.join('\n');
+  return { title, url, text: lines.join('\n') };
+}
 
-  if (navigator.share) {
-    try {
-      await navigator.share({ title, text, url });
-      return;
-    } catch (e) {
-      // fall back to clipboard
-    }
-  }
-
+async function copyShareText() {
+  const payload = buildSharePayload();
   try {
-    await navigator.clipboard.writeText(text);
+    await navigator.clipboard.writeText(payload.text);
     alert('Event info copied. You can paste it into WhatsApp to share.');
   } catch {
-    prompt('Copy this event info:', text);
+    prompt('Copy this event info:', payload.text);
   }
+}
+
+function sanitizePhoneForWhatsApp(phone) {
+  const raw = String(phone || '').trim();
+  return raw ? raw.replace(/[^\d]/g, '') : '';
+}
+
+let hvShareFriendsLoaded = false;
+
+async function loadFriendsForShare() {
+  const listEl = document.getElementById('hvShareFriends');
+  const loadingEl = document.getElementById('hvShareFriendsLoading');
+  if (!listEl) return;
+
+  if (hvShareFriendsLoaded) return;
+  hvShareFriendsLoaded = true;
+
+  try {
+    const res = await fetch('https://fsdp-cycling-ltey.onrender.com/volunteer/friends/me', {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+
+    if (!res.ok) throw new Error('Failed to load friends');
+    const friends = await res.json();
+
+    if (loadingEl) loadingEl.remove();
+    if (!Array.isArray(friends) || friends.length === 0) {
+      listEl.innerHTML = '<div class="hv-share__loading">No friends found yet.</div>';
+      return;
+    }
+
+    const payload = buildSharePayload();
+    listEl.innerHTML = '';
+
+    friends.slice(0, 12).forEach((f) => {
+      const friendId = f.friendid ?? f.friendId ?? f.userid ?? f.userId ?? f.id;
+      if (friendId == null) return;
+      const name = f.nickname || f.name || 'Friend';
+      const username = f.username ? `@${f.username}` : '';
+
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'hv-share__friend';
+      btn.innerHTML = `<strong>${name}</strong><span>${username}</span>`;
+      btn.addEventListener('click', () => {
+        const msg = payload.text;
+        const target = `./userProfile.html?userId=${encodeURIComponent(friendId)}&openWa=1&waText=${encodeURIComponent(msg)}`;
+        window.location.href = target;
+      });
+
+      listEl.appendChild(btn);
+    });
+  } catch (e) {
+    if (loadingEl) loadingEl.textContent = 'Unable to load friends.';
+  }
+}
+
+function openShareModal() {
+  const modal = document.getElementById('hvShareModal');
+  const step1 = document.getElementById('hvShareStep1');
+  const step2 = document.getElementById('hvShareStep2');
+  if (!modal) return;
+  modal.classList.add('is-open');
+  modal.setAttribute('aria-hidden', 'false');
+  if (step1) step1.style.display = 'block';
+  if (step2) step2.style.display = 'none';
+}
+
+function closeShareModal() {
+  const modal = document.getElementById('hvShareModal');
+  if (!modal) return;
+  modal.classList.remove('is-open');
+  modal.setAttribute('aria-hidden', 'true');
+}
+
+function showShareFriendPicker() {
+  const step1 = document.getElementById('hvShareStep1');
+  const step2 = document.getElementById('hvShareStep2');
+  if (step1) step1.style.display = 'none';
+  if (step2) step2.style.display = 'block';
+  loadFriendsForShare();
 }
 
 function openGoogleMapsDirections({ lat, lng, address }) {
@@ -130,8 +207,45 @@ document.addEventListener('DOMContentLoaded', () => {
   const shareBtn = document.getElementById('btn-share-event');
   if (!shareBtn) return;
   shareBtn.addEventListener('click', () => {
-    shareEvent();
+    openShareModal();
   });
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+  const modal = document.getElementById('hvShareModal');
+  if (modal) {
+    modal.addEventListener('click', (e) => {
+      if (e.target?.dataset?.close === 'true') closeShareModal();
+    });
+  }
+
+  const yes = document.getElementById('hvShareYes');
+  if (yes) yes.addEventListener('click', showShareFriendPicker);
+
+  const no = document.getElementById('hvShareNo');
+  if (no) no.addEventListener('click', () => {
+    copyShareText();
+    closeShareModal();
+  });
+
+  const back = document.getElementById('hvShareBack');
+  if (back) back.addEventListener('click', openShareModal);
+
+  const closeBtn = document.getElementById('hvShareClose');
+  if (closeBtn) closeBtn.addEventListener('click', closeShareModal);
+
+  const phoneBtn = document.getElementById('hvSharePhoneBtn');
+  if (phoneBtn) {
+    phoneBtn.addEventListener('click', () => {
+      const input = document.getElementById('hvSharePhone');
+      const raw = input?.value || '';
+      const waPhone = sanitizePhoneForWhatsApp(raw);
+      const payload = buildSharePayload();
+      if (!waPhone) return;
+      const url = `https://wa.me/${waPhone}?text=${encodeURIComponent(payload.text)}`;
+      window.open(url, '_blank', 'noopener');
+    });
+  }
 });
 // check assign
 
