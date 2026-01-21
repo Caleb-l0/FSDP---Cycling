@@ -1,3 +1,8 @@
+const token = localStorage.getItem("token");
+
+if (!token) {
+    window.location.href = "../../index.html";
+}
 
 document.querySelectorAll(".btn-create-post, #openPostForm").forEach(btn => {
     if (!btn) return;
