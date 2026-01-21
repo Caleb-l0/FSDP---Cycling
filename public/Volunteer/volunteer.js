@@ -444,11 +444,7 @@ async function loadfilterSection(choice) {
 else if (choice === 'friend') {
   if (!filterSection) return;
 
-  filterSection.innerHTML = `
-    <div class="fec-loading">
-      <p>⏳ Loading events from your friends...</p>
-    </div>
-  `;
+  filterSection.innerHTML = `<p>Loading friends...</p>`;
 
   try {
     const res = await fetch(
@@ -460,72 +456,99 @@ else if (choice === 'friend') {
 
     if (!Array.isArray(friends) || friends.length === 0) {
       filterSection.innerHTML = `
-        <div class="soft-banner">
-          <div class="soft-title">No friend activity yet</div>
-          <div class="soft-sub">Your friends haven’t joined any events.</div>
+        <div class="event-box">
+          <div class="service-card">
+            <div class="service-icon"><i class="fas fa-users"></i></div>
+            <div class="service-content">
+              <h3>No friend activity yet</h3>
+              <p>Your friends haven't joined any events.</p>
+            </div>
+          </div>
         </div>`;
       return;
     }
 
-    const flat = [];
-    friends.forEach(f => {
-      const friendName = f.friendName || "Friend";
-      (f.events || []).forEach(e => {
-        flat.push({ ...e, _friendName: friendName });
-      });
-    });
-
-    if (flat.length === 0) {
-      filterSection.innerHTML = `
-        <div class="soft-banner">
-          <div class="soft-title">No friend activity yet</div>
-          <div class="soft-sub">Your friends haven’t joined any events.</div>
-        </div>`;
-      return;
-    }
-
-    // Add class for CSS targeting (fallback for browsers without :has())
-    filterSection.classList.add("fec-vertical-mode");
-
-    // Limit to 6 on mobile for less scrolling, 12 on desktop
-    const isMobile = window.innerWidth <= 768;
-    const limit = isMobile ? 6 : 12;
+    // Store friends data globally for toggle function
+    window._friendsSignupData = friends;
 
     filterSection.innerHTML = "";
-    flat.slice(0, limit).forEach(e => {
-      filterSection.innerHTML += renderFriendEventCard(e);
+    friends.forEach((f, idx) => {
+      const friendName = f.friendName || "Friend";
+      const eventCount = (f.events || []).length;
+
+      filterSection.innerHTML += `
+        <div class="event-box">
+          <div class="service-card" onclick="toggleFriendEvents(${idx})" role="button" tabindex="0">
+            <div class="service-icon">
+              <i class="fas fa-user"></i>
+            </div>
+            <div class="service-content">
+              <h3>${friendName}</h3>
+              <p>${eventCount} event${eventCount !== 1 ? 's' : ''} signed up</p>
+            </div>
+          </div>
+        </div>
+        <div class="friend-events-expand" id="friend-events-${idx}" style="display:none;"></div>
+      `;
     });
   } catch (err) {
     console.error(err);
-    filterSection.innerHTML = `<p class="error-text">Failed to load friends’ events.</p>`;
+    filterSection.innerHTML = `<p class="error-text">Failed to load friends.</p>`;
   }
 }
+}
 
-function renderFriendEventCard(e) {
-  const friendName = e._friendName || "Friend";
-  const dateStr = e.eventdate
-    ? new Date(e.eventdate).toLocaleDateString(undefined, { month: "short", day: "numeric" })
-    : "";
+// Toggle friend's events when clicking on a friend card
+function toggleFriendEvents(idx) {
+  const container = document.getElementById(`friend-events-${idx}`);
+  if (!container) return;
 
-  return `
-    <div class="friend-event-card-v2" onclick="goToEventDetail(${e.eventid})" role="button" tabindex="0">
-      <div class="fec-friend-badge">
-        <span class="fec-avatar">👤</span>
-        <span class="fec-friend-name">${friendName}</span>
-      </div>
-      <div class="fec-event-info">
-        <div class="fec-event-name">${e.eventname}</div>
-        <div class="fec-event-meta">
-          ${dateStr ? `<span>📅 ${dateStr}</span>` : ""}
-          <span>📍 ${e.location || "TBA"}</span>
+  const isOpen = container.style.display !== 'none';
+
+  // Close all other expanded sections
+  document.querySelectorAll('.friend-events-expand').forEach(el => {
+    el.style.display = 'none';
+    el.innerHTML = '';
+  });
+
+  if (isOpen) return; // Was open, now closed
+
+  // Open this one
+  const friends = window._friendsSignupData || [];
+  const friend = friends[idx];
+  if (!friend || !friend.events || friend.events.length === 0) {
+    container.innerHTML = `<p style="padding:12px; color:#64748b;">No events signed up.</p>`;
+    container.style.display = 'block';
+    return;
+  }
+
+  // Render events in same style as "Nearer to You"
+  let html = '';
+  friend.events.forEach(e => {
+    const dateStr = e.eventdate
+      ? new Date(e.eventdate).toLocaleDateString(undefined, { month: "short", day: "numeric" })
+      : "";
+    html += `
+      <div class="event-box" style="margin-left: 24px;">
+        <div class="service-card" onclick="goToEventDetail(${e.eventid})" role="button" tabindex="0">
+          <div class="service-icon">
+            <i class="fas fa-calendar"></i>
+          </div>
+          <div class="service-content">
+            <h3>${e.eventname}</h3>
+            <p>${e.location || "TBA"}</p>
+            ${dateStr ? `<p>📅 ${dateStr}</p>` : ""}
+          </div>
         </div>
       </div>
-      <div class="fec-tap-hint">Tap to view →</div>
-    </div>
-  `;
+    `;
+  });
+
+  container.innerHTML = html;
+  container.style.display = 'block';
 }
 
-}
+
 
 
 
