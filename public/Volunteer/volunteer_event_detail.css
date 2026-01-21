@@ -173,54 +173,46 @@
 }
 
 /* =========================
-   SIGNUP BUTTON STATES
+   GOOGLE MAPS BUTTON
+   Highly visible for elderly
    ========================= */
-
-.btn-primary {
-  background: #f4a261;
+.btn-map {
+  background: linear-gradient(135deg, #34A853 0%, #1a73e8 100%);
   color: white;
-  border: none;
+  border: 3px solid #34A853;
+  font-size: 1.15rem;
+  font-weight: 700;
+  padding: 16px 36px;
+  box-shadow: 0 4px 14px rgba(52, 168, 83, 0.45);
+  animation: pulseMap 2s ease-in-out infinite;
 }
 
-.btn-primary:hover {
-  background: #e76f51;
+.btn-map:hover {
+  background: linear-gradient(135deg, #2d9249 0%, #1557b0 100%);
+  transform: scale(1.05);
+  box-shadow: 0 6px 18px rgba(52, 168, 83, 0.55);
 }
 
-.btn-cancelled {
-  background: #fbeaea;
-  color: #c62828;
-  border: 1.5px solid #c62828;
+@keyframes pulseMap {
+  0%, 100% {
+    box-shadow: 0 4px 14px rgba(52, 168, 83, 0.45);
+  }
+  50% {
+    box-shadow: 0 4px 22px rgba(52, 168, 83, 0.75);
+  }
 }
 
-.btn-cancelled:hover {
-  background: #f3caca;
+@media (max-width: 768px) {
+  .request-info {
+    padding: 20px;
+  }
+
+  .request-info h2 {
+    font-size: 1.6rem;
+  }
+
+  .btn-map {
+    font-size: 1.05rem;
+    padding: 14px 24px;
+  }
 }
-
-.btn-disabled {
-  background: #ddd;
-  color: #888;
-  cursor: not-allowed;
-}
-
-.btn-danger {
-  background: #E53935;
-  color: white;
-  border: none;
-}
-
-.btn-danger:hover {
-  background: #C62828;
-}
-
-
-
-
-    @media (max-width: 768px) {
-      .request-info {
-        padding: 20px;
-      }
-
-      .request-info h2 {
-        font-size: 1.6rem;
-      }
-    }

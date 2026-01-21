@@ -270,4 +270,4 @@ document.addEventListener('DOMContentLoaded', async () => {
     displayEventDetails();
   }
 });
-
+}

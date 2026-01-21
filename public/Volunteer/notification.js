@@ -238,7 +238,21 @@ async function acceptRequest(requestId) {
     method: "POST",
     headers: { Authorization: `Bearer ${token}` }
   });
-  if (!res.ok) throw new Error("Failed to accept request");
+  if (!res.ok) {
+    let msg = `Failed to accept request (${res.status})`;
+    try {
+      const data = await res.json();
+      msg = data?.message || data?.error || data?.code || msg;
+    } catch {
+      try {
+        const text = await res.text();
+        if (text) msg = text;
+      } catch {
+        // ignore
+      }
+    }
+    throw new Error(msg);
+  }
 }
 
 async function rejectRequest(requestId) {
@@ -246,7 +260,21 @@ async function rejectRequest(requestId) {
     method: "POST",
     headers: { Authorization: `Bearer ${token}` }
   });
-  if (!res.ok) throw new Error("Failed to reject request");
+  if (!res.ok) {
+    let msg = `Failed to reject request (${res.status})`;
+    try {
+      const data = await res.json();
+      msg = data?.message || data?.error || data?.code || msg;
+    } catch {
+      try {
+        const text = await res.text();
+        if (text) msg = text;
+      } catch {
+        // ignore
+      }
+    }
+    throw new Error(msg);
+  }
 }
 
 async function load() {
@@ -290,7 +318,7 @@ listEl.addEventListener("click", async (e) => {
     await load();
   } catch (err) {
     console.error(err);
-    alert("Action failed. Please try again.");
+    showToast(err?.message || 'Action failed. Please try again.');
     btn.disabled = false;
   }
 });

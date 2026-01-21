@@ -27,16 +27,18 @@ async function sendFriendRequest(req, res) {
     const friendId = Number(req.body.friendId);
     const requestReason = (req.body.requestReason ?? req.body.reason ?? "").toString().trim();
 
+    console.log("[sendFriendRequest] userId:", userId, "friendId:", friendId, "reason:", requestReason);
+
     if (!userId) return res.status(401).json({ message: "Unauthorized" });
-    if (!Number.isInteger(friendId)) return res.status(400).json({ message: "Invalid friendId" });
+    if (!Number.isInteger(friendId) || friendId <= 0) return res.status(400).json({ message: "Invalid friendId" });
 
     const me = await pool.query(`SELECT id, name, email FROM users WHERE id=$1`, [userId]);
     if (me.rowCount === 0) return res.status(401).json({ message: "Unauthorized" });
 
     const result = await userFriendsModel.createFriendRequest(userId, friendId, requestReason);
+    console.log("[sendFriendRequest] createFriendRequest result:", JSON.stringify(result));
 
     if (!result.ok) {
-
       const status = (result.code === "ALREADY_FRIENDS") ? 409 : 400;
       return res.status(status).json(result);
     }
@@ -50,25 +52,31 @@ async function sendFriendRequest(req, res) {
         ? `<p><b>Reason:</b> ${escapeHtml(requestReason)}</p>`
         : "";
 
-      await transporter.sendMail({
-        to: friendEmail,
-        subject: "You received a friend request",
-        html: `
-        <h1>From Cycling Without Age</h1>
-          <div style="font-family:Arial,sans-serif;line-height:1.6">
-            <h2>Hi ${friendName},</h2>
-            <p><b>${myName}</b> sent you a friend request on <b>Happy Volunteer</b>.</p>
-            ${reasonBlock}
-            <p>Open the app to accept or reject the request.</p>
-            <p style="color:#666;font-size:12px">If you didn’t expect this, you can ignore this email.</p>
-          </div>
-        `
-      });
+      try {
+        await transporter.sendMail({
+          to: friendEmail,
+          subject: "You received a friend request",
+          html: `
+          <h1>From Cycling Without Age</h1>
+            <div style="font-family:Arial,sans-serif;line-height:1.6">
+              <h2>Hi ${friendName},</h2>
+              <p><b>${myName}</b> sent you a friend request on <b>Happy Volunteer</b>.</p>
+              ${reasonBlock}
+              <p>Open the app to accept or reject the request.</p>
+              <p style="color:#666;font-size:12px">If you didn't expect this, you can ignore this email.</p>
+            </div>
+          `
+        });
+        console.log("[sendFriendRequest] Email sent to:", friendEmail);
+      } catch (emailErr) {
+        console.error("[sendFriendRequest] Failed to send email:", emailErr);
+        // Don't fail the request if email fails
+      }
     }
 
     return res.status(201).json(result);
   } catch (error) {
-    console.error("Send friend request error:", error);
+    console.error("[sendFriendRequest] Error:", error);
     return res.status(500).json({ message: "Failed to send friend request" });
   }
 }
@@ -94,6 +102,8 @@ async function remobeFriend(req, res) {
     const userId = req.user.id;
     const friendId = parseInt(req.params.friendId);
 
+    console.log("[removeFriend] userId:", userId, "friendId:", friendId);
+
     const removeReason = (req.body?.removeReason ?? req.body?.reason ?? req.query?.reason ?? "").toString().trim();
 
     const me = await pool.query(`SELECT id, name, email FROM users WHERE id=$1`, [userId]);
@@ -102,6 +112,7 @@ async function remobeFriend(req, res) {
     if (friend.rowCount === 0) return res.status(404).json({ message: "User not found" });
 
     await userFriendsModel.removeFriend(userId, friendId);
+    console.log("[removeFriend] Friend removed from DB");
 
     const friendEmail = friend.rows[0].email;
     const friendName = friend.rows[0].name || "there";
@@ -111,24 +122,30 @@ async function remobeFriend(req, res) {
       ? `<p><b>Reason:</b> ${escapeHtml(removeReason)}</p>`
       : "";
 
-    await transporter.sendMail({
-      to: friendEmail,
-      subject: "Friend removed",
-      html: `
-      <h1>From Cycling Without Age</h1>
-        <div style="font-family:Arial,sans-serif;line-height:1.6">
-          <h2>Hi ${friendName},</h2>
-          <p><b>${myName}</b> removed you from their friends list on <b>Happy Volunteer</b>.</p>
-          ${reasonBlock}
-          <p style="color:#666;font-size:12px">If you think this was a mistake, you can reach out or send a new friend request.</p>
-        </div>
-      `
-    });
+    try {
+      await transporter.sendMail({
+        to: friendEmail,
+        subject: "Friend removed",
+        html: `
+        <h1>From Cycling Without Age</h1>
+          <div style="font-family:Arial,sans-serif;line-height:1.6">
+            <h2>Hi ${friendName},</h2>
+            <p><b>${myName}</b> removed you from their friends list on <b>Happy Volunteer</b>.</p>
+            ${reasonBlock}
+            <p style="color:#666;font-size:12px">If you think this was a mistake, you can reach out or send a new friend request.</p>
+          </div>
+        `
+      });
+      console.log("[removeFriend] Email sent to:", friendEmail);
+    } catch (emailErr) {
+      console.error("[removeFriend] Failed to send email:", emailErr);
+      // Don't fail the request if email fails
+    }
 
     return res.status(200).json({ message: "Friend removed successfully" });
   }
   catch (error) {
-    console.error("Remove friend error:", error);
+    console.error("[removeFriend] Error:", error);
     return res.status(500).json({
       message: "Failed to remove friend"
     });

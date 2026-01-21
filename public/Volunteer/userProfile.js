@@ -2,8 +2,16 @@ const UserEndPoint = `https://fsdp-cycling-ltey.onrender.com`;
 const token = localStorage.getItem("token");
 const userId = new URLSearchParams(window.location.search).get("userId");
 
+console.log('[userProfile] Loaded with userId:', userId, 'token exists:', !!token);
+
 if (!token) {
   window.location.href = "../../index.html";
+}
+
+if (!userId || userId === 'null' || userId === 'undefined') {
+  console.error('[userProfile] Invalid userId:', userId);
+  alert('Invalid profile link');
+  window.location.href = './homepage_login_volunteer.html';
 }
 
 /* =========================
@@ -201,6 +209,7 @@ if (frSend) {
       }
 
       const reason = (frReason?.value || '').trim();
+      console.log('[Friend Request] Sending request to userId:', userId, 'reason:', reason);
       const res = await fetch(`${UserEndPoint}/volunteer/friends/add`, {
         method: "POST",
         headers: {
@@ -210,24 +219,36 @@ if (frSend) {
         body: JSON.stringify({ friendId: userId, requestReason: reason })
       });
 
+      console.log('[Friend Request] Response status:', res.status);
+
       if (res.status === 409) {
         closeFriendRequestModal();
         setFriendUI('friends');
         setPhoneVisibility(true);
         showToast('You are already friends.');
         showCongrats('You are already friends!');
-        setTimeout(() => window.location.reload(), 1600);
+        setTimeout(() => window.location.reload(), 2000);
         return;
       }
 
       if (!res.ok) {
-        showFriendRequestError('Failed to send request. Please try again.');
+        let errMsg = 'Failed to send request. Please try again.';
+        try {
+          const errData = await res.json();
+          console.error('[Friend Request] Server error:', errData);
+          errMsg = errData?.message || errData?.error || errMsg;
+        } catch {
+          // ignore parse error
+        }
+        showFriendRequestError(errMsg);
+        showToast(errMsg);
         return;
       }
 
       let data;
       try {
         data = await res.json();
+        console.log('[Friend Request] Success data:', data);
       } catch {
         data = null;
       }
@@ -239,17 +260,18 @@ if (frSend) {
         setPhoneVisibility(true);
         showToast('Friend added successfully.');
         showCongrats('Friend added successfully!');
-        setTimeout(() => window.location.reload(), 1600);
+        setTimeout(() => window.location.reload(), 2000);
       } else {
         setFriendUI('pending_outgoing');
         setPhoneVisibility(false);
         showToast('Friend request sent successfully.');
         showCongrats('Friend request sent successfully!');
-        setTimeout(() => window.location.reload(), 1600);
+        setTimeout(() => window.location.reload(), 2000);
       }
     } catch (err) {
-      console.error(err);
+      console.error('[Friend Request] Exception:', err);
       showFriendRequestError('Failed to send request. Please try again.');
+      showToast('Failed to send request. Check console for details.');
     } finally {
       frSend.disabled = false;
 
@@ -316,6 +338,7 @@ if (rmConfirm) {
       }
 
       const reason = (rmReason?.value || '').trim();
+      console.log('[Remove Friend] Removing friendId:', userId, 'reason:', reason);
       const res = await fetch(`${UserEndPoint}/volunteer/friends/remove/${userId}`, {
         method: "DELETE",
         headers: {
@@ -325,20 +348,33 @@ if (rmConfirm) {
         body: JSON.stringify({ removeReason: reason })
       });
 
+      console.log('[Remove Friend] Response status:', res.status);
+
       if (!res.ok) {
-        showRemoveFriendError('Failed to remove friend. Please try again.');
+        let errMsg = 'Failed to remove friend. Please try again.';
+        try {
+          const errData = await res.json();
+          console.error('[Remove Friend] Server error:', errData);
+          errMsg = errData?.message || errData?.error || errMsg;
+        } catch {
+          // ignore parse error
+        }
+        showRemoveFriendError(errMsg);
+        showToast(errMsg);
         return;
       }
 
+      console.log('[Remove Friend] Success');
       closeRemoveFriendModal();
       setFriendUI('none');
       setPhoneVisibility(false);
       showToast('Removed friend successfully.');
       showCongrats('Removed friend successfully.');
-      setTimeout(() => window.location.reload(), 1400);
+      setTimeout(() => window.location.reload(), 2000);
     } catch (err) {
-      console.error(err);
+      console.error('[Remove Friend] Exception:', err);
       showRemoveFriendError('Failed to remove friend. Please try again.');
+      showToast('Failed to remove friend. Check console for details.');
     } finally {
       rmConfirm.disabled = false;
       if (rmCancel) rmCancel.disabled = false;
