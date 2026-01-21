@@ -370,14 +370,19 @@ body {
 /* ===== COMMENT OVERLAY ===== */
 
 #globalCommentOverlay.comment-overlay {
+    position: fixed !important;
+    inset: 0;
     z-index: 9998;
 }
 
 #globalCommentPanel.comment-panel {
+    position: fixed !important;
+    left: 0;
+    bottom: -100%;
+    width: 100%;
     z-index: 9999;
     max-height: 72vh;
     overflow: auto;
-    bottom: -100%;
 }
 
 #globalCommentPanel.comment-panel.show {
@@ -568,7 +573,7 @@ body {
 
 .post-form-container.is-open {
     display: block;
-    position: fixed;
+    position: fixed !important;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
@@ -578,6 +583,10 @@ body {
     max-height: 85vh;
     overflow: auto;
     padding-bottom: 18px;
+}
+
+#postForm.post-form-container {
+    position: fixed !important;
 }
 
 .post-form-overlay.is-open {

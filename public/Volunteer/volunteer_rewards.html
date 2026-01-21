@@ -61,7 +61,19 @@
   </div>
 </div>
 
-<div id="transactionHistory"></div>
+<section id="transactionHistory" class="history-card" aria-label="Redemption History">
+  <div class="history-head">
+    <h3 class="history-title">Redemption History</h3>
+    <button id="toggleHistory" class="history-toggle" type="button" aria-expanded="true" aria-controls="historyBody">
+      <span class="history-toggle-label">Hide</span>
+      <span class="history-toggle-icon" aria-hidden="true">▾</span>
+    </button>
+  </div>
+
+  <div id="historyBody" class="history-body">
+    <div id="historyContent" aria-live="polite"></div>
+  </div>
+</section>
 <!--Transection History obv-->
 
 <footer>
@@ -213,60 +225,114 @@
   });
 
 
-    async function loadHistory() {
-  const res = await fetch(`https://fsdp-cycling-ltey.onrender.com/rewards/history/${userId}`, {
-  headers: {
-    "Authorization": `Bearer ${token}`
+  const historyContent = document.getElementById("historyContent");
+  const historyBody = document.getElementById("historyBody");
+  const historyToggle = document.getElementById("toggleHistory");
+
+  function setHistoryCollapsed(isCollapsed) {
+    if (!historyBody || !historyToggle) return;
+    historyBody.classList.toggle('is-collapsed', isCollapsed);
+    historyToggle.setAttribute('aria-expanded', isCollapsed ? 'false' : 'true');
+    const label = historyToggle.querySelector('.history-toggle-label');
+    if (label) label.textContent = isCollapsed ? 'Show' : 'Hide';
   }
-});
 
-  const data = await res.json();
-
-  let html = "<h2>Your Redemption History</h2>";
-
-  if (data.length === 0) {
-    html += "<p>No redemptions yet.</p>";
-  } else {
-    html += "<ul>";
-    data.forEach(item => {
-      html += `
-        <li>
-          ${item.ItemName} — ${item.Points} points
-          <span style="color:#777;">(${new Date(item.RedeemedAt).toLocaleString()})</span>
-          <button>View Details</button>
-        </li>
-      `;
+  if (historyToggle) {
+    historyToggle.addEventListener('click', () => {
+      const isCollapsed = historyBody?.classList.contains('is-collapsed');
+      setHistoryCollapsed(!isCollapsed);
     });
-    html += "</ul>";
   }
 
-  document.getElementById("transactionHistory").innerHTML = html;
-  // Attach modal listeners to each "View Details" button
-const historyButtons = document.querySelectorAll("#transactionHistory button");
+  function renderHistorySkeleton(count = 3) {
+    if (!historyContent) return;
+    let html = '<div class="history-skeleton" aria-hidden="true">';
+    for (let i = 0; i < count; i += 1) {
+      html += `
+        <div class="hsk-row">
+          <div class="hsk-line hsk-line--title"></div>
+          <div class="hsk-line"></div>
+          <div class="hsk-line hsk-line--short"></div>
+        </div>
+      `;
+    }
+    html += '</div>';
+    historyContent.innerHTML = html;
+  }
 
-historyButtons.forEach((btn, index) => {
-  btn.addEventListener("click", () => {
-    const item = data[index];
+  function renderEmptyHistory() {
+    if (!historyContent) return;
+    historyContent.innerHTML = `
+      <div class="history-empty" role="status">
+        <div class="history-empty-icon" aria-hidden="true">🎁</div>
+        <div class="history-empty-title">No redemptions yet</div>
+        <div class="history-empty-sub">Your redeemed vouchers will appear here.</div>
+      </div>
+    `;
+  }
 
-    // Fill modal
-    document.getElementById("vItem").textContent = item.ItemName;
-    document.getElementById("vPoints").textContent = item.Points;
-    document.getElementById("vDate").textContent = new Date(item.RedeemedAt).toLocaleString();
-    document.getElementById("vCode").textContent = item.VoucherCode ?? "N/A";
+  function renderHistoryList(data) {
+    if (!historyContent) return;
+    historyContent.innerHTML = `
+      <ul class="history-list">
+        ${data.map((item, index) => `
+          <li class="history-item">
+            <div class="history-item-main">
+              <div class="history-item-name">${item.ItemName}</div>
+              <div class="history-item-meta">${item.Points} points · ${new Date(item.RedeemedAt).toLocaleString()}</div>
+            </div>
+            <button class="history-view" type="button" data-index="${index}">View</button>
+          </li>
+        `).join('')}
+      </ul>
+    `;
+  }
 
-    // Create QR
-    const qrContainer = document.getElementById("qrCode");
-    qrContainer.innerHTML = "";
-    new QRCode(qrContainer, item.VoucherCode ?? "N/A");
+  async function loadHistory() {
+    renderHistorySkeleton(3);
 
-    // Show modal
-    document.getElementById("voucherModal").style.display = "flex";
-  });
-});
+    try {
+      const res = await fetch(`https://fsdp-cycling-ltey.onrender.com/rewards/history/${userId}`, {
+        headers: { "Authorization": `Bearer ${token}` }
+      });
 
-}
+      if (!res.ok) throw new Error('Failed to load history');
+      const data = await res.json();
 
-loadHistory();
+      if (!Array.isArray(data) || data.length === 0) {
+        renderEmptyHistory();
+        return;
+      }
+
+      renderHistoryList(data);
+
+      const historyButtons = document.querySelectorAll(".history-view");
+      historyButtons.forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const index = Number(btn.dataset.index);
+          const item = data[index];
+          if (!item) return;
+
+          document.getElementById("vItem").textContent = item.ItemName;
+          document.getElementById("vPoints").textContent = item.Points;
+          document.getElementById("vDate").textContent = new Date(item.RedeemedAt).toLocaleString();
+          document.getElementById("vCode").textContent = item.VoucherCode ?? "N/A";
+
+          const qrContainer = document.getElementById("qrCode");
+          qrContainer.innerHTML = "";
+          new QRCode(qrContainer, item.VoucherCode ?? "N/A");
+
+          document.getElementById("voucherModal").style.display = "flex";
+        });
+      });
+    } catch (e) {
+      if (historyContent) {
+        historyContent.innerHTML = '<p class="history-error">Failed to load redemption history.</p>';
+      }
+    }
+  }
+
+  loadHistory();
 </script>
 
 <!-- Voucher Modal -->
