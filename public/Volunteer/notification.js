@@ -15,6 +15,7 @@ const eventMarkReadBtn = document.getElementById('btnEventMarkRead');
 
 const EVENTS_ENDPOINT = `${API_BASE}/volunteer/events`;
 const LAST_SEEN_EVENT_KEY = 'hv_last_seen_eventid';
+const EVENT_UPDATE_SEEN_KEY = 'hv_seen_event_updates_v1';
 
 let toastTimer;
 
@@ -124,35 +125,90 @@ async function fetchEvents() {
   return res.json();
 }
 
+function normalizeEventId(e) {
+  const id = Number(e?.eventid ?? e?.EventID ?? e?.EventId ?? e?.id);
+  return Number.isFinite(id) ? id : null;
+}
+
+function normalizeStatus(s) {
+  return String(s ?? '').trim().toLowerCase();
+}
+
+function safeParseJson(val, fallback) {
+  try {
+    return JSON.parse(val);
+  } catch {
+    return fallback;
+  }
+}
+
+function getEventUpdateSignature(e) {
+  const id = normalizeEventId(e);
+  if (!id) return null;
+  const status = normalizeStatus(e.status);
+  const orgId = Number(e.organizationid ?? e.OrganizationID ?? e.organization_id ?? 0) || 0;
+  const reqVol = Number(e.requiredvolunteers ?? e.RequiredVolunteers ?? 0) || 0;
+  const volCount = Number(e.volunteer_signup_count ?? e.volunteerSignupCount ?? 0) || 0;
+  const maxP = Number(e.maximumparticipant ?? e.MaximumParticipant ?? 0) || 0;
+  return `${id}|${status}|org:${orgId}|reqv:${reqVol}|vol:${volCount}|maxp:${maxP}`;
+}
+
+function getEventUpdateType(e) {
+  const status = normalizeStatus(e.status);
+  const date = e.eventdate ? new Date(e.eventdate) : null;
+  const isFuture = date && !Number.isNaN(date.getTime()) ? (date.getTime() > Date.now()) : true;
+  const orgId = Number(e.organizationid ?? 0) || 0;
+  const reqVol = Number(e.requiredvolunteers ?? 0) || 0;
+  const volCount = Number(e.volunteer_signup_count ?? 0) || 0;
+
+  if (status.includes('cancel')) return 'cancelled';
+  if (isFuture && orgId) return 'open';
+  if (isFuture && reqVol > 0 && volCount < reqVol) return 'short';
+  return null;
+}
+
+function buildEventUpdateMessage(type, e) {
+  const name = e.eventname || e.EventName || 'Event';
+  if (type === 'cancelled') return `❌ Event cancelled: ${name}`;
+  if (type === 'short') return `⚠️ Short of volunteers: ${name}`;
+  if (type === 'open') return `✅ Event open for registration: ${name}`;
+  return `🔔 Event update: ${name}`;
+}
+
 function renderEventNotification(newEvents, latestEventId) {
   if (!eventCard || !eventListEl) return;
   eventCard.style.display = 'block';
-  
-  const count = Array.isArray(newEvents) ? newEvents.length : 1;
-  const eventText = count === 1 ? 'A new event has been approved!' : `${count} new events have been approved!`;
-  
-  let eventsHtml = '';
-  if (Array.isArray(newEvents) && newEvents.length > 0) {
-    eventsHtml = newEvents.slice(0, 5).map(e => {
-      const name = e.eventname || e.EventName || 'New Event';
-      const date = e.eventdate ? new Date(e.eventdate).toLocaleDateString() : '';
-      const loc = e.location || e.Location || '';
-      return `
-        <div class="noti-event-item">
-          <strong>📅 ${escapeHtml(name)}</strong>
-          ${date ? `<span class="noti-event-date">${date}</span>` : ''}
-          ${loc ? `<span class="noti-event-loc">📍 ${escapeHtml(loc)}</span>` : ''}
-        </div>
-      `;
-    }).join('');
-  }
-  
+
+  const items = Array.isArray(newEvents) ? newEvents : [];
+  const count = items.length;
+  const eventText = count === 1 ? 'You have 1 event update!' : `You have ${count} event updates!`;
+
+  const eventsHtml = items.slice(0, 6).map(e => {
+    const type = e._updateType || getEventUpdateType(e) || 'open';
+    const msg = buildEventUpdateMessage(type, e);
+    const date = e.eventdate ? new Date(e.eventdate).toLocaleDateString() : '';
+    const loc = e.location || e.Location || '';
+    const reqVol = Number(e.requiredvolunteers ?? 0) || 0;
+    const volCount = Number(e.volunteer_signup_count ?? 0) || 0;
+    const extra = (type === 'short' && reqVol > 0)
+      ? `<span class="noti-event-loc">Need ${reqVol}, now ${volCount}</span>`
+      : '';
+    return `
+      <div class="noti-event-item">
+        <strong>${escapeHtml(msg)}</strong>
+        ${date ? `<span class="noti-event-date">${escapeHtml(date)}</span>` : ''}
+        ${loc ? `<span class="noti-event-loc">📍 ${escapeHtml(loc)}</span>` : ''}
+        ${extra}
+      </div>
+    `;
+  }).join('');
+
   eventListEl.innerHTML = `
     <div class="noti-item noti-item--event">
       <div class="noti-item-top">
         <div>
           <div class="noti-from">${eventText}</div>
-          <div class="noti-meta">Admin has approved new events. Sign up now!</div>
+          <div class="noti-meta">Events updates: open / cancelled / short of volunteers.</div>
         </div>
       </div>
       ${eventsHtml ? `<div class="noti-event-list">${eventsHtml}</div>` : ''}
@@ -186,30 +242,64 @@ async function loadEventNotification() {
   if (!eventCard || !eventListEl) return;
   try {
     const events = await fetchEvents();
+
     const latestId = getLatestEventId(events);
     if (!latestId) {
       eventCard.style.display = 'none';
       return;
     }
 
-    let lastSeen = null;
-    try { lastSeen = Number(localStorage.getItem(LAST_SEEN_EVENT_KEY)); } catch (e) { lastSeen = null; }
+    let seenMap = {};
+    try {
+      seenMap = safeParseJson(localStorage.getItem(EVENT_UPDATE_SEEN_KEY) || '{}', {});
+    } catch {
+      seenMap = {};
+    }
 
-    if (!Number.isFinite(lastSeen) || lastSeen <= 0) {
-      try { localStorage.setItem(LAST_SEEN_EVENT_KEY, String(latestId)); } catch (e) { /* ignore */ }
+    const updates = [];
+    for (const e of (events || [])) {
+      const id = normalizeEventId(e);
+      if (!id) continue;
+      const type = getEventUpdateType(e);
+      if (!type) continue;
+      const sig = getEventUpdateSignature(e);
+      if (!sig) continue;
+      if (seenMap[String(id)] === sig) continue;
+      updates.push({ ...e, _updateType: type, _sig: sig });
+    }
+
+    if (updates.length === 0) {
       eventCard.style.display = 'none';
       return;
     }
 
-    if (latestId > lastSeen) {
-      // Filter to show only new events (id > lastSeen)
-      const newEvents = (events || []).filter(e => {
-        const id = Number(e.eventid ?? e.EventID ?? e.EventId ?? e.id);
-        return Number.isFinite(id) && id > lastSeen;
-      });
-      renderEventNotification(newEvents, latestId);
-    } else {
+    renderEventNotification(updates, latestId);
+
+    const markSeen = () => {
+      try {
+        for (const u of updates) {
+          const id = normalizeEventId(u);
+          if (!id) continue;
+          if (u._sig) seenMap[String(id)] = u._sig;
+        }
+        localStorage.setItem(EVENT_UPDATE_SEEN_KEY, JSON.stringify(seenMap));
+        localStorage.setItem(LAST_SEEN_EVENT_KEY, String(latestId));
+      } catch (e) {
+        /* ignore */
+      }
+    };
+
+    const dismiss = document.getElementById('btnDismissEvent');
+    if (dismiss) dismiss.onclick = () => {
+      markSeen();
       eventCard.style.display = 'none';
+    };
+
+    if (eventMarkReadBtn) {
+      eventMarkReadBtn.onclick = () => {
+        markSeen();
+        eventCard.style.display = 'none';
+      };
     }
   } catch (e) {
     console.error('[loadEventNotification] Error:', e);

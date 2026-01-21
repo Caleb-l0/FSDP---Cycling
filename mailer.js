@@ -1,11 +1,34 @@
 const nodemailer = require("nodemailer");
 
+const EMAIL_USER = process.env.EMAIL_USER;
+const EMAIL_PASSWORD = process.env.EMAIL_PASSWORD;
+
+if (!EMAIL_USER || !EMAIL_PASSWORD) {
+  console.warn(
+    "[mailer] Missing EMAIL_USER / EMAIL_PASSWORD env vars. Email sending will fail until configured."
+  );
+}
+
 const transporter = nodemailer.createTransport({
-    service: "gmail", 
-    auth: {
-        user: process.env.EMAIL_USER,      
-        pass: process.env.EMAIL_PASSWORD  
-    }
+  host: "smtp.gmail.com",
+  port: 465,
+  secure: true,
+  auth: {
+    user: EMAIL_USER,
+    pass: EMAIL_PASSWORD
+  },
+  connectionTimeout: 6000,
+  greetingTimeout: 6000,
+  socketTimeout: 8000
+});
+
+// Verify on startup so we can see auth / network issues in logs early
+transporter.verify((err) => {
+  if (err) {
+    console.error("[mailer] Transport verify failed:", err);
+  } else {
+    console.log("[mailer] Transport ready");
+  }
 });
 
 module.exports = transporter;

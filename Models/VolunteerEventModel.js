@@ -6,9 +6,15 @@ const pool = require("../Postgres_config");
 // ======================================================
 async function getAllEvents() {
   const result = await pool.query(`
-      SELECT *
-      FROM events
-      WHERE organizationid IS NOT NULL
+      SELECT
+        e.*,
+        (
+          SELECT COUNT(*)::int
+          FROM eventsignups es
+          WHERE es.eventid = e.eventid AND es.status = 'Active'
+        ) AS volunteer_signup_count
+      FROM events e
+      WHERE e.organizationid IS NOT NULL
   `);
 
   return result.rows;
