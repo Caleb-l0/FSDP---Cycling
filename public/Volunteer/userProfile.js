@@ -110,6 +110,7 @@ if (frSend) {
     try {
       frSend.disabled = true;
       if (frCancel) frCancel.disabled = true;
+
       if (frError) {
         frError.style.display = 'none';
         frError.textContent = '';
@@ -129,6 +130,7 @@ if (frSend) {
         closeFriendRequestModal();
         setFriendUI('friends');
         setPhoneVisibility(true);
+        showToast('You are already friends.');
         return;
       }
 
@@ -137,41 +139,33 @@ if (frSend) {
         return;
       }
 
+      let data;
+      try {
+        data = await res.json();
+      } catch {
+        data = null;
+      }
+
       closeFriendRequestModal();
-      setFriendUI('pending_outgoing');
-      setPhoneVisibility(false);
+
+      if (data?.autoAccepted) {
+        setFriendUI('friends');
+        setPhoneVisibility(true);
+        showToast('Friend added successfully.');
+      } else {
+        setFriendUI('pending_outgoing');
+        setPhoneVisibility(false);
+        showToast('Friend request sent successfully.');
+      }
     } catch (err) {
       console.error(err);
       showFriendRequestError('Failed to send request. Please try again.');
     } finally {
       frSend.disabled = false;
+
       if (frCancel) frCancel.disabled = false;
     }
   });
-}
-
-function openRemoveFriendModal() {
-  if (!rmModal) return;
-  rmModal.classList.add('is-open');
-  rmModal.setAttribute('aria-hidden', 'false');
-  if (rmError) {
-    rmError.style.display = 'none';
-    rmError.textContent = '';
-  }
-  if (rmReason) rmReason.value = '';
-  setTimeout(() => rmReason?.focus(), 0);
-}
-
-function closeRemoveFriendModal() {
-  if (!rmModal) return;
-  rmModal.classList.remove('is-open');
-  rmModal.setAttribute('aria-hidden', 'true');
-}
-
-function showRemoveFriendError(message) {
-  if (!rmError) return;
-  rmError.textContent = message;
-  rmError.style.display = 'block';
 }
 
 if (rmModal) {
@@ -191,6 +185,7 @@ if (rmConfirm) {
     try {
       rmConfirm.disabled = true;
       if (rmCancel) rmCancel.disabled = true;
+
       if (rmError) {
         rmError.style.display = 'none';
         rmError.textContent = '';
@@ -225,22 +220,29 @@ if (rmConfirm) {
   });
 }
 
-addBtn.onclick = async () => {
+addBtn.addEventListener('click', () => {
   const state = addBtn.dataset.state;
 
-  try {
-    if (state === "add") {
-      openFriendRequestModal();
-      return;
-    } else {
-      openRemoveFriendModal();
-      return;
-    }
-  } catch (err) {
-    alert("Action failed");
-    console.error(err);
+  if (state === 'add') {
+    openFriendRequestModal();
+    return;
   }
-};
+
+  if (state === 'remove' || state === 'friends') {
+    openRemoveFriendModal();
+    return;
+  }
+
+  if (state === 'view_request' || state === 'pending_incoming') {
+    window.location.href = './notification.html';
+    return;
+  }
+
+  if (state === 'pending' || state === 'pending_outgoing') {
+    showToast('Friend request is pending.');
+    return;
+  }
+});
 
 function setFriendUI(status) {
   addBtn.disabled = false;
@@ -263,9 +265,6 @@ function setFriendUI(status) {
   if (status === 'pending_incoming') {
     addBtn.textContent = "View Request";
     addBtn.dataset.state = "view_request";
-    addBtn.onclick = () => {
-      window.location.href = './notification.html';
-    };
     return;
   }
 
