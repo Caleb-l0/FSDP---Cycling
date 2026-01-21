@@ -229,23 +229,26 @@
     currentPoints = data.points ?? 0;
     pointsDisplay.textContent = currentPoints;
 
-    const shopItems = data.shopItems || [];
-    if (shopItems.length === 0) {
-      rewardsList.innerHTML = "<p>No items in shop yet.</p>";
-      return;
-    }
+const shopItems = data.shopItems || [];
+if (shopItems.length === 0) {
+  rewardsList.innerHTML = "<p>No items in shop yet.</p>";
+  return;
+}
 
-    shopItems.forEach(item => {
-      const div = document.createElement("div");
-      div.className = "reward-item";
-      div.innerHTML = `
-        <h4>${item.Name}</h4>
-        <p>${item.Description}</p>
-        <p>Cost: ${item.Cost} points</p>
-        <button ${currentPoints < item.Cost ? "disabled" : ""}>Redeem</button>
-        <div class="redeem-feedback" aria-live="polite"></div>
-      `;
-      rewardsList.appendChild(div);
+
+rewardsList.innerHTML = "";
+
+shopItems.forEach(item => {
+  const div = document.createElement("div");
+  div.className = "reward-item";
+  div.innerHTML = `
+    <h4>${item.Name}</h4>
+    <p>${item.Description}</p>
+    <p>Cost: ${item.Cost} points</p>
+    <button ${currentPoints < item.Cost ? "disabled" : ""}>Redeem</button>
+    <div class="redeem-feedback" aria-live="polite"></div>
+  `;
+  rewardsList.appendChild(div);
 
       const button = div.querySelector("button");
       const feedback = div.querySelector(".redeem-feedback");

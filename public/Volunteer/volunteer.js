@@ -478,15 +478,10 @@ else if (choice === 'friend') {
       return;
     }
 
-    filterSection.innerHTML = `
-      <div class="soft-banner">
-        <div class="soft-title">Friends Also Signed Up</div>
-        <div class="soft-sub">Tap an event to view details</div>
-      </div>
-      <div class="friend-events-grid">
-        ${flat.slice(0, 12).map(e => renderFriendEventCard(e)).join("")}
-      </div>
-    `;
+    filterSection.innerHTML = "";
+    flat.slice(0, 12).forEach(e => {
+      filterSection.innerHTML += renderFriendEventCard(e);
+    });
   } catch (err) {
     console.error(err);
     filterSection.innerHTML = `<p class="error-text">Failed to load friends’ events.</p>`;
@@ -495,24 +490,19 @@ else if (choice === 'friend') {
 
 function renderFriendEventCard(e) {
   const friendName = e._friendName || "Friend";
-  const dateStr = new Date(e.eventdate).toLocaleDateString(undefined, {
-    year: "numeric", month: "short", day: "numeric"
-  });
-
-  const img = e.eventimage
-    ? `<img class="thumb" src="${e.eventimage}" alt="event image">`
-    : `<div class="thumb ph" aria-hidden="true">🎉</div>`;
 
   return `
-    <div class="friend-event-card" onclick="goToEventDetail(${e.eventid})" role="button" tabindex="0">
-      ${img}
-      <div class="card-text">
-        <div class="card-title">${e.eventname}</div>
-        <div class="meta">
-          <span class="pill">📅 ${dateStr}</span>
-          <span class="pill">📍 ${e.location || "TBA"}</span>
+    <div class="event-box">
+      <div class="service-card" onclick="goToEventDetail(${e.eventid})" role="button" tabindex="0">
+        <div class="service-icon">
+          <i class="fas fa-users"></i>
         </div>
-        <div class="friend-tag">${friendName} also signed up</div>
+
+        <div class="service-content">
+          <h3>${e.eventname}</h3>
+          <p>${e.location || "TBA"}</p>
+          <p>${friendName} also signed up</p>
+        </div>
       </div>
     </div>
   `;
