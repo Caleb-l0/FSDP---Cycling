@@ -232,8 +232,31 @@ function attachCommentEvents() {
 }
 
 
-document.getElementById("closeGlobalComment").addEventListener("click", closeCommentBox);
-document.getElementById("globalCommentOverlay").addEventListener("click", closeCommentBox);
+function openGlobalCommentForPost(postId) {
+    if (!postId) return;
+    currentPostId = postId;
+    const panel = document.getElementById("globalCommentPanel");
+    const overlay = document.getElementById("globalCommentOverlay");
+    const input = document.getElementById("globalCommentInput");
+    if (panel) panel.classList.add("show");
+    if (overlay) overlay.style.display = "block";
+    if (input) input.value = "";
+}
+
+document.addEventListener("click", (e) => {
+    const btn = e.target.closest?.(".btn-open-comments, .btn-comment");
+    if (!btn) return;
+    const card = btn.closest?.('.post-card');
+    const postId = card?.getAttribute?.('data-post-id');
+    openGlobalCommentForPost(postId);
+});
+
+
+const closeGlobalBtn = document.getElementById("closeGlobalComment");
+if (closeGlobalBtn) closeGlobalBtn.addEventListener("click", closeCommentBox);
+
+const globalOverlay = document.getElementById("globalCommentOverlay");
+if (globalOverlay) globalOverlay.addEventListener("click", closeCommentBox);
 
 function closeCommentBox() {
     document.getElementById("globalCommentPanel").classList.remove("show");
@@ -241,8 +264,10 @@ function closeCommentBox() {
 }
 
 
-document.getElementById("globalCommentSend").addEventListener("click", async () => {
-    const text = document.getElementById("globalCommentInput").value.trim();
+const globalSendBtn = document.getElementById("globalCommentSend");
+if (globalSendBtn) globalSendBtn.addEventListener("click", async () => {
+    const input = document.getElementById("globalCommentInput");
+    const text = (input ? input.value : '').trim();
     if (!text || !currentPostId) return;
 
     await fetch(`https://fsdp-cycling-ltey.onrender.com/community/posts/${currentPostId}/comments`, {
@@ -258,7 +283,7 @@ document.getElementById("globalCommentSend").addEventListener("click", async () 
 
     // update comment list instantly
     const postCard = document.querySelector(`.post-card[data-post-id="${currentPostId}"]`);
-    const list = postCard.querySelector(".post-comments");
+    const list = postCard ? postCard.querySelector(".post-comments") : null;
 
     loadComments(currentPostId, list);
 });

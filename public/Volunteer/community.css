@@ -308,23 +308,43 @@ body {
 }
 
 .btn-like,
-.btn-open-comments {
+.btn-open-comments,
+.btn-comment {
     min-height: 44px;
     padding: 10px 18px;
-    background: #eef0f3;
-    border: 2px solid rgba(15, 23, 42, 0.08);
+    background: #ffffff;
+    border: 2px solid rgba(15, 23, 42, 0.12);
     border-radius: 999px;
     font-weight: 800;
     cursor: pointer;
     display: flex;
     align-items: center;
     gap: 8px;
+    color: var(--text-main, #0f172a);
+    transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease, border-color 0.15s ease;
+}
+
+.btn-open-comments,
+.btn-comment {
+    background: rgba(234, 141, 42, 0.12);
+    border-color: rgba(234, 141, 42, 0.35);
 }
 
 .btn-like:hover,
-.btn-open-comments:hover {
-    background: rgba(230, 154, 42, 0.15);
-    border-color: rgba(230, 154, 42, 0.35);
+.btn-open-comments:hover,
+.btn-comment:hover {
+    transform: translateY(-1px);
+    background: rgba(234, 141, 42, 0.18);
+    border-color: rgba(234, 141, 42, 0.55);
+    box-shadow: 0 10px 18px rgba(234, 141, 42, 0.12);
+}
+
+.btn-like:focus,
+.btn-open-comments:focus,
+.btn-comment:focus {
+    outline: none;
+    box-shadow: 0 0 0 4px rgba(234, 141, 42, 0.22);
+    border-color: rgba(234, 141, 42, 0.65);
 }
 
 .btn-like.liked {
@@ -555,6 +575,9 @@ body {
     width: min(92vw, 760px);
     margin: 0;
     z-index: 9997;
+    max-height: 85vh;
+    overflow: auto;
+    padding-bottom: 18px;
 }
 
 .post-form-overlay.is-open {
