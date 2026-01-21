@@ -129,13 +129,87 @@ async function createEvent() {
 
     const result = await response.json();
     console.log(result);
-    alert("Event created successfully!");
-   window.location.href='./homepage_login_Admin.html'
+
+    showCongrats('Event created successfully! Emails are being sent.');
+    setTimeout(() => {
+      window.location.href = './homepage_login_Admin.html';
+    }, 1600);
 
   } catch (error) {
     console.error("Error creating event:", error);
     alert(`Failed to create event: ${error.message}`);
   }
+}
+
+function ensureCongratsOverlay() {
+  if (document.getElementById('hvCongrats')) return;
+
+  const wrap = document.createElement('div');
+  wrap.id = 'hvCongrats';
+  wrap.className = 'hv-congrats';
+  wrap.innerHTML = `
+    <div class="hv-congrats__backdrop" data-close="true"></div>
+    <div class="hv-congrats__dialog" role="dialog" aria-modal="true" aria-label="Congratulations">
+      <div class="hv-confetti" aria-hidden="true"></div>
+      <div class="hv-congrats__body">
+        <div class="hv-congrats__icon" aria-hidden="true">✓</div>
+        <h3 class="hv-congrats__title">Congratulations!</h3>
+        <p class="hv-congrats__msg" id="hvCongratsMsg"></p>
+      </div>
+      <div class="hv-congrats__footer">
+        <button class="hv-congrats__btn" type="button" id="hvCongratsOk">OK</button>
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(wrap);
+
+  const close = () => wrap.classList.remove('is-open');
+  wrap.addEventListener('click', (e) => {
+    if (e.target?.dataset?.close === 'true') close();
+  });
+  const ok = wrap.querySelector('#hvCongratsOk');
+  if (ok) ok.addEventListener('click', close);
+}
+
+function launchConfetti(container) {
+  if (!container) return;
+  container.innerHTML = '';
+  const colors = ['#ea8d2a', '#16a34a', '#2563eb', '#dc2626', '#0f172a', '#f59e0b'];
+  const pieces = 28;
+  for (let i = 0; i < pieces; i += 1) {
+    const el = document.createElement('i');
+    const left = Math.random() * 100;
+    const delay = Math.random() * 120;
+    const duration = 700 + Math.random() * 600;
+    const rotate = Math.floor(Math.random() * 360);
+    const w = 8 + Math.random() * 8;
+    const h = 10 + Math.random() * 12;
+    el.style.left = `${left}%`;
+    el.style.background = colors[i % colors.length];
+    el.style.width = `${w}px`;
+    el.style.height = `${h}px`;
+    el.style.transform = `translateY(-10px) rotate(${rotate}deg)`;
+    el.style.animationDelay = `${delay}ms`;
+    el.style.animationDuration = `${duration}ms`;
+    container.appendChild(el);
+  }
+}
+
+function showCongrats(message) {
+  ensureCongratsOverlay();
+  const wrap = document.getElementById('hvCongrats');
+  if (!wrap) return;
+  const msg = wrap.querySelector('#hvCongratsMsg');
+  if (msg) msg.textContent = message || '';
+  const confetti = wrap.querySelector('.hv-confetti');
+  launchConfetti(confetti);
+  wrap.classList.add('is-open');
+
+  window.clearTimeout(wrap._autoCloseTimer);
+  wrap._autoCloseTimer = window.setTimeout(() => {
+    wrap.classList.remove('is-open');
+  }, 2200);
 }
 
 document.getElementById("eventForm").addEventListener("submit", function(e) {

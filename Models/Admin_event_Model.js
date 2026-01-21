@@ -46,6 +46,70 @@ async function createEvent(eventData) {
   }
 }
 
+async function getVolunteerEmails() {
+  try {
+    const result = await pool.query(
+      `SELECT id, email, name FROM users WHERE role = 'volunteer' AND email IS NOT NULL AND email <> ''`
+    );
+    return result.rows;
+  } catch (err) {
+    console.error("Error fetching volunteer emails:", err);
+    throw err;
+  }
+}
+
+async function sendEventOpenNotificationToVolunteers(eventData) {
+  try {
+    const volunteers = await getVolunteerEmails();
+    if (!volunteers || volunteers.length === 0) {
+      console.log('No volunteer emails found');
+      return;
+    }
+
+    const eventName = eventData.EventName || eventData.eventname || "New Event";
+    const eventDate = eventData.EventDate || eventData.eventdate || "TBD";
+    const eventLocation = eventData.Location || eventData.location || "TBD";
+    const eventDescription = eventData.Description || eventData.description || "";
+
+    const emailSubject = `Event Open For Volunteer Signup: ${eventName}`;
+    const emailHtml = `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <h2 style="color: #ea8d2a;">Event Now Open For Volunteer Signup</h2>
+        <p>Hello Volunteer, This is from Cycling Without Age.</p>
+        <p>A new event is now open for volunteer sign up:</p>
+        <div style="background: #f8fafc; padding: 20px; border-radius: 8px; margin: 20px 0;">
+          <h3 style="color: #1e293b; margin-top: 0;">${eventName}</h3>
+          <p><strong>Date:</strong> ${new Date(eventDate).toLocaleString()}</p>
+          <p><strong>Location:</strong> ${eventLocation}</p>
+          ${eventDescription ? `<p><strong>Description:</strong> ${eventDescription}</p>` : ''}
+        </div>
+        <p>Please log in to your account to view and sign up for this event.</p>
+        <p style="color: #64748b; font-size: 14px; margin-top: 30px;">Best regards,<br>Happy Volunteer Team</p>
+        <p style="font-size: 12px; color: #94a3b8;">This is an automated message, please do not reply.</p>
+      </div>
+    `;
+
+    const emailPromises = volunteers.map(async (v) => {
+      try {
+        await transporter.sendMail({
+          from: process.env.EMAIL_USER,
+          to: v.email,
+          subject: emailSubject,
+          html: emailHtml,
+        });
+        console.log(`✅ Volunteer email sent to ${v.email}`);
+      } catch (emailError) {
+        console.error(`❌ Failed to send volunteer email to ${v.email}:`, emailError);
+      }
+    });
+
+    await Promise.all(emailPromises);
+    console.log(`✅ Event open emails sent to ${volunteers.length} volunteers`);
+  } catch (err) {
+    console.error("Error sending volunteer open signup emails:", err);
+  }
+}
+
 // ----------------------------
 // Get All Organization Member Emails (PostgreSQL)
 // ----------------------------
@@ -134,17 +198,21 @@ async function sendEventNotificationToOrganization(organizationID, eventData) {
 // ----------------------------
 async function assignEventToOrgan(eventData) {
   try {
+    const organizationId = eventData.OrganizationID ?? eventData.organizationid ?? eventData.organization_id;
+    const eventId = eventData.EventID ?? eventData.eventid ?? eventData.event_id;
+
     const query = `
       UPDATE events
       SET organizationid = $1,
+          status = 'Upcoming',
           updatedat = NOW()
       WHERE eventid = $2
       RETURNING *
     `;
 
     const values = [
-      eventData.OrganizationID,
-      eventData.EventID
+      organizationId,
+      eventId
     ];
 
     const result = await pool.query(query, values);
@@ -435,18 +503,17 @@ async function autoDeleteEvent(eventID) {
 module.exports = {
   getAllEvents,
   createEvent,
+  sendEventNotificationToOrganization,
+  sendEventOpenNotificationToVolunteers,
   assignEventToOrgan,
-  getEventLocation,
   checkOrganizationExists,
+  getEventLocation,
   canDeleteEvent,
   deleteEvent,
-  getEventsForAutoDelete,
-  autoDeleteEventsWithNoParticipants,
   getEventById,
-  sendEventNotificationToOrganization
+  autoDeleteEvent,
+  autoDeleteEventsWithNoParticipants
 };
-
-
 
 
 
