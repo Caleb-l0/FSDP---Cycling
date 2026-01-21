@@ -350,6 +350,8 @@ function getDistance(lat1, lon1, lat2, lon2) {
 const filterSection = document.getElementById('filter-section');
  
 async function loadfilterSection(choice) {
+    // Reset vertical mode class when switching filters
+    filterSection.classList.remove("fec-vertical-mode");
 
     filterSection.innerHTML = "<p>Loading...</p>";
    
@@ -442,7 +444,11 @@ async function loadfilterSection(choice) {
 else if (choice === 'friend') {
   if (!filterSection) return;
 
-  filterSection.innerHTML = `<p class="loading-text">Loading friends’ joined events...</p>`;
+  filterSection.innerHTML = `
+    <div class="fec-loading">
+      <p>⏳ Loading events from your friends...</p>
+    </div>
+  `;
 
   try {
     const res = await fetch(
@@ -478,8 +484,15 @@ else if (choice === 'friend') {
       return;
     }
 
+    // Add class for CSS targeting (fallback for browsers without :has())
+    filterSection.classList.add("fec-vertical-mode");
+
+    // Limit to 6 on mobile for less scrolling, 12 on desktop
+    const isMobile = window.innerWidth <= 768;
+    const limit = isMobile ? 6 : 12;
+
     filterSection.innerHTML = "";
-    flat.slice(0, 12).forEach(e => {
+    flat.slice(0, limit).forEach(e => {
       filterSection.innerHTML += renderFriendEventCard(e);
     });
   } catch (err) {
@@ -490,20 +503,24 @@ else if (choice === 'friend') {
 
 function renderFriendEventCard(e) {
   const friendName = e._friendName || "Friend";
+  const dateStr = e.eventdate
+    ? new Date(e.eventdate).toLocaleDateString(undefined, { month: "short", day: "numeric" })
+    : "";
 
   return `
-    <div class="event-box">
-      <div class="service-card" onclick="goToEventDetail(${e.eventid})" role="button" tabindex="0">
-        <div class="service-icon">
-          <i class="fas fa-users"></i>
-        </div>
-
-        <div class="service-content">
-          <h3>${e.eventname}</h3>
-          <p>${e.location || "TBA"}</p>
-          <p>${friendName} also signed up</p>
+    <div class="friend-event-card-v2" onclick="goToEventDetail(${e.eventid})" role="button" tabindex="0">
+      <div class="fec-friend-badge">
+        <span class="fec-avatar">👤</span>
+        <span class="fec-friend-name">${friendName}</span>
+      </div>
+      <div class="fec-event-info">
+        <div class="fec-event-name">${e.eventname}</div>
+        <div class="fec-event-meta">
+          ${dateStr ? `<span>📅 ${dateStr}</span>` : ""}
+          <span>📍 ${e.location || "TBA"}</span>
         </div>
       </div>
+      <div class="fec-tap-hint">Tap to view →</div>
     </div>
   `;
 }

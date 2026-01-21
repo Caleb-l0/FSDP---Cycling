@@ -85,6 +85,152 @@
   margin: 0 auto;
 }
 
+/* When filter-section contains friend cards, switch to vertical block layout */
+#filter-section:has(.friend-event-card-v2),
+#filter-section:has(.fec-loading),
+#filter-section:has(.soft-banner),
+#filter-section.fec-vertical-mode {
+  display: block !important;
+  flex-direction: unset;
+  overflow-x: visible;
+  padding: 0 16px;
+}
+
+/* Hide scroll arrows when showing friend events */
+.scroll-wrapper:has(.friend-event-card-v2) .scroll-btn,
+.scroll-wrapper:has(.fec-loading) .scroll-btn,
+.scroll-wrapper:has(.soft-banner) .scroll-btn {
+  display: none;
+}
+
+/* Fallback: hide scroll buttons via JS class on parent */
+.fec-vertical-mode + .scroll-btn,
+.scroll-wrapper:has(.fec-vertical-mode) .scroll-btn {
+  display: none;
+}
+
 @media (min-width: 860px){
   .friend-events-grid{ grid-template-columns:1fr 1fr; }
+}
+
+/* ======================================================
+   FRIEND EVENT CARD V2 — ELDERLY-FRIENDLY
+====================================================== */
+.friend-event-card-v2 {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  background: #fff;
+  border: 2px solid rgba(251, 191, 36, 0.35);
+  border-radius: 20px;
+  padding: 20px;
+  margin-bottom: 16px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.friend-event-card-v2:hover,
+.friend-event-card-v2:focus {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 28px rgba(251, 191, 36, 0.18);
+  outline: none;
+}
+
+.friend-event-card-v2:focus {
+  border-color: #f59e0b;
+}
+
+/* Friend badge row */
+.fec-friend-badge {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: linear-gradient(135deg, rgba(251, 191, 36, 0.18), rgba(251, 191, 36, 0.08));
+  border: 1px solid rgba(251, 191, 36, 0.4);
+  border-radius: 999px;
+  padding: 10px 16px;
+  width: fit-content;
+}
+
+.fec-avatar {
+  font-size: 1.4rem;
+}
+
+.fec-friend-name {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #92400e;
+}
+
+/* Event info */
+.fec-event-info {
+  padding-left: 4px;
+}
+
+.fec-event-name {
+  font-size: 1.25rem;
+  font-weight: 900;
+  color: #1e293b;
+  line-height: 1.35;
+  margin-bottom: 8px;
+}
+
+.fec-event-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  font-size: 1.05rem;
+  color: #475569;
+}
+
+.fec-event-meta span {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Tap hint */
+.fec-tap-hint {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #f59e0b;
+  text-align: right;
+  margin-top: 4px;
+}
+
+/* Loading state */
+.fec-loading {
+  text-align: center;
+  padding: 32px 16px;
+  font-size: 1.15rem;
+  color: #64748b;
+  background: #fff;
+  border-radius: 18px;
+  border: 1px solid rgba(0,0,0,0.06);
+}
+
+/* ====== MOBILE (<=600px) ====== */
+@media (max-width: 600px) {
+  .friend-event-card-v2 {
+    padding: 18px 16px;
+    margin-bottom: 14px;
+  }
+
+  .fec-friend-name {
+    font-size: 1.1rem;
+  }
+
+  .fec-event-name {
+    font-size: 1.15rem;
+  }
+
+  .fec-event-meta {
+    font-size: 1rem;
+    gap: 10px;
+  }
+
+  .fec-tap-hint {
+    font-size: 0.95rem;
+  }
 }
