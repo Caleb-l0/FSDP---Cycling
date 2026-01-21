@@ -21,6 +21,71 @@ body {
 /* ======================================================
    LOADING SKELETON
 ====================================================== */
+/* ===== REWARDS SUMMARY ===== */
+.rewards-summary{
+  margin-top: 36px;
+  background: linear-gradient(135deg, #fff7ed, #fff);
+  border-radius: 20px;
+  padding: 24px 26px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+
+  border: 1px solid rgba(234,141,42,0.25);
+  box-shadow: 0 10px 26px rgba(234,141,42,0.15);
+}
+
+.summary-left h2{
+  margin: 0;
+  font-size: 1.8rem;
+  font-weight: 800;
+}
+
+.summary-points{
+  margin-top: 10px;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #475569;
+}
+
+.summary-points span{
+  display: inline-block;
+  margin: 0 8px;
+  padding: 10px 22px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #e69a2a, #e76f51);
+  color: #fff;
+  font-size: 1.6rem;
+  font-weight: 800;
+}
+
+/* Button */
+.btn-my-rewards{
+  min-height: 52px;
+  padding: 12px 22px;
+  border-radius: 999px;
+  border: none;
+  background: #0f172a;
+  color: #fff;
+  font-size: 1.05rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.btn-my-rewards:hover{
+  background: #020617;
+}
+
+/* Shop title */
+.shop-title{
+  margin-top: 42px;
+  font-size: 1.5rem;
+  font-weight: 800;
+  text-align: center;
+}
+
+
 .reward-skeleton {
   background: #ffffff;
   border-radius: 18px;
@@ -291,48 +356,68 @@ body {
 .history-body.is-collapsed {
   display: none;
 }
-
+/* ===== HISTORY BEAUTIFY (elder-friendly) ===== */
 .history-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+  gap: 14px;
 }
 
 .history-item {
+  background: #ffffff;
+  border: 1px solid rgba(15, 23, 42, 0.10);
+  box-shadow: 0 8px 18px rgba(2, 6, 23, 0.06);
+  border-radius: 16px;
+  padding: 16px;
+}
+
+.history-item-main {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 14px;
-  padding: 14px 16px;
-  background: #f8fafc;
-  border: 1px solid rgba(15, 23, 42, 0.08);
+  align-items: flex-start;
+  gap: 12px;
+}
+
+/* left icon block */
+.history-item-main::before {
+  content: "🎁";
+  width: 46px;
+  height: 46px;
   border-radius: 14px;
+  display: grid;
+  place-items: center;
+  font-size: 1.4rem;
+  background: rgba(234, 141, 42, 0.14);
+  border: 1px solid rgba(234, 141, 42, 0.25);
+  flex: 0 0 46px;
 }
 
 .history-item-name {
-  font-weight: 800;
-  color: #0f172a;
+  font-size: 1.05rem;
+  font-weight: 900;
+  letter-spacing: 0.2px;
 }
 
 .history-item-meta {
-  margin-top: 4px;
   font-size: 0.95rem;
-  color: #475569;
+  margin-top: 6px;
+  color: #64748b;
 }
 
-.history-view {
-  min-height: 44px;
-  padding: 10px 16px;
-  border-radius: 999px;
-  border: none;
-  background: #e69a2a;
-  color: #ffffff;
-  font-weight: 800;
-  cursor: pointer;
+/* points badge inside meta line look */
+.history-item-meta::before {
+  content: "•";
+  margin: 0 6px;
+  color: #cbd5e1;
 }
+
+/* Make button more friendly */
+.history-view {
+  min-height: 48px;
+  padding: 12px 18px;
+  border-radius: 999px;
+  font-weight: 900;
+  box-shadow: 0 10px 18px rgba(234, 141, 42, 0.15);
+}
+
+
 
 .history-view:hover {
   background: #d48a1e;
@@ -452,30 +537,43 @@ body {
     margin: 14px auto 0;
   }
 
+   .rewards-list {
+    display: flex;
+    overflow-x: auto;
+    gap: 14px;
+    padding: 8px 4px 16px;
+    scroll-snap-type: x mandatory;
+  }
+  .rewards-list::-webkit-scrollbar {
+    display: none;
+  }
+
+  .reward-item {
+    flex: 0 0 78%;
+    max-width: 78%;
+    scroll-snap-align: start;
+    border-radius: 18px;
+  }
+
+  /* make the image header shorter */
   .reward-item::before {
-    height: 120px;
+    height: 92px;
   }
 
-  #transactionHistory.history-card {
-    margin-top: 44px;
+  /* tighten text spacing */
+  .reward-item h4 {
+    margin-top: 14px;
+    font-size: 1.1rem;
+  }
+  .reward-item p {
+    font-size: 0.95rem;
   }
 
-  .history-head {
-    padding: 16px;
+  /* button slightly smaller but still easy to tap */
+  .reward-item button {
+    margin: 12px 18px 18px;
+    min-height: 46px;
+    font-size: 1rem;
   }
 
-  .history-body {
-    padding: 16px;
-  }
-
-  .history-item {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .history-view {
-    width: 100%;
-    justify-content: center;
-    text-align: center;
-  }
 }

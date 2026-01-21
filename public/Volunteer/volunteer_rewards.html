@@ -52,8 +52,26 @@
 </header>
 
 <div class="container">
-  <h2>My Rewards</h2>
-  <p><strong>Total Points:</strong> <span id="pointsDisplay">0</span></p>
+
+  <div class="rewards-summary">
+    <div class="summary-left">
+      <h2>My Rewards</h2>
+      <div class="summary-points">
+        You have
+        <span id="pointsDisplay">0</span>
+        points
+      </div>
+    </div>
+
+    <div class="summary-right">
+      <button class="btn-my-rewards" onclick="scrollToHistory()">
+        📜 View My Rewards
+      </button>
+    </div>
+  </div>
+
+  <h3 class="shop-title">Rewards Shop</h3>
+
 
   <h3>Shop</h3>
   <div class="rewards-list" id="rewardsList" aria-live="polite">
@@ -158,6 +176,17 @@
   const pointsDisplay = document.getElementById("pointsDisplay");
   const rewardsList = document.getElementById("rewardsList");
   let currentPoints = 0;
+
+  function scrollToHistory(){
+  const section = document.getElementById("transactionHistory");
+  if (!section) return;
+
+
+  setHistoryCollapsed(false);
+
+  section.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
 
   if (rewardsList) {
     rewardsList.innerHTML = `
