@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Share & Chat</title>
+
+  <link rel="stylesheet" href="./friend_share_chat.css" />
+  <link rel="stylesheet" href="../homepage.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+</head>
+<body>
+  <header class="hv-header">
+    <div class="container hv-header-content">
+      <div class="hv-logo">
+        <a href="./homepage_login_volunteer.html" style="text-decoration:none;color:inherit;">Happy Volunteer</a>
+      </div>
+
+      <nav id="mainNav">
+        <ul>
+          <li><a href="./volunteer-events.html">Booking</a></li>
+          <li><a href="./volunteer_community_page.html">Community</a></li>
+          <li><a href="./volunteer_rewards.html">Reward</a></li>
+          <li><a href="./Volunteer_friend.html">Friends</a></li>
+          <li><a href="../Profile/profilepage.html">Profile</a></li>
+        </ul>
+      </nav>
+
+      <button class="hv-nav-toggle" id="hvNavToggle">
+        <i class="fas fa-bars"></i>
+      </button>
+
+      <nav class="hv-nav" id="hvNav">
+        <ul>
+          <li><a href="./volunteer-events.html">Booking</a></li>
+          <li><a href="./volunteer_community_page.html">Community</a></li>
+          <li><a href="./volunteer_rewards.html">Reward</a></li>
+          <li><a href="./Volunteer_friend.html">Friends</a></li>
+          <li><a href="../Profile/profilepage.html">Profile</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main class="hvsc container">
+    <section class="hvsc-card">
+      <div class="hvsc-head">
+        <div>
+          <div class="hvsc-badge">Share</div>
+          <h1 class="hvsc-title">Share & Chat</h1>
+          <p class="hvsc-sub">Open WhatsApp with the event message, or copy your friend’s WhatsApp number.</p>
+        </div>
+        <button class="hvsc-back" type="button" id="hvscBack">
+          <i class="fas fa-arrow-left" aria-hidden="true"></i>
+          <span>Back</span>
+        </button>
+      </div>
+
+      <div class="hvsc-grid">
+        <div class="hvsc-panel">
+          <h2 class="hvsc-h2">Event</h2>
+          <div class="hvsc-row"><strong>Name:</strong> <span id="hvscEventName">—</span></div>
+          <div class="hvsc-row"><strong>Date:</strong> <span id="hvscEventDate">—</span></div>
+          <div class="hvsc-row"><strong>Location:</strong> <span id="hvscEventLoc">—</span></div>
+          <a class="hvsc-link" id="hvscEventLink" href="#">View event details</a>
+        </div>
+
+        <div class="hvsc-panel">
+          <h2 class="hvsc-h2">Friend</h2>
+          <div class="hvsc-row"><strong>Name:</strong> <span id="hvscFriendName">—</span></div>
+          <div class="hvsc-row"><strong>WhatsApp:</strong> <span id="hvscFriendPhone">Hidden</span></div>
+          <div class="hvsc-note" id="hvscPhoneNote" style="display:none;">Add as friend to view phone number.</div>
+
+          <div class="hvsc-actions">
+            <button class="hvsc-btn hvsc-btn--wa" type="button" id="hvscOpenWa">
+              <i class="fab fa-whatsapp" aria-hidden="true"></i>
+              <span>Open WhatsApp</span>
+            </button>
+            <button class="hvsc-btn" type="button" id="hvscCopyPhone" disabled>
+              <i class="fas fa-copy" aria-hidden="true"></i>
+              <span>Copy number</span>
+            </button>
+          </div>
+
+          <div class="hvsc-divider">Message preview</div>
+          <pre class="hvsc-preview" id="hvscMessagePreview">Loading...</pre>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="hv-footer">
+    <div class="container">
+      <div class="copyright">
+        <p>&copy; 2025 Happy Volunteer. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="../homepage.js"></script>
+  <script src="./friend_share_chat.js"></script>
+  <script src="../Translation.js"></script>
+</body>
+</html>

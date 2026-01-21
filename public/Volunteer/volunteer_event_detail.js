@@ -141,8 +141,7 @@ async function loadFriendsForShare() {
       btn.className = 'hv-share__friend';
       btn.innerHTML = `<strong>${name}</strong><span>${username}</span>`;
       btn.addEventListener('click', () => {
-        const msg = payload.text;
-        const target = `./userProfile.html?userId=${encodeURIComponent(friendId)}&openWa=1&waText=${encodeURIComponent(msg)}`;
+        const target = `./friend_share_chat.html?friendId=${encodeURIComponent(friendId)}&eventId=${encodeURIComponent(eventId)}`;
         window.location.href = target;
       });
 
