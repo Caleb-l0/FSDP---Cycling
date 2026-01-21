@@ -45,6 +45,108 @@ if (closePostFormBtn) closePostFormBtn.addEventListener("click", closePostForm);
 const postFormOverlay = document.getElementById("postFormOverlay");
 if (postFormOverlay) postFormOverlay.addEventListener("click", closePostForm);
 
+function ensureLoadingOverlay() {
+    if (document.getElementById('hvLoading')) return;
+    const wrap = document.createElement('div');
+    wrap.id = 'hvLoading';
+    wrap.className = 'hv-loading';
+    wrap.innerHTML = `
+        <div class="hv-loading__backdrop"></div>
+        <div class="hv-loading__card" role="status" aria-live="polite">
+            <div class="hv-loading__spinner" aria-hidden="true"></div>
+            <h3 class="hv-loading__title">Loading Community</h3>
+            <div class="hv-loading__sub">Please wait a moment…</div>
+        </div>
+    `;
+    document.body.appendChild(wrap);
+}
+
+let hvLoadingCount = 0;
+function showLoading() {
+    ensureLoadingOverlay();
+    hvLoadingCount += 1;
+    const el = document.getElementById('hvLoading');
+    if (el) el.classList.add('is-open');
+}
+
+function hideLoading() {
+    hvLoadingCount = Math.max(0, hvLoadingCount - 1);
+    if (hvLoadingCount !== 0) return;
+    const el = document.getElementById('hvLoading');
+    if (el) el.classList.remove('is-open');
+}
+
+function ensureCongratsOverlay() {
+    if (document.getElementById('hvCongrats')) return;
+
+    const wrap = document.createElement('div');
+    wrap.id = 'hvCongrats';
+    wrap.className = 'hv-congrats';
+    wrap.innerHTML = `
+        <div class="hv-congrats__backdrop" data-close="true"></div>
+        <div class="hv-congrats__dialog" role="dialog" aria-modal="true" aria-label="Congratulations">
+            <div class="hv-confetti" aria-hidden="true"></div>
+            <div class="hv-congrats__body">
+                <div class="hv-congrats__icon" aria-hidden="true">✓</div>
+                <h3 class="hv-congrats__title">Congratulations!</h3>
+                <p class="hv-congrats__msg" id="hvCongratsMsg"></p>
+            </div>
+            <div class="hv-congrats__footer">
+                <button class="hv-congrats__btn" type="button" id="hvCongratsOk">OK</button>
+            </div>
+        </div>
+    `;
+
+    document.body.appendChild(wrap);
+
+    const close = () => wrap.classList.remove('is-open');
+    wrap.addEventListener('click', (e) => {
+        if (e.target?.dataset?.close === 'true') close();
+    });
+    const ok = wrap.querySelector('#hvCongratsOk');
+    if (ok) ok.addEventListener('click', close);
+}
+
+function launchConfetti(container) {
+    if (!container) return;
+    container.innerHTML = '';
+    const colors = ['#ea8d2a', '#16a34a', '#2563eb', '#dc2626', '#0f172a', '#f59e0b'];
+    const pieces = 28;
+    for (let i = 0; i < pieces; i += 1) {
+        const el = document.createElement('i');
+        const left = Math.random() * 100;
+        const delay = Math.random() * 120;
+        const duration = 700 + Math.random() * 600;
+        const rotate = Math.floor(Math.random() * 360);
+        const w = 8 + Math.random() * 8;
+        const h = 10 + Math.random() * 12;
+        el.style.left = `${left}%`;
+        el.style.background = colors[i % colors.length];
+        el.style.width = `${w}px`;
+        el.style.height = `${h}px`;
+        el.style.transform = `translateY(-10px) rotate(${rotate}deg)`;
+        el.style.animationDelay = `${delay}ms`;
+        el.style.animationDuration = `${duration}ms`;
+        container.appendChild(el);
+    }
+}
+
+function showCongrats(message) {
+    ensureCongratsOverlay();
+    const wrap = document.getElementById('hvCongrats');
+    if (!wrap) return;
+    const msg = wrap.querySelector('#hvCongratsMsg');
+    if (msg) msg.textContent = message || '';
+    const confetti = wrap.querySelector('.hv-confetti');
+    launchConfetti(confetti);
+    wrap.classList.add('is-open');
+
+    window.clearTimeout(wrap._autoCloseTimer);
+    wrap._autoCloseTimer = window.setTimeout(() => {
+        wrap.classList.remove('is-open');
+    }, 2200);
+}
+
 function getSectionElements(sectionId) {
     const section = document.getElementById(sectionId);
     if (!section) return { section: null, body: null };
@@ -119,18 +221,20 @@ async function submitPost() {
 }
 
 async function loadPosts() {
-    const res = await fetch("https://fsdp-cycling-ltey.onrender.com/community/browse/posts", {
-        method: "GET",
-        headers: { "Authorization": `Bearer ${token}` }
-    });
+    showLoading();
+    try {
+        const res = await fetch("https://fsdp-cycling-ltey.onrender.com/community/browse/posts", {
+            method: "GET",
+            headers: { "Authorization": `Bearer ${token}` }
+        });
 
-    const posts = await res.json();
-    const container = document.querySelector(".feed-list");
-    container.innerHTML = "";
+        const posts = await res.json();
+        const container = document.querySelector(".feed-list");
+        container.innerHTML = "";
 
-    posts.forEach(p => {
-        container.innerHTML += `
-        <div class="post-card" data-post-id="${p.postid}">
+        posts.forEach(p => {
+            container.innerHTML += `
+            <div class="post-card" data-post-id="${p.postid}">
             
             <div class="post-header">
                 <img class="post-avatar" src="./default_user.png">
@@ -173,14 +277,18 @@ async function loadPosts() {
     attachLikeEvents();
     attachCommentEvents();
 
+    } finally {
+        hideLoading();
+    }
 }
-
 
 function attachLikeEvents() {
     document.querySelectorAll(".post-card").forEach(card => {
         const likeBtn = card.querySelector(".btn-like");
         const likeCountEl = card.querySelector(".like-count");
         const postId = card.getAttribute("data-post-id");
+
+        if (!likeBtn || !likeCountEl || !postId) return;
 
         likeBtn.addEventListener("click", async () => {
             const res = await fetch(`https://fsdp-cycling-ltey.onrender.com/community/posts/${postId}/like`, {
@@ -275,7 +383,7 @@ if (globalSendBtn) globalSendBtn.addEventListener("click", async () => {
     const text = (input ? input.value : '').trim();
     if (!text || !currentPostId) return;
 
-    await fetch(`https://fsdp-cycling-ltey.onrender.com/community/posts/${currentPostId}/comments`, {
+    const res = await fetch(`https://fsdp-cycling-ltey.onrender.com/community/posts/${currentPostId}/comments`, {
         method: "POST",
         headers: {
             "Authorization": `Bearer ${token}`,
@@ -284,7 +392,20 @@ if (globalSendBtn) globalSendBtn.addEventListener("click", async () => {
         body: JSON.stringify({ CommentText: text })
     });
 
+    if (!res.ok) {
+        let data;
+        try {
+            data = await res.json();
+        } catch {
+            data = null;
+        }
+        alert(data?.message || 'Failed to post comment');
+        return;
+    }
+
     closeCommentBox();
+
+    showCongrats('Comment posted successfully!');
 
     // update comment list instantly
     const postCard = document.querySelector(`.post-card[data-post-id="${currentPostId}"]`);
@@ -336,36 +457,43 @@ async function loadComments(postId, container) {
 
 
 async function loadVolunteers() {
-    const res = await fetch("https://fsdp-cycling-ltey.onrender.com/community/browse/volunteers", {
-        method: "GET",
-        headers: { "Authorization": `Bearer ${token}` }
-    });
+    showLoading();
+    try {
+        const res = await fetch("https://fsdp-cycling-ltey.onrender.com/community/browse/volunteers", {
+            method: "GET",
+            headers: { "Authorization": `Bearer ${token}` }
+        });
 
-    const list = await res.json();
+        const list = await res.json();
 
-    const container = document.querySelector(".people-scroll");
-    container.innerHTML = "";
+        const container = document.querySelector(".people-scroll");
+        container.innerHTML = "";
 
-    list.forEach(v => {
-        container.innerHTML += `
-            <div class="people-card">
-                <img src="./default_user.png" class="people-avatar">
-                <h4 class="people-name">${v.name}</h4>
-                <button class="btn-add">Add Friend</button>
-            </div>
-        `;
-    });
+        list.forEach(v => {
+            container.innerHTML += `
+                <div class="people-card">
+                    <img src="./default_user.png" class="people-avatar">
+                    <h4 class="people-name">${v.name}</h4>
+                    <button class="btn-add">Add Friend</button>
+                </div>
+            `;
+        });
+    } finally {
+        hideLoading();
+    }
 }
 
 
 
 async function loadInstitutions() {
-    const res = await fetch("https://fsdp-cycling-ltey.onrender.com/community/browse/institutions", {
-        method: "GET",
-        headers: { "Authorization": `Bearer ${token}` }
-    });
+    showLoading();
+    try {
+        const res = await fetch("https://fsdp-cycling-ltey.onrender.com/community/browse/institutions", {
+            method: "GET",
+            headers: { "Authorization": `Bearer ${token}` }
+        });
 
-    const data = await res.json();
+        const data = await res.json();
 
     const tabs = document.getElementById("instiTabs");
     const panels = document.getElementById("instiPanelsContainer");
@@ -433,7 +561,10 @@ async function loadInstitutions() {
   `;
 });
 
-    attachInstitutionTabEvents();
+        attachInstitutionTabEvents();
+    } finally {
+        hideLoading();
+    }
 }
 
 function openEventDetail(eventId) {
@@ -477,7 +608,16 @@ function goBackToInstitution(id) {
 
 
 document.addEventListener("DOMContentLoaded", () => {
-    loadPosts();
-    loadVolunteers();
-    loadInstitutions();
+    (async () => {
+        showLoading();
+        try {
+            await Promise.allSettled([
+                loadPosts(),
+                loadVolunteers(),
+                loadInstitutions()
+            ]);
+        } finally {
+            hideLoading();
+        }
+    })();
 });

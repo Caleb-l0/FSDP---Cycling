@@ -251,10 +251,6 @@ function renderEvents(events) {
       <div class="event-details" role="button" tabindex="0" data-event-id="${eventId}">
         <button class="event-collapse-btn" type="button" aria-label="Hide this event">×</button>
 
-        <div class="event-head-row">
-          ${isSignedUp ? `<div class="signup-badge" aria-label="You have signed up">You Have Signed Up</div>` : ''}
-        </div>
-
         <div class="event-body">
           <h3>${title}</h3>
           <p><strong>Date:</strong> ${date}</p>
@@ -302,7 +298,7 @@ function renderEvents(events) {
     const button = document.createElement('button');
     button.classList.add('signup-btn');
     button.type = 'button';
-    button.textContent = isSignedUp ? 'You Have Signed Up' : 'Sign Up';
+    button.textContent = isSignedUp ? 'Signed Up' : 'Sign Up';
     button.disabled = isSignedUp;
 
     button.addEventListener('click', (e) => {
@@ -379,6 +375,77 @@ function formatDate(rawDate) {
   });
 }
 
+function ensureCongratsOverlay() {
+  if (document.getElementById('hvCongrats')) return;
+
+  const wrap = document.createElement('div');
+  wrap.id = 'hvCongrats';
+  wrap.className = 'hv-congrats';
+  wrap.innerHTML = `
+    <div class="hv-congrats__backdrop" data-close="true"></div>
+    <div class="hv-congrats__dialog" role="dialog" aria-modal="true" aria-label="Congratulations">
+      <div class="hv-confetti" aria-hidden="true"></div>
+      <div class="hv-congrats__body">
+        <div class="hv-congrats__icon" aria-hidden="true">✓</div>
+        <h3 class="hv-congrats__title" id="hvCongratsTitle">Congratulations!</h3>
+        <p class="hv-congrats__msg" id="hvCongratsMsg"></p>
+      </div>
+      <div class="hv-congrats__footer">
+        <button class="hv-congrats__btn" type="button" id="hvCongratsOk">OK</button>
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(wrap);
+
+  const close = () => wrap.classList.remove('is-open');
+  wrap.addEventListener('click', (e) => {
+    if (e.target?.dataset?.close === 'true') close();
+  });
+  const ok = wrap.querySelector('#hvCongratsOk');
+  if (ok) ok.addEventListener('click', close);
+}
+
+function launchConfetti(container) {
+  if (!container) return;
+  container.innerHTML = '';
+  const colors = ['#ea8d2a', '#16a34a', '#2563eb', '#dc2626', '#0f172a', '#f59e0b'];
+  const pieces = 28;
+  for (let i = 0; i < pieces; i += 1) {
+    const el = document.createElement('i');
+    const left = Math.random() * 100;
+    const delay = Math.random() * 120;
+    const duration = 700 + Math.random() * 600;
+    const rotate = Math.floor(Math.random() * 360);
+    const w = 8 + Math.random() * 8;
+    const h = 10 + Math.random() * 12;
+    el.style.left = `${left}%`;
+    el.style.background = colors[i % colors.length];
+    el.style.width = `${w}px`;
+    el.style.height = `${h}px`;
+    el.style.transform = `translateY(-10px) rotate(${rotate}deg)`;
+    el.style.animationDelay = `${delay}ms`;
+    el.style.animationDuration = `${duration}ms`;
+    container.appendChild(el);
+  }
+}
+
+function showCongrats(message) {
+  ensureCongratsOverlay();
+  const wrap = document.getElementById('hvCongrats');
+  if (!wrap) return;
+  const msg = wrap.querySelector('#hvCongratsMsg');
+  if (msg) msg.textContent = message || '';
+  const confetti = wrap.querySelector('.hv-confetti');
+  launchConfetti(confetti);
+  wrap.classList.add('is-open');
+
+  window.clearTimeout(wrap._autoCloseTimer);
+  wrap._autoCloseTimer = window.setTimeout(() => {
+    wrap.classList.remove('is-open');
+  }, 2400);
+}
+
 async function signUp(eventTitle, eventId, buttonEl, cardEl) {
   const token = localStorage.getItem('token');
 
@@ -430,24 +497,15 @@ async function signUp(eventTitle, eventId, buttonEl, cardEl) {
         feedback.textContent = 'Sign up successfully.';
         feedback.classList.add('is-success');
       }
-
-      const headRow = cardEl.querySelector('.event-head-row');
-      const existingBadge = cardEl.querySelector('.signup-badge');
-      if (headRow && !existingBadge) {
-        const badge = document.createElement('div');
-        badge.className = 'signup-badge';
-        badge.setAttribute('aria-label', 'You have signed up');
-        badge.textContent = 'You Have Signed Up';
-        headRow.insertBefore(badge, headRow.firstChild);
-      }
     }
 
     if (buttonEl) {
       buttonEl.classList.remove('is-loading');
-      buttonEl.textContent = 'You Have Signed Up';
+      buttonEl.textContent = 'Signed Up';
       buttonEl.disabled = true;
-      buttonEl.classList.add('is-success');
     }
+
+    showCongrats(`You signed up successfully for "${eventTitle}".`);
 
     setTimeout(() => {
       const feedback = cardEl?.querySelector('.signup-feedback');
