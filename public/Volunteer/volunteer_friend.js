@@ -115,7 +115,11 @@ function renderFriends() {
       const go = () => {
         window.location.href = `./userProfile.html?userId=${encodeURIComponent(friendId)}`;
       };
-      card.addEventListener("click", go);
+      card.addEventListener("click", (e) => {
+  e.preventDefault();
+  e.stopPropagation();
+  go();
+});
       card.addEventListener("keydown", (e) => {
         if (e.key === "Enter" || e.key === " ") {
           e.preventDefault();

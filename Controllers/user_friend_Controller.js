@@ -1,5 +1,7 @@
 const { get } = require("../mailer");
 const userFriendsModel = require("../Models/user_friend_Model");
+const pool = require("../Postgres_config");
+const transporter = require("../mailer");
 
 /**
  * Get my friends list (private)
@@ -21,21 +23,19 @@ async function getMyFriends(req, res) {
 }
 
 
-const { sendMail } = require("../mailer");
-
 async function sendFriendRequest(req, res) {
   try {
     const userId = req.user?.id;
     const friendId = Number(req.body.friendId);
+    const requestReason = (req.body.requestReason ?? req.body.reason ?? "").toString().trim();
 
     if (!userId) return res.status(401).json({ message: "Unauthorized" });
     if (!Number.isInteger(friendId)) return res.status(400).json({ message: "Invalid friendId" });
 
-
     const me = await pool.query(`SELECT id, name, email FROM users WHERE id=$1`, [userId]);
     if (me.rowCount === 0) return res.status(401).json({ message: "Unauthorized" });
 
-    const result = await userFriendsModel.createFriendRequest(userId, friendId);
+    const result = await userFriendsModel.createFriendRequest(userId, friendId, requestReason);
 
     if (!result.ok) {
 
@@ -43,14 +43,16 @@ async function sendFriendRequest(req, res) {
       return res.status(status).json(result);
     }
 
-  
     if (!result.autoAccepted) {
       const friendEmail = result.friend.email;
       const friendName = result.friend.name || "there";
       const myName = me.rows[0].name || "Someone";
 
-  
-      await sendMail({
+      const reasonBlock = requestReason
+        ? `<p><b>Reason:</b> ${escapeHtml(requestReason)}</p>`
+        : "";
+
+      await transporter.sendMail({
         to: friendEmail,
         subject: "You received a friend request",
         html: `
@@ -58,6 +60,7 @@ async function sendFriendRequest(req, res) {
           <div style="font-family:Arial,sans-serif;line-height:1.6">
             <h2>Hi ${friendName},</h2>
             <p><b>${myName}</b> sent you a friend request on <b>Happy Volunteer</b>.</p>
+            ${reasonBlock}
             <p>Open the app to accept or reject the request.</p>
             <p style="color:#666;font-size:12px">If you didn’t expect this, you can ignore this email.</p>
           </div>
@@ -71,8 +74,6 @@ async function sendFriendRequest(req, res) {
     return res.status(500).json({ message: "Failed to send friend request" });
   }
 }
-
-
 
 async function addFriend(req, res) {
   try {
@@ -148,7 +149,119 @@ async function getAllFriendsSignUpEvents(req, res) {
   }
 }
 
+async function getIncomingFriendRequests(req, res) {
+  try {
+    const userId = req.user.id;
+    const requests = await userFriendsModel.getIncomingFriendRequests(userId);
+    return res.status(200).json(requests);
+  } catch (error) {
+    console.error("Get incoming friend requests error:", error);
+    return res.status(500).json({ message: "Failed to get incoming friend requests" });
+  }
+}
 
+async function getOutgoingFriendRequests(req, res) {
+  try {
+    const userId = req.user.id;
+    const requests = await userFriendsModel.getOutgoingFriendRequests(userId);
+    return res.status(200).json(requests);
+  } catch (error) {
+    console.error("Get outgoing friend requests error:", error);
+    return res.status(500).json({ message: "Failed to get outgoing friend requests" });
+  }
+}
+
+async function getFriendRequestDetail(req, res) {
+  try {
+    const userId = req.user.id;
+    const requestId = parseInt(req.params.requestId);
+    const request = await userFriendsModel.getFriendRequestDetail(userId, requestId);
+    return res.status(200).json(request);
+  } catch (error) {
+    console.error("Get friend request detail error:", error);
+    return res.status(500).json({ message: "Failed to get friend request detail" });
+  }
+}
+
+async function acceptFriendRequest(req, res) {
+  try {
+    const userId = req.user.id;
+    const requestId = parseInt(req.params.requestId);
+    const result = await userFriendsModel.acceptFriendRequest(userId, requestId);
+    if (!result.ok) {
+      return res.status(400).json(result);
+    }
+
+    const friendEmail = result.friend.email;
+    const friendName = result.friend.name || "there";
+    const myName = result.me.name || "Someone";
+
+    await transporter.sendMail({
+      to: friendEmail,
+      subject: "Friend request accepted",
+      html: `
+      <h1>From Cycling Without Age</h1>
+        <div style="font-family:Arial,sans-serif;line-height:1.6">
+          <h2>Hi ${friendName},</h2>
+          <p><b>${myName}</b> accepted your friend request on <b>Happy Volunteer</b>.</p>
+          <p>You are now friends!</p>
+          <p style="color:#666;font-size:12px">If you didn’t expect this, you can ignore this email.</p>
+        </div>
+      `
+    });
+
+    return res.status(200).json(result);
+  } catch (error) {
+    console.error("Accept friend request error:", error);
+    return res.status(500).json({ message: "Failed to accept friend request" });
+  }
+}
+
+async function rejectFriendRequest(req, res) {
+  try {
+    const userId = req.user.id;
+    const requestId = parseInt(req.params.requestId);
+    const result = await userFriendsModel.rejectFriendRequest(userId, requestId);
+    if (!result.ok) {
+      return res.status(400).json(result);
+    }
+
+    const friendEmail = result.friend.email;
+    const friendName = result.friend.name || "there";
+    const myName = result.me.name || "Someone";
+
+    await transporter.sendMail({
+      to: friendEmail,
+      subject: "Friend request rejected",
+      html: `
+      <h1>From Cycling Without Age</h1>
+        <div style="font-family:Arial,sans-serif;line-height:1.6">
+          <h2>Hi ${friendName},</h2>
+          <p><b>${myName}</b> rejected your friend request on <b>Happy Volunteer</b>.</p>
+          <p>You can try sending another request if you want.</p>
+          <p style="color:#666;font-size:12px">If you didn’t expect this, you can ignore this email.</p>
+        </div>
+      `
+    });
+
+    return res.status(200).json(result);
+  } catch (error) {
+    console.error("Reject friend request error:", error);
+    return res.status(500).json({ message: "Failed to reject friend request" });
+  }
+}
+
+async function getFriendStatus(req, res) {
+  try {
+    const userId = req.user.id;
+    const friendId = parseInt(req.params.friendId);
+    const status = await userFriendsModel.getFriendStatus(userId, friendId);
+    return res.status(200).json({ status });
+  } catch (error) {
+    console.error("Get friend status error:", error);
+    return res.status(500).json({ message: "Failed to get friend status" });
+  }
+}
 
 module.exports = {
   getMyFriends,
@@ -158,4 +271,10 @@ module.exports = {
   remobeFriend,
   getAllFriendsSignUpEvents,
   sendFriendRequest,
+  getIncomingFriendRequests,
+  getOutgoingFriendRequests,
+  getFriendRequestDetail,
+  acceptFriendRequest,
+  rejectFriendRequest,
+  getFriendStatus,
 };
