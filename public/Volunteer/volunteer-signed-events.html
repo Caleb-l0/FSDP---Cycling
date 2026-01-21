@@ -52,20 +52,27 @@
 </header>
 
 <div class="container">
-  <button class="toggle-btn" onclick="window.location.href='volunteer-events.html'">
-    View Upcoming Events
-  </button>
+  <div class="signed-page-head">
+    <div class="signed-page-head__text">
+      <h2 class="signed-page-title">My Signed Up Events</h2>
+      <p class="signed-page-subtitle">Your upcoming and past volunteer events in one place.</p>
+    </div>
 
-  <h2>Events I have signed up for</h2>
-  <div class="event-list" id="eventList" aria-live="polite">
+    <div class="signed-page-head__actions">
+      <button class="signed-action-btn signed-action-btn--secondary" type="button" onclick="window.location.href='volunteer-events.html'">
+        View Upcoming Events
+      </button>
+
+      <button class="signed-action-btn signed-action-btn--primary" type="button" onclick="window.location.href='camera.html'">
+        Scan QR Code
+      </button>
+    </div>
   </div>
-  
+
+  <section class="signed-events-section" aria-label="Signed up events list">
+    <div class="event-list" id="eventList" aria-live="polite"></div>
+  </section>
 </div>
-<a href = "camera.html">
-    <button class="scan-btn">
-      Scan QR Code
-    </button>
-    </a>
 
 <footer>
     <div class="container">

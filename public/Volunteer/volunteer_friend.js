@@ -113,7 +113,7 @@ function renderFriends() {
     const friendId = f.friendid ?? f.friendId ?? f.userid ?? f.userId ?? f.id;
     if (friendId != null) {
       const go = () => {
-        window.location.href = `../Profile/profilepage.html?userId=${encodeURIComponent(friendId)}`;
+        window.location.href = `./userProfile.html?userId=${encodeURIComponent(friendId)}`;
       };
       card.addEventListener("click", go);
       card.addEventListener("keydown", (e) => {

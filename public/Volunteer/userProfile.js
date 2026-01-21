@@ -32,6 +32,7 @@ async function checkIfFriend() {
     });
     const data = await res.json();
     setFriendUI(data.isFriend);
+    setPhoneVisibility(Boolean(data.isFriend));
   }
   catch (err) {
     console.error("Check friend error", err);
@@ -60,6 +61,7 @@ addBtn.onclick = async () => {
       if (!res.ok) throw new Error("Add failed");
 
       setFriendUI(true);
+      setPhoneVisibility(true);
     } else {
       // ❌ Remove friend
       const res = await fetch(`${UserEndPoint}/volunteer/friends/remove/${userId}`, {
@@ -72,6 +74,7 @@ addBtn.onclick = async () => {
       if (!res.ok) throw new Error("Remove failed");
 
       setFriendUI(false);
+      setPhoneVisibility(false);
     }
   } catch (err) {
     alert("Action failed");
@@ -91,24 +94,40 @@ function setFriendUI(isFriend) {
   }
 }
 
+function setPhoneVisibility(isFriend) {
+  const phoneEl = document.getElementById('hvop-phone');
+  const phoneNote = document.getElementById('hvop-phone-note');
+
+  const phoneValue = phoneEl?.dataset?.value;
+
+  if (!phoneEl) return;
+
+  if (isFriend && phoneValue) {
+    phoneEl.textContent = phoneValue;
+    if (phoneNote) phoneNote.style.display = 'none';
+  } else {
+    phoneEl.textContent = 'Hidden';
+    if (phoneNote) phoneNote.style.display = 'block';
+  }
+}
+
 // =========================
 // FETCH AND RENDER PROFILE
 // =========================
-
-
-
-
-
-
-
-
 if (!userId) {
   alert("Invalid profile");
   location.href = "homepage_login_volunteer.html";
 }
 
-fetch(`${UserEndPoint}/volunteer/user/profile/${userId}`)
-  .then(res => res.json())
+fetch(`${UserEndPoint}/volunteer/user/profile/${userId}`, {
+  headers: {
+    Authorization: `Bearer ${token}`
+  }
+})
+  .then(res => {
+    if (!res.ok) throw new Error('Failed to load profile');
+    return res.json();
+  })
   .then(renderProfile)
   .catch(err => {
     console.error(err);
@@ -118,6 +137,7 @@ fetch(`${UserEndPoint}/volunteer/user/profile/${userId}`)
 function renderProfile(p) {
   // ================= HERO =================
   document.querySelector(".hvop-name").textContent = p.name;
+
   document.querySelector(".hvop-title").textContent = getTitle(p.level);
   document.querySelector(".hvop-level").textContent =
     `Level ${p.level} · ${getTier(p.level)}`;
@@ -137,6 +157,42 @@ function renderProfile(p) {
 
   // ================= EXPERIENCE =================
   renderExperience(p);
+
+  // ================= CONTACT + ADVANTAGES =================
+  renderContact(p);
+  renderAdvantages(p);
+}
+
+function renderContact(p) {
+  const emailEl = document.getElementById('hvop-email');
+  const phoneEl = document.getElementById('hvop-phone');
+
+  if (emailEl) emailEl.textContent = p.email ?? p.Email ?? '—';
+
+  if (phoneEl) {
+    const phone = p.phone ?? p.phonenumber ?? p.phoneNumber ?? p.PhoneNumber ?? p.Phone ?? '';
+    phoneEl.dataset.value = phone;
+  }
+
+  // Only show phone if mutual friends
+  const isFriend = addBtn?.dataset?.state === 'remove';
+  setPhoneVisibility(Boolean(isFriend));
+}
+
+function renderAdvantages(p) {
+  const list = document.getElementById('hvop-advantages');
+  if (!list) return;
+
+  const items = [];
+  const level = Number(p.level ?? 0);
+  const totalEvents = Number(p.total_events ?? 0);
+
+  items.push(`Reliable volunteer with ${totalEvents} completed events.`);
+  items.push(`Volunteer tier: ${getTier(level)}.`);
+  items.push('Friendly communication and patient support for seniors.');
+  items.push('Experienced in community programmes and teamwork.');
+
+  list.innerHTML = items.map(i => `<li>${i}</li>`).join('');
 }
 
 function setOverview(i, val) {
