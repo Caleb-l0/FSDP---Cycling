@@ -49,8 +49,13 @@ async function createEvent(eventData) {
 async function getVolunteerEmails() {
   try {
     const result = await pool.query(
-      `SELECT id, email, name FROM users WHERE role = 'volunteer' AND email IS NOT NULL AND email <> ''`
+      `SELECT id, email, name 
+       FROM users 
+       WHERE LOWER(TRIM(role)) = 'volunteer'
+         AND email IS NOT NULL 
+         AND TRIM(email) <> ''`
     );
+    console.log(`Volunteer email broadcast: found ${result.rows.length} volunteers`);
     return result.rows;
   } catch (err) {
     console.error("Error fetching volunteer emails:", err);
