@@ -10,6 +10,9 @@ let currentEventLat = null;
 let currentEventLng = null;
 let currentEventAddress = '';
 
+let currentEventName = '';
+let currentEventDate = '';
+
 
 // Get eventId
 const params = new URLSearchParams(window.location.search);
@@ -40,6 +43,8 @@ async function loadEventDetails(id) {
 
     if (!res.ok) throw new Error("Failed to load event");
     const data = await res.json();
+    currentEventName = data.eventname || '';
+    currentEventDate = data.eventdate || '';
     document.getElementById("req-name").textContent = data.eventname;
     document.getElementById("req-org").textContent = data.organizationid || "-";
     document.getElementById("req-date").textContent =
@@ -65,6 +70,38 @@ async function loadEventDetails(id) {
   }
 }
 
+async function shareEvent() {
+  const title = currentEventName || 'Volunteer Event';
+  const dateText = currentEventDate ? new Date(currentEventDate).toLocaleString() : '';
+  const locationText = currentEventAddress || '';
+  const url = `${window.location.origin}${window.location.pathname}?eventId=${encodeURIComponent(eventId)}`;
+
+  const lines = [
+    `Event: ${title}`,
+    dateText ? `Date: ${dateText}` : '',
+    locationText ? `Location: ${locationText}` : '',
+    `Link: ${url}`,
+    'Let’s join together!'
+  ].filter(Boolean);
+  const text = lines.join('\n');
+
+  if (navigator.share) {
+    try {
+      await navigator.share({ title, text, url });
+      return;
+    } catch (e) {
+      // fall back to clipboard
+    }
+  }
+
+  try {
+    await navigator.clipboard.writeText(text);
+    alert('Event info copied. You can paste it into WhatsApp to share.');
+  } catch {
+    prompt('Copy this event info:', text);
+  }
+}
+
 function openGoogleMapsDirections({ lat, lng, address }) {
   const hasCoords = Number.isFinite(lat) && Number.isFinite(lng);
   const destination = hasCoords ? `${lat},${lng}` : (address || '').trim();
@@ -86,6 +123,14 @@ document.addEventListener('DOMContentLoaded', () => {
       lng: currentEventLng,
       address: currentEventAddress
     });
+  });
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+  const shareBtn = document.getElementById('btn-share-event');
+  if (!shareBtn) return;
+  shareBtn.addEventListener('click', () => {
+    shareEvent();
   });
 });
 // check assign

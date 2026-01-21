@@ -437,6 +437,7 @@ function setFriendUI(status) {
 function setPhoneVisibility(isFriend) {
   const phoneEl = document.getElementById('hvop-phone');
   const phoneNote = document.getElementById('hvop-phone-note');
+  const waBtn = document.getElementById('hvop-whatsapp-btn');
 
   const phoneValue = phoneEl?.dataset?.value;
 
@@ -445,10 +446,18 @@ function setPhoneVisibility(isFriend) {
   if (isFriend && phoneValue) {
     phoneEl.textContent = phoneValue;
     if (phoneNote) phoneNote.style.display = 'none';
+    if (waBtn) waBtn.style.display = 'inline-flex';
   } else {
     phoneEl.textContent = 'Hidden';
     if (phoneNote) phoneNote.style.display = 'block';
+    if (waBtn) waBtn.style.display = 'none';
   }
+}
+
+function sanitizePhoneForWhatsApp(phone) {
+  const raw = String(phone || '').trim();
+  if (!raw) return '';
+  return raw.replace(/[^\d]/g, '');
 }
 
 // =========================
@@ -508,6 +517,7 @@ function renderContact(p) {
   const phoneEl = document.getElementById('hvop-phone');
   const emptyEl = document.getElementById('hvop-contact-empty');
   const phoneNote = document.getElementById('hvop-phone-note');
+  const waBtn = document.getElementById('hvop-whatsapp-btn');
 
   const email = (p.email ?? p.Email ?? '').toString().trim();
   const phone = (p.phone ?? p.phonenumber ?? p.phoneNumber ?? p.PhoneNumber ?? p.Phone ?? '').toString().trim();
@@ -516,6 +526,18 @@ function renderContact(p) {
 
   if (phoneEl) {
     phoneEl.dataset.value = phone;
+  }
+
+  if (waBtn) {
+    waBtn.onclick = () => {
+      const isFriend = addBtn?.dataset?.state === 'remove';
+      const phoneValue = phoneEl?.dataset?.value || '';
+      const waPhone = sanitizePhoneForWhatsApp(phoneValue);
+      if (!isFriend || !waPhone) return;
+      const msg = `Hi ${p.name || 'friend'}, this is from Happy Volunteer. Can we chat about volunteering?`;
+      const url = `https://wa.me/${waPhone}?text=${encodeURIComponent(msg)}`;
+      window.open(url, '_blank', 'noopener');
+    };
   }
 
   if (emptyEl) {
