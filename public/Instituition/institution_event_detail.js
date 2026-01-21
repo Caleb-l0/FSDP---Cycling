@@ -119,7 +119,8 @@ function displayEventDetails() {
       setupRequestButton();
     }
   }
-}
+
+
 
 // Setup action buttons based on application status
 function setupActionButtons(status) {

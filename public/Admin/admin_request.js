@@ -152,11 +152,15 @@ async function assignEventToOrgan(){
     
   } catch (error) {
     console.error('Error fetching request details:', error);
+    alert('Approval succeeded, but assigning the event (and sending emails) failed. Please try again.');
+    throw error;
   } 
 }
 
 approve.addEventListener("click",async function(){
  try {
+    approve.disabled = true;
+    reject.disabled = true;
     const response = await fetch(`https://fsdp-cycling-ltey.onrender.com/requests/approve/${currentRequestId}`, {
       method: 'PUT',
       headers: {
@@ -168,7 +172,7 @@ approve.addEventListener("click",async function(){
       throw new Error('Failed to update request');
     }
     const requestData = await response.json();
-    assignEventToOrgan()
+    await assignEventToOrgan();
     const organizationId = currentApplication.organizationid || currentApplication.OrganizationID;
       approve.disabled = true;
     reject.disabled = false;
@@ -179,6 +183,8 @@ approve.addEventListener("click",async function(){
     
   } catch (error) {
     console.error('Error fetching request details:', error);
+    approve.disabled = false;
+    reject.disabled = false;
   } 
 })
 

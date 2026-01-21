@@ -6,6 +6,10 @@ if (!token) {
 
 let signedUp = false;
 
+let currentEventLat = null;
+let currentEventLng = null;
+let currentEventAddress = '';
+
 
 // Get eventId
 const params = new URLSearchParams(window.location.search);
@@ -44,6 +48,9 @@ async function loadEventDetails(id) {
     document.getElementById("req-status").textContent = data.status;
      document.getElementById("req-people-num").textContent = data.maximumparticipant;
     document.getElementById("req-loc").textContent = data.location;
+    currentEventLat = Number(data.latitude);
+    currentEventLng = Number(data.longitude);
+    currentEventAddress = data.location || '';
     document.getElementById("req-needed").textContent = data.requiredvolunteers;
     document.getElementById("req-created").textContent = data.createdat
       ? new Date(data.createdat).toLocaleString()
@@ -57,6 +64,30 @@ async function loadEventDetails(id) {
     alert("Unable to load event details");
   }
 }
+
+function openGoogleMapsDirections({ lat, lng, address }) {
+  const hasCoords = Number.isFinite(lat) && Number.isFinite(lng);
+  const destination = hasCoords ? `${lat},${lng}` : (address || '').trim();
+  if (!destination) {
+    alert('Location is not available for this event.');
+    return;
+  }
+
+  const url = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(destination)}`;
+  window.open(url, '_blank', 'noopener');
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const mapBtn = document.getElementById('btn-map');
+  if (!mapBtn) return;
+  mapBtn.addEventListener('click', () => {
+    openGoogleMapsDirections({
+      lat: currentEventLat,
+      lng: currentEventLng,
+      address: currentEventAddress
+    });
+  });
+});
 // check assign
 
 async function checkIsSignedUp(eventId) {
