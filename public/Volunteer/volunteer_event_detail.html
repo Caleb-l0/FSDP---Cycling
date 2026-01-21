@@ -135,11 +135,24 @@
     Cancel Signup
   </button>
 
-  <button id="btn-map"
-          class="btn-action btn-map"
-          type="button">
-    📍 Get Directions (Google Maps)
-  </button>
+  <div class="gmap-btn-wrap">
+    <button id="btn-map" class="btn-action btn-gmap" type="button">
+      <span class="gmap-icon">
+        <svg viewBox="0 0 24 24" width="22" height="22">
+          <path fill="#4285F4" d="M12 0C7.31 0 3.5 3.81 3.5 8.5c0 5.52 7.2 14.13 7.5 14.5.3.37.7.5 1 .5s.7-.13 1-.5c.3-.37 7.5-8.98 7.5-14.5C20.5 3.81 16.69 0 12 0z"/>
+          <circle fill="#EA4335" cx="12" cy="8.5" r="3.5"/>
+        </svg>
+      </span>
+      <span class="gmap-text">Google Maps</span>
+    </button>
+    <div class="gmap-tooltip" id="gmapTooltip">
+      <div class="gmap-tooltip-content">
+        <span class="gmap-tooltip-icon">🗺️</span>
+        <p>Don't know how to get here?<br><strong>Click to find the way!</strong></p>
+      </div>
+      <div class="gmap-tooltip-arrow"></div>
+    </div>
+  </div>
 
   <!-- Back -->
   <button id="btn-back"
@@ -208,6 +221,26 @@
 <script src="./volunteer_event_detail.js"></script>
 <script src="../Translation.js"></script>
 <script src="../homepage.js"></script>
+
+<script>
+// Auto-hide Google Maps tooltip after 6 seconds
+document.addEventListener('DOMContentLoaded', () => {
+  const tooltip = document.getElementById('gmapTooltip');
+  if (tooltip) {
+    setTimeout(() => {
+      tooltip.classList.add('hide');
+    }, 6000);
+    
+    // Also hide when button is clicked
+    const btn = document.getElementById('btn-map');
+    if (btn) {
+      btn.addEventListener('click', () => {
+        tooltip.classList.add('hide');
+      });
+    }
+  }
+});
+</script>
  <script src="https://cdn.botpress.cloud/webchat/v3.5/inject.js"></script>
 <script src="https://files.bpcontent.cloud/2025/11/22/14/20251122142820-IG7UQ29V.js" defer></script>
 
