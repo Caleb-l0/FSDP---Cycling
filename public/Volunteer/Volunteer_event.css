@@ -143,6 +143,7 @@ h2 {
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
   transition: all 0.3s ease;
   border: 1px solid #e2e8f0;
+  position: relative;
 }
 
 .event-card.is-dismissed {
@@ -158,24 +159,36 @@ h2 {
 }
 
 .event-collapse-btn {
-  min-height: 44px;
-  padding: 8px 12px;
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 36px;
+  height: 36px;
+  padding: 0;
   border-radius: 999px;
   border: 2px solid #e2e8f0;
-  background: #ffffff;
+  background: rgba(255, 255, 255, 0.92);
   color: #1e293b;
-  font-weight: 800;
+  font-weight: 900;
+  font-size: 1.2rem;
+  line-height: 1;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+  justify-content: center;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease, background 0.15s ease;
 }
 
 .event-collapse-btn:hover {
   transform: translateY(-1px);
   border-color: rgba(234, 141, 42, 0.45);
   box-shadow: 0 8px 18px rgba(234, 141, 42, 0.12);
+}
+
+.event-collapse-btn:focus {
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(234, 141, 42, 0.22);
+  border-color: rgba(234, 141, 42, 0.55);
 }
 
 .event-collapse-icon {
@@ -224,6 +237,7 @@ h2 {
   flex-direction: column;
   flex: 1;
   gap: 12px;
+  position: relative;
 }
 
 .event-details[role="button"] {
@@ -270,6 +284,7 @@ h2 {
 ====================================================== */
 .signup-btn {
   margin-top: auto;
+  margin-top: 14px;
   padding: 12px 28px;
   border-radius: 999px;
   border: none;

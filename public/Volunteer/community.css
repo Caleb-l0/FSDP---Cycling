@@ -15,6 +15,17 @@ body {
     line-height: 1.65;
 }
 
+:root {
+    --bg-main: #f8fafc;
+    --bg-card: #ffffff;
+    --text-main: #0f172a;
+    --text-muted: #475569;
+    --primary: #ea8d2a;
+    --primary-dark: #d97a1f;
+    --shadow-soft: 0 10px 28px rgba(2, 6, 23, 0.08);
+    --shadow-hover: 0 18px 50px rgba(2, 6, 23, 0.14);
+}
+
 .community-page {
     width: 90%;
     max-width: 1200px;
@@ -118,6 +129,10 @@ body {
     display: flex;
     gap: 16px;
     align-items: center;
+}
+
+.post-body {
+    margin-top: 12px;
 }
 
 .post-header-actions {
@@ -287,8 +302,8 @@ body {
     display: flex;
     justify-content: flex-start;
     align-items: center;
-    margin-top: 12px;
-    gap: 10px;
+    margin-top: 18px;
+    gap: 12px;
     flex-wrap: wrap;
 }
 
@@ -333,15 +348,20 @@ body {
    COMMENTS (SHOWN UNDER POST)
 ========================================================= */
 /* ===== COMMENT OVERLAY ===== */
-.comment-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0,0,0,0.35);
-    display: none;
+
+#globalCommentOverlay.comment-overlay {
     z-index: 9998;
+}
+
+#globalCommentPanel.comment-panel {
+    z-index: 9999;
+    max-height: 72vh;
+    overflow: auto;
+    bottom: -100%;
+}
+
+#globalCommentPanel.comment-panel.show {
+    bottom: 0;
 }
 
 /* ===== GLOBAL COMMENT PANEL ===== */
@@ -516,6 +536,56 @@ body {
     border: 1px solid rgba(15, 23, 42, 0.10);
     box-shadow: var(--shadow-soft, 0 8px 24px rgba(0,0,0,0.06));
     display: none;
+}
+
+.post-form-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(2, 6, 23, 0.45);
+    display: none;
+    z-index: 9996;
+}
+
+.post-form-container.is-open {
+    display: block;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: min(92vw, 760px);
+    margin: 0;
+    z-index: 9997;
+}
+
+.post-form-overlay.is-open {
+    display: block;
+}
+
+.post-form-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.post-form-close {
+    width: 40px;
+    height: 40px;
+    border-radius: 999px;
+    border: 2px solid rgba(15, 23, 42, 0.12);
+    background: #ffffff;
+    color: var(--text-main, #0f172a);
+    font-size: 1.35rem;
+    font-weight: 900;
+    cursor: pointer;
+}
+
+.post-form-close:hover,
+.post-form-close:focus {
+    outline: none;
+    box-shadow: 0 0 0 4px rgba(234, 141, 42, 0.2);
+    border-color: rgba(234, 141, 42, 0.5);
 }
 
 .post-form-container textarea,

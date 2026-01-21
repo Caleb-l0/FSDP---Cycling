@@ -1,15 +1,13 @@
-const token = localStorage.getItem("token");
-
-if (!token) {
-    window.location.href = "../../index.html";
-}
 
 document.querySelectorAll(".btn-create-post, #openPostForm").forEach(btn => {
     if (!btn) return;
     btn.addEventListener("click", () => {
         const form = document.getElementById("postForm");
-        if (!form) return;
-        form.style.display = form.style.display === "block" ? "none" : "block";
+        const overlay = document.getElementById("postFormOverlay");
+        if (!form || !overlay) return;
+        form.classList.add("is-open");
+        overlay.classList.add("is-open");
+        overlay.setAttribute('aria-hidden', 'false');
     });
     
 });
@@ -18,10 +16,29 @@ const desktopCreatePostBtn = document.getElementById("openPostFormDesktop");
 if (desktopCreatePostBtn) {
     desktopCreatePostBtn.addEventListener("click", () => {
         const form = document.getElementById("postForm");
-        if (!form) return;
-        form.style.display = form.style.display === "block" ? "none" : "block";
+        const overlay = document.getElementById("postFormOverlay");
+        if (!form || !overlay) return;
+        form.classList.add("is-open");
+        overlay.classList.add("is-open");
+        overlay.setAttribute('aria-hidden', 'false');
     });
 }
+
+function closePostForm() {
+    const form = document.getElementById("postForm");
+    const overlay = document.getElementById("postFormOverlay");
+    if (form) form.classList.remove("is-open");
+    if (overlay) {
+        overlay.classList.remove("is-open");
+        overlay.setAttribute('aria-hidden', 'true');
+    }
+}
+
+const closePostFormBtn = document.getElementById("closePostForm");
+if (closePostFormBtn) closePostFormBtn.addEventListener("click", closePostForm);
+
+const postFormOverlay = document.getElementById("postFormOverlay");
+if (postFormOverlay) postFormOverlay.addEventListener("click", closePostForm);
 
 function getSectionElements(sectionId) {
     const section = document.getElementById(sectionId);
@@ -91,8 +108,7 @@ async function submitPost() {
 
     alert(data.message || "Post created");
     contentEl.value = "";
-    const form = document.getElementById("postForm");
-    if (form) form.style.display = "none";
+    closePostForm();
 
     loadPosts();
 }
@@ -191,15 +207,18 @@ let currentPostId = null;
 function attachCommentEvents() {
     document.querySelectorAll(".post-card").forEach(card => {
         const postId = card.getAttribute("data-post-id");
-        const openBtn = card.querySelector(".btn-open-comments");
+        const openBtn = card.querySelector(".btn-open-comments") || card.querySelector(".btn-comment");
         const list = card.querySelector(".post-comments");
 
        
-        openBtn.addEventListener("click", () => {
+        if (openBtn) openBtn.addEventListener("click", () => {
             currentPostId = postId;
-            document.getElementById("globalCommentPanel").classList.add("show");
-            document.getElementById("globalCommentOverlay").style.display = "block";
-            document.getElementById("globalCommentInput").value = "";
+            const panel = document.getElementById("globalCommentPanel");
+            const overlay = document.getElementById("globalCommentOverlay");
+            const input = document.getElementById("globalCommentInput");
+            if (panel) panel.classList.add("show");
+            if (overlay) overlay.style.display = "block";
+            if (input) input.value = "";
         });
 
         

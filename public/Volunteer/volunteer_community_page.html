@@ -59,7 +59,10 @@
 </header>
 
 <div class="post-form-container" id="postForm">
-    <h3>Create a Post</h3>
+    <div class="post-form-head">
+        <h3>Create a Post</h3>
+        <button class="post-form-close" id="closePostForm" type="button" aria-label="Close create post">×</button>
+    </div>
 
     <textarea id="postContent"></textarea>
     <input type="file" id="postImage" accept="image/*">
@@ -76,6 +79,8 @@
 
     <button class="post-submit-btn" onclick="submitPost()">Post</button>
 </div>
+
+<div id="postFormOverlay" class="post-form-overlay" aria-hidden="true"></div>
 
 
 <main class="community-page">

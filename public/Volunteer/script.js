@@ -232,18 +232,27 @@ function renderEvents(events) {
       ? `Required Volunteers: ${event.requiredvolunteers}`
       : '';
 
+    const participantCount =
+      event.participantCount ??
+      event.participantcount ??
+      event.participants ??
+      event.signupCount ??
+      event.signupcount ??
+      event.currentvolunteers ??
+      event.currentVolunteers ??
+      event.volunteersSigned ??
+      event.volunteerssigned;
+
     const eventId = event.eventid;
     const isSignedUp = signedEventIds.has(String(eventId));
     const distanceText = event._distanceKm != null ? `<p><strong>Distance:</strong> ${event._distanceKm.toFixed(1)} km</p>` : '';
 
     card.innerHTML = `
       <div class="event-details" role="button" tabindex="0" data-event-id="${eventId}">
+        <button class="event-collapse-btn" type="button" aria-label="Hide this event">×</button>
+
         <div class="event-head-row">
           ${isSignedUp ? `<div class="signup-badge" aria-label="You have signed up">You Have Signed Up</div>` : ''}
-          <button class="event-collapse-btn" type="button" aria-label="Hide this event">
-            <span class="event-collapse-icon" aria-hidden="true">×</span>
-            <span class="event-collapse-label">Hide</span>
-          </button>
         </div>
 
         <div class="event-body">
@@ -252,6 +261,7 @@ function renderEvents(events) {
           <p><strong>Location:</strong> ${location}</p>
           ${distanceText}
           <p>${description}</p>
+          ${Number.isFinite(Number(participantCount)) ? `<p><strong>Participants signed up:</strong> ${Number(participantCount)}</p>` : ''}
           ${required ? `<p>${required}</p>` : ''}
           <div class="event-actions"></div>
           <div class="signup-feedback" aria-live="polite"></div>
