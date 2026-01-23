@@ -3,10 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Signed-Up Participants | HappyVolunteering</title>
+  <title>Notifications | HappyVolunteering</title>
 
   <link rel="stylesheet" href="../homepage.css" />
   <link rel="stylesheet" href="institutions-events.css" />
+  <link rel="stylesheet" href="institutions-notifications.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
 </head>
 <body>
@@ -23,7 +24,7 @@
           <i class="fas fa-calendar-alt"></i>
           <span>Browse Events</span>
         </a>
-        <a href="institutions-notifications.html" class="header-icon-btn notification-icon" title="Notifications" id="notificationIcon">
+        <a href="institutions-notifications.html" class="header-icon-btn notification-icon active" title="Notifications" id="notificationIcon">
           <i class="fas fa-bell"></i>
           <span class="notification-badge" id="notificationBadge" style="display: none;"></span>
           <span>Notifications</span>
@@ -46,16 +47,20 @@
 </header>
 
 <div class="container">
+  <div class="notifications-page">
+    <h1>Notifications</h1>
+    <p class="notifications-subtitle">Stay updated with the latest events and activities</p>
 
-  <!-- ⭐ Toggle Button back to main events -->
-  <button class="toggle-btn" onclick="window.location.href='institutions-events.html'">
-    Back to Upcoming Events
-  </button>
+    <div class="notifications-actions">
+      <button class="btn-mark-all-read" id="btnMarkAllRead">Mark All as Read</button>
+      <button class="btn-refresh" id="btnRefresh">
+        <i class="fas fa-sync-alt"></i> Refresh
+      </button>
+    </div>
 
-  <h2>Signed-Up Participants for My Events</h2>
-
-  <div class="event-list" id="eventList" aria-live="polite">
-    <!-- Dynamically populated with JS -->
+    <div class="notifications-list" id="notificationsList" aria-live="polite">
+      <div class="loading-message">Loading notifications...</div>
+    </div>
   </div>
 </div>
 
@@ -63,8 +68,8 @@
   © 2025 HappyVolunteering
 </footer>
 
-<script src="institutions-signed-events.js"></script>
+<script src="institutions-notifications.js"></script>
 <script src="institutions-notifications-badge.js"></script>
- <script src="../Translation.js"></script>
+<script src="../Translation.js"></script>
 </body>
 </html>
