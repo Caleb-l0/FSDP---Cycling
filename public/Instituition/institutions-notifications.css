@@ -196,8 +196,26 @@
   border: 1px solid #fecaca;
 }
 
-.notification-icon.active {
-  background: #ea8d2a;
-  color: white;
-  border-color: #ea8d2a;
+/* Notification link in nav - for badge positioning */
+#mainNav .nav-link-notification {
+  position: relative;
+}
+
+.notification-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  width: 10px;
+  height: 10px;
+  background: #dc2626;
+  border-radius: 50%;
+  border: 2px solid white;
+  display: inline-block;
+  animation: pulse-badge 2s infinite;
+  pointer-events: none;
+}
+
+@keyframes pulse-badge {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.2); opacity: 0.8; }
 }

@@ -1,0 +1,22 @@
+/* =========================================================
+   INSTITUTION COMMUNITY PAGE – LAYOUT OVERRIDES
+   Uses ../Volunteer/community.css for feed, cards, modals.
+   This file: top spacing for fixed header.
+========================================================= */
+
+/* Push main content below fixed header (match homepage_instituition header height) */
+main.community-page {
+  margin-top: 100px;
+}
+
+@media (max-width: 768px) {
+  main.community-page {
+    margin-top: 120px;
+  }
+}
+
+@media (max-width: 480px) {
+  main.community-page {
+    margin-top: 140px;
+  }
+}

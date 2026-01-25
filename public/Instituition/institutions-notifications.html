@@ -6,42 +6,33 @@
   <title>Notifications | HappyVolunteering</title>
 
   <link rel="stylesheet" href="../homepage.css" />
-  <link rel="stylesheet" href="institutions-events.css" />
+  <link rel="stylesheet" href="./homepage_instituition.css" />
+  <link rel="stylesheet" href="../for_organ.css" />
   <link rel="stylesheet" href="institutions-notifications.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
 </head>
 <body>
 
-<header>
+<header class="hv-header">
   <div class="container">
     <div class="header-content">
 
-      <!-- ⭐ LOGO — redirects based on ROLE -->
-      <a href="#" id="logoRedirect" class="logo">Happy Volunteer</a>
-
-      <div class="header-icons">
-        <a href="institutions-events.html" class="header-icon-btn" title="Browse Events">
-          <i class="fas fa-calendar-alt"></i>
-          <span>Browse Events</span>
-        </a>
-        <a href="institutions-notifications.html" class="header-icon-btn notification-icon active" title="Notifications" id="notificationIcon">
-          <i class="fas fa-bell"></i>
-          <span class="notification-badge" id="notificationBadge" style="display: none;"></span>
-          <span>Notifications</span>
-        </a>
-      </div>
+      <a href="./homepage_login_instituition.html" id="logoRedirect" class="logo">Cycling Without Age</a>
 
       <button class="nav-toggle" id="navToggle">
         <i class="fas fa-bars"></i>
       </button>
+
       <nav id="mainNav">
         <ul>
-          <li><a href="institutions-events.html">Events</a></li>
-          <li><a href="#">Community</a></li>
-          <li><a href="#">Reward</a></li>
+          <li><a href="./organization_apply_event.html">Apply Event</a></li>
+          <li><a href="institutions-community.html">Community</a></li>
+          <li><a href="./institutions-notifications.html" class="nav-link-notification">Notification<span class="notification-badge" id="notificationBadge" style="display: none;"></span></a></li>
+          <li><a href="#">History</a></li>
           <li><a href="../Profile/profilepage.html">Profile</a></li>
         </ul>
       </nav>
+
     </div>
   </div>
 </header>
@@ -71,5 +62,10 @@
 <script src="institutions-notifications.js"></script>
 <script src="institutions-notifications-badge.js"></script>
 <script src="../Translation.js"></script>
+<script>
+  document.getElementById("navToggle")?.addEventListener("click", function() {
+    document.getElementById("mainNav")?.classList.toggle("active");
+  });
+</script>
 </body>
 </html>

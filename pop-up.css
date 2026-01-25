@@ -18,6 +18,7 @@
 }
 
 .lang-popup-content {
+  position: relative;
   background: #ffffff;
   width: 92%;
   max-width: 440px;
@@ -25,6 +26,63 @@
   border-radius: 18px;
   text-align: center;
   box-shadow: 0 12px 40px rgba(0,0,0,0.35);
+}
+
+/* 右上角关闭按钮 (×) */
+.lang-popup-close {
+  position: absolute;
+  top: 12px;
+  right: 14px;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: none;
+  background: #f1f5f9;
+  color: #64748b;
+  font-size: 1.5rem;
+  line-height: 1;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
+}
+
+.lang-popup-close:hover {
+  background: #e2e8f0;
+  color: #1e293b;
+  transform: scale(1.08);
+}
+
+.lang-popup-close:focus {
+  outline: 2px solid #c7771d;
+  outline-offset: 2px;
+}
+
+/* 底部 Close 按钮（不翻译、直接关闭） */
+.lang-close-btn {
+  display: block;
+  width: 100%;
+  margin-top: 18px;
+  padding: 14px 20px;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #64748b;
+  background: #f8fafc;
+  border: 2px solid #e2e8f0;
+  border-radius: 14px;
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+}
+
+.lang-close-btn:hover {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+  color: #475569;
+  transform: translateY(-1px);
+}
+
+.lang-close-btn:focus {
+  outline: 2px solid #c7771d;
+  outline-offset: 2px;
 }
 
 .lang-popup-content h2 {
