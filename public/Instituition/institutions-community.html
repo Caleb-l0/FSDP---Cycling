@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Community | HappyVolunteer – Institution</title>
+
+  <link rel="stylesheet" href="../homepage.css" />
+  <link rel="stylesheet" href="homepage_instituition.css" />
+  <link rel="stylesheet" href="../Volunteer/community.css" />
+  <link rel="stylesheet" href="institutions-community.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+</head>
+<body>
+
+<header class="hv-header">
+  <div class="container">
+    <div class="header-content">
+      <a href="homepage_login_instituition.html" id="logoRedirect" class="logo">Cycling Without Age</a>
+      <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">
+        <i class="fas fa-bars"></i>
+      </button>
+      <nav id="mainNav">
+        <ul>
+          <li><a href="organization_apply_event.html">Apply Event</a></li>
+          <li><a href="institutions-community.html">Community</a></li>
+          <li><a href="institutions-notifications.html">Notification</a></li>
+          <li><a href="#">History</a></li>
+          <li><a href="../Profile/profilepage.html">Profile</a></li>
+        </ul>
+      </nav>
+    </div>
+  </div>
+</header>
+
+<!-- Create Post (no "Tag Institution" for institution) -->
+<div class="post-form-container" id="postForm">
+  <div class="post-form-head">
+    <h3>Create a Post</h3>
+    <button class="post-form-close" id="closePostForm" type="button" aria-label="Close">×</button>
+  </div>
+  <textarea id="postContent" placeholder="Share updates or engage with the community..."></textarea>
+  <input type="file" id="postImage" accept="image/*">
+  <select id="postVisibility" class="post-form-select">
+    <option value="public">Public</option>
+    <option value="friends">Friends</option>
+    <option value="private">Private</option>
+  </select>
+  <button class="post-submit-btn" id="postSubmitBtn">Post</button>
+</div>
+
+<div id="postFormOverlay" class="post-form-overlay" aria-hidden="true"></div>
+
+<main class="community-page">
+  <section id="communityFeed" class="community-feed hv-section" aria-label="Community Feed">
+    <div class="section-head">
+      <h2 class="section-title">Community – Share & Connect</h2>
+      <div class="section-head-actions">
+        <button class="btn-create-post" id="openPostFormDesktop" type="button">Create Post</button>
+      </div>
+    </div>
+    <div class="section-body" id="communityFeedBody">
+      <div class="feed-list"></div>
+    </div>
+  </section>
+
+  <section id="peopleSection" class="people-section hv-section" aria-label="Volunteers">
+    <div class="section-head">
+      <h2 class="section-title">Volunteers</h2>
+    </div>
+    <div class="section-body" id="peopleSectionBody">
+      <div class="people-scroll"></div>
+    </div>
+  </section>
+
+  <section id="institutionSection" class="institution-section hv-section" aria-label="Other Institutions">
+    <div class="section-head">
+      <h2 class="section-title">Other Institutions</h2>
+    </div>
+    <div class="section-body" id="institutionSectionBody">
+      <div class="insti-header">
+        <div class="insti-tabs" id="instiTabs"></div>
+      </div>
+      <div id="instiPanelsContainer"></div>
+    </div>
+  </section>
+</main>
+
+<!-- Comment panel -->
+<div id="globalCommentOverlay" class="comment-overlay"></div>
+<div id="globalCommentPanel" class="comment-panel">
+  <div class="comment-panel-header">
+    <h4>Write a Comment</h4>
+    <button id="closeGlobalComment" class="comment-close-btn">×</button>
+  </div>
+  <textarea id="globalCommentInput" class="comment-input" placeholder="Write something..."></textarea>
+  <button id="globalCommentSend" class="comment-send-btn">Post</button>
+</div>
+
+<footer>
+  <p>© 2025 Happy Volunteer. All rights reserved.</p>
+</footer>
+
+<script src="../Translation.js"></script>
+<script src="institutions-community.js"></script>
+</body>
+</html>

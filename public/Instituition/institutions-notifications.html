@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Notifications | HappyVolunteering</title>
+
+  <link rel="stylesheet" href="../homepage.css" />
+  <link rel="stylesheet" href="./homepage_instituition.css" />
+  <link rel="stylesheet" href="../for_organ.css" />
+  <link rel="stylesheet" href="institutions-notifications.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+</head>
+<body>
+
+<header class="hv-header">
+  <div class="container">
+    <div class="header-content">
+
+      <a href="./homepage_login_instituition.html" id="logoRedirect" class="logo">Cycling Without Age</a>
+
+      <button class="nav-toggle" id="navToggle">
+        <i class="fas fa-bars"></i>
+      </button>
+
+      <nav id="mainNav">
+        <ul>
+          <li><a href="./organization_apply_event.html">Apply Event</a></li>
+          <li><a href="institutions-community.html">Community</a></li>
+          <li><a href="./institutions-notifications.html" class="nav-link-notification">Notification<span class="notification-badge" id="notificationBadge" style="display: none;"></span></a></li>
+          <li><a href="#">History</a></li>
+          <li><a href="../Profile/profilepage.html">Profile</a></li>
+        </ul>
+      </nav>
+
+    </div>
+  </div>
+</header>
+
+<div class="container">
+  <div class="notifications-page">
+    <h1>Notifications</h1>
+    <p class="notifications-subtitle">Stay updated with the latest events and activities</p>
+
+    <div class="notifications-actions">
+      <button class="btn-mark-all-read" id="btnMarkAllRead">Mark All as Read</button>
+      <button class="btn-refresh" id="btnRefresh">
+        <i class="fas fa-sync-alt"></i> Refresh
+      </button>
+    </div>
+
+    <div class="notifications-list" id="notificationsList" aria-live="polite">
+      <div class="loading-message">Loading notifications...</div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  © 2025 HappyVolunteering
+</footer>
+
+<script src="institutions-notifications.js"></script>
+<script src="institutions-notifications-badge.js"></script>
+<script src="../Translation.js"></script>
+<script>
+  document.getElementById("navToggle")?.addEventListener("click", function() {
+    document.getElementById("mainNav")?.classList.toggle("active");
+  });
+</script>
+</body>
+</html>

@@ -5,7 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Signed-Up Participants | HappyVolunteering</title>
 
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="../homepage.css" />
+  <link rel="stylesheet" href="institutions-events.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
 </head>
 <body>
 
@@ -16,15 +18,27 @@
       <!-- ⭐ LOGO — redirects based on ROLE -->
       <a href="#" id="logoRedirect" class="logo">Happy Volunteer</a>
 
+      <div class="header-icons">
+        <a href="institutions-events.html" class="header-icon-btn" title="Browse Events">
+          <i class="fas fa-calendar-alt"></i>
+          <span>Browse Events</span>
+        </a>
+        <a href="institutions-notifications.html" class="header-icon-btn notification-icon" title="Notifications" id="notificationIcon">
+          <i class="fas fa-bell"></i>
+          <span class="notification-badge" id="notificationBadge" style="display: none;"></span>
+          <span>Notifications</span>
+        </a>
+      </div>
+
       <button class="nav-toggle" id="navToggle">
         <i class="fas fa-bars"></i>
       </button>
       <nav id="mainNav">
         <ul>
           <li><a href="institutions-events.html">Events</a></li>
-          <li><a href="#">Community</a></li>
+          <li><a href="institutions-community.html">Community</a></li>
           <li><a href="#">Reward</a></li>
-          <li><a href="profilepage.html">Profile</a></li>
+          <li><a href="../Profile/profilepage.html">Profile</a></li>
         </ul>
       </nav>
     </div>
@@ -50,6 +64,7 @@
 </footer>
 
 <script src="institutions-signed-events.js"></script>
+<script src="institutions-notifications-badge.js"></script>
  <script src="../Translation.js"></script>
 </body>
 </html>

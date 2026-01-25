@@ -21,9 +21,7 @@
     <div class="container hv-header-content">
 
         <div class="hv-logo">
-                <a href="./homepage_login_volunteer.html" style="text-decoration: none; color: inherit;">
-                Happy Volunteer
-            </a>
+            <a href="./homepage_login_volunteer.html" style="text-decoration: none; color: inherit;">Happy Volunteer</a>
         </div>
 
         <nav id="mainNav">
@@ -32,30 +30,40 @@
                 <li><a href="./volunteer_community_page.html">Community</a></li>
                 <li><a href="./volunteer_rewards.html">Reward</a></li>
                 <li><a href="./Volunteer_friend.html">Friends</a></li>
+                <li><a href="./notification.html" class="noti-nav-link">Notification<span class="noti-nav-badge" id="notiBadge" style="display:none;"></span></a></li>
                 <li><a href="../Profile/profilepage.html">Profile</a></li>
             </ul>
         </nav>
 
-
-        <button class="hv-nav-toggle" id="hvNavToggle">
-          
-            <i class="fas fa-bars"></i>
-        </button>
-
-        <nav class="hv-nav" id="hvNav">
-            
-            <ul>
-           <button class="btn-create-post" id="openPostForm">Create Post</button>
-                <li><a href="./volunteer-events.html">Booking</a></li>
-                <li><a href="./volunteer_community_page.html">Community</a></li>
-                <li><a href="./volunteer_rewards.html">Reward</a></li>
-                <li><a href="./Volunteer_friend.html">Friends</a></li>
-                <li><a href="../Profile/profilepage.html">Profile</a></li>
-            </ul>
-        </nav>
-
+        <div class="hv-header-right">
+            <div class="hv-lang-dropdown">
+                <button id="langButton">Language</button>
+                <div class="hv-lang-dropdown-content">
+                    <button onclick="changeLanguage('en')">English</button>
+                    <button onclick="changeLanguage('zh')">Chinese</button>
+                    <button onclick="changeLanguage('ms')">Malay</button>
+                    <button onclick="changeLanguage('ta')">Tamil</button>
+                </div>
+            </div>
+            <div class="hv-user-status" id="userStatus">Logged in as Guest</div>
+            <button class="hv-nav-toggle" id="hvNavToggle" aria-label="Toggle menu">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
 
     </div>
+
+    <nav class="hv-nav" id="hvNav">
+        <ul>
+            <button class="btn-create-post" id="openPostForm">Create Post</button>
+            <li><a href="./volunteer-events.html">Booking</a></li>
+            <li><a href="./volunteer_community_page.html">Community</a></li>
+            <li><a href="./volunteer_rewards.html">Reward</a></li>
+            <li><a href="./Volunteer_friend.html">Friends</a></li>
+            <li><a href="./notification.html" class="noti-nav-link">Notification<span class="noti-nav-badge" id="notiBadgeMobile" style="display:none;"></span></a></li>
+            <li><a href="../Profile/profilepage.html">Profile</a></li>
+        </ul>
+    </nav>
 </header>
 
 <div class="post-form-container" id="postForm">

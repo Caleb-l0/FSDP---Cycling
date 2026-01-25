@@ -89,15 +89,22 @@ function renderEvents(events) {
     const createdDate = event.createdat || event.CreatedAt || event.eventdate || event.EventDate;
     const isNewEvent = isEventNew(createdDate);
 
+    // Escape HTML to prevent XSS
+    const escapeHtml = (text) => {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    };
+
     card.innerHTML = `
       <div class="event-details">
         ${isNewEvent ? '<span class="new-event-badge">NEW</span>' : ''}
-        <h3>${title}</h3>
-        <p><strong>Date:</strong> ${date}</p>
-        <p><strong>Location:</strong> ${location}</p>
+        <h3>${escapeHtml(title)}</h3>
+        <p><strong>Date:</strong> ${escapeHtml(date)}</p>
+        <p><strong>Location:</strong> ${escapeHtml(location)}</p>
         <p><strong>Required Volunteers:</strong> ${required}</p>
         ${maxParticipants > 0 ? `<p><strong>Max Participants:</strong> ${maxParticipants}</p>` : ''}
-        <p>${description}</p>
+        <p>${escapeHtml(description)}</p>
       </div>
     `;
 
