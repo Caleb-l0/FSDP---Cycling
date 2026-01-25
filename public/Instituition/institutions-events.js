@@ -105,6 +105,9 @@ function renderEvents(events) {
         <p><strong>Required Volunteers:</strong> ${required}</p>
         ${maxParticipants > 0 ? `<p><strong>Max Participants:</strong> ${maxParticipants}</p>` : ''}
         <p>${escapeHtml(description)}</p>
+        <div class="event-actions">
+          <button class="view-details-btn" data-event='${JSON.stringify(event).replace(/'/g, "&apos;")}'>View Details</button>
+        </div>
       </div>
     `;
 
@@ -114,7 +117,15 @@ function renderEvents(events) {
     button.textContent = 'Request to Book';
     button.addEventListener('click', () => openBookingModal(event));
 
-    card.querySelector('.event-details').appendChild(button);
+    card.querySelector('.event-actions').appendChild(button);
+
+    const viewBtn = card.querySelector('.view-details-btn');
+    viewBtn.addEventListener('click', () => {
+      const eventData = JSON.parse(viewBtn.getAttribute('data-event'));
+      localStorage.setItem('currentEvent', JSON.stringify(eventData));
+      window.location.href = './institution_event_detail.html';
+    });
+
     eventList.appendChild(card);
   });
 }

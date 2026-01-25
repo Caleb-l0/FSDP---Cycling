@@ -97,13 +97,33 @@ function displayEventDetails() {
 
   console.log('Setting textContent for:', { eventName, eventDate, location, requiredVolunteers, participants, description, status });
 
-  document.getElementById('req-name').textContent = eventName;
-  document.getElementById('req-date').textContent = eventDate ? new Date(eventDate).toLocaleString() : '-';
-  document.getElementById('req-loc').textContent = location;
-  document.getElementById('req-needed').textContent = requiredVolunteers;
-  document.getElementById('req-participant').textContent = participants;
-  document.getElementById('req-status').textContent = status;
-  document.getElementById('req-desc').textContent = description;
+  const nameEl = document.getElementById('req-name');
+  console.log('req-name element:', nameEl);
+  if (nameEl) nameEl.textContent = eventName;
+
+  const dateEl = document.getElementById('req-date');
+  console.log('req-date element:', dateEl);
+  if (dateEl) dateEl.textContent = eventDate ? new Date(eventDate).toLocaleString() : '-';
+
+  const locEl = document.getElementById('req-loc');
+  console.log('req-loc element:', locEl);
+  if (locEl) locEl.textContent = location;
+
+  const neededEl = document.getElementById('req-needed');
+  console.log('req-needed element:', neededEl);
+  if (neededEl) neededEl.textContent = requiredVolunteers;
+
+  const participantEl = document.getElementById('req-participant');
+  console.log('req-participant element:', participantEl);
+  if (participantEl) participantEl.textContent = participants;
+
+  const statusEl = document.getElementById('req-status');
+  console.log('req-status element:', statusEl);
+  if (statusEl) statusEl.textContent = status;
+
+  const descEl = document.getElementById('req-desc');
+  console.log('req-desc element:', descEl);
+  if (descEl) descEl.textContent = description;
 
   // If we have application data, show session head info
   if (currentApplication) {
