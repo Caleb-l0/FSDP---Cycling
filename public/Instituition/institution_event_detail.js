@@ -12,10 +12,16 @@ let organizationId = null;
 const eventData = localStorage.getItem('currentEvent');
 const applicationData = localStorage.getItem('currentApplication');
 
+console.log('Script loaded');
+console.log('eventData:', eventData);
+console.log('applicationData:', applicationData);
+
 if (eventData) {
   currentEvent = JSON.parse(eventData);
+  console.log('currentEvent set:', currentEvent);
 } else if (applicationData) {
   currentApplication = JSON.parse(applicationData);
+  console.log('currentApplication set:', currentApplication);
   // If we have an application, fetch the event details
   if (currentApplication.eventid || currentApplication.EventID) {
     fetchEventDetails(currentApplication.eventid || currentApplication.EventID);
@@ -73,7 +79,13 @@ async function fetchEventDetails(eventId) {
 
 // Display event details
 function displayEventDetails() {
-  if (!currentEvent) return;
+  console.log('displayEventDetails called');
+  if (!currentEvent) {
+    console.log('No currentEvent');
+    return;
+  }
+
+  console.log('currentEvent:', currentEvent);
 
   const eventName = currentEvent.eventname || currentEvent.EventName || 'Unknown Event';
   const eventDate = currentEvent.eventdate || currentEvent.EventDate;
@@ -82,6 +94,8 @@ function displayEventDetails() {
   const participants = currentEvent.peoplesignup || currentEvent.PeopleSignUp || 0;
   const description = currentEvent.description || currentEvent.Description || 'No description available.';
   const status = currentEvent.status || currentEvent.Status || 'Unknown';
+
+  console.log('Setting textContent for:', { eventName, eventDate, location, requiredVolunteers, participants, description, status });
 
   document.getElementById('req-name').textContent = eventName;
   document.getElementById('req-date').textContent = eventDate ? new Date(eventDate).toLocaleString() : '-';
@@ -265,9 +279,14 @@ async function assignEventHead(modal) {
 
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', async () => {
+  console.log('DOMContentLoaded fired');
   organizationId = await getOrganizationId();
+  console.log('organizationId:', organizationId);
   if (currentEvent) {
+    console.log('Calling displayEventDetails');
     displayEventDetails();
+  } else {
+    console.log('No currentEvent to display');
   }
 });
 }
