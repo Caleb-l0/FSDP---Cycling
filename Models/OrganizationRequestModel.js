@@ -154,23 +154,43 @@ async function deleteRequest(requestID) {
   return result.rows[0] || null;
 }
 
+
 async function getOrganisationIDByUserID(userID) {
   try {
     const result = await pool.query(
       `
-      SELECT o.organizationid
-      FROM organizations o
-      JOIN users u ON o.organizationid = u.organizationid
-      WHERE u.userid = $1
+      SELECT uo.organizationid
+      FROM userorganizations uo
+      WHERE uo.userid = $1
       `,
       [userID]
     );
+
     return result.rows[0] ? result.rows[0].organizationid : null;
-  }
-  catch (err) {
+  } catch (err) {
     console.error("getOrganisationIDByUserID SQL error:", err);
     throw err;
-  } 
+  }
+}
+
+
+async function getOrganisationByUserID(userID) {
+  try {
+    const result = await pool.query(
+      `
+      SELECT o.organizationid, o.orgname, o.orgdescription
+      FROM userorganizations uo
+      JOIN organizations o ON o.organizationid = uo.organizationid
+      WHERE uo.userid = $1
+      `,
+      [userID]
+    );
+
+    return result.rows[0] || null;
+  } catch (err) {
+    console.error("getOrganisationByUserID SQL error:", err);
+    throw err;
+  }
 }
 
 async function getAllOrganizationRequests(organizationID) {
