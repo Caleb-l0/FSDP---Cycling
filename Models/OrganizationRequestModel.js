@@ -18,23 +18,7 @@ const pool = require("../Postgres_config");
 // 1. Create Organization Request
 // ======================================================
 
-async function getOrganisationID(){
-    try {
-        const pool = await sql.connect(db);
 
-        const result = await pool.request()
-           
-            .query(`
-                SELECT OrganizationID FROM Organizations;
-            `);
-
-        return result.recordset;  
-        
-    } catch (err) {
-        console.error("Error fetching organ id:", err);
-        throw err;
-    }
-}
 
 
 
