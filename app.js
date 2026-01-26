@@ -13,7 +13,6 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Allow OAuth popup flows (Firebase / Google) to communicate back to the opener
 app.use((req, res, next) => {
   res.setHeader('Cross-Origin-Opener-Policy', 'same-origin-allow-popups');
   res.setHeader('Cross-Origin-Embedder-Policy', 'unsafe-none');
@@ -439,7 +438,7 @@ app.post("/translate", async (req, res) => {
 // ----- GOOGLE LOGIN ROUTE -----
 
 
-const pool = require("./Postgres_config");
+const pool = process.env.DATABASE_URL ? require("./db") : require("./Postgres_config");
 const { OAuth2Client } = require("google-auth-library");
 
 const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
