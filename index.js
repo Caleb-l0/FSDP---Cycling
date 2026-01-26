@@ -242,11 +242,11 @@ async function showOtpSignup() {
     });
   });
 
-  // Close 按钮：不翻译，保存为英语并关闭弹窗
+
   function closeLangPopupWithoutTranslate() {
     localStorage.setItem("targetLanguage", "en");
     hideLanguagePopup();
-    // 不调用 translatePage
+    
   }
 
   const langPopupClose = document.getElementById("langPopupClose");

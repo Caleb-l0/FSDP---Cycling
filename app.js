@@ -13,6 +13,13 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Allow OAuth popup flows (Firebase / Google) to communicate back to the opener
+app.use((req, res, next) => {
+  res.setHeader('Cross-Origin-Opener-Policy', 'same-origin-allow-popups');
+  res.setHeader('Cross-Origin-Embedder-Policy', 'unsafe-none');
+  next();
+});
+
 // ----- LOGIN ROUTES -----
 const { loginUser, getUserById, updateUser, deleteUser } = require('./Accounts/login/loginController');
 const { validateLogin } = require('./Accounts/login/loginValidation');
@@ -432,7 +439,7 @@ app.post("/translate", async (req, res) => {
 // ----- GOOGLE LOGIN ROUTE -----
 
 
-const pool = require("./db");
+const pool = require("./Postgres_config");
 const { OAuth2Client } = require("google-auth-library");
 
 const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
@@ -440,6 +447,13 @@ const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 app.post("/auth/google", async (req, res) => {
   try {
+    if (!process.env.GOOGLE_CLIENT_ID) {
+      return res.status(500).json({ message: "Google login is not configured (missing GOOGLE_CLIENT_ID)" });
+    }
+    if (!process.env.JWT_SECRET) {
+      return res.status(500).json({ message: "Server auth is not configured (missing JWT_SECRET)" });
+    }
+
     const { credential } = req.body;
     if (!credential) {
       return res.status(400).json({ message: "Missing credential" });
@@ -452,6 +466,9 @@ app.post("/auth/google", async (req, res) => {
     });
 
     const payload = ticket.getPayload();
+    if (!payload?.email) {
+      return res.status(400).json({ message: "Google credential missing email" });
+    }
     const email = payload.email;
     const name = payload.name || "Google User";
 
@@ -466,9 +483,9 @@ app.post("/auth/google", async (req, res) => {
     if (!user) {
      
       const insert = await pool.query(
-        `INSERT INTO users (name, email, role, textSizePreference) 
-         VALUES ($1, $2, 'volunteer', 'normal') 
-         RETURNING id, name, email, role, textSizePreference`,
+        `INSERT INTO users (name, email, role, textsizepreference)
+         VALUES ($1, $2, 'volunteer', 'normal')
+         RETURNING id, name, email, role, textsizepreference`,
         [name, email]
       );
       user = insert.rows[0];
@@ -491,7 +508,7 @@ app.post("/auth/google", async (req, res) => {
       name: user.name,
       email: user.email,
       role: user.role,
-      textSizePreference: user.textSizePreference || 'normal'
+      textSizePreference: user.textsizepreference || 'normal'
     });
 
   } catch (err) {
