@@ -141,6 +141,24 @@
     </div>
 </section>
 
+<button id="planBtn">🗓 Today’s Volunteer Plan</button>
+
+<div id="planWidget" style="display:none; border:1px solid #ccc; padding:16px; margin-top:10px; max-width:320px;">
+  <div id="planContent">Loading...</div>
+</div>
+
+<script>
+document.getElementById("planBtn").onclick = async () => {
+  document.getElementById("planWidget").style.display = "block";
+  document.getElementById("planContent").innerText = "Generating your plan...";
+
+  const res = await fetch("../day-plan.js");
+  const data = await res.json();
+  document.getElementById("planContent").innerText = data.plan;
+};
+</script>
+
+
 <!-- Latest Events -->
 <section class="services">
     <div class="container">
