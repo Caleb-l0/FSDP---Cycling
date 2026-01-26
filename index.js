@@ -11,6 +11,7 @@
     dots.forEach((dot,i)=>dot.addEventListener('click',()=>{ currentSlide=i; showSlide(i); }));
     setInterval(nextSlide,5000);
 
+    
     // Modals
     function openLogin(){document.getElementById('loginModal').classList.add('active');}
     function closeLogin(){document.getElementById('loginModal').classList.remove('active');}

@@ -11,6 +11,52 @@
    <link rel="stylesheet" href="./friend-section.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
    
+<style>
+.calendar-popup {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.calendar-popup-content {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  max-width: 400px;
+  width: 90%;
+}
+
+#calendar table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+#calendar th, #calendar td {
+  padding: 10px;
+  text-align: center;
+  border: 1px solid #ddd;
+}
+
+#calendar td.current-month {
+  cursor: pointer;
+  background: #f0f0f0;
+}
+
+#calendar td.current-month:hover {
+  background: #e0e0e0;
+}
+
+#calendar td.other-month {
+  color: #ccc;
+}
+</style>
 </head>
 <body>
 
@@ -153,9 +199,17 @@ document.getElementById("planBtn").onclick = async () => {
   document.getElementById("planWidget").style.display = "block";
   document.getElementById("planContent").innerText = "Generating your plan...";
 
-  const res = await fetch("../day-plan.js");
-  const data = await res.json();
-  document.getElementById("planContent").innerText = data.plan;
+  try {
+    const res = await fetch("/volunteer/day-plan", {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}` // Assuming token is stored
+      }
+    });
+    const data = await res.json();
+    document.getElementById("planContent").innerText = data.plan;
+  } catch (error) {
+    document.getElementById("planContent").innerText = "Failed to load plan.";
+  }
 };
 </script>
 
