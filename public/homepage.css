@@ -152,7 +152,7 @@ body.elderly-mode nav a {
 
 .container {
   width: 90%;
-  max-width: 1200px;
+  max-width: 1400px;
   margin: auto;
 }
 
@@ -703,6 +703,15 @@ footer .copyright {
   }
   .scroll-btn {
     display: none;
+  }
+
+  .hero-btn {
+    padding: 12px 24px;
+    display: inline-block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
   }
 }
 
