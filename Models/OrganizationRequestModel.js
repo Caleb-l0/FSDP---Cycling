@@ -247,7 +247,6 @@ module.exports = {
   rejectRequest,
   checkRequestStatus,
   deleteRequest,
-  getOrganisationIDByUserID,
   getAllOrganizationRequests,
   getEventPeopleSignups,
   getEventSignups
