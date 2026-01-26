@@ -312,7 +312,9 @@ async function getUserOrganizationID(req, res) {
     }
     res.status(200).json({ organizationId });
   } catch (error) {
-    res.status(500).json({ message: "Server Error", error: error.message });
+    // Fallback: do not hard-fail the UI; return null org id
+    console.error('getUserOrganizationID error:', error);
+    res.status(200).json({ organizationId: null, message: "Unable to resolve organization for user" });
   }
 }
 

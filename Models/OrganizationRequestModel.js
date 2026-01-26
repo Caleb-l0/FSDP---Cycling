@@ -169,7 +169,8 @@ async function getOrganisationIDByUserID(userID) {
     return result.rows[0] ? result.rows[0].organizationid : null;
   } catch (err) {
     console.error("getOrganisationIDByUserID SQL error:", err);
-    throw err;
+    // If mapping table doesn't exist yet (or other schema issues), treat as no org mapping
+    return null;
   }
 }
 
