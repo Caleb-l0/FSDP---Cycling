@@ -139,16 +139,11 @@ async function deleteRequest(requestID) {
 }
 
 
-async function getUserOrganizationID(req, res) {
+// DB helper - returns organizationId or null (used by controller)
+async function getOrganisationIDByUserID(userID) {
   try {
-    if (!req.user || !req.user.id) {
-      return res.status(401).json({ message: "User not authenticated" });
-    }
-
-    const userIdInt = Number(req.user.id);
-    if (!Number.isInteger(userIdInt)) {
-      return res.status(400).json({ message: "Invalid user ID" });
-    }
+    const userIdInt = Number(userID);
+    if (!Number.isInteger(userIdInt)) return null;
 
     const result = await pool.query(
       `
@@ -161,11 +156,10 @@ async function getUserOrganizationID(req, res) {
       [userIdInt]
     );
 
-    const organizationId = result.rows.length ? result.rows[0].organizationid : null;
-    return res.status(200).json({ organizationId });
-  } catch (error) {
-    console.error("getUserOrganizationID error:", error);
-    return res.status(500).json({ message: "Server error", error: error.message });
+    return result.rows[0] ? result.rows[0].organizationid : null;
+  } catch (err) {
+    console.error("getOrganisationIDByUserID SQL error:", err);
+    return null;
   }
 }
 
@@ -247,6 +241,7 @@ module.exports = {
   rejectRequest,
   checkRequestStatus,
   deleteRequest,
+  getOrganisationIDByUserID,
   getAllOrganizationRequests,
   getEventPeopleSignups,
   getEventSignups
