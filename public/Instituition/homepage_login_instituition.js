@@ -200,13 +200,8 @@ async function loadMyApplications() {
     organizationId = await getOrganizationId();
   }
 
-  if (!organizationId) {
-    applicationsGrid.innerHTML = `<p style="text-align:center;color:orange;">You are not associated with an organization yet. Please contact support to set up your organization.</p>`;
-    return;
-  }
-
   try {
-    const response = await fetch(`${API_BASE}/organization/events/my-bookings`, {
+    const response = await fetch(`${API_BASE}/organization/events/my-request`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -215,7 +210,19 @@ async function loadMyApplications() {
     });
 
     if (!response.ok) {
-      throw new Error("Failed to load applications");
+      let msg = "Failed to load applications";
+      try {
+        const data = await response.json();
+        msg = data?.message || data?.error || msg;
+      } catch {
+        try {
+          const text = await response.text();
+          if (text) msg = text;
+        } catch {
+          // ignore
+        }
+      }
+      throw new Error(msg);
     }
 
     const applications = await response.json();
@@ -236,7 +243,10 @@ async function loadMyApplications() {
 
   } catch (err) {
     console.error("Error loading applications:", err);
-    applicationsGrid.innerHTML = `<p style="text-align:center;color:red;">Unable to load applications.</p>`;
+    const fallback = (!organizationId)
+      ? 'You are not associated with an organization yet. Please contact support to set up your organization.'
+      : 'Unable to load applications.';
+    applicationsGrid.innerHTML = `<p style="text-align:center;color:red;">${err?.message || fallback}</p>`;
   }
 }
 
@@ -244,11 +254,6 @@ async function loadMyApplications() {
 async function loadApprovedApplications() {
   if (!organizationId) {
     organizationId = await getOrganizationId();
-  }
-
-  if (!organizationId) {
-    approvedGrid.innerHTML = `<p style="text-align:center;color:orange;">You are not associated with an organization yet. Please contact support to set up your organization.</p>`;
-    return;
   }
 
   try {
@@ -261,7 +266,19 @@ async function loadApprovedApplications() {
     });
 
     if (!response.ok) {
-      throw new Error("Failed to load approved applications");
+      let msg = "Failed to load approved applications";
+      try {
+        const data = await response.json();
+        msg = data?.message || data?.error || msg;
+      } catch {
+        try {
+          const text = await response.text();
+          if (text) msg = text;
+        } catch {
+          // ignore
+        }
+      }
+      throw new Error(msg);
     }
 
     const applications = await response.json();
@@ -282,7 +299,10 @@ async function loadApprovedApplications() {
 
   } catch (err) {
     console.error("Error loading approved applications:", err);
-    approvedGrid.innerHTML = `<p style="text-align:center;color:red;">Unable to load approved applications.</p>`;
+    const fallback = (!organizationId)
+      ? 'You are not associated with an organization yet. Please contact support to set up your organization.'
+      : 'Unable to load approved applications.';
+    approvedGrid.innerHTML = `<p style="text-align:center;color:red;">${err?.message || fallback}</p>`;
   }
 }
 
