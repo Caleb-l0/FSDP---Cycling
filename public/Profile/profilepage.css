@@ -8,19 +8,21 @@
 }
 
 html {
-  height: 100%;
-  overflow-y: auto;
+  min-height: 100%;
+  overflow-y: scroll; /* always show scrollbar to avoid layout shift */
+  -webkit-overflow-scrolling: touch;
 }
 
 body {
   padding-top: 90px;
+  padding-bottom: 120px; /* 底部留足空间，避免被遮挡 */
   margin: 0;
   font-family: 'Segoe UI', sans-serif;
   background: linear-gradient(135deg, #faefe3, #fff8f1);
   color: #333;
   line-height: 1.7;
   font-size: 18px;
-  overflow-x: hidden; /* Prevent horizontal scroll */
+  overflow-x: hidden;
   overflow-y: auto;
   min-height: 100%;
   height: auto;
@@ -28,6 +30,7 @@ body {
 
 #translate {
   min-height: 100vh;
+  padding-bottom: 80px; /* 底部留白，确保最后一块内容不被遮挡 */
 }
 
 /* Elderly Mode Text Sizing - Apply to profile page */
@@ -173,13 +176,16 @@ nav ul li a:hover {
 /* ===============================
    HERO & PROFILE CONTAINER
 ================================= */
-.profile-hero {
+/* 必须用 .hero.profile-hero 覆盖 homepage.css 的 .hero，否则 height:78vh + overflow:hidden 会裁掉底部 */
+.hero.profile-hero {
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  padding: 120px 20px 60px;
+  padding: 120px 20px 100px;
   width: 100%;
   min-height: calc(100vh - 90px);
+  height: auto !important;
+  overflow: visible !important;
 }
 
 .profile-container {
@@ -704,7 +710,7 @@ iframe.goog-te-banner-frame,
 ================================= */
 @media (max-width: 1024px) {
   .profile-hero {
-    padding: 110px 16px 50px;
+    padding: 110px 16px 80px;
   }
   
   .profile-container {
@@ -747,7 +753,7 @@ iframe.goog-te-banner-frame,
 
 @media (max-width: 768px) {
   .profile-hero {
-    padding: 100px 12px 50px;
+    padding: 100px 12px 80px;
     min-height: auto;
   }
   
@@ -849,9 +855,17 @@ iframe.goog-te-banner-frame,
 }
 
 @media (max-width: 480px) {
-  .profile-hero {
-    padding: 90px 8px 40px;
+  .hero.profile-hero {
+    padding: 90px 8px 80px;
     min-height: auto;
+  }
+
+  body {
+    padding-bottom: 100px;
+  }
+
+  #translate {
+    padding-bottom: 60px;
   }
   
   .profile-container {

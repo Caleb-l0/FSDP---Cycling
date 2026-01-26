@@ -12,10 +12,16 @@ let organizationId = null;
 const eventData = localStorage.getItem('currentEvent');
 const applicationData = localStorage.getItem('currentApplication');
 
+console.log('Script loaded');
+console.log('eventData:', eventData);
+console.log('applicationData:', applicationData);
+
 if (eventData) {
   currentEvent = JSON.parse(eventData);
+  console.log('currentEvent set:', currentEvent);
 } else if (applicationData) {
   currentApplication = JSON.parse(applicationData);
+  console.log('currentApplication set:', currentApplication);
   // If we have an application, fetch the event details
   if (currentApplication.eventid || currentApplication.EventID) {
     fetchEventDetails(currentApplication.eventid || currentApplication.EventID);
@@ -73,7 +79,13 @@ async function fetchEventDetails(eventId) {
 
 // Display event details
 function displayEventDetails() {
-  if (!currentEvent) return;
+  console.log('displayEventDetails called');
+  if (!currentEvent) {
+    console.log('No currentEvent');
+    return;
+  }
+
+  console.log('currentEvent:', currentEvent);
 
   const eventName = currentEvent.eventname || currentEvent.EventName || 'Unknown Event';
   const eventDate = currentEvent.eventdate || currentEvent.EventDate;
@@ -83,13 +95,35 @@ function displayEventDetails() {
   const description = currentEvent.description || currentEvent.Description || 'No description available.';
   const status = currentEvent.status || currentEvent.Status || 'Unknown';
 
-  document.getElementById('req-name').textContent = eventName;
-  document.getElementById('req-date').textContent = eventDate ? new Date(eventDate).toLocaleString() : '-';
-  document.getElementById('req-loc').textContent = location;
-  document.getElementById('req-needed').textContent = requiredVolunteers;
-  document.getElementById('req-participant').textContent = participants;
-  document.getElementById('req-status').textContent = status;
-  document.getElementById('req-desc').textContent = description;
+  console.log('Setting textContent for:', { eventName, eventDate, location, requiredVolunteers, participants, description, status });
+
+  const nameEl = document.getElementById('req-name');
+  console.log('req-name element:', nameEl);
+  if (nameEl) nameEl.textContent = eventName;
+
+  const dateEl = document.getElementById('req-date');
+  console.log('req-date element:', dateEl);
+  if (dateEl) dateEl.textContent = eventDate ? new Date(eventDate).toLocaleString() : '-';
+
+  const locEl = document.getElementById('req-loc');
+  console.log('req-loc element:', locEl);
+  if (locEl) locEl.textContent = location;
+
+  const neededEl = document.getElementById('req-needed');
+  console.log('req-needed element:', neededEl);
+  if (neededEl) neededEl.textContent = requiredVolunteers;
+
+  const participantEl = document.getElementById('req-participant');
+  console.log('req-participant element:', participantEl);
+  if (participantEl) participantEl.textContent = participants;
+
+  const statusEl = document.getElementById('req-status');
+  console.log('req-status element:', statusEl);
+  if (statusEl) statusEl.textContent = status;
+
+  const descEl = document.getElementById('req-desc');
+  console.log('req-desc element:', descEl);
+  if (descEl) descEl.textContent = description;
 
   // If we have application data, show session head info
   if (currentApplication) {
@@ -265,9 +299,14 @@ async function assignEventHead(modal) {
 
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', async () => {
+  console.log('DOMContentLoaded fired');
   organizationId = await getOrganizationId();
+  console.log('organizationId:', organizationId);
   if (currentEvent) {
+    console.log('Calling displayEventDetails');
     displayEventDetails();
+  } else {
+    console.log('No currentEvent to display');
   }
 });
 }

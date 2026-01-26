@@ -6,8 +6,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Institution Events | HappyVolunteering</title>
 
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="../homepage.css" />
   <link rel="stylesheet" href="institutions-events.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
 </head>
 <body>
 
@@ -18,15 +19,26 @@
       <!-- ⭐ LOGO — redirects based on ROLE -->
       <a href="#" id="logoRedirect" class="logo">Happy Volunteer</a>
 
+      <div class="header-icons">
+        <a href="institutions-events.html" class="header-icon-btn" title="Browse Events">
+          <i class="fas fa-calendar-alt"></i>
+          <span>Browse Events</span>
+        </a>
+        <a href="institutions-notifications.html" class="header-icon-btn notification-icon" title="Notifications" id="notificationIcon">
+          <i class="fas fa-bell"></i>
+          <span class="notification-badge" id="notificationBadge" style="display: none;"></span>
+          <span>Notifications</span>
+        </a>
+      </div>
       <button class="nav-toggle" id="navToggle">
         <i class="fas fa-bars"></i>
       </button>
       <nav id="mainNav">
         <ul>
           <li><a href="institutions-events.html">Events</a></li>
-          <li><a href="#">Community</a></li>
+          <li><a href="institutions-community.html">Community</a></li>
           <li><a href="#">Reward</a></li>
-          <li><a href="profilepage.html">Profile</a></li>
+          <li><a href="../Profile/profilepage.html">Profile</a></li>
         </ul>
       </nav>
     </div>
@@ -34,13 +46,12 @@
 </header>
 
 <div class="container">
-
-  <!-- ⭐ Toggle Button to view signed-up events -->
-  <button class="toggle-btn" onclick="window.location.href='institutions-signed-events.html'">
-    View Signed-Up Participants
-  </button>
-
-  <h2>Upcoming Institution Events</h2>
+  <div class="page-header">
+    <h2>Upcoming Institution Events</h2>
+    <button class="toggle-btn" onclick="window.location.href='institutions-signed-events.html'">
+      <i class="fas fa-users"></i> View Signed-Up Participants
+    </button>
+  </div>
 
   <div class="event-list" id="eventList" aria-live="polite">
     <!-- Dynamically populated with JS -->
@@ -52,6 +63,7 @@
 </footer>
 
 <script src="institutions-events.js"></script>
+<script src="institutions-notifications-badge.js"></script>
  <script src="../Translation.js"></script>
 </body>
 </html>
