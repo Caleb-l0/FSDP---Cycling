@@ -378,6 +378,7 @@ module.exports = {
   getUserOrganizationID,
   getEventSignups,
   getEventPeopleSignups,
-  getAllOrganizationRequests
+  getAllOrganizationRequests,
+  requestEventBooking,
 };
 
