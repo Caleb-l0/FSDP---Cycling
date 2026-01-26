@@ -301,12 +301,16 @@ async function deleteRequest(req, res) {
 
 async function getUserOrganizationID(req, res) {
   try {
-    const userId = req.user.id;
-    const organizationID = await OrganizationRequestModel.getOrganisationIDByUserID(userId);
-    if (!organizationID) {
-      return res.status(404).json({ message: "Organization not found for user" });
+    if (!req.user?.id) {
+      return res.status(401).json({ message: "User not authenticated" });
     }
-    res.status(200).json({ organizationID });
+
+    const userId = req.user.id;
+    const organizationId = await OrganizationRequestModel.getOrganisationIDByUserID(userId);
+    if (!organizationId) {
+      return res.status(200).json({ organizationId: null, message: "User is not associated with any organization" });
+    }
+    res.status(200).json({ organizationId });
   } catch (error) {
     res.status(500).json({ message: "Server Error", error: error.message });
   }
@@ -315,9 +319,13 @@ async function getUserOrganizationID(req, res) {
 
 async function getAllOrganizationRequests(req, res) {
   try {
-    const organizationID = await getOrganisationIDByUserID(req.user.id);
+    if (!req.user?.id) {
+      return res.status(401).json({ message: "User not authenticated" });
+    }
+
+    const organizationID = await OrganizationRequestModel.getOrganisationIDByUserID(req.user.id);
     if (!organizationID) {
-      return res.status(404).json({ message: "Organization not found for user" });
+      return res.status(200).json([]);
     }
 
     const requests = await OrganizationRequestModel.getAllOrganizationRequests(organizationID);

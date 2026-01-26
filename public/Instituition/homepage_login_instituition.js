@@ -1,4 +1,5 @@
-
+const token = localStorage.getItem("token");
+const role = localStorage.getItem("role");
 
 if (!token || role !== "institution") {
   alert("You do not have access to this page.");
@@ -201,7 +202,7 @@ async function loadMyApplications() {
   }
 
   try {
-    const response = await fetch(`${API_BASE}/organization/events/my-request`, {
+    const response = await fetch(`${API_BASE}/organization/events/my-requests`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -257,7 +258,7 @@ async function loadApprovedApplications() {
   }
 
   try {
-    const response = await fetch(`${API_BASE}/organization/events/my-bookings`, {
+    const response = await fetch(`${API_BASE}/organization/events/my-requests`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${token}`,
