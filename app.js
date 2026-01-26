@@ -190,7 +190,6 @@ app.use("/organization/events", eventBookingRoutes);
 // -------Email -------------
 app.get("/getOrganID",authenticate,EmailController.getOrganisationID)
 app.get("/getUserEmail/:orgID",authenticate,EmailController.getMemberEmailsByOrganizationID)
-app.get("/user/organization-id", authenticate, EmailController.getUserOrganizationID)
 app.get("/send-email",authenticate,EmailController.getMemberEmailsByOrganizationID)
 
 
@@ -226,7 +225,7 @@ app.put('/requests/approve/:id', authenticate, organizationRequestController.app
 app.put('/requests/reject/:id', authenticate, organizationRequestController.rejectRequest);
 app.get('/requests/status/:id', authenticate, organizationRequestController.checkRequestStatus);
 app.post('/request-event', authenticate, organizationRequestController.createRequest);
-app.get('/organisations/events/:eventID/signups', authenticate, organizationRequestController.getEventSignups);
+
 app.get('/organisations/events/:eventID/people-signups', authenticate, organizationRequestController.getEventPeopleSignups);
 app.get('/organisation/get/organization-id', authenticate, organizationRequestController.getUserOrganizationID);
 app.get('/user/organization-id', authenticate, organizationRequestController.getUserOrganizationID);
