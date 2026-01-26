@@ -139,22 +139,33 @@ async function deleteRequest(requestID) {
 }
 
 
-async function getOrganisationIDByUserID(userID) {
+async function getUserOrganizationID(req, res) {
   try {
+    if (!req.user || !req.user.id) {
+      return res.status(401).json({ message: "User not authenticated" });
+    }
+
+    const userIdInt = Number(req.user.id);
+    if (!Number.isInteger(userIdInt)) {
+      return res.status(400).json({ message: "Invalid user ID" });
+    }
+
     const result = await pool.query(
       `
       SELECT organizationid
-      FROM userorganizations 
+      FROM userorganizations
       WHERE userid = $1
+      ORDER BY joinedat DESC
+      LIMIT 1
       `,
-      [userID]
+      [userIdInt]
     );
 
-    return result.rows[0] ? result.rows[0].organizationid : null;
-  } catch (err) {
-    console.error("getOrganisationIDByUserID SQL error:", err);
-    // If mapping table doesn't exist yet (or other schema issues), treat as no org mapping
-    return null;
+    const organizationId = result.rows.length ? result.rows[0].organizationid : null;
+    return res.status(200).json({ organizationId });
+  } catch (error) {
+    console.error("getUserOrganizationID error:", error);
+    return res.status(500).json({ message: "Server error", error: error.message });
   }
 }
 

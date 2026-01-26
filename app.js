@@ -231,7 +231,7 @@ app.get('/requests/status/:id', authenticate, organizationRequestController.chec
 app.post('/request-event', authenticate, organizationRequestController.createRequest);
 
 app.get('/organisations/events/:eventID/people-signups', authenticate, organizationRequestController.getEventPeopleSignups);
-app.get('/organisation/get/organization-id', authenticate, organizationRequestController.getUserOrganizationID);
+
 app.get('/user/organization-id', authenticate, organizationRequestController.getUserOrganizationID);
 app.get('/organization/events/my-requests', authenticate, organizationRequestController.getAllOrganizationRequests);
 
