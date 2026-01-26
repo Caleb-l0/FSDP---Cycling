@@ -233,7 +233,7 @@ app.post('/request-event', authenticate, organizationRequestController.createReq
 
 app.get('/organisations/events/:eventID/people-signups', authenticate, organizationRequestController.getEventPeopleSignups);
 
-app.get('/user/organization-id', authenticate, organizationRequestController.getUserOrganizationID);
+app.get('/organisation/user/organization-id', authenticate, organizationRequestController.getUserOrganizationID);
 app.get('/organization/events/my-requests', authenticate, organizationRequestController.getAllOrganizationRequests);
 app.post('/organization/events/request', authenticate, organizationRequestController.requestEventBooking);
 

@@ -44,7 +44,7 @@ async function getOrganizationId() {
       return null;
     }
 
-    const response = await fetch(`${API_BASE}/user/organization-id`, {
+    const response = await fetch(`${API_BASE}/organisation/user/organization-id`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${token}`,
