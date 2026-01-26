@@ -398,6 +398,6 @@ module.exports = {
   getEventSignups,
   getEventPeopleSignups,
   getAllOrganizationRequests,
-  requestEventBooking,
+  requestEventBooking, assignEventHeadToRequest
 };
 
