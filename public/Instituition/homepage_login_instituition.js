@@ -1,4 +1,6 @@
 
+const token = localStorage.getItem('token');
+const role = localStorage.getItem('role');
 
 if (!token || role !== "institution") {
   alert("You do not have access to this page.");
@@ -349,15 +351,15 @@ function createApplicationCard(application) {
   const eventName = application.eventname || application.EventName || 'Unknown Event';
   const eventDate = application.eventdate || application.EventDate;
   const formattedDate = eventDate ? new Date(eventDate).toLocaleDateString() : 'Date TBD';
-  const location = application.location || application.Location || 'Location TBD';
-  const participants = application.participants || 0;
+  const requiredVolunteers = application.requiredvolunteers ?? application.RequiredVolunteers;
+  const description = application.description || application.Description || '';
 
   card.innerHTML = `
     <div class="event-info">
       <h3>${eventName}</h3>
       <p><strong>Date:</strong> ${formattedDate}</p>
-      <p><strong>Location:</strong> ${location}</p>
-      <p><strong>Participants:</strong> ${participants}</p>
+      ${typeof requiredVolunteers === 'number' ? `<p><strong>People Needed:</strong> ${requiredVolunteers}</p>` : ''}
+      ${description ? `<p><strong>Description:</strong> ${description}</p>` : ''}
       <span class="status-tag status-pending">Pending</span>
     </div>
   `;
@@ -379,17 +381,15 @@ function createApprovedApplicationCard(application) {
   const eventName = application.eventname || application.EventName || 'Unknown Event';
   const eventDate = application.eventdate || application.EventDate;
   const formattedDate = eventDate ? new Date(eventDate).toLocaleDateString() : 'Date TBD';
-  const location = application.location || application.Location || 'Location TBD';
-  const participants = application.participants || 0;
-  const sessionHead = application.session_head_name || 'Not assigned';
+  const requiredVolunteers = application.requiredvolunteers ?? application.RequiredVolunteers;
+  const description = application.description || application.Description || '';
 
   card.innerHTML = `
     <div class="event-info">
       <h3>${eventName}</h3>
       <p><strong>Date:</strong> ${formattedDate}</p>
-      <p><strong>Location:</strong> ${location}</p>
-      <p><strong>Participants:</strong> ${participants}</p>
-      <p><strong>Session Head:</strong> ${sessionHead}</p>
+      ${typeof requiredVolunteers === 'number' ? `<p><strong>People Needed:</strong> ${requiredVolunteers}</p>` : ''}
+      ${description ? `<p><strong>Description:</strong> ${description}</p>` : ''}
       <span class="status-tag status-approved">Approved</span>
     </div>
   `;

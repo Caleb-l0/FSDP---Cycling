@@ -27,12 +27,22 @@ const NotificationModel = require("../Models/notification_model");
 
 async function createRequest(req, res) {
   try {
-    const { OrganizationID, EventName, EventDate, Description, RequiredVolunteers, RequesterID } = req.body;
+    if (!req.user?.id) {
+      return res.status(401).json({ message: "User not authenticated" });
+    }
+
+    const { EventName, EventDate, Description, RequiredVolunteers } = req.body;
+
+    const requesterId = req.user.id;
+    const organizationId = await OrganizationRequestModel.getOrganisationIDByUserID(requesterId);
+    if (!organizationId) {
+      return res.status(200).json({ message: "User is not associated with any organization", organizationId: null });
+    }
 
     // Map request body to model format (convert to lowercase for PostgreSQL)
     const requestData = {
-      organizationid: OrganizationID,
-      requesterid: RequesterID,
+      organizationid: organizationId,
+      requesterid: requesterId,
       eventname: EventName,
       eventdate: EventDate,
       description: Description,
