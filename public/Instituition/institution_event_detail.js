@@ -28,7 +28,7 @@ const applicationData = localStorage.getItem('currentApplication');
 // Get organization ID
 async function getOrganizationId() {
   try {
-    const response = await fetch(`${API_BASE}/organisation/user/organization-id`, {
+    const response = await fetch(`${API_BASE}/user/organization-id`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -216,7 +216,8 @@ function displayEventHeadSection() {
 
   const appStatus = currentApplication?.status || currentApplication?.Status;
   const eventOrgId = currentEvent?.organizationid || currentEvent?.OrganizationID;
-  const isMyOrg = organizationId && eventOrgId && (Number(organizationId) === Number(eventOrgId));
+  const appOrgId = currentApplication?.organizationid || currentApplication?.OrganizationID;
+  const isMyOrg = organizationId && ((eventOrgId && (Number(organizationId) === Number(eventOrgId))) || (appOrgId && (Number(organizationId) === Number(appOrgId))));
   const isApproved = appStatus?.toLowerCase() === 'approved';
 
   // Show section if event is assigned to user's org
@@ -277,7 +278,8 @@ function setupActionButtons() {
 
   const appStatus = currentApplication?.status || currentApplication?.Status;
   const eventOrgId = currentEvent?.organizationid || currentEvent?.OrganizationID;
-  const isMyOrg = organizationId && eventOrgId && (Number(organizationId) === Number(eventOrgId));
+  const appOrgId = currentApplication?.organizationid || currentApplication?.OrganizationID;
+  const isMyOrg = organizationId && ((eventOrgId && (Number(organizationId) === Number(eventOrgId))) || (appOrgId && (Number(organizationId) === Number(appOrgId))));
 
   if (appStatus) {
     // We have an application
@@ -361,8 +363,12 @@ async function requestToBook(btn) {
       throw new Error(errorData.message || 'Failed to send booking request');
     }
 
-    // Show success animation
-    showSuccessAnimation();
+    showSuccessAnimation({
+      title: 'Request Sent!',
+      message: 'Your booking request has been sent to the admin for approval. You can track your application on the homepage.',
+      buttonText: 'Go to Homepage',
+      buttonHref: './homepage_login_instituition.html'
+    });
 
   } catch (error) {
     console.error('Error requesting to book:', error);
@@ -375,11 +381,30 @@ async function requestToBook(btn) {
 }
 
 // Show success animation overlay
-function showSuccessAnimation() {
+function showSuccessAnimation({ title, message, buttonText, buttonHref } = {}) {
   const overlay = document.getElementById('success-overlay');
-  if (overlay) {
-    overlay.classList.add('show');
+  if (!overlay) return;
+
+  const titleEl = overlay.querySelector('.success-title');
+  const messageEl = overlay.querySelector('.success-message');
+  const btnEl = overlay.querySelector('.success-btn');
+
+  if (titleEl && title) titleEl.textContent = title;
+  if (messageEl && message) messageEl.textContent = message;
+  if (btnEl) {
+    if (buttonText) {
+      btnEl.innerHTML = `<i class="fas fa-check"></i> ${buttonText}`;
+    }
+
+    btnEl.onclick = () => {
+      overlay.classList.remove('show');
+      if (buttonHref) {
+        window.location.href = buttonHref;
+      }
+    };
   }
+
+  overlay.classList.add('show');
 }
 
 // Open modal to assign event head
@@ -391,7 +416,7 @@ function openAssignEventHeadModal() {
     <div class="modal-content" style="max-width: 550px;">
       <span class="close-modal">&times;</span>
       <h2 style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.5rem;">
-        <i class="fas fa-user-tie" style="color: #22c55e;"></i> Assign Event Head
+        <i class="fas fa-user-tie" style="color: #f4a261;"></i> Assign Event Head
       </h2>
       <form id="assignEventHeadForm">
         <div class="form-group">
@@ -449,10 +474,9 @@ async function assignEventHead(modal) {
       return;
     }
 
-    const bookingId = currentApplication?.bookingid || currentApplication?.BookingID ||
-                      currentApplication?.requestid || currentApplication?.RequestID;
-    if (!bookingId) {
-      alert('Booking ID not found. Please try again.');
+    const requestId = currentApplication?.requestid || currentApplication?.RequestID;
+    if (!requestId) {
+      alert('Request ID not found. Please try again.');
       return;
     }
 
@@ -460,7 +484,7 @@ async function assignEventHead(modal) {
     submitBtn.disabled = true;
     submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Assigning...';
 
-    const response = await fetch(`${API_BASE}/organization/events/bookings/${bookingId}/assign-head`, {
+    const response = await fetch(`${API_BASE}/organization/events/requests/${requestId}/assign-head`, {
       method: 'PUT',
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -479,8 +503,12 @@ async function assignEventHead(modal) {
       throw new Error(errorData.message || 'Failed to assign event head');
     }
 
-    alert('✅ Event head assigned successfully!');
     modal.remove();
+    showSuccessAnimation({
+      title: 'Event Head Assigned',
+      message: 'Event head information has been saved successfully.',
+      buttonText: 'Close'
+    });
     
     // Update application data
     if (currentApplication) {

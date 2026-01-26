@@ -43,6 +43,32 @@ async function createRequest(requestData) {
   }
 }
 
+async function assignEventHeadToRequest({ requestId, organizationId, eventHeadName, eventHeadContact, eventHeadEmail, eventHeadProfile }) {
+  try {
+    const result = await pool.query(
+      `
+      UPDATE volunterrequests
+      SET
+        session_head_name = $1,
+        session_head_contact = $2,
+        session_head_email = $3,
+        session_head_profile = $4,
+        updatedat = NOW()
+      WHERE requestid = $5
+        AND organizationid = $6
+        AND status = 'Approved'
+      RETURNING *
+      `,
+      [eventHeadName, eventHeadContact, eventHeadEmail, eventHeadProfile || null, requestId, organizationId]
+    );
+
+    return result.rows[0] || null;
+  } catch (err) {
+    console.error('assignEventHeadToRequest SQL error:', err);
+    throw err;
+  }
+}
+
 
 // ======================================================
 // 2. Get All Requests
@@ -293,6 +319,7 @@ module.exports = {
   getAllOrganizationRequests,
   getEventPeopleSignups,
   getEventSignups,
-  createEventBookingRequest
+  createEventBookingRequest,
+  assignEventHeadToRequest
 };
 
