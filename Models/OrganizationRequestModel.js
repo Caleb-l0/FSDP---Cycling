@@ -212,7 +212,31 @@ async function getEventPeopleSignups(eventID) {
   }
 }
 
-
+// For /organisations/events/:eventID/signups - returns { count, signups: [{ name, email, signupdate, checkedin }] }
+async function getEventSignups(eventID) {
+  try {
+    const result = await pool.query(
+      `
+      SELECT u.name, u.email, es.signupdate
+      FROM eventsignups es
+      JOIN users u ON es.userid = u.id
+      WHERE es.eventid = $1 AND (es.status IS NULL OR es.status = 'Active')
+      ORDER BY es.signupdate ASC
+      `,
+      [eventID]
+    );
+    const signups = (result.rows || []).map((r) => ({
+      name: r.name,
+      email: r.email,
+      signupdate: r.signupdate,
+      checkedin: false
+    }));
+    return { count: signups.length, signups };
+  } catch (err) {
+    console.error("getEventSignups SQL error:", err);
+    throw err;
+  }
+}
 
 
 // ======================================================
@@ -223,6 +247,11 @@ module.exports = {
   approveRequest,
   rejectRequest,
   checkRequestStatus,
-  deleteRequest,getOrganisationID, getOrganisationIDByUserID, getAllOrganizationRequests,getEventPeopleSignups
+  deleteRequest,
+  getOrganisationID,
+  getOrganisationIDByUserID,
+  getAllOrganizationRequests,
+  getEventPeopleSignups,
+  getEventSignups
 };
 

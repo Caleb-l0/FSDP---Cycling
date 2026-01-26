@@ -333,6 +333,16 @@ async function getAllOrganizationRequests(req, res) {
 
 
 
+async function getEventSignups(req, res) {
+  const { eventID } = req.params;
+  try {
+    const data = await OrganizationRequestModel.getEventSignups(eventID);
+    res.status(200).json(data);
+  } catch (error) {
+    res.status(500).json({ message: "Server Error", error: error.message });
+  }
+}
+
 async function getEventPeopleSignups(req, res) {
   const { eventID } = req.params;
   try {
@@ -344,9 +354,6 @@ async function getEventPeopleSignups(req, res) {
   } 
 }
 
-
-
-
 // ======================================================
 module.exports = {
   createRequest,
@@ -355,7 +362,10 @@ module.exports = {
   approveRequest,
   rejectRequest,
   checkRequestStatus,
-  deleteRequest,getUserOrganizationID,
-  getEventPeopleSignups,getAllOrganizationRequests
+  deleteRequest,
+  getUserOrganizationID,
+  getEventSignups,
+  getEventPeopleSignups,
+  getAllOrganizationRequests
 };
 
