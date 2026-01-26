@@ -10,6 +10,17 @@ let currentEvent = null;
 let currentApplication = null;
 let organizationId = null;
 
+function handleAuthFailure(message = 'Invalid token. Please log in again.') {
+  try {
+    localStorage.removeItem('token');
+    localStorage.removeItem('role');
+  } catch {
+    // ignore
+  }
+  alert(message);
+  window.location.href = '../../index.html';
+}
+
 // Get data from localStorage
 const eventData = localStorage.getItem('currentEvent');
 const applicationData = localStorage.getItem('currentApplication');
@@ -25,8 +36,23 @@ async function getOrganizationId() {
       }
     });
 
+    if (response.status === 401 || response.status === 403) {
+      handleAuthFailure('Invalid token. Please log in again.');
+      return null;
+    }
+
     if (!response.ok) {
-      console.error('Failed to get organization ID');
+      let bodyText = '';
+      try {
+        bodyText = await response.text();
+      } catch {
+        // ignore
+      }
+      console.error('Failed to get organization ID', {
+        status: response.status,
+        statusText: response.statusText,
+        body: bodyText
+      });
       return null;
     }
 
@@ -49,8 +75,19 @@ async function fetchEventDetails(eventId) {
       }
     });
 
+    if (response.status === 401 || response.status === 403) {
+      handleAuthFailure('Invalid token. Please log in again.');
+      return;
+    }
+
     if (!response.ok) {
-      throw new Error('Failed to fetch event details');
+      let bodyText = '';
+      try {
+        bodyText = await response.text();
+      } catch {
+        // ignore
+      }
+      throw new Error(`Failed to fetch event details (status ${response.status}): ${bodyText}`);
     }
 
     currentEvent = await response.json();

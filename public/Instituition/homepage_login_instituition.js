@@ -12,6 +12,17 @@ let organizationId = null;
 
 const API_BASE = 'https://fsdp-cycling-ltey.onrender.com';
 
+function handleAuthFailure(message = 'Session expired. Please log in again.') {
+  try {
+    localStorage.removeItem('token');
+    localStorage.removeItem('role');
+  } catch {
+    // ignore
+  }
+  alert(message);
+  window.location.href = "../../index.html";
+}
+
 
 // Dashboard elements
 const title1 = document.getElementById("title1");
@@ -41,6 +52,11 @@ async function getOrganizationId() {
         'Content-Type': 'application/json'
       }
     });
+
+    if (response.status === 401 || response.status === 403) {
+      handleAuthFailure('Invalid token. Please log in again.');
+      return null;
+    }
 
     if (!response.ok) {
       let errorData;
@@ -151,13 +167,18 @@ function setActiveFilter(activeBtn) {
 // Load all events created by admin
 async function loadAllEvents(filter = "all") {
   try {
-    const response = await fetch(`${API_BASE}/admin/events`, {
+    const response = await fetch(`${API_BASE}/institution/events/all`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json'
       }
     });
+
+    if (response.status === 401 || response.status === 403) {
+      handleAuthFailure('Invalid token. Please log in again.');
+      return;
+    }
 
     if (!response.ok) {
       throw new Error("Failed to load events");
