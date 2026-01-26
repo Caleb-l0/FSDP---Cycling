@@ -183,6 +183,20 @@ async function loadAllEvents(filter = "all") {
       filteredEvents = events.filter(ev => new Date(ev.eventdate) < currentDate);
     }
 
+    // Update count badge
+    const countBadge = document.getElementById('events-count');
+    if (countBadge) countBadge.textContent = filteredEvents.length;
+
+    if (filteredEvents.length === 0) {
+      eventGrid.innerHTML = `
+        <div class="empty-state">
+          <i class="fas fa-calendar-times"></i>
+          <p>No events found for this filter.</p>
+        </div>
+      `;
+      return;
+    }
+
     filteredEvents.forEach(event => {
       const card = createEventCard(event);
       eventGrid.appendChild(card);
@@ -190,7 +204,12 @@ async function loadAllEvents(filter = "all") {
 
   } catch (err) {
     console.error("Error loading events:", err);
-    eventGrid.innerHTML = `<p style="text-align:center;color:red;">Unable to load events.</p>`;
+    eventGrid.innerHTML = `
+      <div class="empty-state">
+        <i class="fas fa-exclamation-triangle"></i>
+        <p>Unable to load events. Please try again.</p>
+      </div>
+    `;
   }
 }
 
@@ -233,8 +252,17 @@ async function loadMyApplications() {
     // Filter to show only pending applications
     const pendingApplications = applications.filter(app => app.status === 'Pending');
 
+    // Update count badge
+    const countBadge = document.getElementById('applications-count');
+    if (countBadge) countBadge.textContent = pendingApplications.length;
+
     if (pendingApplications.length === 0) {
-      applicationsGrid.innerHTML = `<p style="text-align:center;color:#777;">No pending applications found.</p>`;
+      applicationsGrid.innerHTML = `
+        <div class="empty-state">
+          <i class="fas fa-inbox"></i>
+          <p>No pending applications. Browse available events to apply!</p>
+        </div>
+      `;
       return;
     }
 
@@ -246,9 +274,14 @@ async function loadMyApplications() {
   } catch (err) {
     console.error("Error loading applications:", err);
     const fallback = (!organizationId)
-      ? 'You are not associated with an organization yet. Please contact support to set up your organization.'
+      ? 'You are not associated with an organization yet.'
       : 'Unable to load applications.';
-    applicationsGrid.innerHTML = `<p style="text-align:center;color:red;">${err?.message || fallback}</p>`;
+    applicationsGrid.innerHTML = `
+      <div class="empty-state">
+        <i class="fas fa-exclamation-circle"></i>
+        <p>${err?.message || fallback}</p>
+      </div>
+    `;
   }
 }
 
@@ -289,8 +322,17 @@ async function loadApprovedApplications() {
     // Filter to show only approved applications
     const approvedApplications = applications.filter(app => app.status === 'Approved');
 
+    // Update count badge
+    const countBadge = document.getElementById('approved-count');
+    if (countBadge) countBadge.textContent = approvedApplications.length;
+
     if (approvedApplications.length === 0) {
-      approvedGrid.innerHTML = `<p style="text-align:center;color:#777;">No approved applications found.</p>`;
+      approvedGrid.innerHTML = `
+        <div class="empty-state">
+          <i class="fas fa-calendar-check"></i>
+          <p>No approved events yet. Your applications will appear here once approved.</p>
+        </div>
+      `;
       return;
     }
 
@@ -302,9 +344,14 @@ async function loadApprovedApplications() {
   } catch (err) {
     console.error("Error loading approved applications:", err);
     const fallback = (!organizationId)
-      ? 'You are not associated with an organization yet. Please contact support to set up your organization.'
+      ? 'You are not associated with an organization yet.'
       : 'Unable to load approved applications.';
-    approvedGrid.innerHTML = `<p style="text-align:center;color:red;">${err?.message || fallback}</p>`;
+    approvedGrid.innerHTML = `
+      <div class="empty-state">
+        <i class="fas fa-exclamation-circle"></i>
+        <p>${err?.message || fallback}</p>
+      </div>
+    `;
   }
 }
 
@@ -315,27 +362,41 @@ function createEventCard(event) {
   card.style.cursor = "pointer";
 
   const eventDate = event.eventdate || event.EventDate;
-  const formattedDate = eventDate ? new Date(eventDate).toLocaleString() : 'Date TBD';
+  const formattedDate = eventDate ? new Date(eventDate).toLocaleDateString('en-US', {
+    weekday: 'short',
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  }) : 'Date TBD';
   const eventName = event.eventname || event.EventName || 'Untitled Event';
   const location = event.location || event.Location || 'Location TBD';
   const requiredVolunteers = event.requiredvolunteers || event.RequiredVolunteers || 0;
+  const eventImage = event.eventimage || event.EventImage;
   const isAssigned = event.organizationid !== null;
 
+  const imageStyle = eventImage 
+    ? `background-image: url('${eventImage}'); background-size: cover; background-position: center;`
+    : `background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: white; font-size: 3rem;`;
+
   card.innerHTML = `
-    <div class="event-img" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 150px; display: flex; align-items: center; justify-content: center; color: white; font-size: 2rem;">🚴</div>
+    <div class="event-img" style="${imageStyle}">
+      ${!eventImage ? '🚴' : ''}
+    </div>
     <div class="event-info">
       <h3>${eventName}</h3>
-      <p><strong>Time:</strong> ${formattedDate}</p>
-      <p><strong>Location:</strong> ${location}</p>
-      <p><strong>People Needed:</strong> ${requiredVolunteers}</p>
+      <p><i class="fas fa-calendar"></i> ${formattedDate}</p>
+      <p><i class="fas fa-map-marker-alt"></i> ${location}</p>
+      <p><i class="fas fa-users"></i> ${requiredVolunteers} volunteers needed</p>
       <span class="status-tag ${isAssigned ? 'status-assigned' : 'status-available'}">
-        ${isAssigned ? 'Assigned' : 'Available'}
+        ${isAssigned ? '<i class="fas fa-check"></i> Assigned' : '<i class="fas fa-clock"></i> Available'}
       </span>
     </div>
   `;
 
   card.addEventListener("click", () => {
     localStorage.setItem("currentEvent", JSON.stringify(event));
+    localStorage.removeItem("currentApplication");
     window.location.href = "./institution_event_detail.html";
   });
 
@@ -350,22 +411,34 @@ function createApplicationCard(application) {
 
   const eventName = application.eventname || application.EventName || 'Unknown Event';
   const eventDate = application.eventdate || application.EventDate;
-  const formattedDate = eventDate ? new Date(eventDate).toLocaleDateString() : 'Date TBD';
+  const formattedDate = eventDate ? new Date(eventDate).toLocaleDateString('en-US', {
+    weekday: 'short',
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  }) : 'Date TBD';
   const requiredVolunteers = application.requiredvolunteers ?? application.RequiredVolunteers;
-  const description = application.description || application.Description || '';
+  const location = application.location || application.Location || 'Location TBD';
 
   card.innerHTML = `
+    <div class="event-img" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); display: flex; align-items: center; justify-content: center; color: white; font-size: 3rem;">
+      <i class="fas fa-hourglass-half"></i>
+    </div>
     <div class="event-info">
       <h3>${eventName}</h3>
-      <p><strong>Date:</strong> ${formattedDate}</p>
-      ${typeof requiredVolunteers === 'number' ? `<p><strong>People Needed:</strong> ${requiredVolunteers}</p>` : ''}
-      ${description ? `<p><strong>Description:</strong> ${description}</p>` : ''}
-      <span class="status-tag status-pending">Pending</span>
+      <p><i class="fas fa-calendar"></i> ${formattedDate}</p>
+      <p><i class="fas fa-map-marker-alt"></i> ${location}</p>
+      ${typeof requiredVolunteers === 'number' ? `<p><i class="fas fa-users"></i> ${requiredVolunteers} volunteers needed</p>` : ''}
+      <span class="status-tag status-pending">
+        <i class="fas fa-clock"></i> Pending Approval
+      </span>
     </div>
   `;
 
   card.addEventListener("click", () => {
     localStorage.setItem("currentApplication", JSON.stringify(application));
+    localStorage.removeItem("currentEvent");
     window.location.href = "./institution_event_detail.html";
   });
 
@@ -380,27 +453,55 @@ function createApprovedApplicationCard(application) {
 
   const eventName = application.eventname || application.EventName || 'Unknown Event';
   const eventDate = application.eventdate || application.EventDate;
-  const formattedDate = eventDate ? new Date(eventDate).toLocaleDateString() : 'Date TBD';
+  const formattedDate = eventDate ? new Date(eventDate).toLocaleDateString('en-US', {
+    weekday: 'short',
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  }) : 'Date TBD';
   const requiredVolunteers = application.requiredvolunteers ?? application.RequiredVolunteers;
-  const description = application.description || application.Description || '';
+  const location = application.location || application.Location || 'Location TBD';
+  const hasEventHead = application.session_head_name || application.SessionHeadName;
 
   card.innerHTML = `
+    <div class="event-img" style="background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%); display: flex; align-items: center; justify-content: center; color: white; font-size: 3rem;">
+      <i class="fas fa-check-circle"></i>
+    </div>
     <div class="event-info">
       <h3>${eventName}</h3>
-      <p><strong>Date:</strong> ${formattedDate}</p>
-      ${typeof requiredVolunteers === 'number' ? `<p><strong>People Needed:</strong> ${requiredVolunteers}</p>` : ''}
-      ${description ? `<p><strong>Description:</strong> ${description}</p>` : ''}
-      <span class="status-tag status-approved">Approved</span>
+      <p><i class="fas fa-calendar"></i> ${formattedDate}</p>
+      <p><i class="fas fa-map-marker-alt"></i> ${location}</p>
+      ${typeof requiredVolunteers === 'number' ? `<p><i class="fas fa-users"></i> ${requiredVolunteers} volunteers needed</p>` : ''}
+      <span class="status-tag status-approved">
+        <i class="fas fa-check"></i> Approved
+      </span>
+      ${!hasEventHead ? '<span class="status-tag status-pending" style="margin-left: 8px;"><i class="fas fa-user-plus"></i> Needs Event Head</span>' : ''}
     </div>
   `;
 
   card.addEventListener("click", () => {
     localStorage.setItem("currentApplication", JSON.stringify(application));
+    localStorage.removeItem("currentEvent");
     window.location.href = "./institution_event_detail.html";
   });
 
   return card;
 }
+
+// Toggle collapsible sections
+function toggleSection(sectionName) {
+  const header = document.getElementById(`${sectionName}-section-header`);
+  const content = document.getElementById(`${sectionName}-content`);
+  
+  if (header && content) {
+    header.classList.toggle('collapsed');
+    content.classList.toggle('collapsed');
+  }
+}
+
+// Make toggleSection globally available
+window.toggleSection = toggleSection;
 
 // Initialize on page load
 document.addEventListener("DOMContentLoaded", async () => {
@@ -408,12 +509,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     organizationId = await getOrganizationId();
     if (!organizationId) {
       console.warn("No organization ID found. Some features may be limited.");
-      // Still load events - they might be available to all institutions
     }
     loadAllEvents("all");
   } catch (error) {
     console.error("Error initializing page:", error);
-    // Still try to load events even if organization ID fetch fails
     loadAllEvents("all");
   }
 });

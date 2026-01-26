@@ -98,23 +98,53 @@
 
       <!-- Dashboard 1: All Events -->
       <section id="dashboard1">
-        <div class="filter-group" id="filter-group1">
-          <button class="filter-btn active" id="filter_all">All</button>
-          <button class="filter-btn" id="filter_assigned">Assigned</button>
-          <button class="filter-btn" id="filter_not_assigned">Not Assigned</button>
-          <button class="filter-btn" id="filter_expired">Expired</button>
+        <div class="section-header" id="events-section-header" onclick="toggleSection('events')">
+          <h2>
+            <i class="fas fa-calendar-alt"></i>
+            Available Events
+            <span class="event-count-badge" id="events-count">0</span>
+          </h2>
+          <span class="collapse-icon"><i class="fas fa-chevron-up"></i></span>
         </div>
-        <div class="event-grid" id="eventGrid"></div>
+        <div class="collapsible-content" id="events-content">
+          <div class="filter-group" id="filter-group1">
+            <button class="filter-btn active" id="filter_all"><i class="fas fa-th-large"></i> All</button>
+            <button class="filter-btn" id="filter_assigned"><i class="fas fa-check-circle"></i> Assigned</button>
+            <button class="filter-btn" id="filter_not_assigned"><i class="fas fa-clock"></i> Available</button>
+            <button class="filter-btn" id="filter_expired"><i class="fas fa-history"></i> Past</button>
+          </div>
+          <div class="event-grid" id="eventGrid"></div>
+        </div>
       </section>
 
       <!-- Dashboard 2: My Applications -->
       <section id="dashboard2" style="display:none;">
-        <div class="event-grid" id="applicationsGrid"></div>
+        <div class="section-header" id="applications-section-header" onclick="toggleSection('applications')">
+          <h2>
+            <i class="fas fa-file-alt"></i>
+            My Pending Applications
+            <span class="event-count-badge" id="applications-count">0</span>
+          </h2>
+          <span class="collapse-icon"><i class="fas fa-chevron-up"></i></span>
+        </div>
+        <div class="collapsible-content" id="applications-content">
+          <div class="event-grid" id="applicationsGrid"></div>
+        </div>
       </section>
 
       <!-- Dashboard 3: Approved Applications -->
       <section id="dashboard3" style="display:none;">
-        <div class="event-grid" id="approvedGrid"></div>
+        <div class="section-header" id="approved-section-header" onclick="toggleSection('approved')">
+          <h2>
+            <i class="fas fa-check-double"></i>
+            Approved Events
+            <span class="event-count-badge" id="approved-count">0</span>
+          </h2>
+          <span class="collapse-icon"><i class="fas fa-chevron-up"></i></span>
+        </div>
+        <div class="collapsible-content" id="approved-content">
+          <div class="event-grid" id="approvedGrid"></div>
+        </div>
       </section>
     </section>
   </div>
