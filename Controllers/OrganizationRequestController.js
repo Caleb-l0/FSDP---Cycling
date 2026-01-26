@@ -335,6 +335,37 @@ async function getEventPeopleSignups(req, res) {
   } 
 }
 
+async function requestEventBooking(req, res) {
+  try {
+    if (!req.user?.id) {
+      return res.status(401).json({ message: "User not authenticated" });
+    }
+    const { eventName, eventDate, description, requiredVolunteers } = req.body;
+    const requesterId = req.user.id;
+    const organizationId = await OrganizationRequestModel.getOrganisationIDByUserID(requesterId);
+    if (!organizationId) {
+      return res.status(400).json({ message: "User is not associated with any organization" });
+    }
+
+    const requestData = {
+      organizationid: organizationId,
+      requesterid: requesterId,
+      eventname: eventName,
+      eventdate: eventDate,
+      description: description,
+      requiredvolunteers: requiredVolunteers
+    };
+    await OrganizationRequestModel.createEventBookingRequest(requestData);
+    res.status(200).json({ message: "Event booking request submitted successfully!" });
+  }
+  catch (err) {
+    console.error("requestEventBooking error:", err);
+    res.status(500).json({ message: "Failed to submit event booking request", error: err.message });
+  }
+}
+
+
+
 // ======================================================
 module.exports = {
   createRequest,
