@@ -1,4 +1,6 @@
 const token = localStorage.getItem('token');
+const role = localStorage.getItem('role');
+
 if (!token) {
   window.location.href = '../../index.html';
 }
@@ -12,25 +14,6 @@ let organizationId = null;
 const eventData = localStorage.getItem('currentEvent');
 const applicationData = localStorage.getItem('currentApplication');
 
-console.log('Script loaded');
-console.log('eventData:', eventData);
-console.log('applicationData:', applicationData);
-
-if (eventData) {
-  currentEvent = JSON.parse(eventData);
-  console.log('currentEvent set:', currentEvent);
-} else if (applicationData) {
-  currentApplication = JSON.parse(applicationData);
-  console.log('currentApplication set:', currentApplication);
-  // If we have an application, fetch the event details
-  if (currentApplication.eventid || currentApplication.EventID) {
-    fetchEventDetails(currentApplication.eventid || currentApplication.EventID);
-  }
-} else {
-  alert('No event selected');
-  window.location.href = './homepage_login_instituition.html';
-}
-
 // Get organization ID
 async function getOrganizationId() {
   try {
@@ -43,7 +26,8 @@ async function getOrganizationId() {
     });
 
     if (!response.ok) {
-      throw new Error('Failed to get organization ID');
+      console.error('Failed to get organization ID');
+      return null;
     }
 
     const data = await response.json();
@@ -73,126 +57,226 @@ async function fetchEventDetails(eventId) {
     displayEventDetails();
   } catch (error) {
     console.error('Error fetching event details:', error);
-    alert('Failed to load event details');
+    showError('Failed to load event details. Please try again.');
+  }
+}
+
+// Show error message
+function showError(message) {
+  const nameEl = document.getElementById('event-name');
+  if (nameEl) nameEl.textContent = 'Error Loading Event';
+  
+  const actionBtns = document.getElementById('action-buttons');
+  if (actionBtns) {
+    actionBtns.innerHTML = `
+      <div class="status-message status-rejected-msg">
+        <i class="fas fa-exclamation-circle"></i>
+        ${message}
+      </div>
+      <button class="btn-action btn-secondary" onclick="window.history.back()">
+        <i class="fas fa-arrow-left"></i> Go Back
+      </button>
+    `;
   }
 }
 
 // Display event details
 function displayEventDetails() {
-  console.log('displayEventDetails called');
-  if (!currentEvent) {
-    console.log('No currentEvent');
-    return;
-  }
+  if (!currentEvent) return;
 
-  console.log('currentEvent:', currentEvent);
-
+  // Event name
   const eventName = currentEvent.eventname || currentEvent.EventName || 'Unknown Event';
-  const eventDate = currentEvent.eventdate || currentEvent.EventDate;
-  const location = currentEvent.location || currentEvent.Location || 'TBD';
-  const requiredVolunteers = currentEvent.requiredvolunteers || currentEvent.RequiredVolunteers || 0;
-  const participants = currentEvent.peoplesignup || currentEvent.PeopleSignUp || 0;
-  const description = currentEvent.description || currentEvent.Description || 'No description available.';
-  const status = currentEvent.status || currentEvent.Status || 'Unknown';
-
-  console.log('Setting textContent for:', { eventName, eventDate, location, requiredVolunteers, participants, description, status });
-
-  const nameEl = document.getElementById('req-name');
-  console.log('req-name element:', nameEl);
+  const nameEl = document.getElementById('event-name');
   if (nameEl) nameEl.textContent = eventName;
 
-  const dateEl = document.getElementById('req-date');
-  console.log('req-date element:', dateEl);
-  if (dateEl) dateEl.textContent = eventDate ? new Date(eventDate).toLocaleString() : '-';
-
-  const locEl = document.getElementById('req-loc');
-  console.log('req-loc element:', locEl);
-  if (locEl) locEl.textContent = location;
-
-  const neededEl = document.getElementById('req-needed');
-  console.log('req-needed element:', neededEl);
-  if (neededEl) neededEl.textContent = requiredVolunteers;
-
-  const participantEl = document.getElementById('req-participant');
-  console.log('req-participant element:', participantEl);
-  if (participantEl) participantEl.textContent = participants;
-
-  const statusEl = document.getElementById('req-status');
-  console.log('req-status element:', statusEl);
-  if (statusEl) statusEl.textContent = status;
-
-  const descEl = document.getElementById('req-desc');
-  console.log('req-desc element:', descEl);
-  if (descEl) descEl.textContent = description;
-
-  // If we have application data, show session head info
-  if (currentApplication) {
-    const sessionHead = currentApplication.session_head_name || currentApplication.SessionHeadName;
-    const sessionContact = currentApplication.session_head_contact || currentApplication.SessionHeadContact;
-    const sessionEmail = currentApplication.session_head_email || currentApplication.SessionHeadEmail;
-    const appStatus = currentApplication.status || currentApplication.Status;
-
-    if (sessionHead) {
-      document.getElementById('req-session-head').textContent = sessionHead;
-      document.getElementById('session-head-section').style.display = 'block';
-    }
-    if (sessionContact) {
-      document.getElementById('req-session-contact').textContent = sessionContact;
-      document.getElementById('session-contact-section').style.display = 'block';
-    }
-    if (sessionEmail) {
-      document.getElementById('req-session-email').textContent = sessionEmail;
-      document.getElementById('session-email-section').style.display = 'block';
-    }
-
-    // Show action buttons based on application status
-    setupActionButtons(appStatus);
-  } else {
-    // Show request to book button if event is available
-    if (currentEvent.organizationid === null) {
-      setupRequestButton();
+  // Status badge
+  const status = currentApplication?.status || currentApplication?.Status || 
+                 currentEvent.status || currentEvent.Status || 'Available';
+  const statusBadge = document.getElementById('event-status-badge');
+  if (statusBadge) {
+    statusBadge.textContent = status;
+    statusBadge.className = 'event-status-badge';
+    if (status.toLowerCase() === 'approved') {
+      statusBadge.classList.add('status-approved');
+    } else if (status.toLowerCase() === 'pending') {
+      statusBadge.classList.add('status-pending');
+    } else if (status.toLowerCase() === 'rejected') {
+      statusBadge.classList.add('status-rejected');
+    } else {
+      statusBadge.classList.add('status-available');
     }
   }
 
+  // Event date
+  const eventDate = currentEvent.eventdate || currentEvent.EventDate;
+  const dateEl = document.getElementById('event-date');
+  if (dateEl) {
+    dateEl.textContent = eventDate ? new Date(eventDate).toLocaleString('en-US', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    }) : 'Date not set';
+  }
 
+  // Location
+  const location = currentEvent.location || currentEvent.Location || 'Location TBD';
+  const locEl = document.getElementById('event-location');
+  if (locEl) locEl.textContent = location;
 
-// Setup action buttons based on application status
-function setupActionButtons(status) {
-  const btnGroup = document.getElementById('action-buttons');
-  btnGroup.innerHTML = '';
+  // Volunteers needed
+  const requiredVolunteers = currentEvent.requiredvolunteers || currentEvent.RequiredVolunteers || 0;
+  const volEl = document.getElementById('event-volunteers');
+  if (volEl) volEl.textContent = requiredVolunteers;
 
-  if (status === 'Approved') {
-    // Show assign event head button
-    const assignBtn = document.createElement('button');
-    assignBtn.className = 'btn-action btn-create';
-    assignBtn.textContent = 'Assign Event Head';
-    assignBtn.addEventListener('click', openAssignEventHeadModal);
-    btnGroup.appendChild(assignBtn);
-  } else if (status === 'Pending') {
-    const pendingMsg = document.createElement('p');
-    pendingMsg.textContent = 'Your application is pending approval.';
-    pendingMsg.style.color = '#f59e0b';
-    btnGroup.appendChild(pendingMsg);
-  } else if (status === 'Rejected') {
-    const rejectedMsg = document.createElement('p');
-    rejectedMsg.textContent = 'Your application was rejected.';
-    rejectedMsg.style.color = '#ef4444';
-    btnGroup.appendChild(rejectedMsg);
+  // Current sign-ups
+  const signups = currentEvent.peoplesignup || currentEvent.PeopleSignUp || 0;
+  const signupsEl = document.getElementById('event-signups');
+  if (signupsEl) signupsEl.textContent = signups;
+
+  // Description
+  const description = currentEvent.description || currentEvent.Description || 'No description available.';
+  const descEl = document.getElementById('event-description');
+  if (descEl) descEl.textContent = description;
+
+  // Event Head Section
+  displayEventHeadSection();
+
+  // Action Buttons
+  setupActionButtons();
+}
+
+// Display Event Head Section
+function displayEventHeadSection() {
+  const section = document.getElementById('event-head-section');
+  const content = document.getElementById('event-head-content');
+  if (!section || !content) return;
+
+  // Get event head info from application or event
+  const headName = currentApplication?.session_head_name || currentApplication?.SessionHeadName ||
+                   currentEvent?.session_head_name || currentEvent?.SessionHeadName;
+  const headContact = currentApplication?.session_head_contact || currentApplication?.SessionHeadContact ||
+                      currentEvent?.session_head_contact || currentEvent?.SessionHeadContact;
+  const headEmail = currentApplication?.session_head_email || currentApplication?.SessionHeadEmail ||
+                    currentEvent?.session_head_email || currentEvent?.SessionHeadEmail;
+  const headProfile = currentApplication?.session_head_profile || currentApplication?.SessionHeadProfile ||
+                      currentEvent?.session_head_profile || currentEvent?.SessionHeadProfile;
+
+  const appStatus = currentApplication?.status || currentApplication?.Status;
+  const eventOrgId = currentEvent?.organizationid || currentEvent?.OrganizationID;
+  const isMyOrg = organizationId && eventOrgId && (Number(organizationId) === Number(eventOrgId));
+  const isApproved = appStatus?.toLowerCase() === 'approved';
+
+  // Show section if event is assigned to user's org
+  if (isMyOrg || headName) {
+    section.style.display = 'block';
+
+    if (headName) {
+      // Show event head details
+      const initials = headName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+      content.innerHTML = `
+        <div class="event-head-card">
+          <div class="event-head-avatar">${initials}</div>
+          <div class="event-head-info">
+            <div class="event-head-name">${headName}</div>
+            <div class="event-head-contact">
+              ${headEmail ? `
+                <div class="event-head-contact-item">
+                  <i class="fas fa-envelope"></i>
+                  <a href="mailto:${headEmail}">${headEmail}</a>
+                </div>
+              ` : ''}
+              ${headContact ? `
+                <div class="event-head-contact-item">
+                  <i class="fas fa-phone"></i>
+                  <a href="tel:${headContact}">${headContact}</a>
+                </div>
+              ` : ''}
+              ${headProfile ? `
+                <div class="event-head-contact-item">
+                  <i class="fas fa-user"></i>
+                  <span>${headProfile}</span>
+                </div>
+              ` : ''}
+            </div>
+          </div>
+        </div>
+      `;
+    } else if (isApproved && isMyOrg) {
+      // Show assign prompt
+      content.innerHTML = `
+        <div class="no-event-head">
+          <i class="fas fa-user-plus"></i>
+          <p>No Event Head has been assigned yet.</p>
+          <button class="btn-action btn-primary" onclick="openAssignEventHeadModal()">
+            <i class="fas fa-user-plus"></i> Assign Event Head
+          </button>
+        </div>
+      `;
+    }
   }
 }
 
-// Setup request to book button
-function setupRequestButton() {
+// Setup action buttons based on status
+function setupActionButtons() {
   const btnGroup = document.getElementById('action-buttons');
+  if (!btnGroup) return;
   btnGroup.innerHTML = '';
 
-  const requestBtn = document.createElement('button');
-  requestBtn.className = 'btn-action btn-create';
-  requestBtn.textContent = 'Request to Book';
-  requestBtn.addEventListener('click', () => {
-    window.location.href = `./institutions-events.html?eventId=${currentEvent.eventid || currentEvent.EventID}`;
-  });
-  btnGroup.appendChild(requestBtn);
+  const appStatus = currentApplication?.status || currentApplication?.Status;
+  const eventOrgId = currentEvent?.organizationid || currentEvent?.OrganizationID;
+  const isMyOrg = organizationId && eventOrgId && (Number(organizationId) === Number(eventOrgId));
+
+  if (appStatus) {
+    // We have an application
+    if (appStatus.toLowerCase() === 'approved') {
+      // Check if event head is assigned
+      const headName = currentApplication?.session_head_name || currentApplication?.SessionHeadName;
+      if (!headName && isMyOrg) {
+        const assignBtn = document.createElement('button');
+        assignBtn.className = 'btn-action btn-primary';
+        assignBtn.innerHTML = '<i class="fas fa-user-plus"></i> Assign Event Head';
+        assignBtn.addEventListener('click', openAssignEventHeadModal);
+        btnGroup.appendChild(assignBtn);
+      } else {
+        const successMsg = document.createElement('div');
+        successMsg.className = 'status-message status-success-msg';
+        successMsg.innerHTML = '<i class="fas fa-check-circle"></i> This event is confirmed and ready!';
+        btnGroup.appendChild(successMsg);
+      }
+    } else if (appStatus.toLowerCase() === 'pending') {
+      const pendingMsg = document.createElement('div');
+      pendingMsg.className = 'status-message status-pending-msg';
+      pendingMsg.innerHTML = '<i class="fas fa-clock"></i> Your application is pending approval from admin.';
+      btnGroup.appendChild(pendingMsg);
+    } else if (appStatus.toLowerCase() === 'rejected') {
+      const rejectedMsg = document.createElement('div');
+      rejectedMsg.className = 'status-message status-rejected-msg';
+      rejectedMsg.innerHTML = '<i class="fas fa-times-circle"></i> Your application was rejected.';
+      btnGroup.appendChild(rejectedMsg);
+    }
+  } else {
+    // No application - show request button if event is available
+    if (eventOrgId === null || eventOrgId === undefined) {
+      const requestBtn = document.createElement('button');
+      requestBtn.className = 'btn-action btn-orange';
+      requestBtn.innerHTML = '<i class="fas fa-calendar-plus"></i> Request to Book This Event';
+      requestBtn.addEventListener('click', () => {
+        const eventId = currentEvent.eventid || currentEvent.EventID;
+        window.location.href = `./organization_apply_event.html?eventId=${eventId}`;
+      });
+      btnGroup.appendChild(requestBtn);
+    }
+  }
+
+  // Always show back button
+  const backBtn = document.createElement('button');
+  backBtn.className = 'btn-action btn-secondary';
+  backBtn.innerHTML = '<i class="fas fa-arrow-left"></i> Back to Events';
+  backBtn.addEventListener('click', () => window.history.back());
+  btnGroup.appendChild(backBtn);
 }
 
 // Open modal to assign event head
@@ -201,29 +285,39 @@ function openAssignEventHeadModal() {
   modal.className = 'booking-modal';
   modal.style.display = 'flex';
   modal.innerHTML = `
-    <div class="modal-content" style="max-width: 500px;">
+    <div class="modal-content" style="max-width: 550px;">
       <span class="close-modal">&times;</span>
-      <h2>Assign Event Head</h2>
+      <h2 style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.5rem;">
+        <i class="fas fa-user-tie" style="color: #22c55e;"></i> Assign Event Head
+      </h2>
       <form id="assignEventHeadForm">
         <div class="form-group">
-          <label for="eventHeadName">Event Head Name *</label>
-          <input type="text" id="eventHeadName" name="eventHeadName" required>
+          <label for="eventHeadName">Full Name *</label>
+          <input type="text" id="eventHeadName" name="eventHeadName" required 
+                 placeholder="Enter event head's full name" style="font-size: 1.1rem; padding: 1rem;">
         </div>
         <div class="form-group">
-          <label for="eventHeadContact">Contact Number *</label>
-          <input type="tel" id="eventHeadContact" name="eventHeadContact" required>
+          <label for="eventHeadEmail">Email Address *</label>
+          <input type="email" id="eventHeadEmail" name="eventHeadEmail" required 
+                 placeholder="Enter email address" style="font-size: 1.1rem; padding: 1rem;">
         </div>
         <div class="form-group">
-          <label for="eventHeadEmail">Email *</label>
-          <input type="email" id="eventHeadEmail" name="eventHeadEmail" required>
+          <label for="eventHeadContact">Mobile Number *</label>
+          <input type="tel" id="eventHeadContact" name="eventHeadContact" required 
+                 placeholder="Enter mobile number" style="font-size: 1.1rem; padding: 1rem;">
         </div>
         <div class="form-group">
-          <label for="eventHeadProfile">Profile (Optional)</label>
-          <textarea id="eventHeadProfile" name="eventHeadProfile" rows="4" placeholder="Brief description of the event head..."></textarea>
+          <label for="eventHeadProfile">Brief Profile (Optional)</label>
+          <textarea id="eventHeadProfile" name="eventHeadProfile" rows="3" 
+                    placeholder="Brief description or role of the event head..."
+                    style="font-size: 1.1rem; padding: 1rem;"></textarea>
         </div>
-        <div class="form-actions">
-          <button type="submit" class="btn-submit">Assign Event Head</button>
-          <button type="button" class="btn-cancel" onclick="this.closest('.booking-modal').remove()">Cancel</button>
+        <div class="form-actions" style="margin-top: 2rem;">
+          <button type="submit" class="btn-submit" style="font-size: 1.1rem; padding: 1rem;">
+            <i class="fas fa-check"></i> Confirm Assignment
+          </button>
+          <button type="button" class="btn-cancel" style="font-size: 1.1rem; padding: 1rem;" 
+                  onclick="this.closest('.booking-modal').remove()">Cancel</button>
         </div>
       </form>
     </div>
@@ -238,7 +332,7 @@ function openAssignEventHeadModal() {
   });
 }
 
-// Assign event head
+// Assign event head API call
 async function assignEventHead(modal) {
   try {
     const form = document.getElementById('assignEventHeadForm');
@@ -252,11 +346,16 @@ async function assignEventHead(modal) {
       return;
     }
 
-    const bookingId = currentApplication.bookingid || currentApplication.BookingID;
+    const bookingId = currentApplication?.bookingid || currentApplication?.BookingID ||
+                      currentApplication?.requestid || currentApplication?.RequestID;
     if (!bookingId) {
-      alert('Booking ID not found');
+      alert('Booking ID not found. Please try again.');
       return;
     }
+
+    const submitBtn = form.querySelector('button[type="submit"]');
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Assigning...';
 
     const response = await fetch(`${API_BASE}/organization/events/bookings/${bookingId}/assign-head`, {
       method: 'PUT',
@@ -265,10 +364,10 @@ async function assignEventHead(modal) {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        eventHeadName: eventHeadName,
-        eventHeadContact: eventHeadContact,
-        eventHeadEmail: eventHeadEmail,
-        eventHeadProfile: eventHeadProfile
+        eventHeadName,
+        eventHeadContact,
+        eventHeadEmail,
+        eventHeadProfile
       })
     });
 
@@ -280,33 +379,53 @@ async function assignEventHead(modal) {
     alert('✅ Event head assigned successfully!');
     modal.remove();
     
-    // Update the displayed information
-    document.getElementById('req-session-head').textContent = eventHeadName;
-    document.getElementById('req-session-contact').textContent = eventHeadContact;
-    document.getElementById('req-session-email').textContent = eventHeadEmail;
-    document.getElementById('session-head-section').style.display = 'block';
-    document.getElementById('session-contact-section').style.display = 'block';
-    document.getElementById('session-email-section').style.display = 'block';
+    // Update application data
+    if (currentApplication) {
+      currentApplication.session_head_name = eventHeadName;
+      currentApplication.session_head_contact = eventHeadContact;
+      currentApplication.session_head_email = eventHeadEmail;
+      currentApplication.session_head_profile = eventHeadProfile;
+    }
 
-    // Remove the assign button
-    document.getElementById('action-buttons').innerHTML = '<p style="color: #10b981;">Event head assigned successfully!</p>';
+    // Refresh display
+    displayEventHeadSection();
+    setupActionButtons();
 
   } catch (error) {
     console.error('Error assigning event head:', error);
     alert('❌ Error: ' + error.message);
+    
+    const submitBtn = document.querySelector('#assignEventHeadForm button[type="submit"]');
+    if (submitBtn) {
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = '<i class="fas fa-check"></i> Confirm Assignment';
+    }
   }
 }
 
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', async () => {
-  console.log('DOMContentLoaded fired');
+  // Get organization ID first
   organizationId = await getOrganizationId();
-  console.log('organizationId:', organizationId);
-  if (currentEvent) {
-    console.log('Calling displayEventDetails');
-    displayEventDetails();
-  } else {
-    console.log('No currentEvent to display');
+
+  // Parse stored data
+  if (eventData) {
+    currentEvent = JSON.parse(eventData);
   }
+  
+  if (applicationData) {
+    currentApplication = JSON.parse(applicationData);
+    // If we have an application but no event, fetch event details
+    if (!currentEvent && (currentApplication.eventid || currentApplication.EventID)) {
+      await fetchEventDetails(currentApplication.eventid || currentApplication.EventID);
+      return;
+    }
+  }
+
+  if (!currentEvent && !currentApplication) {
+    showError('No event selected. Please go back and select an event.');
+    return;
+  }
+
+  displayEventDetails();
 });
-}
