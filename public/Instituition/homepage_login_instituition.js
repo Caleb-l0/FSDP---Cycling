@@ -7,7 +7,13 @@ if (!token || role !== "institution") {
   window.location.href = "../../index.html";
 }
 
+// Organization ID will be fetched on page load
+let organizationId = null;
 
+let allEventsCache = [];
+let currentEventFilter = "all";
+let eventsVisibleCount = 0;
+const EVENTS_PAGE_SIZE = 6;
 
 const API_BASE = 'https://fsdp-cycling-ltey.onrender.com';
 
@@ -44,7 +50,7 @@ async function getOrganizationId() {
       return null;
     }
 
-    const response = await fetch(`${API_BASE}/organisation/user/organization-id`, {
+    const response = await fetch(`${API_BASE}/user/organization-id`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -166,6 +172,7 @@ function setActiveFilter(activeBtn) {
 // Load all events created by admin
 async function loadAllEvents(filter = "all") {
   try {
+    currentEventFilter = filter;
     const response = await fetch(`${API_BASE}/institution/events/all`, {
       method: 'GET',
       headers: {
@@ -184,24 +191,17 @@ async function loadAllEvents(filter = "all") {
     }
 
     const events = await response.json();
+    allEventsCache = Array.isArray(events) ? events : [];
     eventGrid.innerHTML = "";
 
     if (!Array.isArray(events) || events.length === 0) {
       eventGrid.innerHTML = `<p style="text-align:center;color:#777;">No events found.</p>`;
+      const loadMoreWrap = document.getElementById('events-load-more-wrap');
+      if (loadMoreWrap) loadMoreWrap.style.display = 'none';
       return;
     }
 
-    // Filter events
-    let filteredEvents = events;
-    const currentDate = new Date();
-    
-    if (filter === "assigned") {
-      filteredEvents = events.filter(ev => ev.organizationid !== null);
-    } else if (filter === "not_assigned") {
-      filteredEvents = events.filter(ev => ev.organizationid === null);
-    } else if (filter === "expired") {
-      filteredEvents = events.filter(ev => new Date(ev.eventdate) < currentDate);
-    }
+    const filteredEvents = getFilteredEventsFromCache(filter);
 
     // Update count badge
     const countBadge = document.getElementById('events-count');
@@ -214,13 +214,13 @@ async function loadAllEvents(filter = "all") {
           <p>No events found for this filter.</p>
         </div>
       `;
+      const loadMoreWrap = document.getElementById('events-load-more-wrap');
+      if (loadMoreWrap) loadMoreWrap.style.display = 'none';
       return;
     }
 
-    filteredEvents.forEach(event => {
-      const card = createEventCard(event);
-      eventGrid.appendChild(card);
-    });
+    eventsVisibleCount = 0;
+    renderMoreEvents(filteredEvents);
 
   } catch (err) {
     console.error("Error loading events:", err);
@@ -230,8 +230,49 @@ async function loadAllEvents(filter = "all") {
         <p>Unable to load events. Please try again.</p>
       </div>
     `;
+    const loadMoreWrap = document.getElementById('events-load-more-wrap');
+    if (loadMoreWrap) loadMoreWrap.style.display = 'none';
   }
 }
+
+function getFilteredEventsFromCache(filter) {
+  let filteredEvents = allEventsCache;
+  const currentDate = new Date();
+
+  if (filter === "assigned") {
+    filteredEvents = allEventsCache.filter(ev => ev.organizationid !== null);
+  } else if (filter === "not_assigned") {
+    filteredEvents = allEventsCache.filter(ev => ev.organizationid === null);
+  } else if (filter === "expired") {
+    filteredEvents = allEventsCache.filter(ev => new Date(ev.eventdate) < currentDate);
+  }
+
+  return filteredEvents;
+}
+
+function renderMoreEvents(filteredEvents) {
+  const loadMoreWrap = document.getElementById('events-load-more-wrap');
+  const loadMoreBtn = document.getElementById('events-load-more');
+  if (!loadMoreWrap || !loadMoreBtn) return;
+
+  const nextChunk = filteredEvents.slice(eventsVisibleCount, eventsVisibleCount + EVENTS_PAGE_SIZE);
+  nextChunk.forEach(event => {
+    const card = createEventCard(event);
+    eventGrid.appendChild(card);
+  });
+  eventsVisibleCount += nextChunk.length;
+
+  loadMoreWrap.style.display = eventsVisibleCount < filteredEvents.length ? 'flex' : 'none';
+}
+
+document.addEventListener('click', (e) => {
+  const loadMoreBtn = document.getElementById('events-load-more');
+  if (!loadMoreBtn) return;
+  if (e.target === loadMoreBtn || loadMoreBtn.contains(e.target)) {
+    const filtered = getFilteredEventsFromCache(currentEventFilter);
+    renderMoreEvents(filtered);
+  }
+});
 
 // Load my applications (pending bookings)
 async function loadMyApplications() {
