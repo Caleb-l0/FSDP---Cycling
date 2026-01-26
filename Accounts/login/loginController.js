@@ -56,6 +56,11 @@ async function loginUser(req, res) {
     // Handle both lowercase (PostgreSQL) and camelCase (legacy) field names
     const textSizePreference = user.textsizepreference || user.textSizePreference || 'normal';
 
+    if (!process.env.JWT_SECRET) {
+      console.error("Login error: Missing JWT_SECRET");
+      return res.status(500).json({ error: "Login failed" });
+    }
+
     const token = jwt.sign(
   { 
     id: user.id, 
@@ -81,7 +86,10 @@ async function loginUser(req, res) {
     });
   } catch (err) {
     console.error("Login error:", err);
-    res.status(500).json({ error: "Login failed" });
+    res.status(500).json({
+      error: "Login failed",
+      details: process.env.NODE_ENV === 'development' ? err.message : undefined
+    });
   }
 }
 

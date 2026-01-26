@@ -159,9 +159,9 @@ async function getOrganisationIDByUserID(userID) {
   try {
     const result = await pool.query(
       `
-      SELECT uo.organizationid
-      FROM userorganizations uo
-      WHERE uo.userid = $1
+      SELECT organizationid
+      FROM userorganizations 
+      WHERE userid = $1
       `,
       [userID]
     );
@@ -175,24 +175,7 @@ async function getOrganisationIDByUserID(userID) {
 }
 
 
-async function getOrganisationByUserID(userID) {
-  try {
-    const result = await pool.query(
-      `
-      SELECT o.organizationid, o.orgname, o.orgdescription
-      FROM userorganizations uo
-      JOIN organizations o ON o.organizationid = uo.organizationid
-      WHERE uo.userid = $1
-      `,
-      [userID]
-    );
 
-    return result.rows[0] || null;
-  } catch (err) {
-    console.error("getOrganisationByUserID SQL error:", err);
-    throw err;
-  }
-}
 
 async function getAllOrganizationRequests(organizationID) {
   try {
@@ -269,7 +252,6 @@ module.exports = {
   rejectRequest,
   checkRequestStatus,
   deleteRequest,
-  getOrganisationID,
   getOrganisationIDByUserID,
   getAllOrganizationRequests,
   getEventPeopleSignups,
