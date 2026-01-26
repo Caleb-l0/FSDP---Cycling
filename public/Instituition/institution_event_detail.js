@@ -107,6 +107,29 @@ function displayEventDetails() {
     }
   }
 
+  // Event Image
+  const eventImage = currentEvent.eventimage || currentEvent.EventImage || currentEvent.image || currentEvent.Image;
+  const imageContainer = document.getElementById('event-image-container');
+  if (imageContainer && eventImage) {
+    imageContainer.innerHTML = `<img src="${eventImage}" alt="${eventName}" onerror="this.parentElement.innerHTML='<div class=\\'event-image-placeholder\\'><i class=\\'fas fa-image\\'></i><p>Image not available</p></div>'">`;
+  }
+
+  // Participant Stats
+  const participantCurrent = currentEvent.participantsignup || currentEvent.ParticipantSignUp || currentEvent.peoplesignup || currentEvent.PeopleSignUp || 0;
+  const participantMax = currentEvent.maxparticipants || currentEvent.MaxParticipants || currentEvent.participantlimit || currentEvent.ParticipantLimit || 0;
+  const participantCurrentEl = document.getElementById('participant-current');
+  const participantMaxEl = document.getElementById('participant-max');
+  if (participantCurrentEl) participantCurrentEl.textContent = participantCurrent;
+  if (participantMaxEl) participantMaxEl.textContent = participantMax || '∞';
+
+  // Volunteer Stats
+  const volunteerCurrent = currentEvent.volunteersignup || currentEvent.VolunteerSignUp || 0;
+  const volunteerMax = currentEvent.requiredvolunteers || currentEvent.RequiredVolunteers || 0;
+  const volunteerCurrentEl = document.getElementById('volunteer-current');
+  const volunteerMaxEl = document.getElementById('volunteer-max');
+  if (volunteerCurrentEl) volunteerCurrentEl.textContent = volunteerCurrent;
+  if (volunteerMaxEl) volunteerMaxEl.textContent = volunteerMax || '∞';
+
   // Event date
   const eventDate = currentEvent.eventdate || currentEvent.EventDate;
   const dateEl = document.getElementById('event-date');
@@ -125,16 +148,6 @@ function displayEventDetails() {
   const location = currentEvent.location || currentEvent.Location || 'Location TBD';
   const locEl = document.getElementById('event-location');
   if (locEl) locEl.textContent = location;
-
-  // Volunteers needed
-  const requiredVolunteers = currentEvent.requiredvolunteers || currentEvent.RequiredVolunteers || 0;
-  const volEl = document.getElementById('event-volunteers');
-  if (volEl) volEl.textContent = requiredVolunteers;
-
-  // Current sign-ups
-  const signups = currentEvent.peoplesignup || currentEvent.PeopleSignUp || 0;
-  const signupsEl = document.getElementById('event-signups');
-  if (signupsEl) signupsEl.textContent = signups;
 
   // Description
   const description = currentEvent.description || currentEvent.Description || 'No description available.';
@@ -263,10 +276,7 @@ function setupActionButtons() {
       const requestBtn = document.createElement('button');
       requestBtn.className = 'btn-action btn-orange';
       requestBtn.innerHTML = '<i class="fas fa-calendar-plus"></i> Request to Book This Event';
-      requestBtn.addEventListener('click', () => {
-        const eventId = currentEvent.eventid || currentEvent.EventID;
-        window.location.href = `./organization_apply_event.html?eventId=${eventId}`;
-      });
+      requestBtn.addEventListener('click', () => requestToBook(requestBtn));
       btnGroup.appendChild(requestBtn);
     }
   }
@@ -277,6 +287,62 @@ function setupActionButtons() {
   backBtn.innerHTML = '<i class="fas fa-arrow-left"></i> Back to Events';
   backBtn.addEventListener('click', () => window.history.back());
   btnGroup.appendChild(backBtn);
+}
+
+// Request to book event
+async function requestToBook(btn) {
+  try {
+    const eventId = currentEvent.eventid || currentEvent.EventID;
+    if (!eventId) {
+      alert('Event ID not found');
+      return;
+    }
+
+    if (!organizationId) {
+      alert('Organization not found. Please make sure you are logged in with an organization account.');
+      return;
+    }
+
+    // Disable button and show loading
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending Request...';
+
+    const response = await fetch(`${API_BASE}/organization/events/request`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        eventId: eventId,
+        organizationId: organizationId
+      })
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Failed to send booking request');
+    }
+
+    // Show success animation
+    showSuccessAnimation();
+
+  } catch (error) {
+    console.error('Error requesting to book:', error);
+    alert('❌ Error: ' + error.message);
+    
+    // Reset button
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fas fa-calendar-plus"></i> Request to Book This Event';
+  }
+}
+
+// Show success animation overlay
+function showSuccessAnimation() {
+  const overlay = document.getElementById('success-overlay');
+  if (overlay) {
+    overlay.classList.add('show');
+  }
 }
 
 // Open modal to assign event head

@@ -342,6 +342,177 @@
       border: 2px solid #86efac;
     }
 
+    /* Event Image */
+    .event-image-container {
+      width: 100%;
+      max-height: 350px;
+      overflow: hidden;
+      border-radius: 12px;
+      margin-bottom: 1.5rem;
+      background: #f1f5f9;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .event-image-container img {
+      width: 100%;
+      height: auto;
+      object-fit: cover;
+      max-height: 350px;
+    }
+
+    .event-image-placeholder {
+      padding: 3rem;
+      text-align: center;
+      color: #94a3b8;
+    }
+
+    .event-image-placeholder i {
+      font-size: 4rem;
+      margin-bottom: 1rem;
+    }
+
+    /* Stats Grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .stat-card {
+      background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+      border-radius: 12px;
+      padding: 1.25rem;
+      text-align: center;
+      border: 2px solid #e2e8f0;
+    }
+
+    .stat-card.participants {
+      border-color: #c4b5fd;
+      background: linear-gradient(135deg, #f5f3ff, #ede9fe);
+    }
+
+    .stat-card.volunteers {
+      border-color: #86efac;
+      background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+    }
+
+    .stat-icon {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .stat-card.participants .stat-icon { color: #8b5cf6; }
+    .stat-card.volunteers .stat-icon { color: #22c55e; }
+
+    .stat-label {
+      font-size: 0.95rem;
+      color: #64748b;
+      font-weight: 500;
+      margin-bottom: 0.25rem;
+    }
+
+    .stat-value {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #1e293b;
+    }
+
+    .stat-value .current { color: #ea8d2a; }
+    .stat-value .max { color: #64748b; }
+
+    /* Success Animation Overlay */
+    .success-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s;
+    }
+
+    .success-overlay.show {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .success-content {
+      background: white;
+      border-radius: 20px;
+      padding: 3rem;
+      text-align: center;
+      max-width: 400px;
+      transform: scale(0.8);
+      transition: transform 0.4s ease;
+    }
+
+    .success-overlay.show .success-content {
+      transform: scale(1);
+    }
+
+    .success-icon {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #22c55e, #16a34a);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1.5rem;
+      animation: successPulse 0.6s ease;
+    }
+
+    .success-icon i {
+      font-size: 3rem;
+      color: white;
+    }
+
+    @keyframes successPulse {
+      0% { transform: scale(0); }
+      50% { transform: scale(1.2); }
+      100% { transform: scale(1); }
+    }
+
+    .success-title {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: #166534;
+      margin-bottom: 0.75rem;
+    }
+
+    .success-message {
+      font-size: 1.1rem;
+      color: #475569;
+      margin-bottom: 2rem;
+      line-height: 1.6;
+    }
+
+    .success-btn {
+      background: linear-gradient(135deg, #22c55e, #16a34a);
+      color: white;
+      border: none;
+      padding: 1rem 2.5rem;
+      font-size: 1.1rem;
+      font-weight: 600;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .success-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(34, 197, 94, 0.35);
+    }
+
     /* Loading State */
     .loading-spinner {
       display: flex;
@@ -439,6 +610,34 @@
       </div>
 
       <div class="event-detail-body">
+        <!-- Event Image -->
+        <div class="event-image-container" id="event-image-container">
+          <div class="event-image-placeholder">
+            <i class="fas fa-image"></i>
+            <p>No image available</p>
+          </div>
+        </div>
+
+        <!-- Stats Grid - Participants & Volunteers -->
+        <div class="stats-grid">
+          <div class="stat-card participants">
+            <i class="fas fa-user-friends stat-icon"></i>
+            <div class="stat-label">Participants</div>
+            <div class="stat-value">
+              <span class="current" id="participant-current">0</span>
+              <span class="max">/ <span id="participant-max">0</span></span>
+            </div>
+          </div>
+          <div class="stat-card volunteers">
+            <i class="fas fa-hand-holding-heart stat-icon"></i>
+            <div class="stat-label">Volunteers</div>
+            <div class="stat-value">
+              <span class="current" id="volunteer-current">0</span>
+              <span class="max">/ <span id="volunteer-max">0</span></span>
+            </div>
+          </div>
+        </div>
+
         <!-- Event Information Section -->
         <section class="detail-section">
           <h2><i class="fas fa-info-circle"></i> Event Information</h2>
@@ -455,20 +654,6 @@
               <div class="info-item-content">
                 <div class="info-item-label">Location</div>
                 <div class="info-item-value" id="event-location">-</div>
-              </div>
-            </div>
-            <div class="info-item">
-              <i class="fas fa-users"></i>
-              <div class="info-item-content">
-                <div class="info-item-label">Volunteers Needed</div>
-                <div class="info-item-value" id="event-volunteers">-</div>
-              </div>
-            </div>
-            <div class="info-item">
-              <i class="fas fa-user-check"></i>
-              <div class="info-item-content">
-                <div class="info-item-label">Current Sign-ups</div>
-                <div class="info-item-value" id="event-signups">-</div>
               </div>
             </div>
           </div>
@@ -514,6 +699,20 @@
       </div>
     </div>
   </footer>
+
+  <!-- Success Animation Overlay -->
+  <div class="success-overlay" id="success-overlay">
+    <div class="success-content">
+      <div class="success-icon">
+        <i class="fas fa-check"></i>
+      </div>
+      <h2 class="success-title">Request Sent!</h2>
+      <p class="success-message">Your booking request has been sent to the admin for approval. You can track your application on the homepage.</p>
+      <button class="success-btn" onclick="window.location.href='./homepage_login_instituition.html'">
+        <i class="fas fa-home"></i> Go to Homepage
+      </button>
+    </div>
+  </div>
 
   <script src="./institution_event_detail.js"></script>
   <script src="../Translation.js"></script>

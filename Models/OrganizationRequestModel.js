@@ -233,6 +233,56 @@ async function getEventSignups(eventID) {
 
 
 // ======================================================
+// Create Booking Request for Existing Event
+// ======================================================
+async function createEventBookingRequest(organizationId, requesterId, eventId) {
+  try {
+    // First get the event details
+    const eventResult = await pool.query(
+      `SELECT eventid, eventname, eventdate, description, requiredvolunteers, organizationid 
+       FROM events WHERE eventid = $1`,
+      [eventId]
+    );
+
+    if (eventResult.rows.length === 0) {
+      throw new Error('Event not found');
+    }
+
+    const event = eventResult.rows[0];
+
+    // Check if event is already assigned to an organization
+    if (event.organizationid !== null) {
+      throw new Error('This event is already assigned to an organization');
+    }
+
+    // Check if a pending request already exists for this event from this organization
+    const existingRequest = await pool.query(
+      `SELECT * FROM volunterrequests 
+       WHERE eventid = $1 AND organizationid = $2 AND status = 'Pending'`,
+      [eventId, organizationId]
+    );
+
+    if (existingRequest.rows.length > 0) {
+      throw new Error('You already have a pending request for this event');
+    }
+
+    // Create the booking request
+    const result = await pool.query(
+      `INSERT INTO volunterrequests 
+        (organizationid, requesterid, eventid, eventname, eventdate, description, requiredvolunteers, status)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, 'Pending')
+       RETURNING *`,
+      [organizationId, requesterId, eventId, event.eventname, event.eventdate, event.description, event.requiredvolunteers]
+    );
+
+    return result.rows[0];
+  } catch (err) {
+    console.error("createEventBookingRequest SQL error:", err);
+    throw err;
+  }
+}
+
+// ======================================================
 module.exports = {
   createRequest,
   getAllRequests,
@@ -244,6 +294,7 @@ module.exports = {
   getOrganisationIDByUserID,
   getAllOrganizationRequests,
   getEventPeopleSignups,
-  getEventSignups
+  getEventSignups,
+  createEventBookingRequest
 };
 
