@@ -364,6 +364,25 @@ async function requestEventBooking(req, res) {
   }
 }
 
+async function assignEventHeadToRequest(req, res) {
+  const { requestId } = req.params;
+  const { eventHeadName, eventHeadEmail, eventHeadContact } = req.body;
+  try {
+    if (!req.user?.id) {
+      return res.status(401).json({ message: "User not authenticated" });
+    }
+    const organizationId = await OrganizationRequestModel.getOrganisationIDByUserID(req.user.id);
+    if (!organizationId) {
+      return res.status(400).json({ message: "User is not associated with any organization" });
+    }
+    await OrganizationRequestModel.assignEventHeadToRequest(requestId, organizationId, eventHeadName, eventHeadEmail, eventHeadContact);
+    res.status(200).json({ message: "Event head assigned to request successfully!" });
+  }
+  catch (err) {
+    console.error("assignEventHeadToRequest error:", err);
+    res.status(500).json({ message: "Failed to assign event head to request", error: err.message });
+  }
+}
 
 
 // ======================================================
