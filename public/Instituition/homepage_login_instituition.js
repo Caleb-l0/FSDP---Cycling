@@ -7,8 +7,7 @@ if (!token || role !== "institution") {
   window.location.href = "../../index.html";
 }
 
-// Organization ID will be fetched on page load
-let organizationId = null;
+
 
 const API_BASE = 'https://fsdp-cycling-ltey.onrender.com';
 

@@ -150,8 +150,6 @@ async function getOrganisationIDByUserID(userID) {
       SELECT organizationid
       FROM userorganizations
       WHERE userid = $1
-      ORDER BY joinedat DESC
-      LIMIT 1
       `,
       [userIdInt]
     );
