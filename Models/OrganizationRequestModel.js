@@ -154,6 +154,66 @@ async function deleteRequest(requestID) {
   return result.rows[0] || null;
 }
 
+async function getOrganisationIDByUserID(userID) {
+  try {
+    const result = await pool.query(
+      `
+      SELECT o.organizationid
+      FROM organizations o
+      JOIN users u ON o.organizationid = u.organizationid
+      WHERE u.userid = $1
+      `,
+      [userID]
+    );
+    return result.rows[0] ? result.rows[0].organizationid : null;
+  }
+  catch (err) {
+    console.error("getOrganisationIDByUserID SQL error:", err);
+    throw err;
+  } 
+}
+
+async function getAllOrganizationRequests(organizationID) {
+  try {
+    const result = await pool.query(
+      `
+      SELECT *
+      FROM volunterrequests
+      WHERE organizationid = $1
+      ORDER BY requestid ASC
+      `,
+      [organizationID]
+    );
+    return result.rows;
+  }
+  catch (err) {
+    console.error("getAllOrganizationRequests SQL error:", err);
+    throw err;
+  }
+}
+
+
+async function getEventPeopleSignups(eventID) {
+  try {
+    const result = await pool.query(
+      `
+      SELECT u.userid, u.name, u.email
+      FROM eventsignups es
+      JOIN users u ON es.userid = u.userid
+      WHERE es.eventid = $1
+      `,
+      [eventID]
+    );
+    return result.rows;
+  }
+  catch (err) {
+    console.error("getEventPeopleSignups SQL error:", err);
+    throw err;
+  }
+}
+
+
+
 
 // ======================================================
 module.exports = {
@@ -163,6 +223,6 @@ module.exports = {
   approveRequest,
   rejectRequest,
   checkRequestStatus,
-  deleteRequest,getOrganisationID,
+  deleteRequest,getOrganisationID, getOrganisationIDByUserID, getAllOrganizationRequests,getEventPeopleSignups
 };
 

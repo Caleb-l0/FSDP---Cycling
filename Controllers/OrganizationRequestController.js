@@ -299,6 +299,53 @@ async function deleteRequest(req, res) {
   }
 }
 
+async function getUserOrganizationID(req, res) {
+  try {
+    const userId = req.user.id;
+    const organizationID = await OrganizationRequestModel.getOrganisationIDByUserID(userId);
+    if (!organizationID) {
+      return res.status(404).json({ message: "Organization not found for user" });
+    }
+    res.status(200).json({ organizationID });
+  } catch (error) {
+    res.status(500).json({ message: "Server Error", error: error.message });
+  }
+}
+
+
+async function getAllOrganizationRequests(req, res) {
+  try {
+    const organizationID = await getOrganisationIDByUserID(req.user.id);
+    if (!organizationID) {
+      return res.status(404).json({ message: "Organization not found for user" });
+    }
+
+    const requests = await OrganizationRequestModel.getAllOrganizationRequests(organizationID);
+    res.status(200).json(requests);
+  } catch (error) {
+    res.status(500).json({ message: "Server Error", error: error.message });
+  }
+}
+
+
+
+
+
+
+
+async function getEventPeopleSignups(req, res) {
+  const { eventID } = req.params;
+  try {
+    const signups = await OrganizationRequestModel.getEventPeopleSignups(eventID);
+    res.status(200).json(signups);
+  }
+  catch (error) {
+    res.status(500).json({ message: "Server Error", error: error.message });
+  } 
+}
+
+
+
 
 // ======================================================
 module.exports = {
@@ -309,5 +356,6 @@ module.exports = {
   rejectRequest,
   checkRequestStatus,
   deleteRequest,getUserOrganizationID,
+  getEventPeopleSignups,getAllOrganizationRequests
 };
 

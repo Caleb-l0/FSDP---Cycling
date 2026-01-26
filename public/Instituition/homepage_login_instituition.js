@@ -201,7 +201,7 @@ async function loadMyApplications() {
   }
 
   try {
-    const response = await fetch(`${API_BASE}/organization/events/my-bookings`, {
+    const response = await fetch(`${API_BASE}/organization/events/my-request`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${token}`,
