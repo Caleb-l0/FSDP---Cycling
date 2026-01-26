@@ -1,9 +1,6 @@
 
 
     // Load header dynamically
-    fetch('./public/header.html')
-      .then(res => res.text())
-      .then(data => document.getElementById('header-placeholder').innerHTML = data);
 
     // Hero slider
     let currentSlide = 0;
