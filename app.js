@@ -236,7 +236,7 @@ app.get('/organisations/events/:eventID/people-signups', authenticate, organizat
 app.get('/organisation/user/organization-id', authenticate, organizationRequestController.getUserOrganizationID);
 app.get('/user/organization-id', authenticate, organizationRequestController.getUserOrganizationID);
 app.get('/organization/events/my-requests', authenticate, organizationRequestController.getAllOrganizationRequests);
-app.put('/organization/events/requests/:requestId/assign-head', authenticate, organizationRequestController.assignEventHeadToRequest);
+app.put('/organization/events/requests/:requestId/assign-head', authenticate, organizationRequestController.assignEventHead);
 
 // ----- ADMIN EVENT FEED -----
 
