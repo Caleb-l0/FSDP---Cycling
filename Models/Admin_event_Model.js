@@ -223,30 +223,49 @@ async function sendEventNotificationToOrganization(organizationID, eventData) {
 // 3. Assign Event to Organization
 // ----------------------------
 async function assignEventToOrgan(eventData) {
+  
   try {
-    const organizationId = eventData.OrganizationID ?? eventData.organizationid ?? eventData.organization_id;
-    const eventId = eventData.EventID ?? eventData.eventid ?? eventData.event_id;
+    await pool.query("BEGIN");
 
-    const query = `
+    const organizationId =
+      eventData.OrganizationID ?? eventData.organizationid ?? eventData.organization_id;
+    const eventId =
+      eventData.EventID ?? eventData.eventid ?? eventData.event_id;
+
+    const participants =
+      eventData.participants ?? eventData.Participants ?? 0;
+
+ 
+    const eventRes = await pool.query(
+      `
       UPDATE events
       SET organizationid = $1,
           status = 'Upcoming',
           updatedat = NOW()
       WHERE eventid = $2
       RETURNING *
-    `;
+      `,
+      [organizationId, eventId]
+    );
 
-    const values = [
-      organizationId,
-      eventId
-    ];
+ 
+    const bookingRes = await pool.query(
+      `
+      INSERT INTO eventbookings (eventid, organizationid, participants, status, createdat, reviewdate)
+      VALUES ($1, $2, $3, 'Approved', NOW(), NOW())
+      RETURNING *
+      `,
+      [eventId, organizationId, participants]
+    );
 
-    const result = await pool.query(query, values);
-    return result.rows[0];
-
+    await pool.query("COMMIT");
+    return { event: eventRes.rows[0] || null, booking: bookingRes.rows[0] || null };
   } catch (err) {
-    console.error("Error updating event:", err);
+    await pool.query("ROLLBACK");
+    console.error("Error assigning event:", err);
     throw err;
+  } finally {
+   pool.release();
   }
 }
 
