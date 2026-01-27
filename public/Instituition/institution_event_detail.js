@@ -5,7 +5,8 @@ if (!token) {
   window.location.href = '../../index.html';
 }
 
-const API_BASE = window.location.origin;
+const API_BASE = 'https://fsdp-cycling-ltey.onrender.com';
+
 let currentEvent = null;
 let currentApplication = null;
 let organizationId = null;
@@ -698,7 +699,7 @@ async function assignEventHead(modal) {
     submitBtn.disabled = true;
     submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Assigning...';
 
-    const response = await fetch(`${API_BASE}/organization/requests/assign-head/${eventId}`, {
+    const response = await fetch(`${API_BASE}/organization/events/assign-head/${eventId}`, {
       method: 'PUT',
       headers: {
         'Authorization': `Bearer ${token}`,
