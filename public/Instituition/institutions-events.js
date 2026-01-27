@@ -8,6 +8,66 @@ const API_BASE = 'https://fsdp-cycling-ltey.onrender.com';
 
 let organizationId = null;
 
+function ensureCongratsOverlay() {
+  if (document.getElementById('hvCongrats')) return;
+  const wrap = document.createElement('div');
+  wrap.id = 'hvCongrats';
+  wrap.className = 'hv-congrats';
+  wrap.innerHTML = `
+    <div class="hv-congrats__backdrop" data-close="true"></div>
+    <div class="hv-congrats__dialog" role="dialog" aria-modal="true" aria-label="Success">
+      <div class="hv-confetti" aria-hidden="true"></div>
+      <div class="hv-congrats__body">
+        <div class="hv-congrats__icon" aria-hidden="true">✓</div>
+        <h3 class="hv-congrats__title" id="hvCongratsTitle">Success!</h3>
+        <p class="hv-congrats__msg" id="hvCongratsMsg"></p>
+      </div>
+      <div class="hv-congrats__footer">
+        <button class="hv-congrats__btn" type="button" id="hvCongratsOk">OK</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(wrap);
+  const close = () => wrap.classList.remove('is-open');
+  wrap.addEventListener('click', (e) => {
+    if (e.target?.dataset?.close === 'true') close();
+  });
+  wrap.querySelector('#hvCongratsOk')?.addEventListener('click', close);
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && wrap.classList.contains('is-open')) close();
+  });
+}
+
+function launchConfetti(container) {
+  if (!container) return;
+  container.innerHTML = '';
+  const colors = ['#f4a261', '#e76f51', '#f59e0b', '#0f172a', '#64748b'];
+  for (let i = 0; i < 28; i += 1) {
+    const el = document.createElement('i');
+    el.style.left = `${Math.random() * 100}%`;
+    el.style.background = colors[i % colors.length];
+    el.style.width = `${8 + Math.random() * 8}px`;
+    el.style.height = `${10 + Math.random() * 12}px`;
+    el.style.animationDelay = `${Math.random() * 120}ms`;
+    el.style.animationDuration = `${700 + Math.random() * 600}ms`;
+    container.appendChild(el);
+  }
+}
+
+function showCongrats({ title = 'Success!', message = '' } = {}) {
+  ensureCongratsOverlay();
+  const wrap = document.getElementById('hvCongrats');
+  if (!wrap) return;
+  const titleEl = wrap.querySelector('#hvCongratsTitle');
+  const msgEl = wrap.querySelector('#hvCongratsMsg');
+  if (titleEl) titleEl.textContent = title;
+  if (msgEl) msgEl.textContent = message;
+  launchConfetti(wrap.querySelector('.hv-confetti'));
+  wrap.classList.add('is-open');
+  window.clearTimeout(wrap._t);
+  wrap._t = window.setTimeout(() => wrap.classList.remove('is-open'), 1800);
+}
+
 // Get organization ID for the current user
 async function getOrganizationId() {
   try {
@@ -213,7 +273,10 @@ async function submitBookingRequest(event, modal) {
     }
 
     const data = await response.json();
-    alert('✅ Booking request submitted successfully! You will be notified when the admin reviews it.');
+    showCongrats({
+      title: 'Request Sent!',
+      message: data.message || 'Your booking request has been submitted. You will be notified when the admin reviews it.'
+    });
     modal.remove();
     loadEvents(); // Refresh the list
 

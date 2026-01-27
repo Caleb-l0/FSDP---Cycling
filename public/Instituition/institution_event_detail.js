@@ -99,9 +99,16 @@ function showCongrats({ title = 'Success!', message = '', autoCloseMs = 1600 } =
   wrap.classList.add('is-open');
 
   window.clearTimeout(wrap._autoCloseTimer);
-  wrap._autoCloseTimer = window.setTimeout(() => {
-    wrap.classList.remove('is-open');
-  }, autoCloseMs);
+  if (Number.isFinite(autoCloseMs) && autoCloseMs > 0) {
+    wrap._autoCloseTimer = window.setTimeout(() => {
+      wrap.classList.remove('is-open');
+      if (typeof wrap._onCloseOnce === 'function') {
+        const cb = wrap._onCloseOnce;
+        wrap._onCloseOnce = null;
+        cb();
+      }
+    }, autoCloseMs);
+  }
 }
 
 function setupCongratsOverlay() {
@@ -109,7 +116,14 @@ function setupCongratsOverlay() {
   if (!wrap || wrap._wired) return;
   wrap._wired = true;
 
-  const close = () => wrap.classList.remove('is-open');
+  const close = () => {
+    wrap.classList.remove('is-open');
+    if (typeof wrap._onCloseOnce === 'function') {
+      const cb = wrap._onCloseOnce;
+      wrap._onCloseOnce = null;
+      cb();
+    }
+  };
   wrap.addEventListener('click', (e) => {
     if (e.target?.dataset?.close === 'true') close();
   });
@@ -275,21 +289,28 @@ function displayEventHeadSection() {
   const content = document.getElementById('event-head-content');
   if (!section || !content) return;
 
-  // Get event head info from application or event
-  const headName = currentApplication?.session_head_name || currentApplication?.SessionHeadName ||
-                   currentEvent?.session_head_name || currentEvent?.SessionHeadName;
-  const headContact = currentApplication?.session_head_contact || currentApplication?.SessionHeadContact ||
-                      currentEvent?.session_head_contact || currentEvent?.SessionHeadContact;
-  const headEmail = currentApplication?.session_head_email || currentApplication?.SessionHeadEmail ||
-                    currentEvent?.session_head_email || currentEvent?.SessionHeadEmail;
-  const headProfile = currentApplication?.session_head_profile || currentApplication?.SessionHeadProfile ||
-                      currentEvent?.session_head_profile || currentEvent?.SessionHeadProfile;
+  // Event head info should come from eventbooking (authoritative after approval).
+  // Fallback to application only if eventbooking info isn't available.
+  const headName =
+    currentEvent?.session_head_name || currentEvent?.SessionHeadName ||
+    currentApplication?.session_head_name || currentApplication?.SessionHeadName;
+  const headContact =
+    currentEvent?.session_head_contact || currentEvent?.SessionHeadContact ||
+    currentApplication?.session_head_contact || currentApplication?.SessionHeadContact;
+  const headEmail =
+    currentEvent?.session_head_email || currentEvent?.SessionHeadEmail ||
+    currentApplication?.session_head_email || currentApplication?.SessionHeadEmail;
+  const headProfile =
+    currentEvent?.session_head_profile || currentEvent?.SessionHeadProfile ||
+    currentApplication?.session_head_profile || currentApplication?.SessionHeadProfile;
+
+  const bookingId = currentEvent?.bookingid || currentEvent?.BookingID;
 
   const appStatus = currentApplication?.status || currentApplication?.Status;
   const eventOrgId = currentEvent?.organizationid || currentEvent?.OrganizationID;
   const appOrgId = currentApplication?.organizationid || currentApplication?.OrganizationID;
   const isMyOrg = organizationId && ((eventOrgId && (Number(organizationId) === Number(eventOrgId))) || (appOrgId && (Number(organizationId) === Number(appOrgId))));
-  const isApproved = appStatus?.toLowerCase() === 'approved';
+  const isApproved = (appStatus?.toLowerCase() === 'approved') || Boolean(bookingId);
 
   // Show section if event is assigned to user's org
   if (isMyOrg || headName) {
@@ -356,7 +377,9 @@ function setupActionButtons() {
     // We have an application
     if (appStatus.toLowerCase() === 'approved') {
       // Check if event head is assigned
-      const headName = currentApplication?.session_head_name || currentApplication?.SessionHeadName;
+      const headName =
+        currentEvent?.session_head_name || currentEvent?.SessionHeadName ||
+        currentApplication?.session_head_name || currentApplication?.SessionHeadName;
       if (!headName && isMyOrg) {
         const assignBtn = document.createElement('button');
         assignBtn.className = 'btn-action btn-primary';
@@ -458,29 +481,26 @@ async function requestToBook(btn) {
 
 // Show success animation overlay
 function showSuccessAnimation({ title, message, buttonText, buttonHref } = {}) {
-  const overlay = document.getElementById('success-overlay');
-  if (!overlay) return;
+  const wrap = document.getElementById('hvCongrats');
+  if (!wrap) return;
 
-  const titleEl = overlay.querySelector('.success-title');
-  const messageEl = overlay.querySelector('.success-message');
-  const btnEl = overlay.querySelector('.success-btn');
-
-  if (titleEl && title) titleEl.textContent = title;
-  if (messageEl && message) messageEl.textContent = message;
-  if (btnEl) {
-    if (buttonText) {
-      btnEl.innerHTML = `<i class="fas fa-check"></i> ${buttonText}`;
-    }
-
-    btnEl.onclick = () => {
-      overlay.classList.remove('show');
-      if (buttonHref) {
-        window.location.href = buttonHref;
-      }
+  // Optional: allow OK to redirect (institution pages sometimes want CTA behavior)
+  if (buttonHref) {
+    const ok = wrap.querySelector('#hvCongratsOk');
+    if (ok && buttonText) ok.textContent = buttonText;
+    wrap._onCloseOnce = () => {
+      window.location.href = buttonHref;
     };
+  } else {
+    const ok = wrap.querySelector('#hvCongratsOk');
+    if (ok) ok.textContent = 'OK';
+    wrap._onCloseOnce = null;
   }
 
-  overlay.classList.add('show');
+  showCongrats({
+    title: title || 'Success!',
+    message: message || ''
+  });
 }
 
 let lastFocusBeforeAssignModal = null;
@@ -578,9 +598,9 @@ async function assignEventHead(modal) {
       return;
     }
 
-    const requestId = currentApplication?.requestid || currentApplication?.RequestID;
-    if (!requestId) {
-      alert('Request ID not found. Please try again.');
+    const bookingId = currentEvent?.bookingid || currentEvent?.BookingID;
+    if (!bookingId) {
+      alert('Booking ID not found. Please refresh the page and try again.');
       return;
     }
 
@@ -588,7 +608,7 @@ async function assignEventHead(modal) {
     submitBtn.disabled = true;
     submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Assigning...';
 
-    const response = await fetch(`${API_BASE}/organization/events/requests/${requestId}/assign-head`, {
+    const response = await fetch(`${API_BASE}/organization/events/bookings/${bookingId}/assign-head`, {
       method: 'PUT',
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -613,12 +633,12 @@ async function assignEventHead(modal) {
       message: 'Event head information has been saved successfully.'
     });
     
-    // Update application data
-    if (currentApplication) {
-      currentApplication.session_head_name = eventHeadName;
-      currentApplication.session_head_contact = eventHeadContact;
-      currentApplication.session_head_email = eventHeadEmail;
-      currentApplication.session_head_profile = eventHeadProfile;
+    // Update event data (authoritative source is eventbooking)
+    if (currentEvent) {
+      currentEvent.session_head_name = eventHeadName;
+      currentEvent.session_head_contact = eventHeadContact;
+      currentEvent.session_head_email = eventHeadEmail;
+      currentEvent.session_head_profile = eventHeadProfile;
     }
 
     // Refresh display
