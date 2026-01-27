@@ -284,9 +284,9 @@ async function getEventPeopleSignups(eventID) {
   try {
     const result = await pool.query(
       `
-      SELECT u.userid, u.name, u.email
+      SELECT u.id, u.name, u.email
       FROM eventsignups es
-      JOIN users u ON es.userid = u.userid
+      JOIN users u ON es.userid = u.id
       WHERE es.eventid = $1
       `,
       [eventID]
