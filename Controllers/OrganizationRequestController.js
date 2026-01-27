@@ -295,10 +295,15 @@ async function getEventSignups(req, res) {
 async function getEventPeopleSignups(req, res) {
   const { eventID } = req.params;
   try {
+    console.log('Controller called with eventID:', eventID);
     const signups = await OrganizationRequestModel.getEventPeopleSignups(eventID);
+    console.log('Controller received from model:', signups);
+    console.log('Type of signups:', typeof signups);
+    console.log('Is array?', Array.isArray(signups));
     res.status(200).json(signups);
   }
   catch (error) {
+    console.error('Controller error:', error);
     res.status(500).json({ message: "Server Error", error: error.message });
   } 
 }
@@ -357,10 +362,10 @@ async function assignEventHead(req, res) {
     }
 
     const requesterId = req.user.id;
-    const eventId = Number(req.params.eventId);
+    const requestId = Number(req.params.requestId);
 
-    if (!eventId) {
-      return res.status(400).json({ message: "Invalid eventId" });
+    if (!requestId) {
+      return res.status(400).json({ message: "Invalid requestId" });
     }
 
     const {
@@ -380,7 +385,7 @@ async function assignEventHead(req, res) {
     }
 
     const booking = await OrganizationRequestModel.assignEventHeadToRequest({
-      eventId,
+      requestId,
       organizationId,
       eventHeadName,
       eventHeadContact,
