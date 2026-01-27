@@ -251,7 +251,7 @@ async function fetchEventSignups() {
     emptyEl.style.display = 'none';
 
     const response = await fetch(
-      `https://fsdp-cycling-ltey.onrender.com/organisations/events/${currentEventId}/signups`,
+      `https://fsdp-cycling-ltey.onrender.com/organisations/events/${currentEventId}/people-signups`,
       {
         method: 'GET',
         headers: {
