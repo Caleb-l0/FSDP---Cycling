@@ -428,6 +428,34 @@ async function createEventBookingRequest(organizationId, requesterId, eventId) {
   }
 }
 
+async function getOrganizationMembers(organizationId) {
+  try {
+    const orgId = Number(organizationId);
+    if (!orgId) return [];
+
+    const result = await pool.query(
+      `
+      SELECT
+        u.id,
+        u.name,
+        u.email,
+        u.phone,
+        uo.orgrole
+      FROM userorganizations uo
+      JOIN users u ON u.id = uo.userid
+      WHERE uo.organizationid = $1
+      ORDER BY u.name ASC
+      `,
+      [orgId]
+    );
+
+    return result.rows || [];
+  } catch (err) {
+    console.error("getOrganizationMembers SQL error:", err);
+    throw err;
+  }
+}
+
 // ======================================================
 module.exports = {
   createRequest,
@@ -442,6 +470,7 @@ module.exports = {
   getEventPeopleSignups,
   getEventSignups,
   createEventBookingRequest,
-  assignEventHeadToRequest
+  assignEventHeadToRequest,
+  getOrganizationMembers
 };
 

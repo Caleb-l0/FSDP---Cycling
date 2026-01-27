@@ -517,11 +517,40 @@ function closeAssignModal() {
 }
 
 // Open modal to assign event head
-function openAssignEventHeadModal() {
+async function openAssignEventHeadModal() {
   if (activeAssignModal) {
     closeAssignModal();
   }
   lastFocusBeforeAssignModal = document.activeElement;
+
+  let members = [];
+  try {
+    const membersResp = await fetch(`${API_BASE}/organization/members`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    });
+    if (membersResp.ok) {
+      members = await membersResp.json();
+      if (!Array.isArray(members)) members = [];
+    }
+  } catch (e) {
+    console.error('Error fetching organization members:', e);
+  }
+
+  const memberOptions = members.length > 0
+    ? members
+      .map(m => {
+        const name = (m.name || '').replace(/"/g, '&quot;');
+        const email = (m.email || '').replace(/"/g, '&quot;');
+        const phone = (m.phone || '').replace(/"/g, '&quot;');
+        return `<option value="${m.id}" data-name="${name}" data-email="${email}" data-phone="${phone}">${m.name || 'Unnamed'}${m.email ? ` (${m.email})` : ''}</option>`;
+      })
+      .join('')
+    : '';
+
   const modal = document.createElement('div');
   modal.className = 'booking-modal';
   modal.style.display = 'flex';
@@ -536,6 +565,16 @@ function openAssignEventHeadModal() {
       </div>
       <div class="modal-body">
         <form id="assignEventHeadForm">
+          ${members.length > 0 ? `
+          <div class="form-group">
+            <label for="memberSelect">Select Organization Member</label>
+            <select id="memberSelect" name="memberSelect" style="width: 100%; padding: 0.9rem 1rem; border-radius: 12px; border: 2px solid #e2e8f0; font-size: 1rem;">
+              <option value="">-- Choose a member --</option>
+              ${memberOptions}
+            </select>
+            <div class="form-hint">Selecting a member will auto-fill the details below.</div>
+          </div>
+          ` : ``}
           <div class="form-group">
             <label for="eventHeadName">Full Name *</label>
             <input type="text" id="eventHeadName" name="eventHeadName" required placeholder="Enter full name">
@@ -565,6 +604,26 @@ function openAssignEventHeadModal() {
   document.body.appendChild(modal);
   activeAssignModal = modal;
 
+  const memberSelect = modal.querySelector('#memberSelect');
+  if (memberSelect) {
+    memberSelect.addEventListener('change', (e) => {
+      const opt = e.target.selectedOptions?.[0];
+      if (!opt || !opt.value) return;
+
+      const name = opt.dataset.name || '';
+      const email = opt.dataset.email || '';
+      const phone = opt.dataset.phone || '';
+
+      const nameInput = modal.querySelector('#eventHeadName');
+      const emailInput = modal.querySelector('#eventHeadEmail');
+      const phoneInput = modal.querySelector('#eventHeadContact');
+
+      if (nameInput) nameInput.value = name;
+      if (emailInput) emailInput.value = email;
+      if (phoneInput) phoneInput.value = phone;
+    });
+  }
+
   modal.querySelector('.close-modal').addEventListener('click', () => closeAssignModal());
   modal.querySelector('#assignCancelBtn').addEventListener('click', () => closeAssignModal());
   modal.addEventListener('click', (e) => {
@@ -579,8 +638,12 @@ function openAssignEventHeadModal() {
   });
 
   setTimeout(() => {
-    const nameInput = modal.querySelector('#eventHeadName');
-    if (nameInput) nameInput.focus();
+    const selectEl = modal.querySelector('#memberSelect');
+    if (selectEl) selectEl.focus();
+    else {
+      const nameInput = modal.querySelector('#eventHeadName');
+      if (nameInput) nameInput.focus();
+    }
   }, 0);
 }
 

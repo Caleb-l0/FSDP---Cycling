@@ -532,6 +532,9 @@
       border-radius: 16px;
       border: 2px solid #e2e8f0;
       box-shadow: 0 12px 30px rgba(0, 0, 0, 0.18);
+      max-height: 90vh;
+      display: flex;
+      flex-direction: column;
       overflow: hidden;
     }
 
@@ -581,6 +584,7 @@
 
     .booking-modal .modal-body {
       padding: 1.5rem;
+      overflow-y: auto;
     }
 
     .booking-modal .form-group {
@@ -627,6 +631,9 @@
       margin-top: 1.25rem;
       padding-top: 1.25rem;
       border-top: 2px solid #e2e8f0;
+      position: sticky;
+      bottom: 0;
+      background: #ffffff;
     }
 
     .booking-modal .btn-submit {

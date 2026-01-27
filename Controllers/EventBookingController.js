@@ -306,6 +306,33 @@ async function assignEventHead(req, res) {
         const event = await EventBookingModel.getUpcomingEvent(updatedBooking.eventid);
         const eventName = event?.eventname || 'Event';
 
+        try {
+          const eventHeadResult = await pool.query(
+            `SELECT id FROM users WHERE email = $1 LIMIT 1`,
+            [eventHeadEmail]
+          );
+          const eventHeadUserId = eventHeadResult.rows[0]?.id;
+
+          if (eventHeadUserId) {
+            await NotificationModel.createNotificationsForUsers({
+              userIds: [eventHeadUserId],
+              type: 'ASSIGNED_AS_EVENT_HEAD',
+              title: 'You have been assigned as Event Head',
+              message: `You have been assigned as the Event Head for "${eventName}".`,
+              payload: {
+                eventId: updatedBooking.eventid,
+                bookingId: updatedBooking.bookingid,
+                eventName,
+                eventHeadName,
+                eventHeadContact,
+                eventHeadEmail
+              }
+            });
+          }
+        } catch (e) {
+          console.error('[assignEventHead] Failed to notify assigned event head:', e);
+        }
+
         const volunteers = await EventBookingModel.getAllVolunteerEmails();
         const userIds = (volunteers || []).map(v => v.id).filter(Boolean);
 

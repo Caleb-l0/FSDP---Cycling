@@ -347,6 +347,9 @@ async function requestEventBooking(req, res) {
   }
 }
 
+
+
+
 async function assignEventHead(req, res) {
   try {
     if (!req.user?.id) {
@@ -402,6 +405,21 @@ async function assignEventHead(req, res) {
 }
 
 
+async function getOrganizationMembers(req, res) {
+  try {
+    if (!req.user?.id) {
+      return res.status(401).json({ message: "User not authenticated" });
+    }
+    const organizationID = await OrganizationRequestModel.getOrganisationIDByUserID(req.user.id);
+    if (!organizationID) {
+      return res.status(200).json([]);
+    }
+    const members = await OrganizationRequestModel.getOrganizationMembers(organizationID);
+    res.status(200).json(members);
+  } catch (error) {
+    res.status(500).json({ message: "Server Error", error: error.message });
+  }
+}
 
 // ======================================================
 module.exports = {
@@ -416,6 +434,6 @@ module.exports = {
   getEventSignups,
   getEventPeopleSignups,
   getAllOrganizationRequests,
-  requestEventBooking, assignEventHead
+  requestEventBooking, assignEventHead,getOrganizationMembers
 };
 
