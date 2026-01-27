@@ -261,42 +261,94 @@ async function getEventSignups(eventID) {
 // ======================================================
 async function createEventBookingRequest(organizationId, requesterId, eventId) {
   try {
-    // First get the event details
+    // Safety: ensure numbers
+    const orgId = Number(organizationId);
+    const reqId = Number(requesterId);
+    const evId = Number(eventId);
+
+    if (!orgId || !reqId || !evId) {
+      throw new Error("Invalid organizationId/requesterId/eventId");
+    }
+
+    // 1) Get event details (include signup counts + max)
     const eventResult = await pool.query(
-      `SELECT eventid, eventname, eventdate, description, requiredvolunteers, organizationid 
-       FROM events WHERE eventid = $1`,
-      [eventId]
+      `
+      SELECT
+        eventid,
+        eventname,
+        eventdate,
+        description,
+        requiredvolunteers,
+        organizationid,
+        maximumparticipant,
+        COALESCE(participantsignup, 0) AS participantsignup
+      FROM events
+      WHERE eventid = $1
+      `,
+      [evId]
     );
 
     if (eventResult.rows.length === 0) {
-      throw new Error('Event not found');
+      throw new Error("Event not found");
     }
 
     const event = eventResult.rows[0];
 
-    // Check if event is already assigned to an organization
+    // 2) Check if event is already assigned to an organization
     if (event.organizationid !== null) {
-      throw new Error('This event is already assigned to an organization');
+      throw new Error("This event is already assigned to an organization");
     }
 
-    // Check if a pending request already exists for this event from this organization
+    // 3) Threshold gate (choose one)
+
+    // ✅ Option A (RECOMMENDED): allow request once volunteer signups reach requiredvolunteers
+    const threshold = Number(event.requiredvolunteers || 0);
+
+    // ✅ Option B (STRICT): allow request only when event is fully booked
+    // const threshold = Number(event.maximumparticipant || 0);
+
+    const signedUp = Number(event.participantsignup || 0);
+
+    if (threshold > 0 && signedUp < threshold) {
+      const remaining = threshold - signedUp;
+      throw new Error(
+        `Cannot request booking yet: volunteers signed up ${signedUp}. Need at least ${threshold}. (${remaining} more needed)`
+      );
+    }
+
+    // 4) Check if a pending request already exists for this event from this organization
     const existingRequest = await pool.query(
-      `SELECT * FROM volunterrequests 
-       WHERE eventid = $1 AND organizationid = $2 AND status = 'Pending'`,
-      [eventId, organizationId]
+      `
+      SELECT requestid
+      FROM volunterrequests
+      WHERE eventid = $1 AND organizationid = $2 AND status = 'Pending'
+      LIMIT 1
+      `,
+      [evId, orgId]
     );
 
     if (existingRequest.rows.length > 0) {
-      throw new Error('You already have a pending request for this event');
+      throw new Error("You already have a pending request for this event");
     }
 
-    // Create the booking request
+    // 5) Create the booking request
     const result = await pool.query(
-      `INSERT INTO volunterrequests 
+      `
+      INSERT INTO volunterrequests
         (organizationid, requesterid, eventid, eventname, eventdate, description, requiredvolunteers, status)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, 'Pending')
-       RETURNING *`,
-      [organizationId, requesterId, eventId, event.eventname, event.eventdate, event.description, event.requiredvolunteers]
+      VALUES
+        ($1, $2, $3, $4, $5, $6, $7, 'Pending')
+      RETURNING *
+      `,
+      [
+        orgId,
+        reqId,
+        evId,
+        event.eventname,
+        event.eventdate,
+        event.description,
+        event.requiredvolunteers
+      ]
     );
 
     return result.rows[0];

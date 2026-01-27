@@ -25,39 +25,6 @@ const NotificationModel = require("../Models/notification_model");
 
 
 
-async function createRequest(req, res) {
-  try {
-    if (!req.user?.id) {
-      return res.status(401).json({ message: "User not authenticated" });
-    }
-
-    const { EventName, EventDate, Description, RequiredVolunteers } = req.body;
-
-    const requesterId = req.user.id;
-    const organizationId = await OrganizationRequestModel.getOrganisationIDByUserID(requesterId);
-    if (!organizationId) {
-      return res.status(200).json({ message: "User is not associated with any organization", organizationId: null });
-    }
-
-    // Map request body to model format (convert to lowercase for PostgreSQL)
-    const requestData = {
-      organizationid: organizationId,
-      requesterid: requesterId,
-      eventname: EventName,
-      eventdate: EventDate,
-      description: Description,
-      requiredvolunteers: RequiredVolunteers
-    };
-
-    await OrganizationRequestModel.createRequest(requestData);
-    
-    res.status(200).json({ message: "Organization request submitted successfully!" });
-  } catch (err) {
-    console.error("createRequest error:", err);
-    res.status(500).json({ message: "Failed to submit request", error: err.message });
-  }
-}
-
 
 // ======================================================
 // 2. Get All Requests
@@ -387,7 +354,7 @@ async function assignEventHeadToRequest(req, res) {
 
 // ======================================================
 module.exports = {
-  createRequest,
+
   getAllRequests,
   getRequestById,
   approveRequest,
