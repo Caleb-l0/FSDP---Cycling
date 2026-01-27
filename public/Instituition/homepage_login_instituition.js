@@ -137,6 +137,77 @@ async function loadOrganizationMembersExperience() {
   }
 }
 
+function escapeHtml(str) {
+  return String(str || '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
+async function loadInstitutionCommunityFeed() {
+  const list = document.getElementById('communityFeedList');
+  if (!list) return;
+
+  try {
+    const res = await fetch(`${API_BASE}/institution/community/feed?limit=6`, {
+      method: 'GET',
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+
+    if (res.status === 401 || res.status === 403) {
+      handleAuthFailure('Invalid token. Please log in again.');
+      return;
+    }
+
+    if (!res.ok) {
+      throw new Error('Failed to load community feed');
+    }
+
+    const posts = await res.json();
+    const arr = Array.isArray(posts) ? posts : [];
+
+    if (arr.length === 0) {
+      list.innerHTML = `<div class="empty-state"><i class="fas fa-comments"></i><p>No community posts tagged to your organisation yet.</p></div>`;
+      return;
+    }
+
+    list.innerHTML = '';
+    arr.forEach((p) => {
+      const username = escapeHtml(p.username || 'Volunteer');
+      const created = p.createdat ? new Date(p.createdat).toLocaleString() : '';
+      const content = escapeHtml(p.content || '');
+      const comments = Array.isArray(p.comments) ? p.comments : [];
+
+      const commentsHtml = comments.slice(-2).map((c) => {
+        const cu = escapeHtml(c.username || 'User');
+        const ct = escapeHtml(c.commenttext || c.CommentText || '');
+        return `
+          <div class="community-comment">
+            <div class="community-comment__text"><span class="community-comment__user">${cu}</span>: ${ct}</div>
+          </div>
+        `;
+      }).join('');
+
+      const el = document.createElement('div');
+      el.className = 'community-post';
+      el.innerHTML = `
+        <div class="community-post__meta">
+          <div class="community-post__user">${username}</div>
+          <div class="community-post__time">${created}</div>
+        </div>
+        <div class="community-post__content">${content}</div>
+        ${commentsHtml ? `<div class="community-post__comments">${commentsHtml}</div>` : ''}
+      `;
+      list.appendChild(el);
+    });
+  } catch (e) {
+    console.error('Error loading institution community feed:', e);
+    list.innerHTML = `<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><p>Unable to load community feed.</p></div>`;
+  }
+}
+
 // Organization ID will be fetched on page load
 let organizationId = null;
 
@@ -706,10 +777,12 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
     loadAllEvents("all");
     loadOrganizationMembersExperience();
+    loadInstitutionCommunityFeed();
   } catch (error) {
     console.error("Error initializing page:", error);
     loadAllEvents("all");
     loadOrganizationMembersExperience();
+    loadInstitutionCommunityFeed();
   }
 });
 

@@ -4,6 +4,8 @@ if (!token) {
   window.location.href = "../../index.html";
 }
 
+const API_BASE = window.location.origin;
+
 let signedUp = false;
 
 let currentEventLat = null;
@@ -36,7 +38,7 @@ document.addEventListener("DOMContentLoaded", () => {
 async function loadEventDetails(id) {
   try {
     const res = await fetch(
-      `https://fsdp-cycling-ltey.onrender.com/volunteer/events/${id}`,
+      `${API_BASE}/volunteer/events/${id}`,
       {
         headers: { Authorization: `Bearer ${token}` }
       }
@@ -159,7 +161,7 @@ async function loadFriendsForShare() {
   hvShareFriendsLoaded = true;
 
   try {
-    const res = await fetch('https://fsdp-cycling-ltey.onrender.com/volunteer/friends/me', {
+    const res = await fetch(`${API_BASE}/volunteer/friends/me`, {
       headers: { Authorization: `Bearer ${token}` }
     });
 
@@ -296,7 +298,7 @@ document.addEventListener('DOMContentLoaded', () => {
 async function checkIsSignedUp(eventId) {
   try {
     const res = await fetch(
-      `https://fsdp-cycling-ltey.onrender.com/volunteer/events/isSignedUp/${eventId}`,
+      `${API_BASE}/volunteer/events/isSignedUp/${eventId}`,
       {
         headers: { Authorization: `Bearer ${token}` }
       }
@@ -370,13 +372,13 @@ function updateSignupButtonUI() {
 async function signUp(eventName, eventId) {
   try {
     const res = await fetch(
-      `https://fsdp-cycling-ltey.onrender.com/volunteer/events/signup/${eventId}`,
+      `${API_BASE}/volunteer/events/signup/${eventId}`,
       {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json"
-        }
+        },
       }
     );
 
@@ -396,7 +398,7 @@ async function signUp(eventName, eventId) {
 async function cancelSignUp(eventId) {
   try {
     const res = await fetch(
-      `https://fsdp-cycling-ltey.onrender.com/volunteer/events/cancel/signup/${eventId}`,
+      `${API_BASE}/volunteer/events/cancel/signup/${eventId}`,
       {
         method: "DELETE",
         headers: {

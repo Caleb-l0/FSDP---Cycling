@@ -223,20 +223,18 @@ async function sendEventNotificationToOrganization(organizationID, eventData) {
 // 3. Assign Event to Organization
 // ----------------------------
 async function assignEventToOrgan(eventData) {
-  
+  const client = await pool.connect();
   try {
-    await pool.query("BEGIN");
+    await client.query("BEGIN");
 
     const organizationId =
       eventData.OrganizationID ?? eventData.organizationid ?? eventData.organization_id;
     const eventId =
       eventData.EventID ?? eventData.eventid ?? eventData.event_id;
 
-    const participants =
-      eventData.participants ?? eventData.Participants ?? 0;
+    const participants = eventData.participants ?? eventData.Participants ?? 0;
 
- 
-    const eventRes = await pool.query(
+    const eventRes = await client.query(
       `
       UPDATE events
       SET organizationid = $1,
@@ -248,8 +246,7 @@ async function assignEventToOrgan(eventData) {
       [organizationId, eventId]
     );
 
- 
-    const bookingRes = await pool.query(
+    const bookingRes = await client.query(
       `
       INSERT INTO eventbookings (eventid, organizationid, participants, status, createdat, reviewdate)
       VALUES ($1, $2, $3, 'Approved', NOW(), NOW())
@@ -258,16 +255,16 @@ async function assignEventToOrgan(eventData) {
       [eventId, organizationId, participants]
     );
 
-    await pool.query("COMMIT");
+    await client.query("COMMIT");
     return { event: eventRes.rows[0] || null, booking: bookingRes.rows[0] || null };
   } catch (err) {
-    await pool.query("ROLLBACK");
-    console.error("Error assigning event:", err);
+    await client.query("ROLLBACK");
     throw err;
   } finally {
-   pool.release();
+    client.release(); // ✅ 注意：释放的是 client，不是 pool
   }
 }
+
 
 // ----------------------------
 // 4. Check if Organization Exists

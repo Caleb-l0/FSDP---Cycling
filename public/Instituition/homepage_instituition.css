@@ -288,6 +288,97 @@ nav ul li a:hover {
   white-space: nowrap;
  }
 
+ .community-feed {
+  background: #ffffff;
+  border: 1px solid #f1f5f9;
+  border-radius: 16px;
+  box-shadow: 0 10px 26px rgba(2, 6, 23, 0.06);
+  padding: 16px;
+ }
+
+ .community-feed__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+ }
+
+ .community-feed__header h3 {
+  margin: 0;
+  color: #0f172a;
+  font-weight: 900;
+ }
+
+ .community-feed__link {
+  text-decoration: none;
+  font-weight: 900;
+  color: #e76f51;
+  padding: 8px 12px;
+  border-radius: 12px;
+  background: rgba(244, 162, 97, 0.12);
+ }
+
+ .community-feed__list {
+  display: grid;
+  gap: 12px;
+ }
+
+ .community-post {
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 14px;
+  background: #fffdf9;
+ }
+
+ .community-post__meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+ }
+
+ .community-post__user {
+  font-weight: 900;
+  color: #0f172a;
+ }
+
+ .community-post__time {
+  color: #64748b;
+  font-weight: 700;
+  font-size: 0.92rem;
+ }
+
+ .community-post__content {
+  color: #0f172a;
+  font-weight: 650;
+ }
+
+ .community-post__comments {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px dashed #e2e8f0;
+  display: grid;
+  gap: 8px;
+ }
+
+ .community-comment {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+ }
+
+ .community-comment__text {
+  color: #334155;
+  font-weight: 650;
+ }
+
+ .community-comment__user {
+  color: #0f172a;
+  font-weight: 900;
+ }
+
 .dashboard_section{
     width:40%;
     padding:3px;

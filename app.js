@@ -295,6 +295,7 @@ app.get("/volunteer/events/isSignedUp/:eventID", authenticate, EventController.i
 // ----- Community route FOR Volunteer----------
 
 app.get("/community/browse/posts",authenticate, CommunityController.browsePosts);
+app.get("/institution/community/feed", authenticate, CommunityController.browseInstitutionFeed);
 app.post("/community/posts", authenticate,  CommunityController.createPost);
 
 app.get("/community/browse/volunteers",authenticate,  CommunityController.browseVolunteers);

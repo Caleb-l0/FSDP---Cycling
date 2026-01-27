@@ -50,6 +50,35 @@ async function getAllPosts() {
   return result.rows;
 }
 
+async function getPostsForInstitution(organizationId, limit = 10) {
+  const orgId = Number(organizationId);
+  const lim = Math.max(1, Math.min(Number(limit) || 10, 25));
+  if (!orgId) return [];
+
+  const result = await pool.query(
+    `
+      SELECT
+        cp.postid,
+        cp.userid,
+        cp.content,
+        cp.photourl,
+        cp.likecount,
+        cp.visibility,
+        cp.taggedinstitutionid,
+        cp.createdat,
+        u.name AS username
+      FROM communityposts cp
+      INNER JOIN users u ON cp.userid = u.id
+      WHERE cp.taggedinstitutionid = $1
+      ORDER BY cp.createdat DESC
+      LIMIT $2
+    `,
+    [orgId, lim]
+  );
+
+  return result.rows;
+}
+
 
 
 // ===================================================
@@ -231,6 +260,7 @@ async function getCommentsForPost(postId) {
 module.exports = {
   createPost,
   getAllPosts,
+  getPostsForInstitution,
   getAllInstitutions,
   getAllVolunteers,
   getInstitutionsWithEvents,
