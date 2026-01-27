@@ -234,7 +234,6 @@ app.post('/organization/events/booking/request', authenticate, organizationReque
 app.get('/organisations/events/:eventID/people-signups', authenticate, organizationRequestController.getEventPeopleSignups);
 
 app.get('/organisation/user/organization-id', authenticate, organizationRequestController.getUserOrganizationID);
-app.get('/user/organization-id', authenticate, organizationRequestController.getUserOrganizationID);
 app.get('/organization/members', authenticate, organizationRequestController.getOrganizationMembers);
 app.get('/organization/events/my-requests', authenticate, organizationRequestController.getAllOrganizationRequests);
 app.put('/organization/events/assign-head/:eventId', authenticate, organizationRequestController.assignEventHead);
