@@ -7,6 +7,136 @@ if (!token || role !== "institution") {
   window.location.href = "../../index.html";
 }
 
+function formatMemberInitials(name) {
+  const parts = String(name || '').trim().split(/\s+/).filter(Boolean);
+  if (parts.length === 0) return 'U';
+  return parts.map(p => p[0]).join('').slice(0, 2).toUpperCase();
+}
+
+function formatShortDate(dt) {
+  if (!dt) return '';
+  const d = new Date(dt);
+  if (Number.isNaN(d.getTime())) return '';
+  return d.toLocaleString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+}
+
+async function loadOrganizationMembersExperience() {
+  if (!membersGrid) return;
+  try {
+    const resp = await fetch(`${API_BASE}/organization/members/experience`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    });
+
+    if (resp.status === 401 || resp.status === 403) {
+      handleAuthFailure('Invalid token. Please log in again.');
+      return;
+    }
+
+    if (!resp.ok) {
+      throw new Error('Failed to load members');
+    }
+
+    const members = await resp.json();
+    const arr = Array.isArray(members) ? members : [];
+
+    const countEl = document.getElementById('members-count');
+    if (countEl) countEl.textContent = arr.length;
+
+    if (arr.length === 0) {
+      membersGrid.innerHTML = `<div class="empty-state"><i class="fas fa-users"></i><p>No members found.</p></div>`;
+      return;
+    }
+
+    membersGrid.innerHTML = '';
+    arr.forEach((m) => {
+      const id = m.id;
+      const name = m.name || 'Unnamed';
+      const orgRole = m.orgrole || 'Member';
+      const email = m.email || '';
+      const phone = m.phone || '';
+      const eventCount = Number(m.eventcount || 0);
+      const events = Array.isArray(m.events) ? m.events : [];
+
+      const card = document.createElement('div');
+      card.className = 'member-card';
+
+      const eventsHtml = events
+        .filter(e => e && (e.eventName || e.eventname))
+        .slice(0, 6)
+        .map((e) => {
+          const eventName = e.eventName || e.eventname || 'Event';
+          const eventDate = formatShortDate(e.eventDate || e.eventdate);
+          return `
+            <div class="member-event-item">
+              <div>
+                <div class="member-event-name">${eventName}</div>
+              </div>
+              <div class="member-event-date">${eventDate}</div>
+            </div>
+          `;
+        })
+        .join('');
+
+      card.innerHTML = `
+        <div class="member-head">
+          <div class="member-avatar">${formatMemberInitials(name)}</div>
+          <div>
+            <p class="member-name">${name}</p>
+            <div class="member-sub">${orgRole}${email ? ` • ${email}` : ''}</div>
+          </div>
+        </div>
+        <div class="member-stats">
+          <span class="member-pill"><i class="fas fa-flag"></i> Event Head: ${eventCount}</span>
+          ${phone ? `<span class="member-pill"><i class="fas fa-phone"></i> ${phone}</span>` : ''}
+        </div>
+        <div class="member-actions">
+          <button class="member-btn member-btn-primary" type="button" data-action="toggle">
+            <i class="fas fa-list"></i>
+            View Events
+          </button>
+          ${id ? `
+            <button class="member-btn member-btn-secondary" type="button" data-action="profile">
+              <i class="fas fa-id-card"></i>
+              Profile
+            </button>
+          ` : ''}
+        </div>
+        <div class="member-events" data-events>
+          ${eventsHtml || '<div style="color:#64748b;font-weight:700;">No events yet.</div>'}
+          ${events.length > 6 ? '<div style="margin-top:10px;color:#64748b;font-weight:700;">Showing latest 6 events.</div>' : ''}
+        </div>
+      `;
+
+      const eventsWrap = card.querySelector('[data-events]');
+      const toggleBtn = card.querySelector('[data-action="toggle"]');
+      const profileBtn = card.querySelector('[data-action="profile"]');
+
+      if (toggleBtn && eventsWrap) {
+        toggleBtn.addEventListener('click', () => {
+          eventsWrap.classList.toggle('is-open');
+        });
+      }
+
+      if (profileBtn && id) {
+        profileBtn.addEventListener('click', () => {
+          window.location.href = `../Profile/profilepage.html?userId=${encodeURIComponent(id)}`;
+        });
+      }
+
+      membersGrid.appendChild(card);
+    });
+  } catch (e) {
+    console.error('Error loading members experience:', e);
+    if (membersGrid) {
+      membersGrid.innerHTML = `<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><p>Unable to load members. Please try again.</p></div>`;
+    }
+  }
+}
+
 // Organization ID will be fetched on page load
 let organizationId = null;
 
@@ -41,6 +171,8 @@ const dashboard3 = document.getElementById("dashboard3");
 const eventGrid = document.getElementById("eventGrid");
 const applicationsGrid = document.getElementById("applicationsGrid");
 const approvedGrid = document.getElementById("approvedGrid");
+
+const membersGrid = document.getElementById('membersGrid');
 
 // Get organization ID
 async function getOrganizationId() {
@@ -573,9 +705,11 @@ document.addEventListener("DOMContentLoaded", async () => {
       console.warn("No organization ID found. Some features may be limited.");
     }
     loadAllEvents("all");
+    loadOrganizationMembersExperience();
   } catch (error) {
     console.error("Error initializing page:", error);
     loadAllEvents("all");
+    loadOrganizationMembersExperience();
   }
 });
 

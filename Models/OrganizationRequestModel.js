@@ -479,6 +479,51 @@ async function getOrganizationMembers(organizationId) {
   }
 }
 
+async function getOrganizationMembersExperience(organizationId) {
+  try {
+    const orgId = Number(organizationId);
+    if (!orgId) return [];
+
+    const result = await pool.query(
+      `
+      SELECT
+        u.id,
+        u.name,
+        u.email,
+        u.phone,
+        uo.orgrole,
+        COALESCE(
+          JSONB_AGG(
+            DISTINCT JSONB_BUILD_OBJECT(
+              'eventId', e.eventid,
+              'eventName', e.eventname,
+              'eventDate', e.eventdate
+            )
+          ) FILTER (WHERE e.eventid IS NOT NULL),
+          '[]'::jsonb
+        ) AS events,
+        COUNT(DISTINCT e.eventid) AS eventcount
+      FROM userorganizations uo
+      JOIN users u ON u.id = uo.userid
+      LEFT JOIN eventbookings eb
+        ON eb.status = 'Approved'
+       AND eb.session_head_email = u.email
+      LEFT JOIN events e
+        ON e.eventid = eb.eventid
+      WHERE uo.organizationid = $1
+      GROUP BY u.id, u.name, u.email, u.phone, uo.orgrole
+      ORDER BY u.name ASC
+      `,
+      [orgId]
+    );
+
+    return result.rows || [];
+  } catch (err) {
+    console.error("getOrganizationMembersExperience SQL error:", err);
+    throw err;
+  }
+}
+
 // ======================================================
 module.exports = {
   createRequest,
@@ -494,7 +539,8 @@ module.exports = {
   getEventSignups,
   createEventBookingRequest,
   assignEventHeadToRequest,
-  getOrganizationMembers
+  getOrganizationMembers,
+  getOrganizationMembersExperience
 };
 
 
