@@ -690,19 +690,22 @@ async function assignEventHead(modal) {
       throw new Error(errorData.message || 'Failed to assign event head');
     }
 
+    const result = await response.json().catch(() => null);
+
     closeAssignModal();
     showCongrats({
       title: 'Event Head Assigned',
       message: 'Event head information has been saved successfully.'
     });
     
-    // Update event data (authoritative source is eventbooking)
-    if (currentEvent) {
-      currentEvent.session_head_name = eventHeadName;
-      currentEvent.session_head_contact = eventHeadContact;
-      currentEvent.session_head_email = eventHeadEmail;
-      currentEvent.session_head_profile = eventHeadProfile;
-    }
+    // Update event data and persist to localStorage so refresh keeps changes
+    if (!currentEvent) currentEvent = {};
+    const bookingData = result?.data || result?.booking || result;
+    currentEvent.session_head_name = bookingData?.session_head_name || eventHeadName;
+    currentEvent.session_head_contact = bookingData?.session_head_contact || eventHeadContact;
+    currentEvent.session_head_email = bookingData?.session_head_email || eventHeadEmail;
+    currentEvent.session_head_profile = bookingData?.session_head_profile || eventHeadProfile;
+    localStorage.setItem('currentEvent', JSON.stringify(currentEvent));
 
     // Refresh display
     displayEventHeadSection();

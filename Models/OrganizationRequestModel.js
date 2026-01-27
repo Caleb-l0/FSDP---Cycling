@@ -62,6 +62,7 @@ async function assignEventHeadToRequest({
         session_head_profile = $6
       WHERE eventid = $1
         AND organizationid = $2
+        AND status = 'Approved'
       RETURNING *
       `,
       [
@@ -74,8 +75,11 @@ async function assignEventHeadToRequest({
       ]
     );
 
-   
-    return result.rows[0] || null;
+    if (result.rows.length === 0) {
+      throw new Error('Approved event booking not found for this event and organization');
+    }
+
+    return result.rows[0];
   } catch (err) {
     console.error("assignEventHeadToRequest SQL error:", err);
     throw err;
