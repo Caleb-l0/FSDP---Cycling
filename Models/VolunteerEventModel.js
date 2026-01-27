@@ -84,9 +84,35 @@ async function getSignedUpEvents(userId) {
 
 async function getEventById(eventId) {
   const result = await pool.query(
-    `SELECT * FROM events WHERE eventid = $1`,
+    `
+    SELECT
+      e.*,
+      eb.bookingid,
+      eb.session_head_name,
+      eb.session_head_contact,
+      eb.session_head_email,
+      eb.session_head_profile,
+      u.id AS eventheaduserid
+    FROM events e
+    LEFT JOIN LATERAL (
+      SELECT
+        bookingid,
+        session_head_name,
+        session_head_contact,
+        session_head_email,
+        session_head_profile
+      FROM eventbookings
+      WHERE eventid = e.eventid
+        AND status = 'Approved'
+      ORDER BY reviewdate DESC NULLS LAST, createdat DESC
+      LIMIT 1
+    ) eb ON TRUE
+    LEFT JOIN users u
+      ON u.email = eb.session_head_email
+    WHERE e.eventid = $1
+    `,
     [eventId]
-  );  
+  );
   return result.rows[0];
 } 
 
