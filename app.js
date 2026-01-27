@@ -229,7 +229,7 @@ app.delete('/request/delete/:id', authenticate, organizationRequestController.de
 app.put('/requests/approve/:id', authenticate, organizationRequestController.approveRequest);
 app.put('/requests/reject/:id', authenticate, organizationRequestController.rejectRequest);
 app.get('/requests/status/:id', authenticate, organizationRequestController.checkRequestStatus);
-app.post('/request-event', authenticate, organizationRequestController.requestEventBooking);
+app.post('/organization/events/request', authenticate, organizationRequestController.requestEventBooking);
 
 app.get('/organisations/events/:eventID/people-signups', authenticate, organizationRequestController.getEventPeopleSignups);
 
