@@ -331,7 +331,9 @@ function setupActionButtons() {
 // Request to book event
 async function requestToBook(btn) {
   try {
+    const currentEvent = JSON.parse(localStorage.getItem("currentEvent"));
     const eventId = currentEvent.eventid || currentEvent.EventID;
+
     if (!eventId) {
       alert('Event ID not found');
       return;
