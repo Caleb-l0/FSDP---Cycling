@@ -7,7 +7,7 @@ const { authenticate } = require("../Accounts/login/authenticate");
 router.get("/available", authenticate, controller.getAvailableEvents);
 
 // Create booking request (institution requests to book)
-router.post("/request", authenticate, controller.createBookingRequest);
+router.post("/booking/request", authenticate, controller.createBookingRequest);
 
 // Get all booking requests (for admin)
 router.get("/requests", authenticate, controller.getAllBookingRequests);

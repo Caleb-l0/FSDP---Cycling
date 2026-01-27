@@ -313,16 +313,8 @@ async function requestEventBooking(req, res) {
     if (!organizationId) {
       return res.status(400).json({ message: "User is not associated with any organization" });
     }
-
-    const requestData = {
-      organizationid: organizationId,
-      requesterid: requesterId,
-      eventname: eventName,
-      eventdate: eventDate,
-      description: description,
-      requiredvolunteers: requiredVolunteers
-    };
-    await OrganizationRequestModel.createEventBookingRequest(requestData);
+    const eventId = req.body.eventId || null;
+    await OrganizationRequestModel.createEventBookingRequest(organizationId, requesterId, eventId);
     res.status(200).json({ message: "Event booking request submitted successfully!" });
   }
   catch (err) {
