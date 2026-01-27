@@ -44,113 +44,36 @@ async function createRequest(requestData) {
 }
 
 async function assignEventHeadToRequest({
-  requestId,
+  eventId,
   organizationId,
   eventHeadName,
   eventHeadContact,
   eventHeadEmail,
   eventHeadProfile
 }) {
-  const client = await pool.connect();
-  try {
-    await client.query("BEGIN");
+  const result = await pool.query(
+    `
+    UPDATE eventbookings
+    SET
+      session_head_name = $3,
+      session_head_contact = $4,
+      session_head_email = $5,
+      session_head_profile = $6
+    WHERE eventid = $1
+      AND organizationid = $2
+    RETURNING *
+    `,
+    [
+      eventId,
+      organizationId,
+      eventHeadName,
+      eventHeadContact,
+      eventHeadEmail,
+      eventHeadProfile || null
+    ]
+  );
 
-    // 1) Verify request exists and is Approved + belongs to org
-    const reqResult = await client.query(
-      `
-      SELECT
-        vr.requestid,
-        vr.eventid,
-        vr.organizationid,
-        vr.requiredvolunteers,
-        e.maximumparticipant
-      FROM volunterrequests vr
-      JOIN events e ON e.eventid = vr.eventid
-      WHERE vr.requestid = $1
-        AND vr.organizationid = $2
-        AND vr.status = 'Approved'
-      `,
-      [requestId, organizationId]
-    );
-
-    if (reqResult.rows.length === 0) {
-      throw new Error("Approved request not found for this organization");
-    }
-
-    const req = reqResult.rows[0];
-
-    // 2) Optional: capacity check
-    if (
-      req.maximumparticipant != null &&
-      req.requiredvolunteers > req.maximumparticipant
-    ) {
-      throw new Error("Required volunteers exceed event maximum participant limit");
-    }
-
-    // 3) Prevent duplicate booking for same request (lock safe-ish with transaction)
-    const existingBooking = await client.query(
-      `
-      SELECT bookingid
-      FROM eventbookings
-      WHERE requestid = $1
-      LIMIT 1
-      `,
-      [requestId]
-    );
-
-    if (existingBooking.rows.length > 0) {
-      throw new Error("This request has already been booked");
-    }
-
-    // 4) Insert booking record
-    const bookingResult = await client.query(
-      `
-      INSERT INTO eventbookings (
-        eventid,
-        organizationid,
-        participants,
-        status,
-        session_head_name,
-        session_head_contact,
-        session_head_email,
-        session_head_profile,
-        requestid,
-        createdat
-      )
-      VALUES ($1, $2, $3, 'Approved', $4, $5, $6, $7, $8, NOW())
-      RETURNING *
-      `,
-      [
-        req.eventid,
-        req.organizationid,
-        req.requiredvolunteers,
-        eventHeadName,
-        eventHeadContact,
-        eventHeadEmail,
-        eventHeadProfile || null,
-        requestId
-      ]
-    );
-
-    // 5) Mark request completed
-    await client.query(
-      `
-      UPDATE volunterrequests
-      SET status = 'Completed', updatedat = NOW()
-      WHERE requestid = $1
-      `,
-      [requestId]
-    );
-
-    await client.query("COMMIT");
-    return bookingResult.rows[0];
-  } catch (err) {
-    await client.query("ROLLBACK");
-    console.error("assignEventHeadToRequest SQL error:", err);
-    throw err;
-  } finally {
-    client.release();
-  }
+  return result.rows[0] || null;
 }
 
 
