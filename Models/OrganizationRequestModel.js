@@ -52,8 +52,7 @@ async function assignEventHeadToRequest({
   eventHeadProfile
 }) {
   try {
-    const result = await pool.query(
-      `
+    const updateSql = `
       UPDATE eventbookings
       SET
         session_head_name = $3,
@@ -64,10 +63,43 @@ async function assignEventHeadToRequest({
         AND organizationid = $2
         AND status = 'Approved'
       RETURNING *
+    `;
+
+    const params = [
+      eventId,
+      organizationId,
+      eventHeadName,
+      eventHeadContact,
+      eventHeadEmail,
+      eventHeadProfile || null
+    ];
+
+    const result = await pool.query(updateSql, params);
+    if (result.rows.length > 0) return result.rows[0];
+
+    const eventCheck = await pool.query(
+      `SELECT eventid FROM events WHERE eventid = $1 AND organizationid = $2`,
+      [eventId, organizationId]
+    );
+
+    if (eventCheck.rows.length === 0) {
+      throw new Error('Approved event booking not found for this event and organization');
+    }
+
+    const fallback = await pool.query(
+      `
+      UPDATE eventbookings
+      SET
+        session_head_name = $2,
+        session_head_contact = $3,
+        session_head_email = $4,
+        session_head_profile = $5
+      WHERE eventid = $1
+        AND status = 'Approved'
+      RETURNING *
       `,
       [
         eventId,
-        organizationId,
         eventHeadName,
         eventHeadContact,
         eventHeadEmail,
@@ -75,11 +107,11 @@ async function assignEventHeadToRequest({
       ]
     );
 
-    if (result.rows.length === 0) {
+    if (fallback.rows.length === 0) {
       throw new Error('Approved event booking not found for this event and organization');
     }
 
-    return result.rows[0];
+    return fallback.rows[0];
   } catch (err) {
     console.error("assignEventHeadToRequest SQL error:", err);
     throw err;

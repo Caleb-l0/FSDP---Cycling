@@ -5,7 +5,7 @@ if (!token) {
   window.location.href = '../../index.html';
 }
 
-const API_BASE = 'https://fsdp-cycling-ltey.onrender.com';
+const API_BASE = window.location.origin;
 let currentEvent = null;
 let currentApplication = null;
 let organizationId = null;
@@ -304,6 +304,10 @@ function displayEventHeadSection() {
     currentEvent?.session_head_profile || currentEvent?.SessionHeadProfile ||
     currentApplication?.session_head_profile || currentApplication?.SessionHeadProfile;
 
+  const headUserId =
+    currentEvent?.eventHeadUserId || currentEvent?.eventheaduserid ||
+    currentApplication?.eventHeadUserId || currentApplication?.eventheaduserid;
+
   const bookingId = currentEvent?.bookingid || currentEvent?.BookingID;
 
   const appStatus = currentApplication?.status || currentApplication?.Status;
@@ -319,8 +323,9 @@ function displayEventHeadSection() {
     if (headName) {
       // Show event head details
       const initials = headName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+      const headProfileHref = headUserId ? `../Profile/profilepage.html?userId=${encodeURIComponent(headUserId)}` : null;
       content.innerHTML = `
-        <div class="event-head-card">
+        <div class="event-head-card"${headProfileHref ? ` role="button" tabindex="0" data-profile-href="${headProfileHref}"` : ''}>
           <div class="event-head-avatar">${initials}</div>
           <div class="event-head-info">
             <div class="event-head-name">${headName}</div>
@@ -347,6 +352,21 @@ function displayEventHeadSection() {
           </div>
         </div>
       `;
+
+      if (headProfileHref) {
+        const card = content.querySelector('.event-head-card');
+        if (card) {
+          card.addEventListener('click', () => {
+            window.location.href = headProfileHref;
+          });
+          card.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              window.location.href = headProfileHref;
+            }
+          });
+        }
+      }
     } else if (isApproved && isMyOrg) {
       // Show assign prompt
       content.innerHTML = `
@@ -381,11 +401,10 @@ function setupActionButtons() {
         currentEvent?.session_head_name || currentEvent?.SessionHeadName ||
         currentApplication?.session_head_name || currentApplication?.SessionHeadName;
       if (!headName && isMyOrg) {
-        const assignBtn = document.createElement('button');
-        assignBtn.className = 'btn-action btn-primary';
-        assignBtn.innerHTML = '<i class="fas fa-user-plus"></i> Assign Event Head';
-        assignBtn.addEventListener('click', openAssignEventHeadModal);
-        btnGroup.appendChild(assignBtn);
+        const infoMsg = document.createElement('div');
+        infoMsg.className = 'status-message status-pending-msg';
+        infoMsg.innerHTML = '<i class="fas fa-user-plus"></i> Assign an Event Head in the Event Head section below.';
+        btnGroup.appendChild(infoMsg);
       } else {
         const successMsg = document.createElement('div');
         successMsg.className = 'status-message status-success-msg';
@@ -558,12 +577,10 @@ async function openAssignEventHeadModal() {
   modal.setAttribute('aria-modal', 'true');
   modal.setAttribute('aria-label', 'Assign Event Head');
   modal.innerHTML = `
-    <div class="modal-content">
-      <div class="modal-header">
-        <h2 class="modal-title"><i class="fas fa-user-tie"></i> Assign Event Head</h2>
-        <button type="button" class="close-modal" aria-label="Close">&times;</button>
-      </div>
-      <div class="modal-body">
+    <div class="booking-modal-content">
+      <button class="close-modal" aria-label="Close">&times;</button>
+      <h3><i class="fas fa-user-tie"></i> Assign Event Head</h3>
+      <div class="booking-modal-body">
         <form id="assignEventHeadForm">
           ${members.length > 0 ? `
           <div class="form-group">
@@ -592,9 +609,15 @@ async function openAssignEventHeadModal() {
             <label for="eventHeadProfile">Brief Profile (Optional)</label>
             <textarea id="eventHeadProfile" name="eventHeadProfile" rows="3" placeholder="Role, experience, or responsibilities..."></textarea>
           </div>
+
+          <input type="hidden" id="eventHeadUserId" name="eventHeadUserId" value="">
           <div class="form-actions">
-            <button type="button" class="btn-cancel" id="assignCancelBtn">Cancel</button>
-            <button type="submit" class="btn-submit"><i class="fas fa-check"></i> Confirm</button>
+            <button type="button" id="assignCancelBtn" class="btn-secondary">
+              <i class="fas fa-times"></i> Cancel
+            </button>
+            <button type="submit" class="btn-primary">
+              <i class="fas fa-check"></i> Confirm Assignment
+            </button>
           </div>
         </form>
       </div>
@@ -621,6 +644,9 @@ async function openAssignEventHeadModal() {
       if (nameInput) nameInput.value = name;
       if (emailInput) emailInput.value = email;
       if (phoneInput) phoneInput.value = phone;
+
+      const userIdInput = modal.querySelector('#eventHeadUserId');
+      if (userIdInput) userIdInput.value = opt.value;
     });
   }
 
@@ -655,6 +681,7 @@ async function assignEventHead(modal) {
     const eventHeadContact = form.eventHeadContact.value.trim();
     const eventHeadEmail = form.eventHeadEmail.value.trim();
     const eventHeadProfile = form.eventHeadProfile.value.trim();
+    const eventHeadUserId = form.eventHeadUserId ? form.eventHeadUserId.value.trim() : '';
 
     if (!eventHeadName || !eventHeadContact || !eventHeadEmail) {
       alert('Please fill in all required fields');
@@ -671,7 +698,7 @@ async function assignEventHead(modal) {
     submitBtn.disabled = true;
     submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Assigning...';
 
-    const response = await fetch(`${API_BASE}/organization/events/assign-head/${eventId}`, {
+    const response = await fetch(`${API_BASE}/organization/requests/assign-head/${eventId}`, {
       method: 'PUT',
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -681,7 +708,8 @@ async function assignEventHead(modal) {
         eventHeadName,
         eventHeadContact,
         eventHeadEmail,
-        eventHeadProfile
+        eventHeadProfile,
+        eventHeadUserId
       })
     });
 
@@ -705,6 +733,7 @@ async function assignEventHead(modal) {
     currentEvent.session_head_contact = bookingData?.session_head_contact || eventHeadContact;
     currentEvent.session_head_email = bookingData?.session_head_email || eventHeadEmail;
     currentEvent.session_head_profile = bookingData?.session_head_profile || eventHeadProfile;
+    if (eventHeadUserId) currentEvent.eventHeadUserId = eventHeadUserId;
     localStorage.setItem('currentEvent', JSON.stringify(currentEvent));
 
     // Refresh display
