@@ -152,20 +152,35 @@ function displayEventDetails() {
   }
 
   // Participant Stats
-  const participantCurrent = currentEvent.participantsignup || currentEvent.ParticipantSignUp || currentEvent.peoplesignup || currentEvent.PeopleSignUp || 0;
-  const participantMax = currentEvent.maxparticipants || currentEvent.MaxParticipants || currentEvent.participantlimit || currentEvent.ParticipantLimit || 0;
+  const participantCurrent = Number(
+    currentEvent.participantsignup ?? currentEvent.ParticipantSignUp ??
+    currentEvent.peoplesignup ?? currentEvent.PeopleSignUp ??
+    0
+  );
+
+  const participantMax = Number(
+    currentEvent.maximumparticipant ?? currentEvent.MaximumParticipant ??
+    currentEvent.maxparticipants ?? currentEvent.MaxParticipants ??
+    currentEvent.participantlimit ?? currentEvent.ParticipantLimit ??
+    0
+  );
   const participantCurrentEl = document.getElementById('participant-current');
   const participantMaxEl = document.getElementById('participant-max');
   if (participantCurrentEl) participantCurrentEl.textContent = participantCurrent;
-  if (participantMaxEl) participantMaxEl.textContent = participantMax || '∞';
+  if (participantMaxEl) participantMaxEl.textContent = participantMax ? participantMax : '∞';
 
   // Volunteer Stats
-  const volunteerCurrent = currentEvent.volunteersignup || currentEvent.VolunteerSignUp || 0;
-  const volunteerMax = currentEvent.requiredvolunteers || currentEvent.RequiredVolunteers || 0;
+  const volunteerCurrent = Number(
+    currentEvent.volunteer_signup_count ??
+    currentEvent.volunteersignup ?? currentEvent.VolunteerSignUp ??
+    0
+  );
+
+  const volunteerMax = Number(currentEvent.requiredvolunteers ?? currentEvent.RequiredVolunteers ?? 0);
   const volunteerCurrentEl = document.getElementById('volunteer-current');
   const volunteerMaxEl = document.getElementById('volunteer-max');
   if (volunteerCurrentEl) volunteerCurrentEl.textContent = volunteerCurrent;
-  if (volunteerMaxEl) volunteerMaxEl.textContent = volunteerMax || '∞';
+  if (volunteerMaxEl) volunteerMaxEl.textContent = volunteerMax ? volunteerMax : '∞';
 
   // Event date
   const eventDate = currentEvent.eventdate || currentEvent.EventDate;
@@ -415,41 +430,36 @@ function openAssignEventHeadModal() {
   modal.className = 'booking-modal';
   modal.style.display = 'flex';
   modal.innerHTML = `
-    <div class="modal-content" style="max-width: 550px;">
-      <span class="close-modal">&times;</span>
-      <h2 style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.5rem;">
-        <i class="fas fa-user-tie" style="color: #f4a261;"></i> Assign Event Head
-      </h2>
-      <form id="assignEventHeadForm">
-        <div class="form-group">
-          <label for="eventHeadName">Full Name *</label>
-          <input type="text" id="eventHeadName" name="eventHeadName" required 
-                 placeholder="Enter event head's full name" style="font-size: 1.1rem; padding: 1rem;">
-        </div>
-        <div class="form-group">
-          <label for="eventHeadEmail">Email Address *</label>
-          <input type="email" id="eventHeadEmail" name="eventHeadEmail" required 
-                 placeholder="Enter email address" style="font-size: 1.1rem; padding: 1rem;">
-        </div>
-        <div class="form-group">
-          <label for="eventHeadContact">Mobile Number *</label>
-          <input type="tel" id="eventHeadContact" name="eventHeadContact" required 
-                 placeholder="Enter mobile number" style="font-size: 1.1rem; padding: 1rem;">
-        </div>
-        <div class="form-group">
-          <label for="eventHeadProfile">Brief Profile (Optional)</label>
-          <textarea id="eventHeadProfile" name="eventHeadProfile" rows="3" 
-                    placeholder="Brief description or role of the event head..."
-                    style="font-size: 1.1rem; padding: 1rem;"></textarea>
-        </div>
-        <div class="form-actions" style="margin-top: 2rem;">
-          <button type="submit" class="btn-submit" style="font-size: 1.1rem; padding: 1rem;">
-            <i class="fas fa-check"></i> Confirm Assignment
-          </button>
-          <button type="button" class="btn-cancel" style="font-size: 1.1rem; padding: 1rem;" 
-                  onclick="this.closest('.booking-modal').remove()">Cancel</button>
-        </div>
-      </form>
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title"><i class="fas fa-user-tie"></i> Assign Event Head</h2>
+        <button type="button" class="close-modal" aria-label="Close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="assignEventHeadForm">
+          <div class="form-group">
+            <label for="eventHeadName">Full Name *</label>
+            <input type="text" id="eventHeadName" name="eventHeadName" required placeholder="Enter full name">
+          </div>
+          <div class="form-group">
+            <label for="eventHeadEmail">Email Address *</label>
+            <input type="email" id="eventHeadEmail" name="eventHeadEmail" required placeholder="name@example.com">
+          </div>
+          <div class="form-group">
+            <label for="eventHeadContact">Mobile Number *</label>
+            <input type="tel" id="eventHeadContact" name="eventHeadContact" required placeholder="e.g. 9123 4567">
+            <div class="form-hint">Include country code if needed.</div>
+          </div>
+          <div class="form-group">
+            <label for="eventHeadProfile">Brief Profile (Optional)</label>
+            <textarea id="eventHeadProfile" name="eventHeadProfile" rows="3" placeholder="Role, experience, or responsibilities..."></textarea>
+          </div>
+          <div class="form-actions">
+            <button type="button" class="btn-cancel" onclick="this.closest('.booking-modal').remove()">Cancel</button>
+            <button type="submit" class="btn-submit"><i class="fas fa-check"></i> Confirm</button>
+          </div>
+        </form>
+      </div>
     </div>
   `;
 
