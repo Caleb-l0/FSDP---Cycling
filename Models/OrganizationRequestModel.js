@@ -44,36 +44,98 @@ async function createRequest(requestData) {
 }
 
 async function assignEventHeadToRequest({
-  eventId,
+  requestId,
   organizationId,
   eventHeadName,
   eventHeadContact,
   eventHeadEmail,
   eventHeadProfile
 }) {
-  const result = await pool.query(
-    `
-    UPDATE eventbookings
-    SET
-      session_head_name = $3,
-      session_head_contact = $4,
-      session_head_email = $5,
-      session_head_profile = $6
-    WHERE eventid = $1
-      AND organizationid = $2
-    RETURNING *
-    `,
-    [
-      eventId,
-      organizationId,
-      eventHeadName,
-      eventHeadContact,
-      eventHeadEmail,
-      eventHeadProfile || null
-    ]
-  );
+  try {
+    // 1) Verify request exists and is Approved
+    const reqResult = await pool.query(
+      `
+      SELECT
+        vr.requestid,
+        vr.eventid,
+        vr.organizationid,
+        vr.requiredvolunteers,
+        e.maximumparticipant
+      FROM volunterrequests vr
+      JOIN events e ON e.eventid = vr.eventid
+      WHERE vr.requestid = $1
+        AND vr.organizationid = $2
+        AND vr.status = 'Approved'
+      `,
+      [requestId, organizationId]
+    );
 
-  return result.rows[0] || null;
+    if (reqResult.rows.length === 0) {
+      throw new Error("Approved request not found for this organization");
+    }
+
+    const req = reqResult.rows[0];
+
+    // 2) Prevent duplicate booking for same request
+    const existingBooking = await pool.query(
+      `
+      SELECT bookingid
+      FROM eventbookings
+      WHERE requestid = $1
+      LIMIT 1
+      `,
+      [requestId]
+    );
+
+    if (existingBooking.rows.length > 0) {
+      throw new Error("This request has already been booked");
+    }
+
+    // 3) Insert into eventbookings (SUCCESS record)
+    const bookingResult = await pool.query(
+      `
+      INSERT INTO eventbookings (
+        eventid,
+        organizationid,
+        participants,
+        status,
+        session_head_name,
+        session_head_contact,
+        session_head_email,
+        session_head_profile,
+        requestid,
+        createdat
+      )
+      VALUES ($1, $2, $3, 'Approved', $4, $5, $6, $7, $8, NOW())
+      RETURNING *
+      `,
+      [
+        req.eventid,
+        req.organizationid,
+        req.requiredvolunteers,
+        eventHeadName,
+        eventHeadContact,
+        eventHeadEmail,
+        eventHeadProfile || null,
+        requestId
+      ]
+    );
+
+    // 4) Mark request as completed / fulfilled
+    await pool.query(
+      `
+      UPDATE volunterrequests
+      SET status = 'Completed', updatedat = NOW()
+      WHERE requestid = $1
+      `,
+      [requestId]
+    );
+
+    return bookingResult.rows[0];
+  } catch (err) {
+    console.error("assignEventHeadToRequest SQL error:", err);
+    throw err;
+  }
 }
 
 
@@ -220,20 +282,63 @@ async function getAllOrganizationRequests(organizationID) {
 
 async function getEventPeopleSignups(eventID) {
   try {
+    console.log('getEventPeopleSignups called with eventID:', eventID);
+    
     const result = await pool.query(
       `
-      SELECT u.id, u.name, u.email
+      SELECT 
+        u.id,
+        u.name,
+        u.email,
+        u.phone,
+        u.role,
+        es.signupdate,
+        es.signupid
       FROM eventsignups es
       JOIN users u ON es.userid = u.id
-      WHERE es.eventid = $1
+      WHERE es.eventid = $1 
+        AND (es.status IS NULL OR es.status = 'Active' OR es.status = 'active')
+      ORDER BY es.signupdate ASC
       `,
       [eventID]
     );
-    return result.rows;
+    
+    console.log('SQL query result rows:', result.rows);
+    console.log('Number of rows returned:', result.rows.length);
+    
+    const volunteers = result.rows.map((row) => ({
+      id: row.id,
+      name: row.name || 'Unknown Volunteer',
+      email: row.email || 'No email',
+      phone: row.phone || 'No phone',
+      role: row.role || 'volunteer',
+      signupDate: row.signupdate,
+      signupId: row.signupid,
+      checkedIn: false // Default to false since column doesn't exist
+    }));
+    
+    const response = {
+      success: true,
+      count: volunteers.length,
+      volunteers: volunteers,
+      signups: volunteers, // Add both for compatibility
+      message: volunteers.length > 0 
+        ? `Found ${volunteers.length} volunteer(s) signed up for this event`
+        : 'No volunteers have signed up for this event yet'
+    };
+    
+    console.log('Final response being sent:', response);
+    return response;
   }
   catch (err) {
     console.error("getEventPeopleSignups SQL error:", err);
-    throw err;
+    return {
+      success: false,
+      count: 0,
+      volunteers: [],
+      signups: [], // Add both for compatibility
+      message: 'Error fetching volunteer signups'
+    };
   }
 }
 
@@ -411,4 +516,5 @@ module.exports = {
   assignEventHeadToRequest,
   getOrganizationMembers
 };
+
 
