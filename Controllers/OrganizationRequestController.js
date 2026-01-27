@@ -307,19 +307,42 @@ async function requestEventBooking(req, res) {
     if (!req.user?.id) {
       return res.status(401).json({ message: "User not authenticated" });
     }
-    const { eventName, eventDate, description, requiredVolunteers } = req.body;
+
     const requesterId = req.user.id;
+
+    const eventId = req.body.eventId;
+    if (!eventId) {
+      return res.status(400).json({ message: "eventId is required" });
+    }
+
     const organizationId = await OrganizationRequestModel.getOrganisationIDByUserID(requesterId);
     if (!organizationId) {
       return res.status(400).json({ message: "User is not associated with any organization" });
     }
-    const eventId = req.body.eventId || null;
-    await OrganizationRequestModel.createEventBookingRequest(organizationId, requesterId, eventId);
-    res.status(200).json({ message: "Event booking request submitted successfully!" });
-  }
-  catch (err) {
+
+    const created = await OrganizationRequestModel.createEventBookingRequest(
+      organizationId,
+      requesterId,
+      eventId
+    );
+
+    return res.status(201).json({
+      message: "Event booking request submitted successfully!",
+      data: created
+    });
+  } catch (err) {
     console.error("requestEventBooking error:", err);
-    res.status(500).json({ message: "Failed to submit event booking request", error: err.message });
+
+    const msg = err?.message || "Unknown error";
+
+    // map common business errors -> proper status
+    if (msg === "Event not found") return res.status(404).json({ message: msg });
+    if (msg.includes("already assigned")) return res.status(409).json({ message: msg });
+    if (msg.includes("pending request")) return res.status(409).json({ message: msg });
+    if (msg.startsWith("Cannot request booking yet")) return res.status(400).json({ message: msg });
+    if (msg.startsWith("Invalid")) return res.status(400).json({ message: msg });
+
+    return res.status(500).json({ message: "Failed to submit event booking request", error: msg });
   }
 }
 
