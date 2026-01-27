@@ -344,6 +344,9 @@ function setupActionButtons() {
 }
 
 // Request to book event
+
+
+// book??
 async function requestToBook(btn) {
   try {
     const currentEvent = JSON.parse(localStorage.getItem("currentEvent"));
@@ -363,7 +366,7 @@ async function requestToBook(btn) {
     btn.disabled = true;
     btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending Request...';
 
-    const response = await fetch(`${API_BASE}/organization/events/request`, {
+    const response = await fetch(`${API_BASE}/organization/events/booking/request`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`,

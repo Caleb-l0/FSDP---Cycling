@@ -229,13 +229,13 @@ app.delete('/request/delete/:id', authenticate, organizationRequestController.de
 app.put('/requests/approve/:id', authenticate, organizationRequestController.approveRequest);
 app.put('/requests/reject/:id', authenticate, organizationRequestController.rejectRequest);
 app.get('/requests/status/:id', authenticate, organizationRequestController.checkRequestStatus);
+app.post('/organization/events/booking/request', authenticate, organizationRequestController.requestEventBooking);
 
 app.get('/organisations/events/:eventID/people-signups', authenticate, organizationRequestController.getEventPeopleSignups);
 
 app.get('/organisation/user/organization-id', authenticate, organizationRequestController.getUserOrganizationID);
 app.get('/user/organization-id', authenticate, organizationRequestController.getUserOrganizationID);
 app.get('/organization/events/my-requests', authenticate, organizationRequestController.getAllOrganizationRequests);
-app.post('/organization/events/request', authenticate, organizationRequestController.requestEventBooking);
 app.put('/organization/events/requests/:requestId/assign-head', authenticate, organizationRequestController.assignEventHeadToRequest);
 
 // ----- ADMIN EVENT FEED -----

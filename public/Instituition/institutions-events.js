@@ -191,7 +191,7 @@ async function submitBookingRequest(event, modal) {
       return;
     }
 
-    const response = await fetch(`${API_BASE}/organization/events/booking/request`, {
+    const response = await fetch(`${API_BASE}/organization/events/request`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`,
