@@ -671,7 +671,7 @@ async function assignEventHead(modal) {
     submitBtn.disabled = true;
     submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Assigning...';
 
-    const response = await fetch(`${API_BASE}/organization/events/bookings/${eventId}/assign-head`, {
+    const response = await fetch(`${API_BASE}/organization/events/assign-head/${eventId}/assign-head`, {
       method: 'PUT',
       headers: {
         'Authorization': `Bearer ${token}`,
