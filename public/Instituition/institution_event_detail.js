@@ -661,9 +661,9 @@ async function assignEventHead(modal) {
       return;
     }
 
-    const bookingId = currentEvent?.bookingid || currentEvent?.BookingID;
-    if (!bookingId) {
-      alert('Booking ID not found. Please refresh the page and try again.');
+    const eventId = currentEvent?.eventid || currentEvent?.BookingID;
+    if (!eventId) {
+      alert('Event ID not found. Please refresh the page and try again.');
       return;
     }
 

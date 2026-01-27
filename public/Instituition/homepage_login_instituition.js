@@ -456,9 +456,10 @@ function createEventCard(event) {
   `;
 
   card.addEventListener("click", () => {
-    localStorage.setItem("currentEvent", JSON.stringify(event));
-    localStorage.removeItem("currentApplication");
-    window.location.href = "./institution_event_detail.html";
+     console.log("clicked origin=", location.origin);
+  localStorage.setItem("currentEvent", JSON.stringify(event));
+  console.log("saved currentEvent=", localStorage.getItem("currentEvent"));
+  window.location.href = "./institution_event_detail.html";
   });
 
   return card;
