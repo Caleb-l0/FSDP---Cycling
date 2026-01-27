@@ -64,6 +64,62 @@ async function getOrganizationId() {
   }
 }
 
+function launchConfetti(container) {
+  if (!container) return;
+  container.innerHTML = '';
+  const colors = ['#f4a261', '#e76f51', '#f59e0b', '#0f172a', '#64748b'];
+  const pieces = 28;
+  for (let i = 0; i < pieces; i += 1) {
+    const el = document.createElement('i');
+    const left = Math.random() * 100;
+    const delay = Math.random() * 120;
+    const duration = 700 + Math.random() * 600;
+    const rotate = Math.floor(Math.random() * 360);
+    const w = 8 + Math.random() * 8;
+    const h = 10 + Math.random() * 12;
+    el.style.left = `${left}%`;
+    el.style.background = colors[i % colors.length];
+    el.style.width = `${w}px`;
+    el.style.height = `${h}px`;
+    el.style.transform = `translateY(-10px) rotate(${rotate}deg)`;
+    el.style.animationDelay = `${delay}ms`;
+    el.style.animationDuration = `${duration}ms`;
+    container.appendChild(el);
+  }
+}
+
+function showCongrats({ title = 'Success!', message = '', autoCloseMs = 1600 } = {}) {
+  const wrap = document.getElementById('hvCongrats');
+  if (!wrap) return;
+  const titleEl = wrap.querySelector('#hvCongratsTitle');
+  const msgEl = wrap.querySelector('#hvCongratsMsg');
+  if (titleEl) titleEl.textContent = title;
+  if (msgEl) msgEl.textContent = message;
+  launchConfetti(wrap.querySelector('.hv-confetti'));
+  wrap.classList.add('is-open');
+
+  window.clearTimeout(wrap._autoCloseTimer);
+  wrap._autoCloseTimer = window.setTimeout(() => {
+    wrap.classList.remove('is-open');
+  }, autoCloseMs);
+}
+
+function setupCongratsOverlay() {
+  const wrap = document.getElementById('hvCongrats');
+  if (!wrap || wrap._wired) return;
+  wrap._wired = true;
+
+  const close = () => wrap.classList.remove('is-open');
+  wrap.addEventListener('click', (e) => {
+    if (e.target?.dataset?.close === 'true') close();
+  });
+  const ok = wrap.querySelector('#hvCongratsOk');
+  if (ok) ok.addEventListener('click', close);
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && wrap.classList.contains('is-open')) close();
+  });
+}
+
 // Fetch event details from API
 async function fetchEventDetails(eventId) {
   try {
@@ -427,11 +483,31 @@ function showSuccessAnimation({ title, message, buttonText, buttonHref } = {}) {
   overlay.classList.add('show');
 }
 
+let lastFocusBeforeAssignModal = null;
+let activeAssignModal = null;
+
+function closeAssignModal() {
+  if (!activeAssignModal) return;
+  const targetFocus = lastFocusBeforeAssignModal && document.contains(lastFocusBeforeAssignModal)
+    ? lastFocusBeforeAssignModal
+    : document.body;
+  activeAssignModal.remove();
+  activeAssignModal = null;
+  if (targetFocus && typeof targetFocus.focus === 'function') targetFocus.focus();
+}
+
 // Open modal to assign event head
 function openAssignEventHeadModal() {
+  if (activeAssignModal) {
+    closeAssignModal();
+  }
+  lastFocusBeforeAssignModal = document.activeElement;
   const modal = document.createElement('div');
   modal.className = 'booking-modal';
   modal.style.display = 'flex';
+  modal.setAttribute('role', 'dialog');
+  modal.setAttribute('aria-modal', 'true');
+  modal.setAttribute('aria-label', 'Assign Event Head');
   modal.innerHTML = `
     <div class="modal-content">
       <div class="modal-header">
@@ -458,7 +534,7 @@ function openAssignEventHeadModal() {
             <textarea id="eventHeadProfile" name="eventHeadProfile" rows="3" placeholder="Role, experience, or responsibilities..."></textarea>
           </div>
           <div class="form-actions">
-            <button type="button" class="btn-cancel" onclick="this.closest('.booking-modal').remove()">Cancel</button>
+            <button type="button" class="btn-cancel" id="assignCancelBtn">Cancel</button>
             <button type="submit" class="btn-submit"><i class="fas fa-check"></i> Confirm</button>
           </div>
         </form>
@@ -467,12 +543,25 @@ function openAssignEventHeadModal() {
   `;
 
   document.body.appendChild(modal);
+  activeAssignModal = modal;
 
-  modal.querySelector('.close-modal').addEventListener('click', () => modal.remove());
+  modal.querySelector('.close-modal').addEventListener('click', () => closeAssignModal());
+  modal.querySelector('#assignCancelBtn').addEventListener('click', () => closeAssignModal());
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) closeAssignModal();
+  });
+  modal.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeAssignModal();
+  });
   modal.querySelector('#assignEventHeadForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     await assignEventHead(modal);
   });
+
+  setTimeout(() => {
+    const nameInput = modal.querySelector('#eventHeadName');
+    if (nameInput) nameInput.focus();
+  }, 0);
 }
 
 // Assign event head API call
@@ -518,11 +607,10 @@ async function assignEventHead(modal) {
       throw new Error(errorData.message || 'Failed to assign event head');
     }
 
-    modal.remove();
-    showSuccessAnimation({
+    closeAssignModal();
+    showCongrats({
       title: 'Event Head Assigned',
-      message: 'Event head information has been saved successfully.',
-      buttonText: 'Close'
+      message: 'Event head information has been saved successfully.'
     });
     
     // Update application data
@@ -551,6 +639,7 @@ async function assignEventHead(modal) {
 
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', async () => {
+  setupCongratsOverlay();
   // Get organization ID first
   organizationId = await getOrganizationId();
 

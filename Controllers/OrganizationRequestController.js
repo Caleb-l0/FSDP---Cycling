@@ -3,6 +3,7 @@ const OrganizationRequestModel = require("../Models/OrganizationRequestModel");
 const pool = require("../Postgres_config");
 const transporter = require("../mailer");
 const NotificationModel = require("../Models/notification_model");
+const { assign } = require("nodemailer/lib/shared");
 
 
 // ======================================================
@@ -346,25 +347,60 @@ async function requestEventBooking(req, res) {
   }
 }
 
-async function assignEventHeadToRequest(req, res) {
-  const { requestId } = req.params;
-  const { eventHeadName, eventHeadEmail, eventHeadContact } = req.body;
+async function assignEventHead(req, res) {
   try {
     if (!req.user?.id) {
       return res.status(401).json({ message: "User not authenticated" });
     }
-    const organizationId = await OrganizationRequestModel.getOrganisationIDByUserID(req.user.id);
+
+    const requesterId = req.user.id;
+    const requestId = Number(req.params.requestId);
+
+    if (!requestId) {
+      return res.status(400).json({ message: "Invalid requestId" });
+    }
+
+    const {
+      eventHeadName,
+      eventHeadContact,
+      eventHeadEmail,
+      eventHeadProfile
+    } = req.body;
+
+    if (!eventHeadName || !eventHeadContact || !eventHeadEmail) {
+      return res.status(400).json({ message: "Missing required event head fields" });
+    }
+
+    const organizationId = await OrganizationRequestModel.getOrganisationIDByUserID(requesterId);
     if (!organizationId) {
       return res.status(400).json({ message: "User is not associated with any organization" });
     }
-    await OrganizationRequestModel.assignEventHeadToRequest(requestId, organizationId, eventHeadName, eventHeadEmail, eventHeadContact);
-    res.status(200).json({ message: "Event head assigned to request successfully!" });
-  }
-  catch (err) {
-    console.error("assignEventHeadToRequest error:", err);
-    res.status(500).json({ message: "Failed to assign event head to request", error: err.message });
+
+    const booking = await OrganizationRequestModel.assignEventHeadToRequest({
+      requestId,
+      organizationId,
+      eventHeadName,
+      eventHeadContact,
+      eventHeadEmail,
+      eventHeadProfile
+    });
+
+    return res.status(200).json({
+      message: "Event booking created successfully",
+      data: booking
+    });
+  } catch (err) {
+    console.error("assignEventHead error:", err);
+
+    const msg = err?.message || "Unknown error";
+
+    if (msg.includes("not found")) return res.status(404).json({ message: msg });
+    if (msg.includes("already been booked")) return res.status(409).json({ message: msg });
+
+    return res.status(500).json({ message: "Failed to assign event head", error: msg });
   }
 }
+
 
 
 // ======================================================
@@ -380,6 +416,6 @@ module.exports = {
   getEventSignups,
   getEventPeopleSignups,
   getAllOrganizationRequests,
-  requestEventBooking, assignEventHeadToRequest
+  requestEventBooking, assignEventHead
 };
 

@@ -678,6 +678,118 @@
       }
     }
 
+    .hv-congrats{
+      position:fixed;
+      inset:0;
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding:18px;
+      z-index:2500;
+    }
+
+    .hv-congrats.is-open{display:flex;}
+
+    .hv-congrats__backdrop{
+      position:absolute;
+      inset:0;
+      background:rgba(15, 23, 42, 0.58);
+    }
+
+    .hv-congrats__dialog{
+      position:relative;
+      width:min(520px, 100%);
+      background:#fff;
+      border-radius:18px;
+      box-shadow:0 16px 44px rgba(0,0,0,.25);
+      overflow:hidden;
+      transform:translateY(8px) scale(.98);
+      opacity:0;
+      animation:hvCongratsPop 220ms ease forwards;
+    }
+
+    .hv-congrats.is-open .hv-congrats__dialog{
+      animation:hvCongratsPop 240ms ease forwards;
+    }
+
+    @keyframes hvCongratsPop{
+      to{transform:translateY(0) scale(1); opacity:1;}
+    }
+
+    .hv-congrats__body{
+      padding:24px 22px 18px;
+      text-align:center;
+    }
+
+    .hv-congrats__icon{
+      width:76px;
+      height:76px;
+      border-radius:999px;
+      margin:0 auto 14px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background:linear-gradient(135deg, #f4a261, #e76f51);
+      color:#fff;
+      font-size:2.2rem;
+      font-weight:900;
+    }
+
+    .hv-congrats__title{
+      margin:0;
+      font-size:1.6rem;
+      color:#0f172a;
+      font-weight:900;
+    }
+
+    .hv-congrats__msg{
+      margin:10px 0 0;
+      color:#475569;
+      font-weight:700;
+      line-height:1.5;
+    }
+
+    .hv-congrats__footer{
+      padding:14px 18px 18px;
+      display:flex;
+    }
+
+    .hv-congrats__btn{
+      width:100%;
+      min-height:48px;
+      border:none;
+      border-radius:12px;
+      font-weight:900;
+      cursor:pointer;
+      background:linear-gradient(135deg, #f4a261, #e76f51);
+      color:#fff;
+      transition:transform 180ms ease, box-shadow 180ms ease;
+    }
+
+    .hv-congrats__btn:hover{
+      transform:translateY(-1px);
+      box-shadow:0 12px 22px rgba(244, 162, 97, 0.28);
+    }
+
+    .hv-confetti{
+      position:absolute;
+      inset:0;
+      pointer-events:none;
+      overflow:hidden;
+    }
+
+    .hv-confetti i{
+      position:absolute;
+      top:-12px;
+      border-radius:3px;
+      animation:hvConfettiFall 1.2s ease forwards;
+    }
+
+    @keyframes hvConfettiFall{
+      0%{transform:translateY(-10px) rotate(0deg); opacity:1;}
+      100%{transform:translateY(480px) rotate(280deg); opacity:0;}
+    }
+
     /* Loading State */
     .loading-spinner {
       display: flex;
@@ -904,6 +1016,21 @@
       <button class="success-btn" onclick="window.location.href='./homepage_login_instituition.html'">
         <i class="fas fa-home"></i> Go to Homepage
       </button>
+    </div>
+  </div>
+
+  <div class="hv-congrats" id="hvCongrats">
+    <div class="hv-congrats__backdrop" data-close="true"></div>
+    <div class="hv-congrats__dialog" role="dialog" aria-modal="true" aria-label="Success">
+      <div class="hv-confetti" aria-hidden="true"></div>
+      <div class="hv-congrats__body">
+        <div class="hv-congrats__icon" aria-hidden="true">✓</div>
+        <h3 class="hv-congrats__title" id="hvCongratsTitle">Success!</h3>
+        <p class="hv-congrats__msg" id="hvCongratsMsg"></p>
+      </div>
+      <div class="hv-congrats__footer">
+        <button class="hv-congrats__btn" type="button" id="hvCongratsOk">OK</button>
+      </div>
     </div>
   </div>
 

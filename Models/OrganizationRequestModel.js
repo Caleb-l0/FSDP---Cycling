@@ -43,31 +43,101 @@ async function createRequest(requestData) {
   }
 }
 
-async function assignEventHeadToRequest({ requestId, organizationId, eventHeadName, eventHeadContact, eventHeadEmail, eventHeadProfile }) {
+async function assignEventHeadToRequest({
+  requestId,
+  organizationId,
+  eventHeadName,
+  eventHeadContact,
+  eventHeadEmail,
+  eventHeadProfile
+}) {
   try {
-    const result = await pool.query(
+    // 1) Verify request exists and is Approved
+    const reqResult = await pool.query(
       `
-      UPDATE volunterrequests
-      SET
-        session_head_name = $1,
-        session_head_contact = $2,
-        session_head_email = $3,
-        session_head_profile = $4,
-        updatedat = NOW()
-      WHERE requestid = $5
-        AND organizationid = $6
-        AND status = 'Approved'
-      RETURNING *
+      SELECT
+        vr.requestid,
+        vr.eventid,
+        vr.organizationid,
+        vr.requiredvolunteers,
+        e.maximumparticipant
+      FROM volunterrequests vr
+      JOIN events e ON e.eventid = vr.eventid
+      WHERE vr.requestid = $1
+        AND vr.organizationid = $2
+        AND vr.status = 'Approved'
       `,
-      [eventHeadName, eventHeadContact, eventHeadEmail, eventHeadProfile || null, requestId, organizationId]
+      [requestId, organizationId]
     );
 
-    return result.rows[0] || null;
+    if (reqResult.rows.length === 0) {
+      throw new Error("Approved request not found for this organization");
+    }
+
+    const req = reqResult.rows[0];
+
+    // 2) Prevent duplicate booking for same request
+    const existingBooking = await pool.query(
+      `
+      SELECT bookingid
+      FROM eventbookings
+      WHERE requestid = $1
+      LIMIT 1
+      `,
+      [requestId]
+    );
+
+    if (existingBooking.rows.length > 0) {
+      throw new Error("This request has already been booked");
+    }
+
+    // 3) Insert into eventbookings (SUCCESS record)
+    const bookingResult = await pool.query(
+      `
+      INSERT INTO eventbookings (
+        eventid,
+        organizationid,
+        participants,
+        status,
+        session_head_name,
+        session_head_contact,
+        session_head_email,
+        session_head_profile,
+        requestid,
+        createdat
+      )
+      VALUES ($1, $2, $3, 'Approved', $4, $5, $6, $7, $8, NOW())
+      RETURNING *
+      `,
+      [
+        req.eventid,
+        req.organizationid,
+        req.requiredvolunteers,
+        eventHeadName,
+        eventHeadContact,
+        eventHeadEmail,
+        eventHeadProfile || null,
+        requestId
+      ]
+    );
+
+    // 4) Mark request as completed / fulfilled
+    await pool.query(
+      `
+      UPDATE volunterrequests
+      SET status = 'Completed', updatedat = NOW()
+      WHERE requestid = $1
+      `,
+      [requestId]
+    );
+
+    return bookingResult.rows[0];
   } catch (err) {
-    console.error('assignEventHeadToRequest SQL error:', err);
+    console.error("assignEventHeadToRequest SQL error:", err);
     throw err;
   }
 }
+
 
 
 // ======================================================
