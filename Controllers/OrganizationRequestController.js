@@ -357,10 +357,10 @@ async function assignEventHead(req, res) {
     }
 
     const requesterId = req.user.id;
-    const requestId = Number(req.params.requestId);
+    const eventId = Number(req.params.eventId);
 
-    if (!requestId) {
-      return res.status(400).json({ message: "Invalid requestId" });
+    if (!eventId) {
+      return res.status(400).json({ message: "Invalid eventId" });
     }
 
     const {
@@ -380,7 +380,7 @@ async function assignEventHead(req, res) {
     }
 
     const booking = await OrganizationRequestModel.assignEventHeadToRequest({
-      requestId,
+      eventId,
       organizationId,
       eventHeadName,
       eventHeadContact,

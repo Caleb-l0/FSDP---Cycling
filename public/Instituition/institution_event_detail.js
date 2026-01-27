@@ -661,7 +661,7 @@ async function assignEventHead(modal) {
       return;
     }
 
-    const eventId = currentEvent?.eventid || currentEvent?.BookingID;
+    const eventId = currentApplication?.eventid 
     if (!eventId) {
       alert('Event ID not found. Please refresh the page and try again.');
       return;
@@ -671,7 +671,7 @@ async function assignEventHead(modal) {
     submitBtn.disabled = true;
     submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Assigning...';
 
-    const response = await fetch(`${API_BASE}/organization/events/bookings/${bookingId}/assign-head`, {
+    const response = await fetch(`${API_BASE}/organization/events/bookings/${eventId}/assign-head`, {
       method: 'PUT',
       headers: {
         'Authorization': `Bearer ${token}`,

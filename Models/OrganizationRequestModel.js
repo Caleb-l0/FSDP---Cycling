@@ -51,9 +51,12 @@ async function assignEventHeadToRequest({
   eventHeadEmail,
   eventHeadProfile
 }) {
+  const client = await pool.connect();
   try {
-    // 1) Verify request exists and is Approved
-    const reqResult = await pool.query(
+    await client.query("BEGIN");
+
+    // 1) Verify request exists and is Approved + belongs to org
+    const reqResult = await client.query(
       `
       SELECT
         vr.requestid,
@@ -76,8 +79,16 @@ async function assignEventHeadToRequest({
 
     const req = reqResult.rows[0];
 
-    // 2) Prevent duplicate booking for same request
-    const existingBooking = await pool.query(
+    // 2) Optional: capacity check
+    if (
+      req.maximumparticipant != null &&
+      req.requiredvolunteers > req.maximumparticipant
+    ) {
+      throw new Error("Required volunteers exceed event maximum participant limit");
+    }
+
+    // 3) Prevent duplicate booking for same request (lock safe-ish with transaction)
+    const existingBooking = await client.query(
       `
       SELECT bookingid
       FROM eventbookings
@@ -91,8 +102,8 @@ async function assignEventHeadToRequest({
       throw new Error("This request has already been booked");
     }
 
-    // 3) Insert into eventbookings (SUCCESS record)
-    const bookingResult = await pool.query(
+    // 4) Insert booking record
+    const bookingResult = await client.query(
       `
       INSERT INTO eventbookings (
         eventid,
@@ -121,8 +132,8 @@ async function assignEventHeadToRequest({
       ]
     );
 
-    // 4) Mark request as completed / fulfilled
-    await pool.query(
+    // 5) Mark request completed
+    await client.query(
       `
       UPDATE volunterrequests
       SET status = 'Completed', updatedat = NOW()
@@ -131,10 +142,14 @@ async function assignEventHeadToRequest({
       [requestId]
     );
 
+    await client.query("COMMIT");
     return bookingResult.rows[0];
   } catch (err) {
+    await client.query("ROLLBACK");
     console.error("assignEventHeadToRequest SQL error:", err);
     throw err;
+  } finally {
+    client.release();
   }
 }
 
