@@ -443,6 +443,23 @@ async function getOrganizationMembersExperience(req, res) {
   } 
 }
 
+async function getInstitutionSignedEvents(req, res) {
+  try {
+    if (!req.user?.id) {
+      return res.status(401).json({ message: "User not authenticated" });
+    }
+    const organizationID = await OrganizationRequestModel.getOrganisationIDByUserID(req.user.id);
+    if (!organizationID) {
+      return res.status(200).json([]);
+    }
+    const events = await OrganizationRequestModel.getInstitutionSignedEvents(organizationID);
+    res.status(200).json(events);
+  } catch (error) {
+    res.status(500).json({ message: "Server Error", error: error.message });
+  }
+}
+
+
 // ======================================================
 module.exports = {
 
@@ -457,5 +474,6 @@ module.exports = {
   getEventPeopleSignups,
   getAllOrganizationRequests,
   requestEventBooking, assignEventHead,getOrganizationMembers, getOrganizationMembersExperience
+  ,getInstitutionSignedEvents
 };
 
