@@ -4,6 +4,10 @@ if (!token) {
   window.location.href = "../../index.html";
 }
 
+const API_BASE = (window.location.origin && window.location.origin !== 'null')
+  ? window.location.origin
+  : "https://fsdp-cycling-ltey.onrender.com";
+
 
 let friendsData = [];
 let currentFilter = "recent";
@@ -13,12 +17,13 @@ document.addEventListener("DOMContentLoaded", () => {
   loadFriends();
   setupFilters();
   setupSearch();
+  setupAddFriend();
 });
 
 async function loadFriends() {
   try {
     const res = await fetch(
-      "https://fsdp-cycling-ltey.onrender.com/volunteer/friends/me",
+      `${API_BASE}/volunteer/friends/me`,
       {
         headers: {
           Authorization: `Bearer ${token}`
@@ -182,4 +187,153 @@ function renderFriends() {
 
     list.appendChild(card);
   });
+}
+
+function setupAddFriend() {
+  const openBtn = document.getElementById('openAddFriend');
+  const modal = document.getElementById('addFriendModal');
+  const overlay = document.getElementById('addFriendOverlay');
+  const closeBtn = document.getElementById('closeAddFriend');
+  const input = document.getElementById('addFriendQuery');
+  const resultsEl = document.getElementById('addFriendResults');
+  const hintEl = document.getElementById('addFriendHint');
+
+  if (!openBtn || !modal || !overlay || !closeBtn || !input || !resultsEl || !hintEl) return;
+
+  const open = () => {
+    modal.classList.add('is-open');
+    modal.setAttribute('aria-hidden', 'false');
+    input.value = '';
+    hintEl.textContent = 'Start typing to search volunteers.';
+    resultsEl.innerHTML = '';
+    setTimeout(() => input.focus(), 0);
+  };
+
+  const close = () => {
+    modal.classList.remove('is-open');
+    modal.setAttribute('aria-hidden', 'true');
+  };
+
+  openBtn.addEventListener('click', open);
+  overlay.addEventListener('click', close);
+  closeBtn.addEventListener('click', close);
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modal.classList.contains('is-open')) close();
+  });
+
+  let searchTimer = null;
+  input.addEventListener('input', () => {
+    const q = String(input.value || '').trim();
+    if (searchTimer) window.clearTimeout(searchTimer);
+    searchTimer = window.setTimeout(() => {
+      runUserSearch(q, resultsEl, hintEl);
+    }, 250);
+  });
+}
+
+async function runUserSearch(query, resultsEl, hintEl) {
+  const q = String(query || '').trim();
+
+  if (!q) {
+    hintEl.textContent = 'Start typing to search volunteers.';
+    resultsEl.innerHTML = '';
+    return;
+  }
+
+  hintEl.textContent = 'Searching...';
+  resultsEl.innerHTML = '';
+
+  try {
+    const res = await fetch(`${API_BASE}/volunteer/users/search?q=${encodeURIComponent(q)}`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+
+    if (!res.ok) throw new Error(`Search failed (${res.status})`);
+    const data = await res.json();
+    const users = Array.isArray(data) ? data : [];
+
+    if (users.length === 0) {
+      hintEl.textContent = 'No users found.';
+      return;
+    }
+
+    hintEl.textContent = `Found ${users.length} user${users.length === 1 ? '' : 's'}.`;
+    resultsEl.innerHTML = '';
+
+    users.forEach((u) => {
+      const row = document.createElement('div');
+      row.className = 'hvf-result';
+
+      const name = u.name || 'Unknown';
+      const email = u.email || 'No email';
+      const phone = u.phonenumber || u.phone || '';
+      const level = (u.level != null) ? `Level ${u.level}` : '';
+
+      row.innerHTML = `
+        <div class="hvf-result__main">
+          <div class="hvf-result__name">${escapeHtml(name)}</div>
+          <div class="hvf-result__meta">${escapeHtml(email)}${phone ? ` • ${escapeHtml(phone)}` : ''}${level ? ` • ${escapeHtml(level)}` : ''}</div>
+        </div>
+        <button class="hvf-result__action" type="button">Add</button>
+      `;
+
+      const btn = row.querySelector('button');
+      btn.addEventListener('click', async () => {
+        btn.disabled = true;
+        btn.textContent = 'Adding...';
+        const ok = await sendAddFriend(u.id);
+        if (ok) {
+          btn.textContent = 'Sent';
+          await loadFriends();
+        } else {
+          btn.disabled = false;
+          btn.textContent = 'Add';
+        }
+      });
+
+      resultsEl.appendChild(row);
+    });
+  } catch (e) {
+    console.error('[add-friend] search error:', e);
+    hintEl.textContent = 'Failed to search. Please try again.';
+  }
+}
+
+async function sendAddFriend(friendId) {
+  const id = Number(friendId);
+  if (!Number.isFinite(id) || id <= 0) return false;
+
+  try {
+    const res = await fetch(`${API_BASE}/volunteer/friends/add`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ friendId: id })
+    });
+
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      alert(data.message || 'Failed to add friend.');
+      return false;
+    }
+
+    alert(data.message || 'Friend request sent.');
+    return true;
+  } catch (e) {
+    console.error('[add-friend] add error:', e);
+    alert('Failed to add friend. Please try again later.');
+    return false;
+  }
+}
+
+function escapeHtml(str) {
+  return String(str)
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#039;');
 }

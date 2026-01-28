@@ -77,6 +77,35 @@
   color:#0f172a;
 }
 
+.hvf-add-friend{
+  min-height: 44px;
+  padding: 10px 16px;
+  border-radius: 999px;
+  border: 2px solid #ea8d2a;
+  background: #ea8d2a;
+  color: #ffffff;
+  font-size: 1rem;
+  font-weight: 800;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease, border-color 0.15s ease;
+  box-shadow: 0 10px 20px rgba(234, 141, 42, 0.18);
+}
+
+.hvf-add-friend:hover{
+  background: #d97a1f;
+  border-color: #d97a1f;
+  transform: translateY(-1px);
+  box-shadow: 0 12px 26px rgba(234, 141, 42, 0.22);
+}
+
+.hvf-add-friend:focus{
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(234, 141, 42, 0.22);
+}
+
 /* ======================================================
    FILTER BUTTONS – Professional Style
    Elderly-Friendly: Large, clear, high contrast
@@ -91,45 +120,168 @@
 }
 
 .hvf-pill {
-  padding: 14px 32px;
-  min-height: 48px; /* Elderly-friendly: larger touch target */
-  border-radius: 999px; /* Pill shape - consistent with other pages */
-  border: none;
+  min-height: 44px;
+  padding: 10px 16px;
+  border-radius: 999px;
+  border: 2px solid #e2e8f0;
   background: #ffffff;
-  border: 2px solid #e2e8f0; /* Clean, professional border */
-  color: #475569;
+  color: #1e293b;
   font-size: 1rem;
-  font-weight: 600;
-  letter-spacing: 0.3px;
+  font-weight: 700;
   cursor: pointer;
-  transition: all 0.2s ease;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease, border-color 0.15s ease;
 }
 
 .hvf-pill:hover {
-  background: #f1f5f9;
-  border-color: #264653;
-  color: #1e293b;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transform: translateY(-1px);
+  border-color: rgba(234, 141, 42, 0.45);
+  box-shadow: 0 8px 18px rgba(234, 141, 42, 0.12);
 }
 
 /* ACTIVE STATE - Clean Yellow Pill (Professional, Elderly-Friendly) */
 .hvf-pill.hvf-active {
-  background: #fbbf24; /* Bright amber yellow - highly visible */
-  border: none; /* No border when active - cleaner look */
-  color: #1e293b; /* Dark text on yellow for high contrast */
-  box-shadow: 0 6px 16px rgba(251, 191, 36, 0.4);
-  font-weight: 600;
+  background: #ea8d2a;
+  border-color: #ea8d2a;
+  color: #ffffff;
+  box-shadow: 0 10px 20px rgba(234, 141, 42, 0.25);
 }
 
 .hvf-pill.hvf-active:hover {
-  background: #f59e0b; /* Slightly darker yellow on hover */
-  box-shadow: 0 8px 20px rgba(251, 191, 36, 0.5);
-  transform: translateY(-2px);
+  box-shadow: 0 12px 24px rgba(234, 141, 42, 0.28);
+  transform: translateY(-1px);
+}
+
+.hvf-modal{
+  position: fixed;
+  inset: 0;
+  display: none;
+  z-index: 9999;
+}
+
+.hvf-modal.is-open{display: block;}
+
+.hvf-modal__overlay{
+  position: absolute;
+  inset: 0;
+  background: rgba(2, 6, 23, 0.55);
+}
+
+.hvf-modal__panel{
+  position: relative;
+  width: 92%;
+  max-width: 640px;
+  margin: 84px auto;
+  background: #ffffff;
+  border-radius: 18px;
+  border: 1px solid rgba(15, 23, 42, 0.10);
+  box-shadow: 0 18px 48px rgba(2, 6, 23, 0.25);
+  overflow: hidden;
+}
+
+.hvf-modal__head{
+  padding: 16px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+  background: linear-gradient(180deg, #ffffff, #fbfdff);
+}
+
+.hvf-modal__title{
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 900;
+  color: #0f172a;
+}
+
+.hvf-modal__close{
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  border: 2px solid rgba(15, 23, 42, 0.10);
+  background: #ffffff;
+  color: #0f172a;
+  cursor: pointer;
+}
+
+.hvf-modal__close:hover{border-color: rgba(234, 141, 42, 0.45);}
+.hvf-modal__close:focus{outline:none; box-shadow: 0 0 0 4px rgba(234, 141, 42, 0.22);}
+
+.hvf-modal__body{padding: 16px 18px 18px;}
+
+.hvf-modal__label{
+  display: block;
+  font-weight: 800;
+  color: #334155;
+  margin-bottom: 10px;
+}
+
+.hvf-modal__search{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  border-radius: 999px;
+  padding: 10px 14px;
+}
+
+.hvf-modal__search i{color:#64748b;}
+
+.hvf-modal__search input{
+  width: 100%;
+  border: none;
+  outline: none;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.hvf-modal__hint{
+  margin-top: 12px;
+  color: #64748b;
+  font-weight: 700;
+}
+
+.hvf-modal__results{margin-top: 14px; display: flex; flex-direction: column; gap: 10px;}
+
+.hvf-result{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 12px;
+  border-radius: 16px;
+  background: #ffffff;
+  border: 1px solid rgba(15, 23, 42, 0.10);
+  box-shadow: 0 6px 14px rgba(0,0,0,.05);
+}
+
+.hvf-result__main{min-width: 0;}
+
+.hvf-result__name{font-weight: 900; color: #0f172a; font-size: 1.05rem;}
+
+.hvf-result__meta{margin-top: 6px; color: #475569; font-weight: 700; font-size: 0.98rem;}
+
+.hvf-result__action{
+  min-height: 40px;
+  padding: 10px 14px;
+  border-radius: 999px;
+  border: 2px solid #ea8d2a;
+  background: #ea8d2a;
+  color: #ffffff;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.hvf-result__action:hover{background:#d97a1f; border-color:#d97a1f;}
+.hvf-result__action:disabled{opacity:0.6; cursor:not-allowed;}
+
+@media (max-width: 480px) {
+  .hvf-modal__panel{margin: 70px auto;}
+  .hvf-add-friend{width: 100%; justify-content: center;}
 }
 
 /* ======================================================

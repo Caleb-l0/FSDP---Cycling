@@ -36,9 +36,24 @@ async function getPublicVolunteerProfile(req, res) {
   }
 }
 
+async function searchVolunteers(req, res) {
+  try {
+    const userId = req.user?.id;
+    if (!userId) return res.status(401).json({ message: 'Unauthorized' });
+
+    const q = String(req.query.q || '').trim();
+    if (!q) return res.status(200).json([]);
+
+    const results = await userProfileModel.searchVolunteers(q, userId, 10);
+    return res.status(200).json(results);
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: 'Server error' });
+  }
+}
 
 
 module.exports = {
- getPublicVolunteerProfile
-
+  getPublicVolunteerProfile,
+  searchVolunteers
 };

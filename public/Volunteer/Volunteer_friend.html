@@ -72,6 +72,10 @@
         <i class="fas fa-search" aria-hidden="true"></i>
         <input id="friendsSearch" type="text" placeholder="Search by name, username, bio, email" autocomplete="off" />
       </div>
+      <button class="hvf-add-friend" id="openAddFriend" type="button">
+        <i class="fas fa-user-plus" aria-hidden="true"></i>
+        Add Friend
+      </button>
     </div>
 
     <!-- FILTER BUTTONS -->
@@ -86,6 +90,29 @@
     <!-- Cards injected by JS using hvf- prefixed classes -->
   </div>
 </section>
+
+<div class="hvf-modal" id="addFriendModal" aria-hidden="true">
+  <div class="hvf-modal__overlay" id="addFriendOverlay"></div>
+  <div class="hvf-modal__panel" role="dialog" aria-modal="true" aria-labelledby="addFriendTitle">
+    <div class="hvf-modal__head">
+      <h3 class="hvf-modal__title" id="addFriendTitle">Add a Friend</h3>
+      <button class="hvf-modal__close" id="closeAddFriend" type="button" aria-label="Close">
+        <i class="fas fa-times" aria-hidden="true"></i>
+      </button>
+    </div>
+
+    <div class="hvf-modal__body">
+      <label class="hvf-modal__label" for="addFriendQuery">Search by name, email, or phone number</label>
+      <div class="hvf-modal__search">
+        <i class="fas fa-magnifying-glass" aria-hidden="true"></i>
+        <input id="addFriendQuery" type="text" placeholder="Type to search..." autocomplete="off" />
+      </div>
+
+      <div class="hvf-modal__hint" id="addFriendHint">Start typing to search volunteers.</div>
+      <div class="hvf-modal__results" id="addFriendResults" aria-live="polite"></div>
+    </div>
+  </div>
+</div>
 
 
 

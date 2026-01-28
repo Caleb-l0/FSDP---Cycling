@@ -294,6 +294,7 @@ app.delete('/admin/events/auto-delete/:eventID', authenticate, adminEventControl
 
 // ------ VOLUNTEER USER PROFILE --------
 app.get('/volunteer/user/profile/:id',volunteerUserController.getPublicVolunteerProfile);
+app.get('/volunteer/users/search', authenticate, volunteerUserController.searchVolunteers);
 
 // ------ VOLUNTEER FRIENDS CONTROLLER -----
 
