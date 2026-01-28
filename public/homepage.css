@@ -225,6 +225,8 @@ textarea {
   align-items: center;
   justify-content: space-between;
   height: 72px;
+  gap: 12px;
+  padding: 0 12px;
 }
 
 /* =========================
@@ -252,10 +254,10 @@ textarea {
   align-items: center;
   justify-content: center;
 
-  padding: 10px 18px;
+  padding: 9px 14px;
   min-height: 44px;
 
-  font-size: 1rem;
+  font-size: 0.98rem;
   font-weight: 600;
 
   text-decoration: none;
@@ -826,20 +828,38 @@ footer .copyright {
 .hv-header-right {
     display: flex;
     align-items: center;
-    gap: 14px;
+    gap: 10px;
 }
 
 /* Logged-in badge */
 .hv-user-status {
-    font-size: 14px;
-    font-weight: 600;
-    color: #264653;
-    background: transparent;    
-    padding: 0;                     
-    border-radius: 0;               
-    white-space: nowrap;
-    margin-left: 45px;             
-    opacity: 0.85;                 
+    display: none;
+}
+
+@media (max-width: 1200px) {
+  .hv-logo {
+    font-size: 1.45rem;
+  }
+  #mainNav ul {
+    gap: 8px;
+  }
+  #mainNav ul li a {
+    padding: 8px 12px;
+    font-size: 0.95rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .hv-header-content {
+    height: 64px;
+    padding: 0 10px;
+  }
+  body {
+    padding-top: 64px;
+  }
+  .hv-logo {
+    font-size: 1.25rem;
+  }
 }
 
 

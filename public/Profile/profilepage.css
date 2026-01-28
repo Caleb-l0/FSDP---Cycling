@@ -791,11 +791,12 @@ iframe.goog-te-banner-frame,
   }
   
   .profile-nav-btn {
-    min-width: 140px;
+    min-width: 124px;
     flex-shrink: 0;
     justify-content: center;
-    padding: 14px 18px;
-    font-size: 0.9rem;
+    padding: 10px 12px;
+    font-size: 0.85rem;
+    min-height: 44px;
   }
   
   .profile-nav-btn span {
@@ -803,7 +804,7 @@ iframe.goog-te-banner-frame,
   }
   
   .profile-nav-btn i {
-    font-size: 1rem;
+    font-size: 0.95rem;
     margin-right: 6px;
   }
   
@@ -858,6 +859,29 @@ iframe.goog-te-banner-frame,
   .hero.profile-hero {
     padding: 90px 8px 80px;
     min-height: auto;
+  }
+
+  .profile-sidebar {
+    padding: 14px;
+  }
+
+  .profile-nav {
+    gap: 6px;
+    padding-bottom: 6px;
+    margin-bottom: 14px;
+  }
+
+  .profile-nav-btn {
+    min-width: 112px;
+    padding: 9px 10px;
+    font-size: 0.82rem;
+    min-height: 42px;
+    border-radius: 10px;
+  }
+
+  .profile-nav-btn i {
+    font-size: 0.92rem;
+    margin-right: 6px;
   }
 
   body {

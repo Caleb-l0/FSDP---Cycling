@@ -209,6 +209,7 @@ h2 {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  z-index: 2;
   transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease, background 0.15s ease;
 }
 
@@ -271,6 +272,42 @@ h2 {
   flex: 1;
   gap: 12px;
   position: relative;
+}
+
+@media (max-width: 600px) {
+  .event-details {
+    padding: 18px;
+    padding-top: 56px;
+    padding-right: 56px;
+  }
+
+  .event-collapse-btn {
+    top: 10px;
+    right: 10px;
+    width: 34px;
+    height: 34px;
+    font-size: 1.1rem;
+  }
+
+  .event-card::before {
+    height: 160px;
+  }
+}
+
+@media (max-width: 420px) {
+  .event-details {
+    padding: 16px;
+    padding-top: 54px;
+    padding-right: 52px;
+  }
+
+  .event-details h3 {
+    font-size: 1.2rem;
+  }
+
+  .event-details p {
+    font-size: 0.95rem;
+  }
 }
 
 .event-details[role="button"] {

@@ -42,8 +42,10 @@ async function loadFriends() {
     console.error("Load friends error", err);
     const list = document.getElementById("friendsList");
     list.innerHTML = `
-      <div class="hvf-empty-state">
-        <p>Unable to load friends. Please try again later.</p>
+      <div class="hv-empty">
+        <div class="hv-empty__icon" aria-hidden="true"><i class="fas fa-triangle-exclamation"></i></div>
+        <p class="hv-empty__title">Unable to load friends</p>
+        <p class="hv-empty__sub">Please check your connection and try again.</p>
       </div>
     `;
   }
@@ -87,8 +89,10 @@ function renderFriends() {
   // Handle empty state
   if (!friendsData || friendsData.length === 0) {
     list.innerHTML = `
-      <div class="hvf-empty-state">
-        <p>You don't have any friends yet. Start connecting with other volunteers!</p>
+      <div class="hv-empty">
+        <div class="hv-empty__icon" aria-hidden="true"><i class="fas fa-user"></i></div>
+        <p class="hv-empty__title">No friends yet</p>
+        <p class="hv-empty__sub">Use Add Friend to connect with other volunteers.</p>
       </div>
     `;
     return;
@@ -126,8 +130,10 @@ function renderFriends() {
 
   if (sorted.length === 0) {
     list.innerHTML = `
-      <div class="hvf-empty-state">
-        <p>No friends match your search.</p>
+      <div class="hv-empty">
+        <div class="hv-empty__icon" aria-hidden="true"><i class="fas fa-magnifying-glass"></i></div>
+        <p class="hv-empty__title">No results</p>
+        <p class="hv-empty__sub">No friends match your search.</p>
       </div>
     `;
     return;

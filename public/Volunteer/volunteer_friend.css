@@ -403,6 +403,32 @@
     margin: 32px 0 40px;
   }
 
+  .hvf-subhead{
+    gap: 12px;
+    margin-bottom: 18px;
+  }
+
+  .hvf-count{
+    padding: 8px 12px;
+    font-size: 0.95rem;
+  }
+
+  .hvf-search{
+    min-width: 220px;
+    padding: 8px 12px;
+  }
+
+  .hvf-search input{
+    font-size: 0.95rem;
+  }
+
+  .hvf-add-friend{
+    min-height: 44px;
+    padding: 9px 12px;
+    font-size: 0.95rem;
+    gap: 8px;
+  }
+
   .hvf-friend-card {
     padding: 24px;
   }
@@ -418,9 +444,9 @@
   }
 
   .hvf-pill {
-    padding: 14px 28px; /* Keep larger padding on tablet */
-    font-size: 1rem; /* Keep readable font size */
-    min-height: 48px; /* Maintain large touch target */
+    padding: 10px 14px;
+    font-size: 0.95rem;
+    min-height: 44px;
   }
 }
 
@@ -428,6 +454,26 @@
   .hvf-friends-list {
     grid-template-columns: 1fr;
     gap: 24px;
+  }
+
+  .hv-friends{
+    padding: 0 14px;
+  }
+
+  .hvf-subhead{
+    gap: 10px;
+  }
+
+  .hvf-search{
+    min-width: 0;
+    width: 100%;
+  }
+
+  .hvf-add-friend{
+    width: auto;
+    min-height: 44px;
+    padding: 9px 12px;
+    font-size: 0.92rem;
   }
 
   .hvf-friend-card {
@@ -449,15 +495,15 @@
   }
 
   .hvf-friend-filters {
-    gap: 16px; /* Slightly smaller gap on mobile but still spacious */
+    gap: 10px;
   }
 
   .hvf-pill {
-    padding: 14px 24px; /* Large padding for easy clicking */
-    font-size: 1rem; /* Keep large, readable font */
-    min-height: 50px; /* Even larger touch target on mobile */
-    width: 100%; /* Full width on very small screens for easier tapping */
-    max-width: 200px; /* But not too wide */
+    padding: 9px 12px;
+    font-size: 0.92rem;
+    min-height: 44px;
+    width: auto;
+    max-width: none;
   }
 
   .hv-friends-header h2 {
