@@ -43,6 +43,118 @@ async function signUpForEvent(userID, eventID) {
     `,
     [eventID]
   );
+
+  try {
+    await awardVolunteerLevelBadges(userID);
+  } catch (e) {
+    console.error('awardVolunteerLevelBadges error:', e);
+  }
+}
+
+async function awardVolunteerLevelBadges(userID) {
+  const userId = Number(userID);
+  if (!userId) return;
+
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+
+    const countRes = await client.query(
+      `
+      SELECT COUNT(*)::int AS total
+      FROM eventsignups
+      WHERE userid = $1 AND status = 'Active'
+      `,
+      [userId]
+    );
+
+    const total = Number(countRes.rows?.[0]?.total || 0);
+
+    let level = null;
+    if (total >= 20) level = 'Diamond Volunteer';
+    else if (total >= 10) level = 'Gold Volunteer';
+    else if (total >= 5) level = 'Bronze Volunteer';
+
+    if (level) {
+      await client.query(
+        `
+        UPDATE users
+        SET level = $2
+        WHERE id = $1
+        `,
+        [userId, level]
+      );
+    }
+
+    const badgesToAward = [];
+    if (total >= 5) badgesToAward.push({
+      badgetype: 'level',
+      badgename: 'Bronze Volunteer',
+      description: 'Signed up for 5 volunteer events',
+      requirementvalue: 5,
+      iconurl: 'https://cdn-icons-png.flaticon.com/512/2583/2583319.png'
+    });
+    if (total >= 10) badgesToAward.push({
+      badgetype: 'level',
+      badgename: 'Gold Volunteer',
+      description: 'Signed up for 10 volunteer events',
+      requirementvalue: 10,
+      iconurl: 'https://cdn-icons-png.flaticon.com/512/2583/2583434.png'
+    });
+    if (total >= 20) badgesToAward.push({
+      badgetype: 'level',
+      badgename: 'Diamond Volunteer',
+      description: 'Signed up for 20 volunteer events',
+      requirementvalue: 20,
+      iconurl: 'https://cdn-icons-png.flaticon.com/512/2583/2583340.png'
+    });
+
+    for (const b of badgesToAward) {
+      const existing = await client.query(
+        `
+        SELECT badgeid
+        FROM badges
+        WHERE LOWER(TRIM(badgetype)) = LOWER(TRIM($1))
+          AND LOWER(TRIM(badgename)) = LOWER(TRIM($2))
+        LIMIT 1
+        `,
+        [b.badgetype, b.badgename]
+      );
+
+      let badgeId = existing.rows?.[0]?.badgeid;
+
+      if (!badgeId) {
+        const inserted = await client.query(
+          `
+          INSERT INTO badges (badgetype, badgename, description, iconurl, requirementvalue, isactive)
+          VALUES ($1, $2, $3, $4, $5, TRUE)
+          RETURNING badgeid
+          `,
+          [b.badgetype, b.badgename, b.description, b.iconurl, b.requirementvalue]
+        );
+        badgeId = inserted.rows?.[0]?.badgeid;
+      }
+
+      if (badgeId) {
+        await client.query(
+          `
+          INSERT INTO userbadges (userid, badgeid, source, status)
+          VALUES ($1, $2, 'system', 'active')
+          ON CONFLICT (userid, badgeid)
+          DO UPDATE SET status = 'active'
+          `,
+          [userId, badgeId]
+        );
+      }
+    }
+
+    await client.query('COMMIT');
+  } catch (err) {
+    await client.query('ROLLBACK');
+    throw err;
+  } finally {
+    client.release();
+  }
 }
 
 

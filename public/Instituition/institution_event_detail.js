@@ -701,7 +701,7 @@ async function assignEventHead(modal) {
 
     const response = await fetch(`${API_BASE}/organization/events/assign-head/${eventId}`, {
       method: 'PUT',
-      headers: {
+      headers: {   
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json'
       },
