@@ -14,21 +14,24 @@ async function getPublicVolunteerProfile(req, res) {
     const followers = await userProfileModel.getFollowersCount(userId);
 
     return res.json({
-      id: user.id,
-      name: user.name,
-      level: user.level,
-      joindate: user.joindate,
-      role: user.role,
-      email: user.email,
-      phone: user.phone ?? user.phonenumber ?? null,
-      advantages: user.advantages ?? null,
+      user: {
+        id: user.id,
+        name: user.name,
+        level: user.level,
+        joindate: user.joindate,
+        role: user.role,
+        email: user.email,
+        phone: user.phone ?? user.phonenumber ?? null,
+        advantages: user.advantages ?? null,
+        profilePicture: user.profilepicture ?? null,
 
-      total_events: exp.total_events,
-      first_event_date: exp.first_event_date,
+        total_events: exp.total_events,
+        first_event_date: exp.first_event_date,
 
-      followers,
-      events,
-      badges
+        followers,
+        events,
+        badges
+      }
     });
   } catch (err) {
     console.error(err);

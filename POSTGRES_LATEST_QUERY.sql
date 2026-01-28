@@ -29,6 +29,10 @@ ADD COLUMN IF NOT EXISTS phonenumber VARCHAR(20);
 ALTER TABLE users 
 ADD COLUMN IF NOT EXISTS advantages TEXT;
 
+-- Add profilepicture column for storing avatar images (base64 encoded)
+ALTER TABLE users 
+ADD COLUMN IF NOT EXISTS profilepicture TEXT;
+
 
 
 

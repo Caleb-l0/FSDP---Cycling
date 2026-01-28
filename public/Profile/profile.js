@@ -35,6 +35,19 @@ async function loadProfile() {
       const title = document.getElementById('profileTitle');
       if (title) title.textContent = 'User Profile';
 
+      // Load profile picture for viewed user
+      const avatarImg = document.getElementById("profileAvatar");
+      if (avatarImg) {
+        if (user.profilePicture || user.profilepicture) {
+          avatarImg.src = user.profilePicture || user.profilepicture;
+        } else {
+          avatarImg.src = "https://cdn-icons-png.flaticon.com/512/847/847969.png";
+        }
+      }
+      // Hide avatar upload button when viewing other users
+      const avatarUploadLabel = document.querySelector(".avatar-upload-label");
+      if (avatarUploadLabel) avatarUploadLabel.style.display = 'none';
+
       if (editBtnEl) editBtnEl.style.display = 'none';
       if (saveBtnEl) saveBtnEl.style.display = 'none';
       if (editSettingsBtnEl) editSettingsBtnEl.style.display = 'none';
@@ -53,6 +66,7 @@ async function loadProfile() {
 
       data = await response.json();
       console.log("PROFILE API:", data);  
+      console.log("Profile Picture from API:", data.profilePicture || data.profilepicture);
 
       user = data.user || data; 
     }
@@ -60,6 +74,22 @@ async function loadProfile() {
     document.getElementById("name").value  = user.name || "";
     document.getElementById("email").value = user.email || "";
     // Role removed - no longer displayed
+
+    // Load profile picture
+    const avatarImg = document.getElementById("profileAvatar");
+    if (avatarImg) {
+      const profilePic = user.profilePicture || user.profilepicture;
+      console.log("Loading profile picture:", profilePic ? "Found" : "Not found");
+      console.log("Profile picture value:", profilePic ? profilePic.substring(0, 50) + "..." : "null/undefined");
+      // Only update if we have a valid profile picture, or if current src is the default
+      if (profilePic && profilePic.trim() !== "") {
+        avatarImg.src = profilePic;
+      } else if (!avatarImg.src || avatarImg.src.includes("cdn-icons-png.flaticon.com") || avatarImg.src.includes("default_user")) {
+        // Only set default if current image is default or empty
+        avatarImg.src = "https://cdn-icons-png.flaticon.com/512/847/847969.png";
+      }
+      // Otherwise keep the current image (user might have just uploaded)
+    }
 
     // Load settings from profile data (handle both camelCase and lowercase)
     if (user.homeAddress || user.homeaddress) {
@@ -221,6 +251,7 @@ saveBtn.addEventListener("click", async () => {
     const homeAddress = document.getElementById("homeAddress")?.value || null;
     const phoneNumber = document.getElementById("phoneNumber")?.value || null;
     const advantages = document.getElementById("advantages")?.value || null;
+    const profilePicture = document.getElementById("profileAvatar")?.src || null;
 
     const response = await fetch("https://fsdp-cycling-ltey.onrender.com/profile", {
       method: "PUT",
@@ -231,7 +262,8 @@ saveBtn.addEventListener("click", async () => {
         textSizePreference: selectedTextSize,
         homeAddress: homeAddress,
         phoneNumber: phoneNumber,
-        advantages: advantages
+        advantages: advantages,
+        profilePicture: profilePicture
       })
     });
 
@@ -567,3 +599,109 @@ window.scrollTo({
   top: 0,
   behavior: 'smooth'
 });
+
+// ======================================================
+// Avatar Upload Functionality
+// ======================================================
+const avatarUpload = document.getElementById("avatarUpload");
+const profileAvatar = document.getElementById("profileAvatar");
+
+if (avatarUpload && profileAvatar) {
+  avatarUpload.addEventListener("change", async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith("image/")) {
+      alert("Please select an image file (JPG, PNG, etc.).");
+      return;
+    }
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      alert("Image size should be less than 5MB. Please select a smaller image.");
+      return;
+    }
+
+    // Convert to base64 for preview and upload
+    const reader = new FileReader();
+    reader.onload = async (event) => {
+      let base64Image = event.target.result;
+      
+      // Compress image if it's too large (resize to max 300x300 to reduce size)
+      const img = new Image();
+      img.onload = async () => {
+        const canvas = document.createElement('canvas');
+        const maxSize = 300;
+        let width = img.width;
+        let height = img.height;
+        
+        // Calculate new dimensions maintaining aspect ratio
+        if (width > height) {
+          if (width > maxSize) {
+            height = (height * maxSize) / width;
+            width = maxSize;
+          }
+        } else {
+          if (height > maxSize) {
+            width = (width * maxSize) / height;
+            height = maxSize;
+          }
+        }
+        
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+        
+        // Convert to base64 with quality 0.8
+        base64Image = canvas.toDataURL('image/jpeg', 0.8);
+        
+        // Show preview immediately
+        profileAvatar.src = base64Image;
+
+        // Save to profile - only update profilePicture
+        try {
+          const response = await fetch("https://fsdp-cycling-ltey.onrender.com/profile", {
+            method: "PUT",
+            headers: { 
+              "Content-Type": "application/json", 
+              "Authorization": `Bearer ${token}` 
+            },
+            body: JSON.stringify({ 
+              profilePicture: base64Image
+            })
+          });
+
+          if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            console.error("Avatar upload failed:", errorData);
+            throw new Error(errorData.message || `HTTP ${response.status}: Failed to update avatar`);
+          }
+
+          const result = await response.json();
+          console.log("Avatar upload success:", result);
+          console.log("Avatar base64 length:", base64Image.length);
+          alert("Avatar updated successfully!");
+          
+          // Keep the displayed image - don't reload immediately
+          // The image is already displayed via profileAvatar.src = base64Image above
+          // Only reload if there's an error
+        } catch (err) {
+          console.error("Error uploading avatar:", err);
+          alert(`Failed to upload avatar: ${err.message || "Please try again"}`);
+          // Revert to previous image only on error
+          loadProfile();
+        }
+      };
+      
+      img.onerror = () => {
+        alert("Failed to load image. Please select another image.");
+      };
+      
+      img.src = event.target.result;
+    };
+
+    reader.readAsDataURL(file);
+  });
+}
