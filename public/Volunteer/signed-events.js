@@ -109,11 +109,28 @@ function getStatusBadge(eventStatus, signUpStatus) {
 }
 
 function setStatusMessage(type, message) {
+  const icon = (type === 'loading')
+    ? '<i class="fas fa-circle-notch"></i>'
+    : (type === 'error')
+      ? '<i class="fas fa-triangle-exclamation"></i>'
+      : '<i class="fas fa-calendar"></i>';
+
   eventList.innerHTML = `
-    <div class="event-message event-message--${type}">
-      ${message}
+    <div class="hv-empty">
+      <div class="hv-empty__icon" aria-hidden="true">${icon}</div>
+      <p class="hv-empty__title">${escapeHtml(message)}</p>
+      <p class="hv-empty__sub">${type === 'loading' ? 'Please wait a moment.' : ' '}</p>
     </div>
   `;
+}
+
+function escapeHtml(str) {
+  return String(str)
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#039;');
 }
 
 function formatDate(rawDate) {

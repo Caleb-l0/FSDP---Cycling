@@ -475,13 +475,43 @@ async function loadVolunteers() {
         container.innerHTML = "";
 
         list.forEach(v => {
+            const vid = v.id ?? v.userid ?? v.userId;
             container.innerHTML += `
                 <div class="people-card">
                     <img src="${v.profilepicture || './default_user.png'}" class="people-avatar" alt="${v.name}'s avatar">
                     <h4 class="people-name">${v.name}</h4>
-                    <button class="btn-add">Add Friend</button>
+                    ${vid ? `<button class="btn-add" data-user-id="${vid}">Add Friend</button>` : `<button class="btn-add" disabled>Add Friend</button>`}
                 </div>
             `;
+        });
+
+        container.querySelectorAll('.btn-add[data-user-id]').forEach((btn) => {
+            btn.addEventListener('click', async () => {
+                const friendId = Number(btn.getAttribute('data-user-id'));
+                if (!friendId) return;
+                try {
+                    const r = await fetch('https://fsdp-cycling-ltey.onrender.com/volunteer/friends/add', {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ friendId })
+                    });
+
+                    const d = await r.json().catch(() => ({}));
+                    if (!r.ok) {
+                        alert(d?.message || d?.error || 'Failed to send friend request');
+                        return;
+                    }
+
+                    alert(d?.message || 'Friend request sent');
+                    btn.textContent = 'Requested';
+                    btn.disabled = true;
+                } catch (e) {
+                    alert('Failed to send friend request');
+                }
+            });
         });
     } finally {
         hideLoading();

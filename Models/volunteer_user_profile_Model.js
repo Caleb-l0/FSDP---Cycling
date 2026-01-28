@@ -69,6 +69,40 @@ async function getUserEvents(id) {
   return result.rows;
 }
 
+async function searchVolunteers(query, excludeUserId, limit = 10) {
+  const q = String(query || '').trim();
+  if (!q) return [];
+
+  const like = `%${q}%`;
+  const safeLimit = Math.min(Math.max(Number(limit) || 10, 1), 20);
+
+  const result = await pool.query(
+    `
+      SELECT
+        id,
+        name,
+        email,
+        phonenumber,
+        level,
+        joindate
+      FROM users
+      WHERE role = 'volunteer'
+        AND id <> $2
+        AND (
+          name ILIKE $1
+          OR email ILIKE $1
+          OR phonenumber ILIKE $1
+          OR phone ILIKE $1
+        )
+      ORDER BY name ASC
+      LIMIT ${safeLimit}
+    `,
+    [like, excludeUserId]
+  );
+
+  return result.rows;
+}
+
 /**
  * Get badges earned by user
  */
@@ -116,5 +150,6 @@ module.exports = {
   getUserEvents,
   getUserBadges,
   getFollowersCount,
+  searchVolunteers,
   
 };

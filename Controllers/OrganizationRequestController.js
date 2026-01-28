@@ -3,6 +3,7 @@ const OrganizationRequestModel = require("../Models/OrganizationRequestModel");
 const pool = require("../Postgres_config");
 const transporter = require("../mailer");
 const NotificationModel = require("../Models/notification_model");
+const { assign } = require("nodemailer/lib/shared");
 
 
 // ======================================================
@@ -20,72 +21,10 @@ const NotificationModel = require("../Models/notification_model");
 // ======================================================
 
 
-async function getUserOrganizationID(req, res) {
-  try {
-    // Check if user is authenticated
-    if (!req.user) {
-      return res.status(401).json({ message: "User not authenticated" });
-    }
-
-    const userId = req.user.id;
-    
-    if (!userId) {
-      console.error("getUserOrganizationID: userId is missing from req.user:", req.user);
-      return res.status(400).json({ message: "User ID is missing" });
-    }
-
-    // Ensure userId is an integer (PostgreSQL userid column is INT)
-    const userIdInt = parseInt(userId, 10);
-    if (isNaN(userIdInt)) {
-      console.error("getUserOrganizationID: userId is not a valid number:", userId);
-      return res.status(400).json({ message: "Invalid user ID format" });
-    }
-
-    const result = await pool.query(
-      `SELECT organizationid FROM userorganizations WHERE userid = $1 LIMIT 1`,
-      [userIdInt]
-    );
-
-    if (result.rows.length === 0) {
-      // Return null instead of 404 - institution users might not have organization yet
-      return res.status(200).json({ organizationId: null, message: "User is not associated with any organization" });
-    }
-
-    const organizationId = result.rows[0].organizationid;
-    res.status(200).json({ organizationId: organizationId });
-  } catch (error) {
-    console.error("getUserOrganizationID error:", error);
-    console.error("Error details:", error.stack);
-    console.error("Error message:", error.message);
-    res.status(500).json({ message: "Server error", error: error.message });
-  }
-}
 
 
 
 
-async function createRequest(req, res) {
-  try {
-    const { OrganizationID, EventName, EventDate, Description, RequiredVolunteers, RequesterID } = req.body;
-
-    // Map request body to model format (convert to lowercase for PostgreSQL)
-    const requestData = {
-      organizationid: OrganizationID,
-      requesterid: RequesterID,
-      eventname: EventName,
-      eventdate: EventDate,
-      description: Description,
-      requiredvolunteers: RequiredVolunteers
-    };
-
-    await OrganizationRequestModel.createRequest(requestData);
-    
-    res.status(200).json({ message: "Organization request submitted successfully!" });
-  } catch (err) {
-    console.error("createRequest error:", err);
-    res.status(500).json({ message: "Failed to submit request", error: err.message });
-  }
-}
 
 
 // ======================================================
@@ -312,7 +251,9 @@ async function getUserOrganizationID(req, res) {
     }
     res.status(200).json({ organizationId });
   } catch (error) {
-    res.status(500).json({ message: "Server Error", error: error.message });
+    // Fallback: do not hard-fail the UI; return null org id
+    console.error('getUserOrganizationID error:', error);
+    res.status(200).json({ organizationId: null, message: "Unable to resolve organization for user" });
   }
 }
 
@@ -354,17 +295,174 @@ async function getEventSignups(req, res) {
 async function getEventPeopleSignups(req, res) {
   const { eventID } = req.params;
   try {
+    console.log('Controller called with eventID:', eventID);
     const signups = await OrganizationRequestModel.getEventPeopleSignups(eventID);
+    console.log('Controller received from model:', signups);
+    console.log('Type of signups:', typeof signups);
+    console.log('Is array?', Array.isArray(signups));
     res.status(200).json(signups);
   }
   catch (error) {
+    console.error('Controller error:', error);
     res.status(500).json({ message: "Server Error", error: error.message });
   } 
 }
 
+async function requestEventBooking(req, res) {
+  try {
+    if (!req.user?.id) {
+      return res.status(401).json({ message: "User not authenticated" });
+    }
+
+    const requesterId = req.user.id;
+
+    const eventId = req.body.eventId;
+    if (!eventId) {
+      return res.status(400).json({ message: "eventId is required" });
+    }
+
+    const organizationId = await OrganizationRequestModel.getOrganisationIDByUserID(requesterId);
+    if (!organizationId) {
+      return res.status(400).json({ message: "User is not associated with any organization" });
+    }
+
+    const created = await OrganizationRequestModel.createEventBookingRequest(
+      organizationId,
+      requesterId,
+      eventId
+    );
+
+    return res.status(201).json({
+      message: "Event booking request submitted successfully!",
+      data: created
+    });
+  } catch (err) {
+    console.error("requestEventBooking error:", err);
+
+    const msg = err?.message || "Unknown error";
+
+    // map common business errors -> proper status
+    if (msg === "Event not found") return res.status(404).json({ message: msg });
+    if (msg.includes("already assigned")) return res.status(409).json({ message: msg });
+    if (msg.includes("pending request")) return res.status(409).json({ message: msg });
+    if (msg.startsWith("Cannot request booking yet")) return res.status(400).json({ message: msg });
+    if (msg.startsWith("Invalid")) return res.status(400).json({ message: msg });
+
+    return res.status(500).json({ message: "Failed to submit event booking request", error: msg });
+  }
+}
+
+
+
+
+async function assignEventHead(req, res) {
+  try {
+    if (!req.user?.id) {
+      return res.status(401).json({ message: "User not authenticated" });
+    }
+
+    const requesterId = req.user.id;
+    const eventId = Number(req.params.eventId);
+
+    if (!eventId || isNaN(eventId)) {
+      return res.status(400).json({ message: "Invalid eventId" });
+    }
+
+    const {
+      eventHeadName,
+      eventHeadContact,
+      eventHeadEmail,
+      eventHeadProfile
+    } = req.body;
+
+    if (!eventHeadName || !eventHeadContact || !eventHeadEmail ) {
+      return res.status(400).json({ message: "Missing required event head fields" });
+    }
+
+    const organizationId = await OrganizationRequestModel.getOrganisationIDByUserID(requesterId);
+    if (!organizationId) {
+      return res.status(400).json({ message: "User is not associated with any organization" });
+    }
+
+    const booking = await OrganizationRequestModel.assignEventHeadToRequest({
+      eventId,
+      organizationId,
+      eventHeadName,
+      eventHeadContact,
+      eventHeadEmail,
+      eventHeadProfile
+    });
+
+    return res.status(200).json({
+      message: "Event booking created successfully",
+      data: booking
+    });
+  } catch (err) {
+    console.error("assignEventHead error:", err);
+
+    const msg = err?.message || "Unknown error";
+
+    if (msg.includes("not found")) return res.status(404).json({ message: msg });
+    if (msg.includes("already been booked")) return res.status(409).json({ message: msg });
+
+    return res.status(500).json({ message: "Failed to assign event head", error: msg });
+  }
+}
+
+
+async function getOrganizationMembers(req, res) {
+  try {
+    if (!req.user?.id) {
+      return res.status(401).json({ message: "User not authenticated" });
+    }
+    const organizationID = await OrganizationRequestModel.getOrganisationIDByUserID(req.user.id);
+    if (!organizationID) {
+      return res.status(200).json([]);
+    }
+    const members = await OrganizationRequestModel.getOrganizationMembers(organizationID);
+    res.status(200).json(members);
+  } catch (error) {
+    res.status(500).json({ message: "Server Error", error: error.message });
+  }
+}
+
+
+async function getOrganizationMembersExperience(req, res) {
+  try {
+    if (!req.user?.id) {
+      return res.status(401).json({ message: "User not authenticated" });
+    }
+    const organizationID = await OrganizationRequestModel.getOrganisationIDByUserID(req.user.id);
+    if (!organizationID) {
+      return res.status(200).json([]);
+    }
+    const members = await OrganizationRequestModel.getOrganizationMembersExperience(organizationID);
+    res.status(200).json(members);
+  } catch (error) {
+    res.status(500).json({ message: "Server Error", error: error.message });
+  } 
+}
+
+async function getInstitutionSignedEvents(req, res) {
+  try {
+    if (!req.user?.id) {
+      return res.status(401).json({ message: "User not authenticated" });
+    }
+    const organizationID = await OrganizationRequestModel.getOrganisationIDByUserID(req.user.id);
+    if (!organizationID) {
+      return res.status(200).json([]);
+    }
+    const events = await OrganizationRequestModel.getInstitutionSignedEvents(organizationID);
+    res.status(200).json(events);
+  } catch (error) {
+    res.status(500).json({ message: "Server Error", error: error.message });
+  }
+}
+
+
 // ======================================================
 module.exports = {
-  createRequest,
+
   getAllRequests,
   getRequestById,
   approveRequest,
@@ -374,6 +472,8 @@ module.exports = {
   getUserOrganizationID,
   getEventSignups,
   getEventPeopleSignups,
-  getAllOrganizationRequests
+  getAllOrganizationRequests,
+  requestEventBooking, assignEventHead,getOrganizationMembers, getOrganizationMembersExperience
+  ,getInstitutionSignedEvents
 };
 

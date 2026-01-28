@@ -1,4 +1,5 @@
 const model = require("../Models/Volunteer_Community_Model");
+const pool = require("../Postgres_config");
 
 async function createPost(req, res) {
     try {
@@ -52,6 +53,36 @@ async function browsePosts(req, res) {
     } catch (err) {
         res.status(500).json({ message: "Failed to load posts" });
     }
+}
+
+async function browseInstitutionFeed(req, res) {
+  try {
+    if (!req.user?.id) {
+      return res.status(401).json({ message: "User not authenticated" });
+    }
+
+    const lim = req.query?.limit;
+
+    const orgRes = await pool.query(
+      `SELECT organizationid FROM userorganizations WHERE userid = $1 LIMIT 1`,
+      [req.user.id]
+    );
+    const orgId = orgRes.rows?.[0]?.organizationid;
+
+    if (!orgId) return res.json([]);
+
+    const posts = await model.getPostsForInstitution(orgId, lim || 8);
+
+    const hydrated = [];
+    for (const p of posts) {
+      const comments = await model.getCommentsForPost(p.postid);
+      hydrated.push({ ...p, comments: comments || [] });
+    }
+
+    return res.json(hydrated);
+  } catch (err) {
+    res.status(500).json({ message: "Failed to load institution feed", error: err.message });
+  }
 }
 
 async function browseVolunteers(req, res) {
@@ -127,6 +158,7 @@ async function getComments(req, res) {
 module.exports = {
     createPost,
        browsePosts,
+    browseInstitutionFeed,
     browseVolunteers,
     getInstitutions,
     toggleLike,

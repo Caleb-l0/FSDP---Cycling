@@ -1,9 +1,6 @@
 
 
     // Load header dynamically
-    fetch('./public/header.html')
-      .then(res => res.text())
-      .then(data => document.getElementById('header-placeholder').innerHTML = data);
 
     // Hero slider
     let currentSlide = 0;
@@ -14,6 +11,7 @@
     dots.forEach((dot,i)=>dot.addEventListener('click',()=>{ currentSlide=i; showSlide(i); }));
     setInterval(nextSlide,5000);
 
+    
     // Modals
     function openLogin(){document.getElementById('loginModal').classList.add('active');}
     function closeLogin(){document.getElementById('loginModal').classList.remove('active');}
@@ -244,11 +242,11 @@ async function showOtpSignup() {
     });
   });
 
-  // Close 按钮：不翻译，保存为英语并关闭弹窗
+
   function closeLangPopupWithoutTranslate() {
     localStorage.setItem("targetLanguage", "en");
     hideLanguagePopup();
-    // 不调用 translatePage
+    
   }
 
   const langPopupClose = document.getElementById("langPopupClose");

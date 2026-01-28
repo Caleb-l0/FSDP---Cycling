@@ -328,6 +328,7 @@ async function loadComments(postId, container) {
   }
 }
 
+<<<<<<< HEAD
 // --- Volunteers ---
 async function loadVolunteers() {
   showLoading();
@@ -354,6 +355,8 @@ async function loadVolunteers() {
   }
 }
 
+=======
+>>>>>>> e3b59c206106a1d33a7dfa59225489c490da6198
 // --- Other Institutions ---
 async function loadInstitutions() {
   showLoading();
@@ -369,7 +372,19 @@ async function loadInstitutions() {
     tabs.innerHTML = "";
     panels.innerHTML = "";
 
-    (Array.isArray(data) ? data : []).forEach((org, i) => {
+    const arr = Array.isArray(data) ? data : [];
+    if (arr.length === 0) {
+      panels.innerHTML = `
+        <div class="empty-state">
+          <i class="fas fa-calendar-times"></i>
+          <h3>No events open for volunteers</h3>
+          <p>There are currently no institution events available for volunteers. Please check back later.</p>
+        </div>
+      `;
+      return;
+    }
+
+    arr.forEach((org, i) => {
       tabs.innerHTML += `
         <button class="insti-btn ${i === 0 ? "active" : ""}" data-target="inst_${org.organizationid}">${(org.orgname || "").replace(/</g, "&lt;")}</button>
       `;
@@ -389,7 +404,12 @@ async function loadInstitutions() {
             <button class="back-btn" onclick="goBackToInstitution('${org.organizationid}')">← Back</button>
             <h3 class="events-title">${(org.orgname || "").replace(/</g, "&lt;")} – Events</h3>
             <div class="insti-events-list">
-              ${events.length === 0 ? '<p class="no-events">No events available</p>' : events.map((e) => `
+              ${events.length === 0 ? `
+                <div class="empty-state">
+                  <i class="fas fa-calendar-times"></i>
+                  <p>No events open for volunteers right now.</p>
+                </div>
+              ` : events.map((e) => `
                 <div class="event-card" onclick="openEventDetail(${e.eventid})">
                   <h4>${(e.eventname || "").replace(/</g, "&lt;")}</h4>
                   <p>${new Date(e.eventdate).toLocaleDateString()}</p>
@@ -444,5 +464,5 @@ function goBackToInstitution(id) {
 // --- Init ---
 document.addEventListener("DOMContentLoaded", () => {
   showLoading();
-  Promise.allSettled([loadPosts(), loadVolunteers(), loadInstitutions()]).finally(hideLoading);
+  Promise.allSettled([loadPosts(), loadInstitutions()]).finally(hideLoading);
 });

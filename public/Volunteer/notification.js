@@ -326,7 +326,13 @@ function escapeHtml(str) {
 
 function render(items) {
   if (!items || items.length === 0) {
-    listEl.innerHTML = `<div class="noti-empty">No notifications yet.</div>`;
+    listEl.innerHTML = `
+      <div class="hv-empty">
+        <div class="hv-empty__icon" aria-hidden="true"><i class="fas fa-bell"></i></div>
+        <p class="hv-empty__title">No notifications</p>
+        <p class="hv-empty__sub">Friend requests and updates will appear here.</p>
+      </div>
+    `;
     return;
   }
 
@@ -395,14 +401,26 @@ async function rejectRequest(requestId) {
 }
 
 async function load() {
-  listEl.innerHTML = `<div class="noti-empty">Loading...</div>`;
+  listEl.innerHTML = `
+    <div class="hv-empty">
+      <div class="hv-empty__icon" aria-hidden="true"><i class="fas fa-circle-notch"></i></div>
+      <p class="hv-empty__title">Loading</p>
+      <p class="hv-empty__sub">Please wait a moment.</p>
+    </div>
+  `;
   try {
     await loadEventNotification();
     const items = await fetchIncoming();
     render(items);
   } catch (e) {
     console.error(e);
-    listEl.innerHTML = `<div class="noti-empty">Unable to load notifications.</div>`;
+    listEl.innerHTML = `
+      <div class="hv-empty">
+        <div class="hv-empty__icon" aria-hidden="true"><i class="fas fa-triangle-exclamation"></i></div>
+        <p class="hv-empty__title">Unable to load</p>
+        <p class="hv-empty__sub">Please check your connection and try again.</p>
+      </div>
+    `;
   }
 }
 

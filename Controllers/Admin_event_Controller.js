@@ -154,16 +154,20 @@ async function assignEventToOrgan(req,res){
       OrganizationID: organizationId
     };
 
-    const newEvent = await AdminEventModel.assignEventToOrgan(eventData);
+const result = await AdminEventModel.assignEventToOrgan(eventData);
+const event = result?.event;
+const booking = result?.booking;
 
-    if (newEvent?.organizationid) {
-      try {
-        await AdminEventModel.sendEventNotificationToOrganization(newEvent.organizationid, newEvent);
-      } catch (emailError) {
-        console.warn('Failed to send organisation emails on approval:', emailError);
-      }
-    }
+if (event?.organizationid) {
+  await AdminEventModel.sendEventNotificationToOrganization(event.organizationid, event);
+}
 
+
+res.status(201).json({
+  message: "Assign Organization to the event succeed!",
+  event,
+  booking
+});
     try {
       await AdminEventModel.sendEventOpenNotificationToVolunteers(newEvent);
     } catch (emailError) {

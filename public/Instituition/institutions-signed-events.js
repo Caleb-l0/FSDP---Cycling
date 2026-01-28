@@ -54,15 +54,21 @@ function renderEvents(events) {
     const card = document.createElement('div');
     card.classList.add('event-card', 'signed-event-card');
 
-    const title = event.EventName || 'Untitled Event';
-    const date = formatDate(event.EventDate);
-    const description = event.Description || 'No description available.';
-    const location = event.EventLocation || 'Location TBD';
-    const required = event.RequiredVolunteers ? `Required Volunteers: ${event.RequiredVolunteers}` : '';
-    const eventStatus = event.Status || 'Upcoming';
+    const title = event.EventName || event.eventname || 'Untitled Event';
+    const date = formatDate(event.EventDate || event.eventdate);
+    const description = event.Description || event.description || 'No description available.';
+    const location = event.EventLocation || event.location || 'Location TBD';
+    const requiredVol = event.RequiredVolunteers ?? event.requiredvolunteers;
+    const participants = event.Participants ?? event.participants;
+    const bookedAt = formatDate(event.BookedAt || event.createdat || event.SignUpDate);
+    const reviewedAt = formatDate(event.ReviewedAt || event.reviewdate);
+    const bookingStatus = event.BookingStatus || event.bookingstatus || 'Pending';
 
-    const requiredMarkup = required ? `<p>${required}</p>` : '';
-    const statusBadge = getStatusBadge(eventStatus);
+    const requiredMarkup = (requiredVol != null) ? `<p><strong>Required Volunteers:</strong> ${requiredVol}</p>` : '';
+    const participantsMarkup = (participants != null) ? `<p><strong>Participants:</strong> ${participants}</p>` : '';
+    const bookedAtMarkup = bookedAt ? `<p class="signup-info"><strong>Booked At:</strong> ${bookedAt}</p>` : '';
+    const reviewedAtMarkup = reviewedAt ? `<p class="signup-info"><strong>Reviewed At:</strong> ${reviewedAt}</p>` : '';
+    const statusBadge = getBookingBadge(bookingStatus);
 
     card.innerHTML = `
       <div class="event-details">
@@ -72,6 +78,9 @@ function renderEvents(events) {
         <p><strong>Location:</strong> ${location}</p>
         <p>${description}</p>
         ${requiredMarkup}
+        ${participantsMarkup}
+        ${bookedAtMarkup}
+        ${reviewedAtMarkup}
       </div>
     `;
 
@@ -79,22 +88,23 @@ function renderEvents(events) {
   });
 }
 
-function getStatusBadge(eventStatus) {
+function getBookingBadge(status) {
+  const s = String(status || '').trim().toLowerCase();
   let badgeClass = 'status-badge';
-  let badgeText = '';
+  let badgeText = status || 'Pending';
 
-  if (eventStatus === 'Completed') {
+  if (s === 'approved') {
     badgeClass += ' status-badge--completed';
-    badgeText = 'Completed';
-  } else if (eventStatus === 'Ongoing') {
-    badgeClass += ' status-badge--ongoing';
-    badgeText = 'Ongoing';
-  } else if (eventStatus === 'Cancelled') {
+    badgeText = 'Approved';
+  } else if (s === 'rejected') {
+    badgeClass += ' status-badge--cancelled';
+    badgeText = 'Rejected';
+  } else if (s === 'cancelled') {
     badgeClass += ' status-badge--cancelled';
     badgeText = 'Cancelled';
   } else {
     badgeClass += ' status-badge--upcoming';
-    badgeText = 'Upcoming';
+    badgeText = 'Pending';
   }
 
   return `<span class="${badgeClass}">${badgeText}</span>`;

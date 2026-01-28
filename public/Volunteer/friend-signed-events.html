@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Friend's Signed Up Events | Happy Volunteer</title>
+
+  <link rel="stylesheet" href="../homepage.css">
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="signed-events.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="signed-events-page">
+
+<header class="hv-header">
+  <div class="container hv-header-content">
+
+    <div class="hv-logo">
+      <a href="./homepage_login_volunteer.html" style="text-decoration: none; color: inherit;">
+        Happy Volunteer
+      </a>
+    </div>
+
+    <nav id="mainNav">
+      <ul>
+        <li><a href="./volunteer-events.html">Booking</a></li>
+        <li><a href="./volunteer_community_page.html">Community</a></li>
+        <li><a href="./volunteer_rewards.html">Reward</a></li>
+        <li><a href="./Volunteer_friend.html">Friends</a></li>
+        <li><a href="../Profile/profilepage.html">Profile</a></li>
+      </ul>
+    </nav>
+
+    <button class="hv-nav-toggle" id="hvNavToggle">
+      <i class="fas fa-bars"></i>
+    </button>
+
+    <nav class="hv-nav" id="hvNav">
+      <ul>
+        <li><a href="./volunteer-events.html">Booking</a></li>
+        <li><a href="./volunteer_community_page.html">Community</a></li>
+        <li><a href="./volunteer_rewards.html">Reward</a></li>
+        <li><a href="./Volunteer_friend.html">Friends</a></li>
+        <li><a href="../Profile/profilepage.html">Profile</a></li>
+      </ul>
+    </nav>
+
+  </div>
+</header>
+
+<main class="signed-events-main">
+  <div class="container">
+    <section class="signed-page-head" aria-label="Friend signed events header">
+      <div class="signed-page-head__text">
+        <h1 class="signed-page-title" id="friendEventsTitle">Friend's Signed Up Events</h1>
+        <p class="signed-page-subtitle" id="friendEventsSubtitle">All events this volunteer has signed up for.</p>
+      </div>
+
+      <div class="signed-page-head__actions" aria-label="Quick actions">
+        <button class="signed-action-btn signed-action-btn--secondary" type="button" onclick="window.location.href='homepage_login_volunteer.html'">
+          Back to Home
+        </button>
+        <button class="signed-action-btn signed-action-btn--primary" type="button" id="viewProfileBtn">
+          View Profile
+        </button>
+      </div>
+    </section>
+
+    <section class="signed-events-section" aria-label="Friend signed up events list">
+      <div class="event-list" id="eventList" aria-live="polite"></div>
+    </section>
+  </div>
+</main>
+
+<footer>
+  <div class="container">
+    <div class="copyright">
+      <p>&copy; 2025 Happy Volunteer. All rights reserved.</p>
+    </div>
+  </div>
+</footer>
+
+<script src="../homepage.js"></script>
+<script src="friend-signed-events.js"></script>
+</body>
+</html>

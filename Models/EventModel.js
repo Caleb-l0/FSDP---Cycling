@@ -47,10 +47,28 @@ async function getEventById(eventID) {
       e.peoplesignup,
       e.createdat,
       e.status,
-      o.orgname AS organizationname
+      o.orgname AS organizationname,
+      eb.bookingid,
+      eb.session_head_name,
+      eb.session_head_contact,
+      eb.session_head_email,
+      eb.session_head_profile
     FROM events e
     LEFT JOIN organizations o
       ON e.organizationid = o.organizationid
+    LEFT JOIN LATERAL (
+      SELECT
+        bookingid,
+        session_head_name,
+        session_head_contact,
+        session_head_email,
+        session_head_profile
+      FROM eventbookings
+      WHERE eventid = e.eventid
+        AND status = 'Approved'
+      ORDER BY reviewdate DESC NULLS LAST, createdat DESC
+      LIMIT 1
+    ) eb ON TRUE
     WHERE e.eventid = $1
     `,
     [eventID]

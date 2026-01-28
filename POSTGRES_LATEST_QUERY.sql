@@ -59,9 +59,9 @@ CREATE TABLE organizations (
     createdat TIMESTAMP DEFAULT NOW()
 );
 
+
 CREATE TABLE userorganizations (
-    userorgid SERIAL PRIMARY KEY,
-    userid INT NOT NULL,
+    userid INT PRIMARY KEY,
     organizationid INT NOT NULL,
     orgemail VARCHAR(100),
     orgrole VARCHAR(50) DEFAULT 'member',

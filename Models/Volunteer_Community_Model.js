@@ -41,12 +41,55 @@ async function getAllPosts() {
         cp.visibility,
         cp.taggedinstitutionid,
         cp.createdat,
+<<<<<<< HEAD
         u.name AS username,
         u.profilepicture
+=======
+        COALESCE(o.orgname, u.name) AS username
+>>>>>>> e3b59c206106a1d33a7dfa59225489c490da6198
       FROM communityposts cp
       INNER JOIN users u ON cp.userid = u.id
+      LEFT JOIN userorganizations uo
+        ON uo.userid = u.id
+      LEFT JOIN organizations o
+        ON o.organizationid = uo.organizationid
+       AND LOWER(TRIM(u.role)) = 'institution'
       ORDER BY cp.createdat DESC
   `);
+
+  return result.rows;
+}
+
+async function getPostsForInstitution(organizationId, limit = 10) {
+  const orgId = Number(organizationId);
+  const lim = Math.max(1, Math.min(Number(limit) || 10, 25));
+  if (!orgId) return [];
+
+  const result = await pool.query(
+    `
+      SELECT
+        cp.postid,
+        cp.userid,
+        cp.content,
+        cp.photourl,
+        cp.likecount,
+        cp.visibility,
+        cp.taggedinstitutionid,
+        cp.createdat,
+        COALESCE(o.orgname, u.name) AS username
+      FROM communityposts cp
+      INNER JOIN users u ON cp.userid = u.id
+      LEFT JOIN userorganizations uo
+        ON uo.userid = u.id
+      LEFT JOIN organizations o
+        ON o.organizationid = uo.organizationid
+       AND LOWER(TRIM(u.role)) = 'institution'
+      WHERE cp.taggedinstitutionid = $1
+      ORDER BY cp.createdat DESC
+      LIMIT $2
+    `,
+    [orgId, lim]
+  );
 
   return result.rows;
 }
@@ -137,6 +180,9 @@ async function getAllInstitutions() {
         organizationid, location, description,
         requiredvolunteers
       FROM events
+      WHERE status = 'Upcoming'
+        AND eventdate > NOW()
+        AND organizationid IS NOT NULL
       ORDER BY eventdate
   `);
 
@@ -232,6 +278,7 @@ async function getCommentsForPost(postId) {
 module.exports = {
   createPost,
   getAllPosts,
+  getPostsForInstitution,
   getAllInstitutions,
   getAllVolunteers,
   getInstitutionsWithEvents,

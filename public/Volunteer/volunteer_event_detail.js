@@ -4,6 +4,8 @@ if (!token) {
   window.location.href = "../../index.html";
 }
 
+const API_BASE = window.location.origin;
+
 let signedUp = false;
 
 let currentEventLat = null;
@@ -36,7 +38,7 @@ document.addEventListener("DOMContentLoaded", () => {
 async function loadEventDetails(id) {
   try {
     const res = await fetch(
-      `https://fsdp-cycling-ltey.onrender.com/volunteer/events/${id}`,
+      `${API_BASE}/volunteer/events/${id}`,
       {
         headers: { Authorization: `Bearer ${token}` }
       }
@@ -64,6 +66,51 @@ async function loadEventDetails(id) {
       ? new Date(data.createdat).toLocaleString()
       : "-";
     document.getElementById("req-desc").textContent = data.description || "-";
+
+    const headWrap = document.getElementById('event-head');
+    const headContent = document.getElementById('event-head-content');
+    if (headWrap && headContent) {
+      const headName = data.session_head_name || data.sessionHeadName;
+      const headEmail = data.session_head_email || data.sessionHeadEmail;
+      const headContact = data.session_head_contact || data.sessionHeadContact;
+      const headProfile = data.session_head_profile || data.sessionHeadProfile;
+      const headUserId = data.eventheaduserid || data.eventHeadUserId;
+
+      if (headName) {
+        headWrap.style.display = 'block';
+        const initials = String(headName).trim().split(/\s+/).map(s => s[0]).join('').slice(0, 2).toUpperCase();
+        const href = headUserId ? `../Profile/profilepage.html?userId=${encodeURIComponent(headUserId)}` : '';
+        headContent.innerHTML = `
+          <div class="event-head-card" ${href ? `role=\"button\" tabindex=\"0\"` : ''}>
+            <div class="event-head-avatar">${initials || 'EH'}</div>
+            <div class="event-head-meta">
+              <div class="event-head-name">${headName}</div>
+              <div class="event-head-sub">
+                ${headEmail ? `<div><i class=\"fas fa-envelope\"></i> <a href=\"mailto:${headEmail}\">${headEmail}</a></div>` : ''}
+                ${headContact ? `<div><i class=\"fas fa-phone\"></i> <a href=\"tel:${headContact}\">${headContact}</a></div>` : ''}
+                ${headProfile ? `<div><i class=\"fas fa-user\"></i> <span>${headProfile}</span></div>` : ''}
+                ${href ? `<div><i class=\"fas fa-id-card\"></i> <span>View profile</span></div>` : ''}
+              </div>
+            </div>
+          </div>
+        `;
+
+        if (href) {
+          const card = headContent.querySelector('.event-head-card');
+          if (card) {
+            card.addEventListener('click', () => { window.location.href = href; });
+            card.addEventListener('keydown', (e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                window.location.href = href;
+              }
+            });
+          }
+        }
+      } else {
+        headWrap.style.display = 'none';
+      }
+    }
      
   
 
@@ -114,7 +161,7 @@ async function loadFriendsForShare() {
   hvShareFriendsLoaded = true;
 
   try {
-    const res = await fetch('https://fsdp-cycling-ltey.onrender.com/volunteer/friends/me', {
+    const res = await fetch(`${API_BASE}/volunteer/friends/me`, {
       headers: { Authorization: `Bearer ${token}` }
     });
 
@@ -251,7 +298,7 @@ document.addEventListener('DOMContentLoaded', () => {
 async function checkIsSignedUp(eventId) {
   try {
     const res = await fetch(
-      `https://fsdp-cycling-ltey.onrender.com/volunteer/events/isSignedUp/${eventId}`,
+      `${API_BASE}/volunteer/events/isSignedUp/${eventId}`,
       {
         headers: { Authorization: `Bearer ${token}` }
       }
@@ -325,13 +372,13 @@ function updateSignupButtonUI() {
 async function signUp(eventName, eventId) {
   try {
     const res = await fetch(
-      `https://fsdp-cycling-ltey.onrender.com/volunteer/events/signup/${eventId}`,
+      `${API_BASE}/volunteer/events/signup/${eventId}`,
       {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json"
-        }
+        },
       }
     );
 
@@ -351,7 +398,7 @@ async function signUp(eventName, eventId) {
 async function cancelSignUp(eventId) {
   try {
     const res = await fetch(
-      `https://fsdp-cycling-ltey.onrender.com/volunteer/events/cancel/signup/${eventId}`,
+      `${API_BASE}/volunteer/events/cancel/signup/${eventId}`,
       {
         method: "DELETE",
         headers: {

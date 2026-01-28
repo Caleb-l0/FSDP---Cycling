@@ -1,5 +1,3 @@
-
-
 require('dotenv').config();
 const express = require('express');
 const path = require('path');
@@ -14,6 +12,12 @@ const port = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+app.use((req, res, next) => {
+  res.setHeader('Cross-Origin-Opener-Policy', 'same-origin-allow-popups');
+  res.setHeader('Cross-Origin-Embedder-Policy', 'unsafe-none');
+  next();
+});
 
 // ----- LOGIN ROUTES -----
 const { loginUser, getUserById, updateUser, deleteUser } = require('./Accounts/login/loginController');
@@ -55,6 +59,12 @@ const userFriendController = require("./Controllers/user_friend_Controller.js");
 
 // ------ NOTIFICATIONS CONTROLLER --------------
 const notificationController = require("./Controllers/notification_controller.js");
+
+// ------ COMPANION CONTROLLER --------------
+const CompanionController = require("./Controllers/CompanionController.js");
+
+// ------ SCHEDULED NOTIFICATION PUBLISHER --------------
+const publishNotificationsTask = require("./ScheduledTasks/publishNotifications");
 
 
 
@@ -195,6 +205,40 @@ app.put("/profile", authenticate, async (req, res) => {
   }
 });
 
+app.get("/profile/event-head-experience", authenticate, async (req, res) => {
+  try {
+    if (!req.user?.id) return res.status(401).json({ message: "Unauthorized" });
+
+    const me = await pool.query(
+      "SELECT id, email, name FROM users WHERE id = $1",
+      [req.user.id]
+    );
+
+    if (me.rowCount === 0) return res.status(401).json({ message: "Unauthorized" });
+
+    const email = (me.rows[0].email || "").trim();
+    if (!email) return res.status(200).json({ count: 0, events: [] });
+
+    const q = await pool.query(
+      `
+      SELECT e.eventid, e.eventname, e.eventdate, e.location, e.status
+      FROM eventbookings eb
+      INNER JOIN events e ON e.eventid = eb.eventid
+      WHERE eb.status = 'Approved'
+        AND LOWER(TRIM(eb.session_head_email)) = LOWER(TRIM($1))
+      ORDER BY e.eventdate DESC
+      `,
+      [email]
+    );
+
+    const events = q.rows || [];
+    return res.status(200).json({ count: events.length, events });
+  } catch (err) {
+    console.error("/profile/event-head-experience error:", err);
+    return res.status(500).json({ message: "Failed to load event head experience" });
+  }
+});
+
 // Event Booking Routies (By Organzations)
 const eventBookingRoutes = require("./Routes/EventBookingRoutes");
 app.use("/organization/events", eventBookingRoutes);
@@ -218,7 +262,9 @@ app.put("/events/update/:eventID", authenticate, EventController.updateEvent);
 
 
 // Serve static files (for CSS, JS, images, etc.) - but after API routes
+app.use('/public/images', express.static(path.join(__dirname, 'images')));
 app.use('/public', express.static(path.join(__dirname, 'public'))); // header, images, etc.
+app.use('/companion', express.static(path.join(__dirname, 'public', 'companion')));
 app.use('/Accounts/views', express.static(path.join(__dirname, 'Accounts/views'))); // login.html, signup.html
 
 // ----- HTML PAGES -----
@@ -237,12 +283,16 @@ app.delete('/request/delete/:id', authenticate, organizationRequestController.de
 app.put('/requests/approve/:id', authenticate, organizationRequestController.approveRequest);
 app.put('/requests/reject/:id', authenticate, organizationRequestController.rejectRequest);
 app.get('/requests/status/:id', authenticate, organizationRequestController.checkRequestStatus);
-app.post('/request-event', authenticate, organizationRequestController.createRequest);
+app.post('/organization/events/booking/request', authenticate, organizationRequestController.requestEventBooking);
 
 app.get('/organisations/events/:eventID/people-signups', authenticate, organizationRequestController.getEventPeopleSignups);
-app.get('/organisation/get/organization-id', authenticate, organizationRequestController.getUserOrganizationID);
-app.get('/user/organization-id', authenticate, organizationRequestController.getUserOrganizationID);
+
+app.get('/organisation/user/organization-id', authenticate, organizationRequestController.getUserOrganizationID);
+app.get('/organization/members', authenticate, organizationRequestController.getOrganizationMembers);
+app.get('/organization/members/experience', authenticate, organizationRequestController.getOrganizationMembersExperience);
+app.get('/institutions/signed-events', authenticate, organizationRequestController.getInstitutionSignedEvents);
 app.get('/organization/events/my-requests', authenticate, organizationRequestController.getAllOrganizationRequests);
+app.put('/organization/events/assign-head/:eventId', authenticate, organizationRequestController.assignEventHead);
 
 // ----- ADMIN EVENT FEED -----
 
@@ -257,6 +307,7 @@ app.delete('/admin/events/auto-delete/:eventID', authenticate, adminEventControl
 
 // ------ VOLUNTEER USER PROFILE --------
 app.get('/volunteer/user/profile/:id',volunteerUserController.getPublicVolunteerProfile);
+app.get('/volunteer/users/search', authenticate, volunteerUserController.searchVolunteers);
 
 // ------ VOLUNTEER FRIENDS CONTROLLER -----
 
@@ -284,6 +335,12 @@ app.post('/volunteer/notifications/read-all', authenticate, notificationControll
 app.get('/notifications', authenticate, notificationController.listMyNotifications);
 app.post('/notifications/:id/read', authenticate, notificationController.markNotificationRead);
 app.post('/notifications/read-all', authenticate, notificationController.markAllNotificationsRead);
+
+// ----- ELDERLY COMPANION PANEL -----
+app.get('/api/companion/recommendation', authenticate, CompanionController.getRecommendation);
+app.post('/api/companion/book', authenticate, CompanionController.book);
+app.get('/api/companion/next-ride', authenticate, CompanionController.getNextRide);
+app.get('/api/notifications/my', authenticate, CompanionController.getMyNotifications);
 // ----- VOLUNTEER EVENT FEED -----
 
 app.get('/volunteer/events', adminEventController.getAllEvents);
@@ -300,6 +357,7 @@ app.get("/volunteer/events/isSignedUp/:eventID", authenticate, EventController.i
 // ----- Community route FOR Volunteer----------
 
 app.get("/community/browse/posts",authenticate, CommunityController.browsePosts);
+app.get("/institution/community/feed", authenticate, CommunityController.browseInstitutionFeed);
 app.post("/community/posts", authenticate,  CommunityController.createPost);
 
 app.get("/community/browse/volunteers",authenticate,  CommunityController.browseVolunteers);
@@ -447,7 +505,7 @@ app.post("/translate", async (req, res) => {
 // ----- GOOGLE LOGIN ROUTE -----
 
 
-const pool = require("./db");
+const pool = process.env.DATABASE_URL ? require("./db") : require("./Postgres_config");
 const { OAuth2Client } = require("google-auth-library");
 
 const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
@@ -455,6 +513,13 @@ const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 app.post("/auth/google", async (req, res) => {
   try {
+    if (!process.env.GOOGLE_CLIENT_ID) {
+      return res.status(500).json({ message: "Google login is not configured (missing GOOGLE_CLIENT_ID)" });
+    }
+    if (!process.env.JWT_SECRET) {
+      return res.status(500).json({ message: "Server auth is not configured (missing JWT_SECRET)" });
+    }
+
     const { credential } = req.body;
     if (!credential) {
       return res.status(400).json({ message: "Missing credential" });
@@ -467,6 +532,9 @@ app.post("/auth/google", async (req, res) => {
     });
 
     const payload = ticket.getPayload();
+    if (!payload?.email) {
+      return res.status(400).json({ message: "Google credential missing email" });
+    }
     const email = payload.email;
     const name = payload.name || "Google User";
 
@@ -481,9 +549,9 @@ app.post("/auth/google", async (req, res) => {
     if (!user) {
      
       const insert = await pool.query(
-        `INSERT INTO users (name, email, role, textSizePreference) 
-         VALUES ($1, $2, 'volunteer', 'normal') 
-         RETURNING id, name, email, role, textSizePreference`,
+        `INSERT INTO users (name, email, role, textsizepreference)
+         VALUES ($1, $2, 'volunteer', 'normal')
+         RETURNING id, name, email, role, textsizepreference`,
         [name, email]
       );
       user = insert.rows[0];
@@ -506,7 +574,7 @@ app.post("/auth/google", async (req, res) => {
       name: user.name,
       email: user.email,
       role: user.role,
-      textSizePreference: user.textSizePreference || 'normal'
+      textSizePreference: user.textsizepreference || 'normal'
     });
 
   } catch (err) {
@@ -543,6 +611,23 @@ process.on('unhandledRejection', (err) => {
 // ----- START SERVER -----
 app.listen(port, () => {
   console.log(`✅ Server running on http://localhost:${port}`);
+
+  // Publish scheduled notifications (scheduled_for <= now) periodically.
+  // Uses setInterval to avoid extra dependencies.
+  const publishDue = async () => {
+    try {
+      const rows = await publishNotificationsTask.publishDueNotifications({ limit: 200 });
+      if (rows.length > 0) {
+        console.log(`[notifications] published scheduled: ${rows.length}`);
+      }
+    } catch (err) {
+      console.error("[notifications] publish scheduled error:", err);
+    }
+  };
+
+  // Run once on startup, then every 60 seconds.
+  publishDue();
+  setInterval(publishDue, 60 * 1000);
   
   // Schedule auto-delete task to run daily at 2 AM
   const autoDeleteTask = require("./ScheduledTasks/autoDeleteEvents");
