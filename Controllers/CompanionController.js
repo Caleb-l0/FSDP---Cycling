@@ -138,8 +138,22 @@ async function getRecommendation(req, res) {
       .sort((a, b) => b.score - a.score);
 
     const top = scored[0];
+    const topList = scored.slice(0, 5).map((item) => ({
+      recommendedRide: {
+        eventId: item.event.eventid,
+        eventName: item.event.eventname,
+        eventDate: item.event.eventdate,
+        location: item.event.location,
+        description: item.event.description,
+        requiredVolunteers: item.event.requiredvolunteers,
+        volunteerSignupCount: item.event.volunteer_signup_count
+      },
+      score: item.score,
+      reasons: item.reasons
+    }));
 
     return res.status(200).json({
+      recommendations: topList,
       recommendedRide: {
         eventId: top.event.eventid,
         eventName: top.event.eventname,

@@ -131,6 +131,50 @@
   }
 
   let recommended = null;
+  let recommendations = [];
+  let recIndex = 0;
+
+  function renderRecommendation(recBox, recData) {
+    if (!recData?.recommendedRide) {
+      recBox.innerHTML = `<div class="hvcp-muted">${(recData?.reasons?.[0] || 'No recommendation available.')}</div>`;
+      return;
+    }
+
+    recommended = recData.recommendedRide;
+
+    const positionText = recommendations.length > 1 ? `Suggestion ${recIndex + 1} of ${recommendations.length}` : '';
+
+    recBox.innerHTML = `
+      <div class="hvcp-row">
+        <div>
+          <div class="hvcp-strong">${recommended.eventName || 'Ride'}</div>
+          <div class="hvcp-muted">${new Date(recommended.eventDate).toLocaleString()}</div>
+          <div class="hvcp-muted">${recommended.location || 'Location TBD'}</div>
+          ${positionText ? `<div class="hvcp-muted hvcp-small">${positionText}</div>` : ''}
+        </div>
+        <div class="hvcp-score">${Math.round((recData?.score || 0) * 100)}%</div>
+      </div>
+      <div class="hvcp-divider"></div>
+      <div class="hvcp-muted">Why this ride?</div>
+      ${Array.isArray(recData?.reasons) ? `<ul class="hvcp-list">${recData.reasons.map(r => `<li>${String(r).replace(/</g, '&lt;')}</li>`).join('')}</ul>` : ''}
+
+      <div class="hvcp-actions">
+        <button class="hvcp-btn hvcp-btn--secondary" id="hvcpBookBtn" type="button">Sign up</button>
+        <button class="hvcp-btn" id="hvcpNextBtn" type="button" ${recommendations.length > 1 ? '' : 'disabled'}>Next</button>
+      </div>
+    `;
+
+    document.getElementById('hvcpBookBtn')?.addEventListener('click', () => {
+      document.getElementById('hvcpBookEvent').textContent = `${recommended.eventName} — ${new Date(recommended.eventDate).toLocaleString()}`;
+      openBookModal();
+    });
+
+    document.getElementById('hvcpNextBtn')?.addEventListener('click', () => {
+      if (!recommendations.length) return;
+      recIndex = (recIndex + 1) % recommendations.length;
+      renderRecommendation(recBox, recommendations[recIndex]);
+    });
+  }
 
   async function loadData() {
     const token = getToken();
@@ -157,31 +201,12 @@
     const recBox = document.getElementById('hvcpRec');
     const weatherBox = document.getElementById('hvcpWeather');
 
-    recommended = rec?.recommendedRide || null;
+    recommendations = Array.isArray(rec?.recommendations) && rec.recommendations.length > 0
+      ? rec.recommendations
+      : (rec?.recommendedRide ? [{ recommendedRide: rec.recommendedRide, score: rec.score, reasons: rec.reasons }] : []);
 
-    if (!recommended) {
-      recBox.innerHTML = `<div class="hvcp-muted">${(rec?.reasons?.[0] || 'No recommendation available.')}</div>`;
-    } else {
-      recBox.innerHTML = `
-        <div class="hvcp-row">
-          <div>
-            <div class="hvcp-strong">${recommended.eventName || 'Ride'}</div>
-            <div class="hvcp-muted">${new Date(recommended.eventDate).toLocaleString()}</div>
-            <div class="hvcp-muted">${recommended.location || 'Location TBD'}</div>
-          </div>
-          <div class="hvcp-score">${Math.round((rec?.score || 0) * 100)}%</div>
-        </div>
-        <div class="hvcp-divider"></div>
-        <div class="hvcp-muted">Why this ride?</div>
-        ${Array.isArray(rec?.reasons) ? `<ul class="hvcp-list">${rec.reasons.map(r => `<li>${String(r).replace(/</g, '&lt;')}</li>`).join('')}</ul>` : ''}
-        <button class="hvcp-btn hvcp-btn--secondary" id="hvcpBookBtn" type="button">Sign up</button>
-      `;
-
-      document.getElementById('hvcpBookBtn')?.addEventListener('click', () => {
-        document.getElementById('hvcpBookEvent').textContent = `${recommended.eventName} — ${new Date(recommended.eventDate).toLocaleString()}`;
-        openBookModal();
-      });
-    }
+    recIndex = 0;
+    renderRecommendation(recBox, recommendations[recIndex] || rec);
 
     renderList(weatherBox, rec?.weatherTips || []);
 
