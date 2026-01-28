@@ -41,9 +41,14 @@ async function getAllPosts() {
         cp.visibility,
         cp.taggedinstitutionid,
         cp.createdat,
-        u.name AS username
+        COALESCE(o.orgname, u.name) AS username
       FROM communityposts cp
       INNER JOIN users u ON cp.userid = u.id
+      LEFT JOIN userorganizations uo
+        ON uo.userid = u.id
+      LEFT JOIN organizations o
+        ON o.organizationid = uo.organizationid
+       AND LOWER(TRIM(u.role)) = 'institution'
       ORDER BY cp.createdat DESC
   `);
 
@@ -66,9 +71,14 @@ async function getPostsForInstitution(organizationId, limit = 10) {
         cp.visibility,
         cp.taggedinstitutionid,
         cp.createdat,
-        u.name AS username
+        COALESCE(o.orgname, u.name) AS username
       FROM communityposts cp
       INNER JOIN users u ON cp.userid = u.id
+      LEFT JOIN userorganizations uo
+        ON uo.userid = u.id
+      LEFT JOIN organizations o
+        ON o.organizationid = uo.organizationid
+       AND LOWER(TRIM(u.role)) = 'institution'
       WHERE cp.taggedinstitutionid = $1
       ORDER BY cp.createdat DESC
       LIMIT $2
@@ -165,6 +175,9 @@ async function getAllInstitutions() {
         organizationid, location, description,
         requiredvolunteers
       FROM events
+      WHERE status = 'Upcoming'
+        AND eventdate > NOW()
+        AND organizationid IS NOT NULL
       ORDER BY eventdate
   `);
 

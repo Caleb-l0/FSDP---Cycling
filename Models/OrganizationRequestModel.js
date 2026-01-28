@@ -43,6 +43,41 @@ async function createRequest(requestData) {
   }
 }
 
+async function getInstitutionSignedEvents(organizationId) {
+  try {
+    const orgId = Number(organizationId);
+    if (!orgId) return [];
+
+    const result = await pool.query(
+      `
+      SELECT
+        e.eventid AS "EventID",
+        e.eventname AS "EventName",
+        e.eventdate AS "EventDate",
+        e.description AS "Description",
+        e.location AS "EventLocation",
+        e.requiredvolunteers AS "RequiredVolunteers",
+        e.status AS "Status",
+        eb.bookingid AS "BookingID",
+        eb.participants AS "Participants",
+        eb.createdat AS "BookedAt",
+        eb.reviewdate AS "ReviewedAt",
+        eb.status AS "BookingStatus"
+      FROM eventbookings eb
+      INNER JOIN events e ON e.eventid = eb.eventid
+      WHERE eb.organizationid = $1
+      ORDER BY eb.createdat DESC
+      `,
+      [orgId]
+    );
+
+    return result.rows || [];
+  } catch (err) {
+    console.error("getInstitutionSignedEvents SQL error:", err);
+    throw err;
+  }
+}
+
 async function assignEventHeadToRequest({
   eventId,
   organizationId,
@@ -540,7 +575,8 @@ module.exports = {
   createEventBookingRequest,
   assignEventHeadToRequest,
   getOrganizationMembers,
-  getOrganizationMembersExperience
+  getOrganizationMembersExperience,
+  getInstitutionSignedEvents
 };
 
 

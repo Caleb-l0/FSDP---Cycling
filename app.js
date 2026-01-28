@@ -236,6 +236,7 @@ app.get('/organisations/events/:eventID/people-signups', authenticate, organizat
 app.get('/organisation/user/organization-id', authenticate, organizationRequestController.getUserOrganizationID);
 app.get('/organization/members', authenticate, organizationRequestController.getOrganizationMembers);
 app.get('/organization/members/experience', authenticate, organizationRequestController.getOrganizationMembersExperience);
+app.get('/institutions/signed-events', authenticate, organizationRequestController.getInstitutionSignedEvents);
 app.get('/organization/events/my-requests', authenticate, organizationRequestController.getAllOrganizationRequests);
 app.put('/organization/events/assign-head/:eventId', authenticate, organizationRequestController.assignEventHead);
 

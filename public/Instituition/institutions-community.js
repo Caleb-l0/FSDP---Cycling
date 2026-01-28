@@ -323,32 +323,6 @@ async function loadComments(postId, container) {
   }
 }
 
-// --- Volunteers ---
-async function loadVolunteers() {
-  showLoading();
-  try {
-    const res = await fetch("https://fsdp-cycling-ltey.onrender.com/community/browse/volunteers", {
-      method: "GET",
-      headers: { "Authorization": `Bearer ${token}` }
-    });
-    const list = await res.json();
-    const container = document.querySelector(".people-scroll");
-    if (!container) return;
-    container.innerHTML = "";
-    (Array.isArray(list) ? list : []).forEach((v) => {
-      container.innerHTML += `
-        <div class="people-card">
-          <img src="${DEFAULT_AVATAR}" class="people-avatar" alt="">
-          <h4 class="people-name">${(v.name || "").replace(/</g, "&lt;")}</h4>
-          <button class="btn-add">Add Friend</button>
-        </div>
-      `;
-    });
-  } finally {
-    hideLoading();
-  }
-}
-
 // --- Other Institutions ---
 async function loadInstitutions() {
   showLoading();
@@ -439,5 +413,5 @@ function goBackToInstitution(id) {
 // --- Init ---
 document.addEventListener("DOMContentLoaded", () => {
   showLoading();
-  Promise.allSettled([loadPosts(), loadVolunteers(), loadInstitutions()]).finally(hideLoading);
+  Promise.allSettled([loadPosts(), loadInstitutions()]).finally(hideLoading);
 });
