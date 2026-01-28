@@ -6,6 +6,16 @@ if (!token) {
     window.location.href = "../../index.html";   
 }
 
+function openFriendSignedEvents(e, friendId, friendName) {
+  if (e && typeof e.stopPropagation === 'function') e.stopPropagation();
+  const id = String(friendId || '').trim();
+  if (!id) return;
+  const name = String(friendName || '').trim();
+  const qs = new URLSearchParams({ friendId: id });
+  if (name) qs.set('friendName', name);
+  window.location.href = `./friend-signed-events.html?${qs.toString()}`;
+}
+
 const LAST_SEEN_EVENT_KEY = 'hv_last_seen_eventid';
 
 function getLatestEventId(events) {
@@ -534,6 +544,7 @@ else if (choice === 'friend') {
     friends.forEach((f, idx) => {
       const friendName = f.friendName || "Friend";
       const eventCount = (f.events || []).length;
+      const friendId = f.friendId ?? f.friend_id ?? f.id;
 
       filterSection.innerHTML += `
         <div class="fec-accordion">
@@ -545,7 +556,10 @@ else if (choice === 'friend') {
                 <div class="fec-friend-row__sub">${eventCount} event${eventCount !== 1 ? 's' : ''} signed up</div>
               </div>
             </div>
-            <div class="fec-friend-row__chev" aria-hidden="true">▾</div>
+            <div class="fec-friend-row__right">
+              <button class="fec-viewall" type="button" onclick="openFriendSignedEvents(event, '${String(friendId ?? '')}', '${String(friendName ?? '').replace(/'/g, "&#039;")}')">View all</button>
+              <div class="fec-friend-row__chev" aria-hidden="true">▾</div>
+            </div>
           </div>
           <div class="friend-events-expand" id="friend-events-${idx}" style="display:none;"></div>
         </div>
