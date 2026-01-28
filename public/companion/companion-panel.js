@@ -21,8 +21,9 @@
     root = document.createElement('div');
     root.id = 'hvCompanionRoot';
     root.innerHTML = `
-      <button class="hvcp-fab" id="hvcpFab" type="button" aria-label="Open Companion Panel">
-        <i class="fas fa-life-ring"></i>
+      <button class="hvcp-fab" id="hvcpFab" type="button" aria-label="Open Elderly Companion">
+        <span class="hvcp-fab-icon" aria-hidden="true"><i class="fas fa-hands-helping"></i></span>
+        <span class="hvcp-fab-text">Help</span>
       </button>
 
       <div class="hvcp-welcome" id="hvcpWelcome" role="dialog" aria-label="Elderly Companion help">
