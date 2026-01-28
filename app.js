@@ -60,6 +60,12 @@ const userFriendController = require("./Controllers/user_friend_Controller.js");
 // ------ NOTIFICATIONS CONTROLLER --------------
 const notificationController = require("./Controllers/notification_controller.js");
 
+// ------ COMPANION CONTROLLER --------------
+const CompanionController = require("./Controllers/CompanionController.js");
+
+// ------ SCHEDULED NOTIFICATION PUBLISHER --------------
+const publishNotificationsTask = require("./ScheduledTasks/publishNotifications");
+
 
 
 // --------------- translation
@@ -314,6 +320,12 @@ app.post('/volunteer/notifications/read-all', authenticate, notificationControll
 app.get('/notifications', authenticate, notificationController.listMyNotifications);
 app.post('/notifications/:id/read', authenticate, notificationController.markNotificationRead);
 app.post('/notifications/read-all', authenticate, notificationController.markAllNotificationsRead);
+
+// ----- ELDERLY COMPANION PANEL -----
+app.get('/api/companion/recommendation', authenticate, CompanionController.getRecommendation);
+app.post('/api/companion/book', authenticate, CompanionController.book);
+app.get('/api/companion/next-ride', authenticate, CompanionController.getNextRide);
+app.get('/api/notifications/my', authenticate, CompanionController.getMyNotifications);
 // ----- VOLUNTEER EVENT FEED -----
 
 app.get('/volunteer/events', adminEventController.getAllEvents);
@@ -584,6 +596,23 @@ process.on('unhandledRejection', (err) => {
 // ----- START SERVER -----
 app.listen(port, () => {
   console.log(`✅ Server running on http://localhost:${port}`);
+
+  // Publish scheduled notifications (scheduled_for <= now) periodically.
+  // Uses setInterval to avoid extra dependencies.
+  const publishDue = async () => {
+    try {
+      const rows = await publishNotificationsTask.publishDueNotifications({ limit: 200 });
+      if (rows.length > 0) {
+        console.log(`[notifications] published scheduled: ${rows.length}`);
+      }
+    } catch (err) {
+      console.error("[notifications] publish scheduled error:", err);
+    }
+  };
+
+  // Run once on startup, then every 60 seconds.
+  publishDue();
+  setInterval(publishDue, 60 * 1000);
   
   // Schedule auto-delete task to run daily at 2 AM
   const autoDeleteTask = require("./ScheduledTasks/autoDeleteEvents");
