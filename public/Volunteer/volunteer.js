@@ -536,18 +536,19 @@ else if (choice === 'friend') {
       const eventCount = (f.events || []).length;
 
       filterSection.innerHTML += `
-        <div class="event-box">
-          <div class="service-card" onclick="toggleFriendEvents(${idx})" role="button" tabindex="0">
-            <div class="service-icon">
-              <i class="fas fa-user"></i>
+        <div class="fec-accordion">
+          <div class="fec-friend-row" onclick="toggleFriendEvents(${idx})" role="button" tabindex="0" aria-expanded="false" aria-controls="friend-events-${idx}">
+            <div class="fec-friend-row__left">
+              <div class="fec-friend-row__avatar" aria-hidden="true"><i class="fas fa-user"></i></div>
+              <div class="fec-friend-row__text">
+                <div class="fec-friend-row__name">${friendName}</div>
+                <div class="fec-friend-row__sub">${eventCount} event${eventCount !== 1 ? 's' : ''} signed up</div>
+              </div>
             </div>
-            <div class="service-content">
-              <h3>${friendName}</h3>
-              <p>${eventCount} event${eventCount !== 1 ? 's' : ''} signed up</p>
-            </div>
+            <div class="fec-friend-row__chev" aria-hidden="true">▾</div>
           </div>
+          <div class="friend-events-expand" id="friend-events-${idx}" style="display:none;"></div>
         </div>
-        <div class="friend-events-expand" id="friend-events-${idx}" style="display:none;"></div>
       `;
     });
   } catch (err) {
@@ -564,47 +565,71 @@ function toggleFriendEvents(idx) {
 
   const isOpen = container.style.display !== 'none';
 
+  const allContainers = Array.from(document.querySelectorAll('.friend-events-expand'));
+  const allRows = Array.from(document.querySelectorAll('.fec-friend-row'));
+
   // Close all other expanded sections
-  document.querySelectorAll('.friend-events-expand').forEach(el => {
+  allContainers.forEach((el) => {
     el.style.display = 'none';
     el.innerHTML = '';
+    el.classList.remove('open');
+  });
+  allRows.forEach((row) => {
+    row.classList.remove('is-open');
+    row.setAttribute('aria-expanded', 'false');
   });
 
   if (isOpen) return; // Was open, now closed
+
+  // Mark row open
+  const row = document.querySelector(`.fec-friend-row[aria-controls="friend-events-${idx}"]`);
+  if (row) {
+    row.classList.add('is-open');
+    row.setAttribute('aria-expanded', 'true');
+  }
 
   // Open this one
   const friends = window._friendsSignupData || [];
   const friend = friends[idx];
   if (!friend || !friend.events || friend.events.length === 0) {
-    container.innerHTML = `<p style="padding:12px; color:#64748b;">No events signed up.</p>`;
+    container.innerHTML = `<div class="fec-empty">No events signed up.</div>`;
     container.style.display = 'block';
+    container.classList.add('open');
     return;
   }
 
-  // Render events in same style as "Nearer to You"
-  let html = '';
-  friend.events.forEach(e => {
-    const dateStr = e.eventdate
-      ? new Date(e.eventdate).toLocaleDateString(undefined, { month: "short", day: "numeric" })
-      : "";
-    html += `
-      <div class="event-box" style="margin-left: 24px;">
-        <div class="service-card" onclick="goToEventDetail(${e.eventid})" role="button" tabindex="0">
-          <div class="service-icon">
-            <i class="fas fa-calendar"></i>
-          </div>
-          <div class="service-content">
-            <h3>${e.eventname}</h3>
-            <p>${e.location || "TBA"}</p>
-            ${dateStr ? `<p>📅 ${dateStr}</p>` : ""}
-          </div>
-        </div>
-      </div>
-    `;
-  });
+  // Render events as compact, easy-to-scan rows (elderly-friendly)
+  const formatDate = (value) => {
+    try {
+      return new Date(value).toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+    } catch {
+      return '';
+    }
+  };
 
-  container.innerHTML = html;
+  container.innerHTML = `
+    <div class="fec-events">
+      ${friend.events.map((e) => {
+        const dateStr = e.eventdate ? formatDate(e.eventdate) : '';
+        const loc = e.location || 'TBA';
+        return `
+          <div class="fec-event-row" role="button" tabindex="0" onclick="goToEventDetail(${e.eventid})">
+            <div class="fec-event-row__main">
+              <div class="fec-event-row__name">${e.eventname}</div>
+              <div class="fec-event-row__meta">
+                <span>📍 ${loc}</span>
+                ${dateStr ? `<span>📅 ${dateStr}</span>` : ''}
+              </div>
+            </div>
+            <div class="fec-event-row__go" aria-hidden="true">›</div>
+          </div>
+        `;
+      }).join('')}
+    </div>
+  `;
+
   container.style.display = 'block';
+  container.classList.add('open');
 }
 
 
