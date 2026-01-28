@@ -10,6 +10,12 @@ body {
   line-height: 1.6;
 }
 
+@media (max-width: 820px){
+  .history-list--stock{grid-template-columns: 1fr;}
+  .history-item-actions{justify-content:stretch;}
+  .history-item-actions .history-view{width:100%;}
+}
+
 .container > h3 {
   margin-top: 34px;
   text-align: center;
@@ -360,7 +366,22 @@ body {
 }
 /* ===== HISTORY BEAUTIFY (elder-friendly) ===== */
 .history-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
   gap: 14px;
+}
+
+/* ===== OWNED REWARDS (STOCK) LAYOUT ===== */
+.history-list--stock{
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
 }
 
 .history-item {
@@ -369,6 +390,12 @@ body {
   box-shadow: 0 8px 18px rgba(2, 6, 23, 0.06);
   border-radius: 16px;
   padding: 16px;
+}
+
+.history-list--stock .history-item{
+  display:flex;
+  flex-direction:column;
+  gap: 12px;
 }
 
 .history-item-main{
@@ -399,12 +426,53 @@ body {
   color: #64748b;
 }
 
+.history-badge{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.08);
+  border: 1px solid rgba(15, 23, 42, 0.10);
+  color: #0f172a;
+  font-weight: 900;
+  margin-right: 10px;
+}
+
+.history-meta-text{font-weight:800;color:#475569;}
+
+.history-code{
+  margin-top: 10px;
+  font-size: 1rem;
+  color: #334155;
+  font-weight: 900;
+}
+
+.history-code-value{
+  font-weight: 900;
+  color: #0f172a;
+  background: rgba(234, 141, 42, 0.14);
+  border: 1px solid rgba(234, 141, 42, 0.30);
+  padding: 4px 10px;
+  border-radius: 999px;
+  display:inline-block;
+  margin-left: 6px;
+}
+
+.history-item-actions{
+  display:flex;
+  justify-content:flex-end;
+}
+
 /* points badge inside meta line look */
 .history-item-meta::before {
   content: "•";
   margin: 0 6px;
   color: #cbd5e1;
 }
+
+/* Stock view already has its own badge; remove the extra dot */
+.history-list--stock .history-item-meta::before{content:none;}
 
 /* Make button more friendly */
 .history-view {

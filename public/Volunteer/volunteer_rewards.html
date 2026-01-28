@@ -76,9 +76,9 @@
   </div>
 </div>
 
-<section id="transactionHistory" class="history-card" aria-label="Redemption History">
+<section id="transactionHistory" class="history-card" aria-label="My rewards stock">
   <div class="history-head">
-    <h3 class="history-title">Redemption History</h3>
+    <h3 class="history-title">My Rewards Stock</h3>
     <button id="toggleHistory" class="history-toggle" type="button" aria-expanded="true" aria-controls="historyBody">
       <span class="history-toggle-label">Hide</span>
       <span class="history-toggle-icon" aria-hidden="true">▾</span>
@@ -346,23 +346,48 @@ shopItems.forEach(item => {
     historyContent.innerHTML = `
       <div class="history-empty" role="status">
         <div class="history-empty-icon" aria-hidden="true">🎁</div>
-        <div class="history-empty-title">No redemptions yet</div>
-        <div class="history-empty-sub">Your redeemed vouchers will appear here.</div>
+        <div class="history-empty-title">No rewards in your stock yet</div>
+        <div class="history-empty-sub">Redeem an item in the shop and it will appear here.</div>
       </div>
     `;
   }
 
   function renderHistoryList(data) {
     if (!historyContent) return;
+
+    const formatDate = (value) => {
+      try {
+        return new Date(value).toLocaleString();
+      } catch {
+        return 'Date unavailable';
+      }
+    };
+
+    const maskCode = (code) => {
+      const c = String(code || '').trim();
+      if (!c) return 'N/A';
+      if (c.length <= 6) return c;
+      return `${c.slice(0, 3)}•••${c.slice(-3)}`;
+    };
+
     historyContent.innerHTML = `
-      <ul class="history-list">
+      <ul class="history-list history-list--stock">
         ${data.map((item, index) => `
           <li class="history-item">
             <div class="history-item-main">
               <div class="history-item-name">${item.ItemName}</div>
-              <div class="history-item-meta">${item.Points} points · ${new Date(item.RedeemedAt).toLocaleString()}</div>
+              <div class="history-item-meta">
+                <span class="history-badge">${item.Points} pts</span>
+                <span class="history-meta-text">Redeemed: ${formatDate(item.RedeemedAt)}</span>
+              </div>
+              <div class="history-code">
+                Voucher: <span class="history-code-value">${maskCode(item.VoucherCode)}</span>
+              </div>
             </div>
-            <button class="history-view" type="button" data-index="${index}">View</button>
+
+            <div class="history-item-actions">
+              <button class="history-view" type="button" data-index="${index}">View voucher</button>
+            </div>
           </li>
         `).join('')}
       </ul>
