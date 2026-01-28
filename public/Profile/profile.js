@@ -3,9 +3,74 @@ let userRole = null;
 const textSizeButtons = document.querySelectorAll('[data-text-size]');
 let selectedTextSize = (window.getTextSizePreference ? window.getTextSizePreference() : localStorage.getItem("happyVolunteerTextSize")) || "normal";
 
+const API_BASE = window.location.origin;
+
 if (!token) {
   alert("You must be logged in to access this page.");
   window.location.href = "../../index.html";
+}
+
+function hideSettingsAndBadgesOnly() {
+  const settingsBtn = document.querySelector('[data-section="settings"]');
+  const badgesBtn = document.querySelector('[data-section="badges"]');
+  if (settingsBtn) settingsBtn.style.display = 'none';
+  if (badgesBtn) badgesBtn.style.display = 'none';
+
+  const settingsSection = document.getElementById('section-settings');
+  const badgesSection = document.getElementById('section-badges');
+  if (settingsSection) settingsSection.style.display = 'none';
+  if (badgesSection) badgesSection.style.display = 'none';
+}
+
+function showInstitutionExperienceUI() {
+  const eventsBtn = document.querySelector('[data-section="events"]');
+  const eventsSection = document.getElementById('section-events');
+  const eventsTitle = eventsSection?.querySelector?.('.section-title');
+  if (eventsBtn) {
+    const label = eventsBtn.querySelector('span');
+    if (label) label.textContent = 'Event Experience';
+    eventsBtn.style.display = '';
+  }
+  if (eventsTitle) eventsTitle.textContent = 'Event Experience';
+}
+
+async function loadInstitutionEventHeadExperience() {
+  const eventsList = document.getElementById('eventsAttendedList');
+  if (!eventsList) return;
+
+  try {
+    const response = await fetch(`${API_BASE}/profile/event-head-experience`, {
+      headers: { "Authorization": `Bearer ${token}` }
+    });
+    if (!response.ok) throw new Error('Failed to load experience');
+
+    const data = await response.json();
+    const count = Number(data?.count || 0);
+    const events = Array.isArray(data?.events) ? data.events : [];
+
+    const header = `
+      <div class="event-item-card">
+        <h4>Event Head Count: ${count}</h4>
+        <p>${count === 0 ? 'You have not been assigned as Event Head yet.' : 'These are events where you were assigned as Event Head.'}</p>
+      </div>
+    `;
+
+    const listHtml = events.length === 0
+      ? ''
+      : events.map(ev => `
+          <div class="event-item-card">
+            <h4>${ev.eventname || 'Untitled Event'}</h4>
+            <p><strong>Date:</strong> ${ev.eventdate ? new Date(ev.eventdate).toLocaleDateString() : 'Date TBD'}</p>
+            <p><strong>Location:</strong> ${ev.location || 'TBA'}</p>
+            ${ev.status ? `<p><strong>Status:</strong> ${ev.status}</p>` : ''}
+          </div>
+        `).join('');
+
+    eventsList.innerHTML = header + listHtml;
+  } catch (err) {
+    console.error('Error loading institution experience:', err);
+    eventsList.innerHTML = '<p class="empty-text">Unable to load event experience. Please try again later.</p>';
+  }
 }
 
 
@@ -27,7 +92,7 @@ async function loadProfile() {
     let user;
 
     if (viewUserId) {
-      const response = await fetch(`https://fsdp-cycling-ltey.onrender.com/volunteer/user/profile/${encodeURIComponent(viewUserId)}`);
+      const response = await fetch(`${API_BASE}/volunteer/user/profile/${encodeURIComponent(viewUserId)}`);
       if (!response.ok) throw new Error("Failed to load user profile");
       data = await response.json();
       user = data.user || data;
@@ -45,7 +110,7 @@ async function loadProfile() {
 
       hideVolunteerOnlySections();
     } else {
-      const response = await fetch("https://fsdp-cycling-ltey.onrender.com/profile", {
+      const response = await fetch(`${API_BASE}/profile`, {
         method: "GET",
         headers: { "Authorization": `Bearer ${token}` }
       });
@@ -74,8 +139,13 @@ async function loadProfile() {
 
     // Load additional data (only for own profile)
     if (!viewUserId) {
-      loadEventsAttended();
-      loadUserBadges();
+      if (userRole === 'institution' || userRole === 'instituition') {
+        showInstitutionExperienceUI();
+        loadInstitutionEventHeadExperience();
+      } else {
+        loadEventsAttended();
+        loadUserBadges();
+      }
 
       selectedTextSize = data.textSizePreference || selectedTextSize;
       updateTextSizeButtons(selectedTextSize);
@@ -95,7 +165,11 @@ async function loadProfile() {
 
       // Hide volunteer-only sections for admin and institution
       if (userRole && userRole !== 'volunteer') {
-        hideVolunteerOnlySections();
+        if (userRole === 'institution' || userRole === 'instituition') {
+          hideSettingsAndBadgesOnly();
+        } else {
+          hideVolunteerOnlySections();
+        }
       }
     }
 
@@ -164,7 +238,7 @@ function updateTextSizeButtons(mode) {
 async function handleTextSizeChange(mode) {
   if (!mode || mode === selectedTextSize) return;
   try {
-    const response = await fetch("https://fsdp-cycling-ltey.onrender.com/profile", {
+    const response = await fetch(`${API_BASE}/profile`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -222,7 +296,7 @@ saveBtn.addEventListener("click", async () => {
     const phoneNumber = document.getElementById("phoneNumber")?.value || null;
     const advantages = document.getElementById("advantages")?.value || null;
 
-    const response = await fetch("https://fsdp-cycling-ltey.onrender.com/profile", {
+    const response = await fetch(`${API_BASE}/profile`, {
       method: "PUT",
       headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
       body: JSON.stringify({ 
@@ -451,17 +525,17 @@ if (editSettingsBtn) {
 }
 
 if (saveSettingsBtn) {
-  saveSettingsBtn.addEventListener("click", async () => {
+  saveSettingsBtn.addEventListener("click", async function saveSettings() {
     const homeAddress = document.getElementById("homeAddress").value;
     const phoneNumber = document.getElementById("phoneNumber").value;
     const advantages = document.getElementById("advantages").value;
 
     try {
-      const response = await fetch("https://fsdp-cycling-ltey.onrender.com/profile", {
+      const response = await fetch(`${API_BASE}/profile`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`
+          Authorization: `Bearer ${token}`
         },
         body: JSON.stringify({
           homeAddress,
@@ -495,7 +569,7 @@ async function loadEventsAttended() {
   if (!eventsList) return;
 
   try {
-    const response = await fetch("https://fsdp-cycling-ltey.onrender.com/volunteer/signed-events", {
+    const response = await fetch(`${API_BASE}/volunteer/signed-events`, {
       headers: { "Authorization": `Bearer ${token}` }
     });
 
@@ -537,7 +611,7 @@ async function loadUserBadges() {
       return;
     }
 
-    const response = await fetch(`https://fsdp-cycling-ltey.onrender.com/volunteer/user/profile/${userId}`);
+    const response = await fetch(`${API_BASE}/volunteer/user/profile/${userId}`);
     
     if (!response.ok) throw new Error("Failed to load badges");
 

@@ -186,6 +186,40 @@ app.put("/profile", authenticate, async (req, res) => {
   }
 });
 
+app.get("/profile/event-head-experience", authenticate, async (req, res) => {
+  try {
+    if (!req.user?.id) return res.status(401).json({ message: "Unauthorized" });
+
+    const me = await pool.query(
+      "SELECT id, email, name FROM users WHERE id = $1",
+      [req.user.id]
+    );
+
+    if (me.rowCount === 0) return res.status(401).json({ message: "Unauthorized" });
+
+    const email = (me.rows[0].email || "").trim();
+    if (!email) return res.status(200).json({ count: 0, events: [] });
+
+    const q = await pool.query(
+      `
+      SELECT e.eventid, e.eventname, e.eventdate, e.location, e.status
+      FROM eventbookings eb
+      INNER JOIN events e ON e.eventid = eb.eventid
+      WHERE eb.status = 'Approved'
+        AND LOWER(TRIM(eb.session_head_email)) = LOWER(TRIM($1))
+      ORDER BY e.eventdate DESC
+      `,
+      [email]
+    );
+
+    const events = q.rows || [];
+    return res.status(200).json({ count: events.length, events });
+  } catch (err) {
+    console.error("/profile/event-head-experience error:", err);
+    return res.status(500).json({ message: "Failed to load event head experience" });
+  }
+});
+
 // Event Booking Routies (By Organzations)
 const eventBookingRoutes = require("./Routes/EventBookingRoutes");
 app.use("/organization/events", eventBookingRoutes);
