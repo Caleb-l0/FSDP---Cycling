@@ -186,7 +186,9 @@
     loadHistory();
   }
 
-  section.scrollIntoView({ behavior: "smooth", block: "start" });
+  const headerOffset = 84;
+  const y = section.getBoundingClientRect().top + window.pageYOffset - headerOffset;
+  window.scrollTo({ top: Math.max(y, 0), behavior: "smooth" });
 }
 
 
