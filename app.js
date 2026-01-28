@@ -251,6 +251,7 @@ app.put("/events/update/:eventID", authenticate, EventController.updateEvent);
 // Serve static files (for CSS, JS, images, etc.) - but after API routes
 app.use('/public/images', express.static(path.join(__dirname, 'images')));
 app.use('/public', express.static(path.join(__dirname, 'public'))); // header, images, etc.
+app.use('/companion', express.static(path.join(__dirname, 'public', 'companion')));
 app.use('/Accounts/views', express.static(path.join(__dirname, 'Accounts/views'))); // login.html, signup.html
 
 // ----- HTML PAGES -----
