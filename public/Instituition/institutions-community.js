@@ -175,10 +175,11 @@ async function loadPosts() {
     container.innerHTML = "";
 
     (Array.isArray(posts) ? posts : []).forEach((p) => {
+      const avatarUrl = p.profilepicture || DEFAULT_AVATAR;
       container.innerHTML += `
         <div class="post-card" data-post-id="${p.postid}">
           <div class="post-header">
-            <img class="post-avatar" src="${DEFAULT_AVATAR}" alt="">
+            <img class="post-avatar" src="${avatarUrl}" alt="${(p.username || "").replace(/</g, "&lt;")}'s avatar">
             <div>
               <h4 class="post-user">${(p.username || "").replace(/</g, "&lt;")}</h4>
               <p class="post-time">${new Date(p.createdat).toLocaleString()}</p>
@@ -310,11 +311,15 @@ async function loadComments(postId, container) {
     container.innerHTML = "";
     if (!Array.isArray(comments)) return;
     comments.forEach((c) => {
+      const avatarUrl = c.profilepicture || DEFAULT_AVATAR;
       container.innerHTML += `
         <div class="comment-item">
-          <strong>${(c.username || "").replace(/</g, "&lt;")}:</strong>
-          <span>${(c.commenttext || "").replace(/</g, "&lt;")}</span>
-          <div class="comment-time">${new Date(c.createdat).toLocaleString()}</div>
+          <img class="comment-avatar" src="${avatarUrl}" alt="${(c.username || "").replace(/</g, "&lt;")}'s avatar">
+          <div class="comment-content">
+            <strong>${(c.username || "").replace(/</g, "&lt;")}:</strong>
+            <span>${(c.commenttext || "").replace(/</g, "&lt;")}</span>
+            <div class="comment-time">${new Date(c.createdat).toLocaleString()}</div>
+          </div>
         </div>
       `;
     });
@@ -323,6 +328,35 @@ async function loadComments(postId, container) {
   }
 }
 
+<<<<<<< HEAD
+// --- Volunteers ---
+async function loadVolunteers() {
+  showLoading();
+  try {
+    const res = await fetch("https://fsdp-cycling-ltey.onrender.com/community/browse/volunteers", {
+      method: "GET",
+      headers: { "Authorization": `Bearer ${token}` }
+    });
+    const list = await res.json();
+    const container = document.querySelector(".people-scroll");
+    if (!container) return;
+    container.innerHTML = "";
+    (Array.isArray(list) ? list : []).forEach((v) => {
+      container.innerHTML += `
+        <div class="people-card">
+          <img src="${v.profilepicture || DEFAULT_AVATAR}" class="people-avatar" alt="${(v.name || "").replace(/</g, "&lt;")}'s avatar">
+          <h4 class="people-name">${(v.name || "").replace(/</g, "&lt;")}</h4>
+          <button class="btn-add">Add Friend</button>
+        </div>
+      `;
+    });
+  } finally {
+    hideLoading();
+  }
+}
+
+=======
+>>>>>>> e3b59c206106a1d33a7dfa59225489c490da6198
 // --- Other Institutions ---
 async function loadInstitutions() {
   showLoading();

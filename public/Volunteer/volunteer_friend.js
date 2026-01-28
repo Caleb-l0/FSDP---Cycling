@@ -157,9 +157,10 @@ function renderFriends() {
     const bio = f.bio || "No bio available.";
     const email = f.email || "No email available.";
 
+    const avatarUrl = f.profilepicture || "./default_user.png";
     card.innerHTML = `
       <div class="hvf-friend-main">
-        <img src="./default_user.png" class="hvf-friend-avatar" alt="${friendName}'s avatar">
+        <img src="${avatarUrl}" class="hvf-friend-avatar" alt="${friendName}'s avatar">
 
         <div class="hvf-friend-text">
           <div class="hvf-friend-name">${friendName}</div>

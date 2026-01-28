@@ -233,11 +233,12 @@ async function loadPosts() {
         container.innerHTML = "";
 
         posts.forEach(p => {
+            const avatarUrl = p.profilepicture || "./default_user.png";
             container.innerHTML += `
             <div class="post-card" data-post-id="${p.postid}">
             
             <div class="post-header">
-                <img class="post-avatar" src="./default_user.png">
+                <img class="post-avatar" src="${avatarUrl}" alt="${p.username}'s avatar">
                 <div>
                     <h4 class="post-user">${p.username}</h4>
                     <p class="post-time">${new Date(p.createdat).toLocaleString()}</p>
@@ -438,11 +439,15 @@ async function loadComments(postId, container) {
   if (!Array.isArray(comments)) return;
 
   comments.forEach(c => {
+    const avatarUrl = c.profilepicture || "./default_user.png";
     container.innerHTML += `
       <div class="comment-item">
-        <strong>${c.username}:</strong>
-        <span>${c.commenttext}</span>
-        <div class="comment-time">${new Date(c.createdat).toLocaleString()}</div>
+        <img class="comment-avatar" src="${avatarUrl}" alt="${c.username}'s avatar">
+        <div class="comment-content">
+          <strong>${c.username}:</strong>
+          <span>${c.commenttext}</span>
+          <div class="comment-time">${new Date(c.createdat).toLocaleString()}</div>
+        </div>
       </div>
     `;
   });
@@ -473,7 +478,7 @@ async function loadVolunteers() {
             const vid = v.id ?? v.userid ?? v.userId;
             container.innerHTML += `
                 <div class="people-card">
-                    <img src="./default_user.png" class="people-avatar">
+                    <img src="${v.profilepicture || './default_user.png'}" class="people-avatar" alt="${v.name}'s avatar">
                     <h4 class="people-name">${v.name}</h4>
                     ${vid ? `<button class="btn-add" data-user-id="${vid}">Add Friend</button>` : `<button class="btn-add" disabled>Add Friend</button>`}
                 </div>

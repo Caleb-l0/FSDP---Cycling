@@ -27,21 +27,26 @@ async function findUserByEmail(email) {
 // -------------------------------
 async function getUserById(id) {
   const query = `
-    SELECT id, name, email, role, textsizepreference, homeaddress, phonenumber, advantages
+    SELECT id, name, email, role, textsizepreference, homeaddress, phonenumber, advantages, profilepicture
     FROM users
     WHERE id = $1
     LIMIT 1
   `;
 
   const result = await pool.query(query, [id]);
-  return result.rows[0];
+  const user = result.rows[0];
+  if (user) {
+    console.log("getUserById - profilepicture exists:", !!user.profilepicture);
+    console.log("getUserById - profilepicture length:", user.profilepicture ? user.profilepicture.length : 0);
+  }
+  return user;
 }
 
 
 // -------------------------------
 // 3. Update user (dynamic fields)
 // -------------------------------
-async function updateUser(id, name, email, textSizePreference, homeAddress, phoneNumber, advantages) {
+async function updateUser(id, name, email, textSizePreference, homeAddress, phoneNumber, advantages, profilePicture) {
 
   const updates = [];
   const values = [];
@@ -89,6 +94,17 @@ async function updateUser(id, name, email, textSizePreference, homeAddress, phon
     index++;
   }
 
+  // push profilePicture
+  if (profilePicture !== undefined && profilePicture !== null && profilePicture !== "") {
+    updates.push(`profilepicture = $${index}`);
+    values.push(profilePicture);
+    index++;
+    console.log("Updating profilePicture, length:", profilePicture ? profilePicture.length : 0);
+    console.log("Updating profilePicture, first 50 chars:", profilePicture ? profilePicture.substring(0, 50) : "N/A");
+  } else {
+    console.log("profilePicture not updated - value:", profilePicture, "type:", typeof profilePicture);
+  }
+
   // Nothing to update
   if (updates.length === 0) return;
 
@@ -101,7 +117,22 @@ async function updateUser(id, name, email, textSizePreference, homeAddress, phon
     WHERE id = $${index}
   `;
 
-  await pool.query(query, values);
+  console.log("Update query:", query);
+  console.log("Update values count:", values.length);
+  console.log("Update values (first 100 chars of each):", values.map(v => typeof v === 'string' && v.length > 100 ? v.substring(0, 100) + '...' : v));
+  
+  const result = await pool.query(query, values);
+  console.log("Update result:", result.rowCount, "rows updated");
+  
+  // Verify the update by querying back
+  if (result.rowCount > 0) {
+    const verifyQuery = `SELECT profilepicture FROM users WHERE id = $1`;
+    const verifyResult = await pool.query(verifyQuery, [id]);
+    if (verifyResult.rows[0]) {
+      const savedPic = verifyResult.rows[0].profilepicture;
+      console.log("Verification - profilepicture saved:", !!savedPic, "length:", savedPic ? savedPic.length : 0);
+    }
+  }
 }
 
 

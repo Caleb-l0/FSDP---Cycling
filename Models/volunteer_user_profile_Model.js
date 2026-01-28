@@ -15,7 +15,8 @@ async function getUserById(id) {
         advantages,
         role,
         level,
-        joindate
+        joindate,
+        profilepicture
       FROM users
       WHERE id = $1
     `,

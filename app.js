@@ -162,6 +162,16 @@ app.delete('/user/:id', authenticate, deleteUser);
 app.get("/profile", authenticate, async (req, res) => {
   try {
     const user = await loginModel.getUserById(req.user.id);
+    console.log("Profile fetch - user object keys:", Object.keys(user));
+    console.log("Profile fetch - profilepicture exists:", !!user.profilepicture);
+    console.log("Profile fetch - profilepicture value:", user.profilepicture ? "Has value" : "null/undefined");
+    console.log("Profile fetch - profilepicture length:", user.profilepicture ? user.profilepicture.length : 0);
+    
+    // Also check all possible field name variations
+    console.log("Profile fetch - user.profilepicture:", user.profilepicture);
+    console.log("Profile fetch - user.ProfilePicture:", user.ProfilePicture);
+    console.log("Profile fetch - user.profilePicture:", user.profilePicture);
+    
     res.json({
       id: user.id,
       name: user.name,
@@ -170,7 +180,8 @@ app.get("/profile", authenticate, async (req, res) => {
       textSizePreference: user.textsizepreference || 'normal',
       homeAddress: user.homeaddress || null,
       phoneNumber: user.phonenumber || null,
-      advantages: user.advantages || null
+      advantages: user.advantages || null,
+      profilePicture: user.profilepicture || user.ProfilePicture || user.profilePicture || null
     });
   } catch (err) {
     console.error("Profile fetch error:", err);
@@ -180,10 +191,12 @@ app.get("/profile", authenticate, async (req, res) => {
 
 // ----- UPDATE PROFILE -----
 app.put("/profile", authenticate, async (req, res) => {
-  const { name, email, textSizePreference, homeAddress, phoneNumber, advantages } = req.body;
+  const { name, email, textSizePreference, homeAddress, phoneNumber, advantages, profilePicture } = req.body;
 
   try {
-    await loginModel.updateUser(req.user.id, name, email, textSizePreference, homeAddress, phoneNumber, advantages);
+    console.log("Profile update request - profilePicture provided:", !!profilePicture);
+    console.log("Profile update request - profilePicture length:", profilePicture ? profilePicture.length : 0);
+    await loginModel.updateUser(req.user.id, name, email, textSizePreference, homeAddress, phoneNumber, advantages, profilePicture);
 
     res.json({ message: "Profile updated successfully!" });
   } catch (err) {

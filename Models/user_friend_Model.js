@@ -13,6 +13,7 @@ async function getUserFriends(userId, sortBy = "date") {
       u.name,
       u.level,
       u.joindate,
+      u.profilepicture,
       uf.adddate,
       uf.friend_level,
       uf.nickname,
@@ -89,6 +90,7 @@ async function getAllFriendsSignUpEvents(userId) {
     SELECT
       f.friend_id,
       u.name AS friend_name,
+      u.profilepicture,
       e.eventid,
       e.eventname,
       e.eventdate,

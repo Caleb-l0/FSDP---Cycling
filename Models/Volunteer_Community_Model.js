@@ -28,7 +28,7 @@ async function createPost(postData) {
 
 
 // ===================================================
-// 2. Get All Posts + Username
+// 2. Get All Posts + Username + Profile Picture
 // ===================================================
 async function getAllPosts() {
   const result = await pool.query(`
@@ -41,7 +41,12 @@ async function getAllPosts() {
         cp.visibility,
         cp.taggedinstitutionid,
         cp.createdat,
+<<<<<<< HEAD
+        u.name AS username,
+        u.profilepicture
+=======
         COALESCE(o.orgname, u.name) AS username
+>>>>>>> e3b59c206106a1d33a7dfa59225489c490da6198
       FROM communityposts cp
       INNER JOIN users u ON cp.userid = u.id
       LEFT JOIN userorganizations uo
@@ -190,11 +195,11 @@ async function getAllInstitutions() {
 
 
 // ===================================================
-// 7. Get All Volunteers
+// 7. Get All Volunteers + Profile Picture
 // ===================================================
 async function getAllVolunteers() {
   const result = await pool.query(`
-      SELECT id, name
+      SELECT id, name, profilepicture
       FROM users
       WHERE role = 'volunteer'
       ORDER BY name
@@ -250,13 +255,13 @@ async function createComment(postId, userId, text) {
 
 
 // ===================================================
-// 10. Get All Comments for a Post
+// 10. Get All Comments for a Post + Profile Picture
 // ===================================================
 async function getCommentsForPost(postId) {
 
   const result = await pool.query(
     `
-      SELECT c.*, u.name AS username
+      SELECT c.*, u.name AS username, u.profilepicture
       FROM communitycomments c
       INNER JOIN users u ON u.id = c.userid
       WHERE c.postid = $1
