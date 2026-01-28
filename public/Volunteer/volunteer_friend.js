@@ -7,10 +7,12 @@ if (!token) {
 
 let friendsData = [];
 let currentFilter = "recent";
+let currentQuery = "";
 
 document.addEventListener("DOMContentLoaded", () => {
   loadFriends();
   setupFilters();
+  setupSearch();
 });
 
 async function loadFriends() {
@@ -29,6 +31,7 @@ async function loadFriends() {
     }
 
     friendsData = await res.json();
+    updateFriendCount();
     renderFriends();
   } catch (err) {
     console.error("Load friends error", err);
@@ -39,6 +42,23 @@ async function loadFriends() {
       </div>
     `;
   }
+}
+
+function setupSearch() {
+  const input = document.getElementById("friendsSearch");
+  if (!input) return;
+
+  input.addEventListener("input", () => {
+    currentQuery = String(input.value || "").trim().toLowerCase();
+    renderFriends();
+  });
+}
+
+function updateFriendCount() {
+  const el = document.getElementById("friendsCount");
+  if (!el) return;
+  const count = Array.isArray(friendsData) ? friendsData.length : 0;
+  el.textContent = `${count} friend${count === 1 ? "" : "s"}`;
 }
 
 function setupFilters() {
@@ -84,6 +104,30 @@ function renderFriends() {
     });
   }
 
+  if (currentQuery) {
+    sorted = sorted.filter((f) => {
+      const name = (f.nickname || f.name || "").toLowerCase();
+      const username = (f.username || "").toLowerCase();
+      const bio = (f.bio || "").toLowerCase();
+      const email = (f.email || "").toLowerCase();
+      return (
+        name.includes(currentQuery) ||
+        username.includes(currentQuery) ||
+        bio.includes(currentQuery) ||
+        email.includes(currentQuery)
+      );
+    });
+  }
+
+  if (sorted.length === 0) {
+    list.innerHTML = `
+      <div class="hvf-empty-state">
+        <p>No friends match your search.</p>
+      </div>
+    `;
+    return;
+  }
+
   // Render friend cards
   sorted.forEach(f => {
     const card = document.createElement("div");
@@ -98,6 +142,9 @@ function renderFriends() {
       day: 'numeric'
     }) : "Date unknown";
     const friendLevel = f.friend_level || 0;
+    const username = f.username ? `@${f.username}` : "@unknown";
+    const bio = f.bio || "No bio available.";
+    const email = f.email || "No email available.";
 
     card.innerHTML = `
       <div class="hvf-friend-main">
@@ -105,9 +152,10 @@ function renderFriends() {
 
         <div class="hvf-friend-text">
           <div class="hvf-friend-name">${friendName}</div>
-          <div class="hvf-friend-username">@${f.username || "unknown"}</div>
-          <div class="hvf-friend-bio">${f.bio || "No bio available."}</div>
-          <div class="hvf=friend-email">${f.email || "No email available."}</div>
+          <div class="hvf-friend-username">${username}</div>
+          <div class="hvf-friend-bio">${bio}</div>
+          <div class="hvf-friend-email">${email}</div>
+
           <div class="hvf-friend-meta">Joined ${joinDate}</div>
           <div class="hvf-friend-level">Level ${friendLevel}</div>
         </div>
