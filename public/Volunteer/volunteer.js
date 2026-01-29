@@ -1,6 +1,17 @@
 
 const token = localStorage.getItem("token");
 
+const API_BASE = (window.location.origin && window.location.origin !== 'null')
+    ? window.location.origin
+    : 'https://fsdp-cycling-ltey.onrender.com';
+
+const FALLBACK_AVATAR = "https://source.unsplash.com/96x96/?elderly,portrait";
+
+function getAvatarUrl(obj) {
+    const url = (obj?.profilepicture || obj?.profilePicture || obj?.avatar || obj?.avatarUrl || "").toString().trim();
+    return url || FALLBACK_AVATAR;
+}
+
 if (!token) {
     alert("Please log in first");
     window.location.href = "../../index.html";   
@@ -357,7 +368,7 @@ async function loadVolunteersHomepage() {
 
     try {
         const res = await fetch(
-            "https://fsdp-cycling-ltey.onrender.com/community/browse/volunteers",
+            `${API_BASE}/community/browse/volunteers`,
             {
                 method: "GET",
                 headers: { "Authorization": `Bearer ${token}` }
@@ -389,13 +400,19 @@ async function loadVolunteersHomepage() {
         }
 
         volunteers.forEach(v => {
+            const avatarUrl = getAvatarUrl(v);
             container.innerHTML += `
                 <div class="event-box">
                     <div class="service-card volunteer-card"
                          onclick="openVolunteerProfile('${v.id}')">
 
                         <div class="service-icon">
-                            <i class="fas fa-user"></i>
+                            <img
+                                src="${avatarUrl}"
+                                alt="${v.name}'s avatar"
+                                onerror="this.onerror=null;this.src='${FALLBACK_AVATAR}'"
+                                style="width:56px;height:56px;border-radius:50%;object-fit:cover;display:block;"
+                            >
                         </div>
 
                         <div class="service-content">

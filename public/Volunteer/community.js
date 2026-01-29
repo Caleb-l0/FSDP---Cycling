@@ -4,6 +4,13 @@ const API_BASE = (window.location.origin && window.location.origin !== 'null')
     ? window.location.origin
     : 'https://fsdp-cycling-ltey.onrender.com';
 
+const FALLBACK_AVATAR = "https://source.unsplash.com/96x96/?elderly,portrait";
+
+function getAvatarUrl(obj) {
+    const url = (obj?.profilepicture || obj?.profilePicture || obj?.avatar || obj?.avatarUrl || "").toString().trim();
+    return url || FALLBACK_AVATAR;
+}
+
 if (!token) {
     window.location.href = "../../index.html";
 }
@@ -255,7 +262,7 @@ function renderVisiblePosts() {
     }
 
     slice.forEach(p => {
-        const avatarUrl = p.profilepicture || "./default_user.png";
+        const avatarUrl = getAvatarUrl(p);
         const username = escapeHtml(p.username || 'Unknown');
         const content = escapeHtml(p.content || '');
         const createdAt = p.createdat ? new Date(p.createdat).toLocaleString() : '';
@@ -265,7 +272,7 @@ function renderVisiblePosts() {
         container.innerHTML += `
             <div class="post-card" data-post-id="${escapeHtml(p.postid)}">
                 <div class="post-header">
-                    <img class="post-avatar" src="${avatarUrl}" alt="${username}'s avatar">
+                    <img class="post-avatar" src="${avatarUrl}" alt="${username}'s avatar" onerror="this.onerror=null;this.src='${FALLBACK_AVATAR}'">
                     <div>
                         <h4 class="post-user">${username}</h4>
                         <p class="post-time">${createdAt}</p>
@@ -382,7 +389,7 @@ function attachLikeEvents() {
         if (!likeBtn || !likeCountEl || !postId) return;
 
         likeBtn.addEventListener("click", async () => {
-            const res = await fetch(`https://fsdp-cycling-ltey.onrender.com/community/posts/${postId}/like`, {
+            const res = await fetch(`${API_BASE}/community/posts/${postId}/like`, {
                 method: "POST",
                 headers: { "Authorization": `Bearer ${token}` }
             });
@@ -524,26 +531,30 @@ async function loadComments(postId, container) {
   }
 
   const comments = await res.json();
+
+  if (!Array.isArray(comments)) {
+    container.innerHTML = "";
+    return;
+  }
+
   container.innerHTML = "";
 
-  if (!Array.isArray(comments)) return;
-
   comments.forEach(c => {
-    const avatarUrl = c.profilepicture || "./default_user.png";
+    const avatarUrl = getAvatarUrl(c);
+    const username = escapeHtml(c.username || 'Unknown');
+    const text = escapeHtml(c.commenttext || '');
+
     container.innerHTML += `
       <div class="comment-item">
-        <img class="comment-avatar" src="${avatarUrl}" alt="${c.username}'s avatar">
+        <img class="comment-avatar" src="${avatarUrl}" alt="${username}'s avatar" onerror="this.onerror=null;this.src='${FALLBACK_AVATAR}'">
         <div class="comment-content">
-          <strong>${c.username}:</strong>
-          <span>${c.commenttext}</span>
-          <div class="comment-time">${new Date(c.createdat).toLocaleString()}</div>
+          <strong>${username}:</strong>
+          <span>${text}</span>
         </div>
       </div>
     `;
   });
 }
-
-
 
 
 
@@ -568,7 +579,7 @@ async function loadVolunteers() {
             const vid = v.id ?? v.userid ?? v.userId;
             container.innerHTML += `
                 <div class="people-card">
-                    <img src="${v.profilepicture || './default_user.png'}" class="people-avatar" alt="${v.name}'s avatar">
+                    <img src="${getAvatarUrl(v)}" class="people-avatar" alt="${v.name}'s avatar" onerror="this.onerror=null;this.src='${FALLBACK_AVATAR}'">
                     <h4 class="people-name">${v.name}</h4>
                     ${vid ? `<button class="btn-add" data-user-id="${vid}">Add Friend</button>` : `<button class="btn-add" disabled>Add Friend</button>`}
                 </div>
