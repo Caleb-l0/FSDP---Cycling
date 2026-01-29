@@ -562,6 +562,64 @@ function renderProfile(p) {
   renderAdvantages(p);
 }
 
+function renderContact(p) {
+  const emailEl = document.getElementById('hvop-email');
+  const phoneEl = document.getElementById('hvop-phone');
+  const emptyEl = document.getElementById('hvop-contact-empty');
+  const phoneNote = document.getElementById('hvop-phone-note');
+  const waBtn = document.getElementById('hvop-whatsapp-btn');
+
+  const email = (p.email ?? p.Email ?? '').toString().trim();
+  const phone = (p.phone ?? p.phonenumber ?? p.phoneNumber ?? p.PhoneNumber ?? p.Phone ?? '').toString().trim();
+
+  if (emailEl) emailEl.textContent = email || '—';
+
+  if (phoneEl) {
+    phoneEl.dataset.value = phone;
+  }
+
+  if (emptyEl) {
+    emptyEl.style.display = (!email && !phone) ? 'block' : 'none';
+  }
+
+  if (!phone && phoneNote) {
+    phoneNote.style.display = 'none';
+  }
+
+  const isFriend = addBtn?.dataset?.state === 'remove';
+  setPhoneVisibility(Boolean(isFriend));
+
+  if (waBtn) {
+    waBtn.onclick = () => {
+      const isFriendNow = addBtn?.dataset?.state === 'remove';
+      const phoneValue = phoneEl?.dataset?.value || '';
+      const waPhone = sanitizePhoneForWhatsApp(phoneValue);
+      if (!isFriendNow || !waPhone) return;
+      const msg = (waTextParam && waTextParam.trim())
+        ? waTextParam
+        : `Hi ${p.name || 'friend'}, this is from Happy Volunteer. Can we chat about volunteering?`;
+      const url = `https://wa.me/${waPhone}?text=${encodeURIComponent(msg)}`;
+      window.open(url, '_blank', 'noopener');
+    };
+  }
+
+  tryAutoOpenWhatsApp();
+}
+
+function renderAdvantages(p) {
+  const list = document.getElementById('hvop-advantages');
+  const empty = document.getElementById('hvop-advantages-empty');
+  if (!list) return;
+
+  const raw = (p.advantages ?? '').toString().trim();
+  const items = raw
+    ? raw.split(/\n|\r\n/).map(s => s.trim()).filter(Boolean)
+    : [];
+
+  list.innerHTML = items.map(i => `<li>${i}</li>`).join('');
+  if (empty) empty.style.display = items.length === 0 ? 'block' : 'none';
+}
+
 function setOverview(i, val) {
   document.querySelectorAll(".hvop-overview-card strong")[i].textContent = val;
 }
