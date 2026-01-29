@@ -112,6 +112,21 @@
       <label>Description</label>
       <textarea id="description"></textarea>
 
+      <label>Event Picture</label>
+      <div class="event-image-upload">
+        <div class="event-image-preview-wrap">
+          <img id="eventImagePreview" class="event-image-preview" src="" alt="Event image preview" style="display: none;">
+          <div id="eventImagePlaceholder" class="event-image-placeholder">
+            <i class="fas fa-image"></i>
+            <span>No image selected</span>
+          </div>
+        </div>
+        <label for="eventImageUpload" class="event-image-upload-btn">
+          <i class="fas fa-camera"></i> Choose Image
+        </label>
+        <input type="file" id="eventImageUpload" accept="image/*" style="display: none;">
+      </div>
+
       <label>Status</label>
       <select id="status">
         <option>Upcoming</option>

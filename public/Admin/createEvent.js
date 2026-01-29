@@ -79,6 +79,8 @@ async function createEvent() {
     return;
   }
 
+  const eventImageBase64 = window._eventImageBase64 || null;
+
   const eventData = {
     EventName: eventName,
     EventDate: eventDate,
@@ -88,8 +90,7 @@ async function createEvent() {
     MaximumParticipant:   MaximumParticipant,
     OrganizationID: organizerValue,
     Location: Location,
-    
-
+    EventImage: eventImageBase64,
   };
 
 
@@ -216,6 +217,66 @@ document.getElementById("eventForm").addEventListener("submit", function(e) {
   e.preventDefault(); 
   createEvent();      
 });
+
+// ======================================================
+// Event Picture Upload
+// ======================================================
+const eventImageUpload = document.getElementById("eventImageUpload");
+const eventImagePreview = document.getElementById("eventImagePreview");
+const eventImagePlaceholder = document.getElementById("eventImagePlaceholder");
+
+if (eventImageUpload && eventImagePreview && eventImagePlaceholder) {
+  eventImageUpload.addEventListener("change", function(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      alert("Please select an image file (JPG, PNG, etc.).");
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      alert("Image size should be less than 5MB. Please select a smaller image.");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = function(event) {
+      let base64Image = event.target.result;
+      const img = new Image();
+      img.onload = function() {
+        const canvas = document.createElement("canvas");
+        const maxSize = 600;
+        let width = img.width;
+        let height = img.height;
+        if (width > height) {
+          if (width > maxSize) {
+            height = (height * maxSize) / width;
+            width = maxSize;
+          }
+        } else {
+          if (height > maxSize) {
+            width = (width * maxSize) / height;
+            height = maxSize;
+          }
+        }
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0, width, height);
+        base64Image = canvas.toDataURL("image/jpeg", 0.8);
+        window._eventImageBase64 = base64Image;
+        eventImagePreview.src = base64Image;
+        eventImagePreview.style.display = "block";
+        eventImagePlaceholder.style.display = "none";
+      };
+      img.onerror = function() {
+        alert("Failed to load image. Please select another image.");
+      };
+      img.src = event.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
 
 
 

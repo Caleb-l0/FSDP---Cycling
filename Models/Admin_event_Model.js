@@ -20,9 +20,9 @@ async function createEvent(eventData) {
     const query = `
       INSERT INTO events (
         location, organizationid, eventname, eventdate, description,
-        requiredvolunteers, maximumparticipant, status
+        requiredvolunteers, maximumparticipant, status, eventimage
       )
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
       RETURNING *
     `;
 
@@ -35,6 +35,7 @@ async function createEvent(eventData) {
       eventData.RequiredVolunteers,
       eventData.MaximumParticipant,
       eventData.Status || "Upcoming",
+      eventData.EventImage || eventData.eventimage || null,
     ];
 
     const result = await pool.query(query, values);

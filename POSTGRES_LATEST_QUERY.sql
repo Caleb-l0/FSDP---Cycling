@@ -91,6 +91,10 @@ ADD COLUMN longitude DOUBLE PRECISION;
 ADD COLUMN participantsignup INT DEFAULT 0;
 ADD COLUMN eventimage VARCHAR(255);
 
+-- Event image for base64 uploads (use TEXT; run MIGRATION_eventimage_to_TEXT.sql if column already exists as VARCHAR)
+-- ALTER TABLE events DROP COLUMN IF EXISTS eventimage;
+-- ALTER TABLE events ADD COLUMN eventimage TEXT;
+
 
 CREATE TABLE volunterrequests (   /* supposed to be institution requests please ignore this error, because change make time */
     requestid SERIAL PRIMARY KEY,
