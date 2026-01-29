@@ -523,6 +523,7 @@ function renderProfile(p) {
   p = p || {};
   p.badges = Array.isArray(p.badges) ? p.badges : [];
   p.events = Array.isArray(p.events) ? p.events : [];
+
   p.followers = Number(p.followers) || 0;
   p.total_events = Number(p.total_events) || 0;
   p.level = Number(p.level) || 0;
