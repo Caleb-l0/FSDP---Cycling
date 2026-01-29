@@ -491,9 +491,7 @@ function sanitizePhoneForWhatsApp(phone) {
 // =========================
 // FETCH AND RENDER PROFILE
 // =========================
-  alert("Invalid profile");
-  location.href = "homepage_login_volunteer.html";
-}
+// userId is validated earlier; proceed to fetch profile
 
 fetch(`${UserEndPoint}/volunteer/user/profile/${userId}`, {
   headers: {
