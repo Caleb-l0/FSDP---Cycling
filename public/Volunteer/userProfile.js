@@ -527,8 +527,8 @@ function renderProfile(p) {
 
   const avatarImg = document.querySelector('.hvop-avatar');
   const profilePic = (p.profilePicture || p.profilepicture || '').toString().trim();
-  if (avatarImg && profilePic) {
-    avatarImg.src = profilePic;
+  if (avatarImg) {
+    avatarImg.src = profilePic || '../Bali.jpg';
   }
 
   // ================= HERO =================
@@ -648,7 +648,17 @@ function renderEvents(events) {
   grid.innerHTML = "";
 
   if (!events || events.length === 0) {
-    grid.innerHTML = "<p>No events joined yet.</p>";
+    grid.innerHTML = `
+      <div class="hvop-empty">
+        <img
+          class="hvop-empty__img"
+          alt="No events"
+          src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='280'%20height='180'%20viewBox='0%200%20280%20180'%3E%3Crect%20x='0'%20y='0'%20width='280'%20height='180'%20rx='18'%20fill='%23f8fafc'/%3E%3Cpath%20d='M62%2056h156a16%2016%200%200%201%2016%2016v70a16%2016%200%200%201-16%2016H62a16%2016%200%200%201-16-16V72a16%2016%200%200%201%2016-16z'%20fill='%23ffffff'%20stroke='%23e2e8f0'%20stroke-width='2'/%3E%3Cpath%20d='M78%2084h92'%20stroke='%230f172a'%20stroke-opacity='.18'%20stroke-width='10'%20stroke-linecap='round'/%3E%3Cpath%20d='M78%20106h70'%20stroke='%230f172a'%20stroke-opacity='.12'%20stroke-width='10'%20stroke-linecap='round'/%3E%3Ccircle%20cx='196'%20cy='104'%20r='16'%20fill='%23f59e0b'%20fill-opacity='.22'/%3E%3Cpath%20d='M190%20104l4%204%209-10'%20stroke='%23f59e0b'%20stroke-width='4'%20fill='none'%20stroke-linecap='round'%20stroke-linejoin='round'/%3E%3C/svg%3E"
+        />
+        <div class="hvop-empty__title">No events yet</div>
+        <div class="hvop-empty__sub">This user hasn’t joined any events.</div>
+      </div>
+    `;
     return;
   }
 
@@ -677,11 +687,22 @@ function renderBadges(badges) {
   grid.innerHTML = "";
 
   if (!badges || badges.length === 0) {
-    empty.style.display = "block";
+    if (empty) empty.style.display = "none";
+    grid.innerHTML = `
+      <div class="hvop-empty">
+        <img
+          class="hvop-empty__img"
+          alt="No badges"
+          src="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='280'%20height='180'%20viewBox='0%200%20280%20180'%3E%3Crect%20x='0'%20y='0'%20width='280'%20height='180'%20rx='18'%20fill='%23f8fafc'/%3E%3Cpath%20d='M92%2050h96a18%2018%200%200%201%2018%2018v62a18%2018%200%200%201-18%2018H92a18%2018%200%200%201-18-18V68a18%2018%200%200%201%2018-18z'%20fill='%23ffffff'%20stroke='%23e2e8f0'%20stroke-width='2'/%3E%3Cpath%20d='M108%2080h64'%20stroke='%230f172a'%20stroke-opacity='.18'%20stroke-width='10'%20stroke-linecap='round'/%3E%3Cpath%20d='M108%20102h44'%20stroke='%230f172a'%20stroke-opacity='.12'%20stroke-width='10'%20stroke-linecap='round'/%3E%3Cpath%20d='M140%20118l10%2010%2020-24'%20stroke='%23f59e0b'%20stroke-width='6'%20fill='none'%20stroke-linecap='round'%20stroke-linejoin='round'/%3E%3C/svg%3E"
+        />
+        <div class="hvop-empty__title">No badges yet</div>
+        <div class="hvop-empty__sub">This user hasn’t earned any badges.</div>
+      </div>
+    `;
     return;
   }
 
-  empty.style.display = "none";
+  if (empty) empty.style.display = "none";
 
   badges.forEach(b => {
     const div = document.createElement("div");

@@ -5,7 +5,7 @@ const API_BASE = (window.location.origin && window.location.origin !== 'null')
     ? window.location.origin
     : 'https://fsdp-cycling-ltey.onrender.com';
 
-const FALLBACK_AVATAR = "https://source.unsplash.com/96x96/?elderly,portrait";
+const FALLBACK_AVATAR = "../Bali.jpg";
 
 function getAvatarUrl(obj) {
     const url = (obj?.profilepicture || obj?.profilePicture || obj?.avatar || obj?.avatarUrl || "").toString().trim();
@@ -411,7 +411,7 @@ async function loadVolunteersHomepage() {
                                 src="${avatarUrl}"
                                 alt="${v.name}'s avatar"
                                 onerror="this.onerror=null;this.src='${FALLBACK_AVATAR}'"
-                                style="width:56px;height:56px;border-radius:50%;object-fit:cover;display:block;"
+                                style="width:56px;height:56px;border-radius:12px;object-fit:cover;display:block;"
                             >
                         </div>
 

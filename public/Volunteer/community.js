@@ -4,7 +4,7 @@ const API_BASE = (window.location.origin && window.location.origin !== 'null')
     ? window.location.origin
     : 'https://fsdp-cycling-ltey.onrender.com';
 
-const FALLBACK_AVATAR = "https://source.unsplash.com/96x96/?elderly,portrait";
+const FALLBACK_AVATAR = "../Bali.jpg";
 
 function getAvatarUrl(obj) {
     const url = (obj?.profilepicture || obj?.profilePicture || obj?.avatar || obj?.avatarUrl || "").toString().trim();

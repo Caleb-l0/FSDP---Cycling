@@ -437,7 +437,7 @@ body {
 .post-avatar {
     width: 52px;
     height: 52px;
-    border-radius: 50%;
+    border-radius: 12px;
     object-fit: cover;
     border: 2px solid rgba(230, 154, 42, 0.55);
 }
@@ -651,7 +651,7 @@ body {
 .comment-avatar {
     width: 36px;
     height: 36px;
-    border-radius: 50%;
+    border-radius: 12px;
     object-fit: cover;
     border: 2px solid rgba(230, 154, 42, 0.35);
     flex-shrink: 0;
@@ -871,7 +871,7 @@ body {
 .people-avatar {
     width: 86px;
     height: 86px;
-    border-radius: 50%;
+    border-radius: 12px;
     object-fit: cover;
 }
 
