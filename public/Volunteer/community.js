@@ -4,6 +4,10 @@ if (!token) {
     window.location.href = "../../index.html";
 }
 
+const FEED_PAGE_SIZE = 6;
+let allPostsCache = [];
+let visiblePostCount = FEED_PAGE_SIZE;
+
 document.querySelectorAll(".btn-create-post, #openPostForm").forEach(btn => {
     if (!btn) return;
     btn.addEventListener("click", () => {
@@ -176,6 +180,128 @@ document.addEventListener("click", (e) => {
     dismissPost(card);
 });
 
+function escapeHtml(str) {
+    return String(str ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+}
+
+function setupFeedControls() {
+    const controls = document.getElementById('feedControls');
+    const moreBtn = document.getElementById('feedLoadMore');
+    const lessBtn = document.getElementById('feedLoadLess');
+
+    if (!controls || !moreBtn || !lessBtn) return;
+
+    moreBtn.addEventListener('click', () => {
+        visiblePostCount = Math.min(allPostsCache.length, visiblePostCount + FEED_PAGE_SIZE);
+        renderVisiblePosts();
+    });
+
+    lessBtn.addEventListener('click', () => {
+        visiblePostCount = FEED_PAGE_SIZE;
+        renderVisiblePosts();
+        const feedSection = document.getElementById('communityFeed');
+        if (feedSection) feedSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+}
+
+function updateFeedControls() {
+    const controls = document.getElementById('feedControls');
+    const moreBtn = document.getElementById('feedLoadMore');
+    const lessBtn = document.getElementById('feedLoadLess');
+
+    if (!controls || !moreBtn || !lessBtn) return;
+
+    const total = Array.isArray(allPostsCache) ? allPostsCache.length : 0;
+    const showing = Math.min(visiblePostCount, total);
+
+    if (total <= FEED_PAGE_SIZE) {
+        controls.style.display = 'none';
+        return;
+    }
+
+    controls.style.display = 'flex';
+    moreBtn.disabled = showing >= total;
+    lessBtn.disabled = showing <= FEED_PAGE_SIZE;
+}
+
+function renderVisiblePosts() {
+    const container = document.querySelector('.feed-list');
+    if (!container) return;
+
+    container.innerHTML = '';
+
+    const total = Array.isArray(allPostsCache) ? allPostsCache.length : 0;
+    const slice = allPostsCache.slice(0, Math.min(visiblePostCount, total));
+
+    if (slice.length === 0) {
+        container.innerHTML = `
+            <div class="hv-empty">
+                <div class="hv-empty__icon" aria-hidden="true"><i class="fas fa-message"></i></div>
+                <p class="hv-empty__title">No posts yet</p>
+                <p class="hv-empty__sub">Be the first to share something with the community.</p>
+            </div>
+        `;
+        updateFeedControls();
+        return;
+    }
+
+    slice.forEach(p => {
+        const avatarUrl = p.profilepicture || "./default_user.png";
+        const username = escapeHtml(p.username || 'Unknown');
+        const content = escapeHtml(p.content || '');
+        const createdAt = p.createdat ? new Date(p.createdat).toLocaleString() : '';
+        const likeCount = Number.isFinite(Number(p.likecount)) ? Number(p.likecount) : 0;
+        const photoUrl = p.photourl ? escapeHtml(p.photourl) : '';
+
+        container.innerHTML += `
+            <div class="post-card" data-post-id="${escapeHtml(p.postid)}">
+                <div class="post-header">
+                    <img class="post-avatar" src="${avatarUrl}" alt="${username}'s avatar">
+                    <div>
+                        <h4 class="post-user">${username}</h4>
+                        <p class="post-time">${createdAt}</p>
+                    </div>
+
+                    <div class="post-header-actions">
+                        <button class="post-collapse-btn" type="button" aria-label="Hide this post">× Hide</button>
+                    </div>
+                </div>
+
+                <div class="post-body">
+                    <p class="post-text">${content}</p>
+
+                    ${photoUrl ? `<img class="post-img" src="${photoUrl}">` : ""}
+
+                    <div class="post-actions">
+                        <button class="btn-like">
+                            <i class="fa-solid fa-heart"></i> Like
+                        </button>
+
+                        <div class="like-display">
+                            People Like: <span class="like-count">${likeCount}</span>
+                        </div>
+
+                        <button class="btn-open-comments">
+                            <i class="fa-solid fa-comment"></i> Comment
+                        </button>
+                    </div>
+
+                    <div class="post-comments"></div>
+                </div>
+            </div>
+        `;
+    });
+
+    attachLikeEvents();
+    attachCommentEvents();
+    updateFeedControls();
+}
+
 
 
 async function submitPost() {
@@ -229,59 +355,19 @@ async function loadPosts() {
         });
 
         const posts = await res.json();
-        const container = document.querySelector(".feed-list");
-        container.innerHTML = "";
-
-        posts.forEach(p => {
-            const avatarUrl = p.profilepicture || "./default_user.png";
-            container.innerHTML += `
-            <div class="post-card" data-post-id="${p.postid}">
-            
-            <div class="post-header">
-                <img class="post-avatar" src="${avatarUrl}" alt="${p.username}'s avatar">
-                <div>
-                    <h4 class="post-user">${p.username}</h4>
-                    <p class="post-time">${new Date(p.createdat).toLocaleString()}</p>
-                </div>
-
-                <div class="post-header-actions">
-                    <button class="post-collapse-btn" type="button" aria-label="Hide this post">× Hide</button>
-                </div>
-            </div>
-
-            <div class="post-body">
-                <p class="post-text">${p.content}</p>
-
-                ${p.photourl ? `<img class="post-img" src="${p.photourl}">` : ""}
-
-                <div class="post-actions">
-                    <button class="btn-like">
-                        <i class="fa-solid fa-heart"></i> Like
-                    </button>
-
-                    <div class="like-display">
-                        People Like: <span class="like-count">${p.likecount}</span>
-                    </div>
-
-                    <button class="btn-open-comments">
-                        <i class="fa-solid fa-comment"></i> Comment
-                    </button>
-                </div>
-
-                <div class="post-comments"></div>
-            </div>
-
-        </div>
-        `;
-    });
-
-    attachLikeEvents();
-    attachCommentEvents();
+        allPostsCache = Array.isArray(posts) ? posts : [];
+        visiblePostCount = FEED_PAGE_SIZE;
+        renderVisiblePosts();
 
     } finally {
         hideLoading();
     }
 }
+
+document.addEventListener('DOMContentLoaded', () => {
+    setupFeedControls();
+    loadPosts();
+});
 
 function attachLikeEvents() {
     document.querySelectorAll(".post-card").forEach(card => {

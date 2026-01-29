@@ -41,12 +41,8 @@ async function getAllPosts() {
         cp.visibility,
         cp.taggedinstitutionid,
         cp.createdat,
-<<<<<<< HEAD
-        u.name AS username,
+        COALESCE(o.orgname, u.name) AS username,
         u.profilepicture
-=======
-        COALESCE(o.orgname, u.name) AS username
->>>>>>> e3b59c206106a1d33a7dfa59225489c490da6198
       FROM communityposts cp
       INNER JOIN users u ON cp.userid = u.id
       LEFT JOIN userorganizations uo

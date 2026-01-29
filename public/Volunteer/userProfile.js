@@ -510,6 +510,14 @@ fetch(`${UserEndPoint}/volunteer/user/profile/${userId}`, {
   });
 
 function renderProfile(p) {
+  // Normalize API shape to avoid runtime crashes when fields are missing
+  p = p || {};
+  p.badges = Array.isArray(p.badges) ? p.badges : [];
+  p.events = Array.isArray(p.events) ? p.events : [];
+  p.followers = Number(p.followers) || 0;
+  p.total_events = Number(p.total_events) || 0;
+  p.level = Number(p.level) || 0;
+
   // ================= HERO =================
   document.querySelector(".hvop-name").textContent = p.name;
 
@@ -538,65 +546,6 @@ function renderProfile(p) {
   renderAdvantages(p);
 }
 
-function renderContact(p) {
-  const emailEl = document.getElementById('hvop-email');
-  const phoneEl = document.getElementById('hvop-phone');
-  const emptyEl = document.getElementById('hvop-contact-empty');
-  const phoneNote = document.getElementById('hvop-phone-note');
-  const waBtn = document.getElementById('hvop-whatsapp-btn');
-
-  const email = (p.email ?? p.Email ?? '').toString().trim();
-  const phone = (p.phone ?? p.phonenumber ?? p.phoneNumber ?? p.PhoneNumber ?? p.Phone ?? '').toString().trim();
-
-  if (emailEl) emailEl.textContent = email || '—';
-
-  if (phoneEl) {
-    phoneEl.dataset.value = phone;
-  }
-
-  if (waBtn) {
-    waBtn.onclick = () => {
-      const isFriend = addBtn?.dataset?.state === 'remove';
-      const phoneValue = phoneEl?.dataset?.value || '';
-      const waPhone = sanitizePhoneForWhatsApp(phoneValue);
-      if (!isFriend || !waPhone) return;
-      const msg = (waTextParam && waTextParam.trim())
-        ? waTextParam
-        : `Hi ${p.name || 'friend'}, this is from Happy Volunteer. Can we chat about volunteering?`;
-      const url = `https://wa.me/${waPhone}?text=${encodeURIComponent(msg)}`;
-      window.open(url, '_blank', 'noopener');
-    };
-  }
-
-  if (emptyEl) {
-    emptyEl.style.display = (!email && !phone) ? 'block' : 'none';
-  }
-
-  if (!phone && phoneNote) {
-    phoneNote.style.display = 'none';
-  }
-
-  // Only show phone if mutual friends
-  const isFriend = addBtn?.dataset?.state === 'remove';
-  setPhoneVisibility(Boolean(isFriend));
-
-  tryAutoOpenWhatsApp();
-}
-
-function renderAdvantages(p) {
-  const list = document.getElementById('hvop-advantages');
-  const empty = document.getElementById('hvop-advantages-empty');
-  if (!list) return;
-
-  const raw = (p.advantages ?? '').toString().trim();
-  const items = raw
-    ? raw.split(/\n|\r\n/).map(s => s.trim()).filter(Boolean)
-    : [];
-
-  list.innerHTML = items.map(i => `<li>${i}</li>`).join('');
-  if (empty) empty.style.display = items.length === 0 ? 'block' : 'none';
-}
-
 function setOverview(i, val) {
   document.querySelectorAll(".hvop-overview-card strong")[i].textContent = val;
 }
@@ -604,6 +553,7 @@ function setOverview(i, val) {
 /* ================= EXPERIENCE ================= */
 function renderExperience(p) {
   const el = document.getElementById("experience");
+  const badges = Array.isArray(p?.badges) ? p.badges : [];
   el.innerHTML = `
     <div class="hvop-text-card">
       <h2>Volunteer Experience</h2>
@@ -615,7 +565,7 @@ function renderExperience(p) {
       <p>
         ${p.name} has been actively contributing to community programmes,
         joining ${p.total_events} volunteer events and earning
-        ${p.badges.length} badges.
+        ${badges.length} badges.
       </p>
     </div>
   `;

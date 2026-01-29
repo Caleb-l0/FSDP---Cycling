@@ -364,8 +364,29 @@ async function loadVolunteersHomepage() {
             }
         );
 
-        const volunteers = await res.json();
+        if (!res.ok) {
+            if (res.status === 401 || res.status === 403) {
+                alert('Login expired, please login again');
+                window.location.href = '../../index.html';
+                return;
+            }
+            throw new Error(`Failed to load volunteers (${res.status})`);
+        }
+
+        const data = await res.json();
+        const volunteers = Array.isArray(data) ? data : [];
         container.innerHTML = "";
+
+        if (volunteers.length === 0) {
+            container.innerHTML = `
+                <div class="hv-empty">
+                    <div class="hv-empty__icon" aria-hidden="true"><i class="fas fa-user"></i></div>
+                    <p class="hv-empty__title">No volunteers to show</p>
+                    <p class="hv-empty__sub">Please check back later.</p>
+                </div>
+            `;
+            return;
+        }
 
         volunteers.forEach(v => {
             container.innerHTML += `
@@ -388,6 +409,13 @@ async function loadVolunteersHomepage() {
 
     } catch (err) {
         console.error("Failed to load volunteers:", err);
+        container.innerHTML = `
+            <div class="hv-empty">
+                <div class="hv-empty__icon" aria-hidden="true"><i class="fas fa-triangle-exclamation"></i></div>
+                <p class="hv-empty__title">Unable to load volunteers</p>
+                <p class="hv-empty__sub">Please try again later.</p>
+            </div>
+        `;
     }
 }
 
