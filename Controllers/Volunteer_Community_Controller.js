@@ -36,7 +36,7 @@ async function getInstitutions(req, res) {
 
         const grouped = institutions.map(inst => ({
             ...inst,
-            Events: events.filter(e => e.OrganizationID === inst.OrganizationID)
+            events: events.filter(e => e.organizationid === inst.organizationid)
         }));
 
         res.json(grouped);
