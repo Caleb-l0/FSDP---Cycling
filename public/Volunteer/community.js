@@ -1,5 +1,9 @@
 const token = localStorage.getItem("token");
 
+const API_BASE = (window.location.origin && window.location.origin !== 'null')
+    ? window.location.origin
+    : 'https://fsdp-cycling-ltey.onrender.com';
+
 if (!token) {
     window.location.href = "../../index.html";
 }
@@ -324,7 +328,7 @@ async function submitPost() {
     taggedinstitutionid: institution ? parseInt(institution) : null
     };
 
-    const res = await fetch("https://fsdp-cycling-ltey.onrender.com/community/posts", {
+    const res = await fetch(`${API_BASE}/community/posts`, {
         method: "POST",
         headers: {
             "Authorization": `Bearer ${token}`,
@@ -349,7 +353,7 @@ async function submitPost() {
 async function loadPosts() {
     showLoading();
     try {
-        const res = await fetch("https://fsdp-cycling-ltey.onrender.com/community/browse/posts", {
+        const res = await fetch(`${API_BASE}/community/browse/posts`, {
             method: "GET",
             headers: { "Authorization": `Bearer ${token}` }
         });
@@ -470,7 +474,7 @@ if (globalSendBtn) globalSendBtn.addEventListener("click", async () => {
     const text = (input ? input.value : '').trim();
     if (!text || !currentPostId) return;
 
-    const res = await fetch(`https://fsdp-cycling-ltey.onrender.com/community/posts/${currentPostId}/comments`, {
+    const res = await fetch(`${API_BASE}/community/posts/${currentPostId}/comments`, {
         method: "POST",
         headers: {
             "Authorization": `Bearer ${token}`,
@@ -509,7 +513,7 @@ async function loadComments(postId, container) {
   if (!container) return;
 
   const res = await fetch(
-    `https://fsdp-cycling-ltey.onrender.com/community/posts/${postId}/comments`,
+    `${API_BASE}/community/posts/${postId}/comments`,
     { headers: { "Authorization": `Bearer ${token}` } }
   );
 
@@ -550,7 +554,7 @@ async function loadComments(postId, container) {
 async function loadVolunteers() {
     showLoading();
     try {
-        const res = await fetch("https://fsdp-cycling-ltey.onrender.com/community/browse/volunteers", {
+        const res = await fetch(`${API_BASE}/community/browse/volunteers`, {
             method: "GET",
             headers: { "Authorization": `Bearer ${token}` }
         });
@@ -576,7 +580,7 @@ async function loadVolunteers() {
                 const friendId = Number(btn.getAttribute('data-user-id'));
                 if (!friendId) return;
                 try {
-                    const r = await fetch('https://fsdp-cycling-ltey.onrender.com/volunteer/friends/add', {
+                    const r = await fetch(`${API_BASE}/volunteer/friends/add`, {
                         method: 'POST',
                         headers: {
                             'Authorization': `Bearer ${token}`,
@@ -609,7 +613,7 @@ async function loadVolunteers() {
 async function loadInstitutions() {
     showLoading();
     try {
-        const res = await fetch("https://fsdp-cycling-ltey.onrender.com/community/browse/institutions", {
+        const res = await fetch(`${API_BASE}/community/browse/institutions`, {
             method: "GET",
             headers: { "Authorization": `Bearer ${token}` }
         });

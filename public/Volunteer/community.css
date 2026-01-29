@@ -535,6 +535,50 @@ body {
 }
 
 /* =========================================================
+   FEED CONTROLS (LOAD MORE / LOAD LESS)
+========================================================= */
+.feed-controls {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin: 16px auto 6px;
+    padding: 6px 0 0;
+    flex-wrap: wrap;
+}
+
+.feed-control-btn {
+    min-height: 44px;
+    padding: 10px 16px;
+    border-radius: 999px;
+    border: 2px solid rgba(15, 23, 42, 0.12);
+    background: #ffffff;
+    color: var(--text-main, #0f172a);
+    font-weight: 800;
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease, border-color 0.15s ease;
+}
+
+.feed-control-btn:hover {
+    transform: translateY(-1px);
+    background: rgba(234, 141, 42, 0.12);
+    border-color: rgba(234, 141, 42, 0.45);
+    box-shadow: 0 10px 18px rgba(234, 141, 42, 0.12);
+}
+
+.feed-control-btn:focus {
+    outline: none;
+    box-shadow: 0 0 0 4px rgba(234, 141, 42, 0.22);
+    border-color: rgba(234, 141, 42, 0.65);
+}
+
+.feed-control-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+/* =========================================================
    COMMENTS (SHOWN UNDER POST)
 ========================================================= */
 /* ===== COMMENT OVERLAY ===== */
@@ -1177,6 +1221,16 @@ body {
         justify-content: center;
     }
 
+    .feed-controls {
+        width: 100%;
+        gap: 10px;
+    }
+
+    .feed-control-btn {
+        width: 100%;
+        justify-content: center;
+    }
+
     #globalCommentPanel.comment-panel {
     padding: 20px;
     }
@@ -1190,6 +1244,12 @@ body {
 
     .post-card {
         padding: 16px;
+    }
+
+    .feed-control-btn {
+        min-height: 40px;
+        padding: 8px 12px;
+        font-size: 0.95rem;
     }
 }
 

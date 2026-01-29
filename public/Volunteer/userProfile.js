@@ -1,4 +1,6 @@
-const UserEndPoint = `https://fsdp-cycling-ltey.onrender.com`;
+const UserEndPoint = (window.location.origin && window.location.origin !== 'null')
+  ? window.location.origin
+  : 'https://fsdp-cycling-ltey.onrender.com';
 const token = localStorage.getItem("token");
 const profileParams = new URLSearchParams(window.location.search);
 const userId = profileParams.get("userId");
@@ -500,10 +502,17 @@ fetch(`${UserEndPoint}/volunteer/user/profile/${userId}`, {
   }
 })
   .then(res => {
+    if (res.status === 401 || res.status === 403) {
+      window.location.href = "../../index.html";
+      return null;
+    }
     if (!res.ok) throw new Error('Failed to load profile');
     return res.json();
   })
-  .then(renderProfile)
+  .then(p => {
+    if (!p) return;
+    renderProfile(p);
+  })
   .catch(err => {
     console.error(err);
     alert("Failed to load profile");
@@ -517,6 +526,12 @@ function renderProfile(p) {
   p.followers = Number(p.followers) || 0;
   p.total_events = Number(p.total_events) || 0;
   p.level = Number(p.level) || 0;
+
+  const avatarImg = document.querySelector('.hvop-avatar');
+  const profilePic = (p.profilepicture || p.profilePicture || '').toString().trim();
+  if (avatarImg && profilePic) {
+    avatarImg.src = profilePic;
+  }
 
   // ================= HERO =================
   document.querySelector(".hvop-name").textContent = p.name;
