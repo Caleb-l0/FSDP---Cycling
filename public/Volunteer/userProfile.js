@@ -528,7 +528,11 @@ function renderProfile(p) {
   const avatarImg = document.querySelector('.hvop-avatar');
   const profilePic = (p.profilePicture || p.profilepicture || '').toString().trim();
   if (avatarImg) {
-    avatarImg.src = profilePic || '../Bali.jpg';
+    avatarImg.src = profilePic || '../assets/elderly.jpg';
+    avatarImg.onerror = () => {
+      avatarImg.onerror = null;
+      avatarImg.src = '../Bali.jpg';
+    };
   }
 
   // ================= HERO =================

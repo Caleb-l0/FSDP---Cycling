@@ -4,7 +4,8 @@ const API_BASE = (window.location.origin && window.location.origin !== 'null')
     ? window.location.origin
     : 'https://fsdp-cycling-ltey.onrender.com';
 
-const FALLBACK_AVATAR = "../Bali.jpg";
+const FALLBACK_AVATAR = "../assets/elderly.jpg";
+const FALLBACK_AVATAR_SECONDARY = "../Bali.jpg";
 
 function getAvatarUrl(obj) {
     const url = (obj?.profilepicture || obj?.profilePicture || obj?.avatar || obj?.avatarUrl || "").toString().trim();
@@ -272,7 +273,7 @@ function renderVisiblePosts() {
         container.innerHTML += `
             <div class="post-card" data-post-id="${escapeHtml(p.postid)}">
                 <div class="post-header">
-                    <img class="post-avatar" src="${avatarUrl}" alt="${username}'s avatar" onerror="this.onerror=null;this.src='${FALLBACK_AVATAR}'">
+                    <img class="post-avatar" src="${avatarUrl}" alt="${username}'s avatar" onerror="this.onerror=null;this.src='${FALLBACK_AVATAR_SECONDARY}'">
                     <div>
                         <h4 class="post-user">${username}</h4>
                         <p class="post-time">${createdAt}</p>
@@ -546,7 +547,7 @@ async function loadComments(postId, container) {
 
     container.innerHTML += `
       <div class="comment-item">
-        <img class="comment-avatar" src="${avatarUrl}" alt="${username}'s avatar" onerror="this.onerror=null;this.src='${FALLBACK_AVATAR}'">
+        <img class="comment-avatar" src="${avatarUrl}" alt="${username}'s avatar" onerror="this.onerror=null;this.src='${FALLBACK_AVATAR_SECONDARY}'">
         <div class="comment-content">
           <strong>${username}:</strong>
           <span>${text}</span>
@@ -579,7 +580,7 @@ async function loadVolunteers() {
             const vid = v.id ?? v.userid ?? v.userId;
             container.innerHTML += `
                 <div class="people-card">
-                    <img src="${getAvatarUrl(v)}" class="people-avatar" alt="${v.name}'s avatar" onerror="this.onerror=null;this.src='${FALLBACK_AVATAR}'">
+                    <img src="${getAvatarUrl(v)}" class="people-avatar" alt="${v.name}'s avatar" onerror="this.onerror=null;this.src='${FALLBACK_AVATAR_SECONDARY}'">
                     <h4 class="people-name">${v.name}</h4>
                     ${vid ? `<button class="btn-add" data-user-id="${vid}">Add Friend</button>` : `<button class="btn-add" disabled>Add Friend</button>`}
                 </div>
