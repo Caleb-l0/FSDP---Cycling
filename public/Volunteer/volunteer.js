@@ -412,7 +412,6 @@ async function loadVolunteersHomepage() {
                                 src="${avatarUrl}"
                                 alt="${v.name}'s avatar"
                                 onerror="this.onerror=null;this.src='${FALLBACK_AVATAR_SECONDARY}'"
-                                style="width:56px;height:56px;border-radius:12px;object-fit:cover;display:block;"
                             >
                         </div>
 
