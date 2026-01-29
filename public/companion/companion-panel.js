@@ -1,5 +1,6 @@
 (function () {
   const API_BASE = window.location.origin;
+  const HIDE_WELCOME_KEY = 'hvcpWelcomeHidden';
 
   function getToken() {
     return localStorage.getItem('token');
@@ -279,9 +280,11 @@
   function init() {
     ensureRoot();
 
-    // Always show the welcome prompt on each page load.
-    // (No persistence; it will appear again next time the page loads.)
-    document.getElementById('hvcpWelcome')?.classList.remove('hidden');
+    const welcomeEl = document.getElementById('hvcpWelcome');
+    const hiddenThisSession = sessionStorage.getItem(HIDE_WELCOME_KEY) === '1';
+    if (welcomeEl) {
+      welcomeEl.classList.toggle('hidden', hiddenThisSession);
+    }
 
     document.getElementById('hvcpFab')?.addEventListener('click', async () => {
       openPanel();
@@ -301,6 +304,7 @@
     });
     document.getElementById('hvcpWelcomeClose')?.addEventListener('click', (e) => {
       e.stopPropagation();
+      sessionStorage.setItem(HIDE_WELCOME_KEY, '1');
       document.getElementById('hvcpWelcome')?.classList.add('hidden');
     });
 
