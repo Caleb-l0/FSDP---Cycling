@@ -491,7 +491,6 @@ function sanitizePhoneForWhatsApp(phone) {
 // =========================
 // FETCH AND RENDER PROFILE
 // =========================
-if (!userId) {
   alert("Invalid profile");
   location.href = "homepage_login_volunteer.html";
 }
@@ -511,7 +510,7 @@ fetch(`${UserEndPoint}/volunteer/user/profile/${userId}`, {
   })
   .then(p => {
     if (!p) return;
-    renderProfile(p);
+    renderProfile(p.user || p);
   })
   .catch(err => {
     console.error(err);
@@ -529,7 +528,7 @@ function renderProfile(p) {
   p.level = Number(p.level) || 0;
 
   const avatarImg = document.querySelector('.hvop-avatar');
-  const profilePic = (p.profilepicture || p.profilePicture || '').toString().trim();
+  const profilePic = (p.profilePicture || p.profilepicture || '').toString().trim();
   if (avatarImg && profilePic) {
     avatarImg.src = profilePic;
   }
