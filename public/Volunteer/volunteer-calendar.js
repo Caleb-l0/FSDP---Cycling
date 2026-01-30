@@ -1,9 +1,13 @@
-const SIGNED_EVENTS_ENDPOINT = `https://fsdp-cycling-ltey.onrender.com/volunteer/signed-events`;
+const EVENTS_ENDPOINT = `https://fsdp-cycling-ltey.onrender.com/volunteer/events`;
 const token = localStorage.getItem('token');
 
 if (!token) {
   window.location.href = '../../index.html';
 }
+
+// Current calendar view: month (0-11) and year
+let currentCalendarMonth = new Date().getMonth();
+let currentCalendarYear = new Date().getFullYear();
 
 /* =====================================================
    WEATHER (DISPLAY BY CURRENT LOCATION ONLY)
@@ -96,17 +100,26 @@ function showGeoWeather() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  showGeoWeather(); // Load weather
+  showGeoWeather();
   loadCalendar();
+  const prevBtn = document.getElementById('calendar-prev-month');
+  const nextBtn = document.getElementById('calendar-next-month');
+  if (prevBtn) prevBtn.addEventListener('click', goToPrevMonth);
+  if (nextBtn) nextBtn.addEventListener('click', goToNextMonth);
 });
 
 async function loadCalendar() {
   const container = document.getElementById('calendar-container');
+  const headerTitle = document.getElementById('calendar-title');
+  if (headerTitle) {
+    const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+      'July', 'August', 'September', 'October', 'November', 'December'];
+    headerTitle.textContent = `${monthNames[currentCalendarMonth]} ${currentCalendarYear}`;
+  }
   container.innerHTML = '<div class="calendar-loading">Loading calendar...</div>';
 
   try {
-    // Fetch signed events
-    const response = await fetch(SIGNED_EVENTS_ENDPOINT, {
+    const response = await fetch(EVENTS_ENDPOINT, {
       headers: {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json'
@@ -116,91 +129,22 @@ async function loadCalendar() {
     if (!response.ok) {
       if (response.status === 401) {
         alert('Login expired, please login again');
-        window.location.href = '../Accounts/views/login.html';
+        window.location.href = '../../index.html';
         return;
       }
       throw new Error(`Failed to fetch events (${response.status})`);
     }
 
     const events = await response.json();
-    
-    console.log('=== Calendar Debug Info ===');
-    console.log('Total signed events:', events.length);
-    console.log('All events data:', events);
-    
-    // Log each event's date for debugging
-    events.forEach((event, index) => {
+    const monthEvents = events.filter(event => {
       const eventDateStr = event.eventdate || event.EventDate;
-      console.log(`Event ${index + 1}:`, {
-        name: event.eventname || event.EventName,
-        dateString: eventDateStr,
-        parsedDate: eventDateStr ? new Date(eventDateStr) : 'N/A',
-        month: eventDateStr ? new Date(eventDateStr).getMonth() + 1 : 'N/A',
-        year: eventDateStr ? new Date(eventDateStr).getFullYear() : 'N/A'
-      });
-    });
-    
-    // Filter events for February 2026
-    // Support both uppercase and lowercase field names (database returns lowercase)
-    const februaryEvents = events.filter(event => {
-      const eventDateStr = event.eventdate || event.EventDate;
-      if (!eventDateStr) {
-        console.log('Event missing date:', event);
-        return false;
-      }
+      if (!eventDateStr) return false;
       const eventDate = new Date(eventDateStr);
-      if (isNaN(eventDate.getTime())) {
-        console.log('Invalid date format:', eventDateStr, event);
-        return false;
-      }
-      const month = eventDate.getMonth(); // 0-indexed, so 1 = February
-      const year = eventDate.getFullYear();
-      const isFebruary = month === 1; // Month is 0-indexed, so 1 = February
-      const is2026 = year === 2026;
-      
-      console.log(`Checking event: ${event.eventname || event.EventName}, Date: ${eventDateStr}, Month: ${month + 1}, Year: ${year}, Is Feb 2026: ${isFebruary && is2026}`);
-      
-      return isFebruary && is2026;
+      if (isNaN(eventDate.getTime())) return false;
+      return eventDate.getMonth() === currentCalendarMonth && eventDate.getFullYear() === currentCalendarYear;
     });
-    
-    console.log('February 2026 events found:', februaryEvents.length);
-    console.log('February events data:', februaryEvents);
 
-    // Generate calendar
-    if (februaryEvents.length === 0 && events.length > 0) {
-      // Show a message if there are events but none in February
-      const months = events.map(e => {
-        const dateStr = e.eventdate || e.EventDate;
-        if (!dateStr) return null;
-        const date = new Date(dateStr);
-        if (isNaN(date.getTime())) return null;
-        return { month: date.getMonth() + 1, year: date.getFullYear() };
-      }).filter(Boolean);
-      
-      const uniqueMonths = [...new Set(months.map(m => `${m.year}-${m.month}`))];
-      console.log('Events are in months:', uniqueMonths);
-      
-      container.innerHTML = `
-        <div class="calendar-info-message">
-          <h3>No events in February 2026</h3>
-          <p>You have ${events.length} signed event(s), but none are scheduled for February 2026.</p>
-          <p>Your events are in: ${uniqueMonths.map(m => {
-            const [y, mo] = m.split('-');
-            const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 
-                              'July', 'August', 'September', 'October', 'November', 'December'];
-            return `${monthNames[parseInt(mo) - 1]} ${y}`;
-          }).join(', ')}</p>
-          <p style="margin-top: 20px; font-size: 0.9rem; color: #666;">
-            <strong>Note:</strong> This calendar currently shows February 2026 only. 
-            Check the browser console (F12) for detailed event information.
-          </p>
-        </div>
-        ${generateEmptyCalendar()}
-      `;
-    } else {
-      renderCalendar(februaryEvents);
-    }
-
+    renderCalendar(monthEvents, currentCalendarMonth, currentCalendarYear);
   } catch (error) {
     console.error('Error loading calendar:', error);
     container.innerHTML = `
@@ -211,53 +155,48 @@ async function loadCalendar() {
   }
 }
 
-function renderCalendar(events) {
+function goToPrevMonth() {
+  currentCalendarMonth--;
+  if (currentCalendarMonth < 0) {
+    currentCalendarMonth = 11;
+    currentCalendarYear--;
+  }
+  loadCalendar();
+}
+
+function goToNextMonth() {
+  currentCalendarMonth++;
+  if (currentCalendarMonth > 11) {
+    currentCalendarMonth = 0;
+    currentCalendarYear++;
+  }
+  loadCalendar();
+}
+
+function renderCalendar(events, month, year) {
   const container = document.getElementById('calendar-container');
-  
-  // Create a map of events by date (day of month)
-  // Support both uppercase and lowercase field names (database returns lowercase)
+  const displayMonth = month ?? currentCalendarMonth;
+  const displayYear = year ?? currentCalendarYear;
+
+  // Map events by day of month (events are already filtered to this month/year by loadCalendar)
   const eventsByDate = {};
   events.forEach(event => {
     const eventDateStr = event.eventdate || event.EventDate;
     if (eventDateStr) {
-      // Parse date string - handle both ISO format and other formats
       let eventDate = new Date(eventDateStr);
-      
-      // If date parsing fails, try alternative methods
       if (isNaN(eventDate.getTime())) {
-        // Try parsing as ISO string with timezone
         eventDate = new Date(eventDateStr.replace(' ', 'T'));
       }
-      
       if (!isNaN(eventDate.getTime())) {
-        // Use UTC methods to avoid timezone issues, or local methods
-        // Check if it's actually February 2025
-        const month = eventDate.getMonth(); // 0-indexed
-        const year = eventDate.getFullYear();
-        
-        if (month === 1 && year === 2026) {
-          const day = eventDate.getDate();
-          if (!eventsByDate[day]) {
-            eventsByDate[day] = [];
-          }
-          eventsByDate[day].push(event);
-          console.log(`Added event "${event.eventname || event.EventName}" to day ${day}`);
-        } else {
-          console.log(`Event "${event.eventname || event.EventName}" is not in Feb 2026 (Month: ${month + 1}, Year: ${year})`);
-        }
-      } else {
-        console.log(`Failed to parse date for event: ${event.eventname || event.EventName}, Date string: ${eventDateStr}`);
+        const day = eventDate.getDate();
+        if (!eventsByDate[day]) eventsByDate[day] = [];
+        eventsByDate[day].push(event);
       }
-    } else {
-      console.log(`Event missing date: ${event.eventname || event.EventName}`);
     }
   });
-  
-  console.log('Events by date:', eventsByDate);
 
-  // February 2026 has 28 days (2026 is not a leap year)
-  const daysInMonth = 28;
-  const firstDayOfWeek = new Date(2026, 1, 1).getDay(); // 1 = February, 0 = Sunday
+  const daysInMonth = new Date(displayYear, displayMonth + 1, 0).getDate();
+  const firstDayOfWeek = new Date(displayYear, displayMonth, 1).getDay();
 
   let html = `
     <div class="calendar-grid">

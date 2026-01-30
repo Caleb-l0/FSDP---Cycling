@@ -46,7 +46,11 @@
 
 <div class="container">
   <div class="calendar-header">
-    <h2>February 2026 Calendar</h2>
+    <div class="calendar-header-nav">
+      <button type="button" class="calendar-nav-btn" id="calendar-prev-month" title="Previous month" aria-label="Previous month"><i class="fas fa-chevron-left"></i></button>
+      <h2 id="calendar-title">Calendar</h2>
+      <button type="button" class="calendar-nav-btn" id="calendar-next-month" title="Next month" aria-label="Next month"><i class="fas fa-chevron-right"></i></button>
+    </div>
     <button class="back-btn" onclick="window.location.href='volunteer-events.html'">
       <i class="fas fa-arrow-left"></i> Back to Events
     </button>
