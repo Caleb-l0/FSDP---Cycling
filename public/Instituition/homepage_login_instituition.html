@@ -1,236 +1,1256 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cycling Without Age</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Event Details</title>
+  <link rel="stylesheet" href="../homepage.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="./institutions-events.css">
+  <style>
+    /* Event Detail Page Styles - Elderly Friendly */
+    .event-detail-wrapper {
+      max-width: 900px;
+      margin: 140px auto 3rem;
+      padding: 0 1.5rem;
+    }
 
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: #64748b;
+      text-decoration: none;
+      font-size: 1.1rem;
+      font-weight: 500;
+      margin-bottom: 1.5rem;
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      transition: all 0.2s;
+    }
 
+    .back-link:hover {
+      background: #f1f5f9;
+      color: #334155;
+    }
 
-    <link rel="stylesheet" href="../homepage.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="./homepage_instituition.css">
+    .event-detail-card {
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      overflow: hidden;
+      border: 2px solid #e2e8f0;
+    }
 
+    .event-detail-header {
+      background: linear-gradient(135deg, #f4a261 0%, #e76f51 100%);
+      color: white;
+      padding: 2rem 2.5rem;
+    }
 
-    <link rel="stylesheet" href="../for_organ.css">
+    .event-detail-header h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      margin: 0 0 0.75rem 0;
+      line-height: 1.3;
+    }
+
+    .event-status-badge {
+      display: inline-block;
+      padding: 0.5rem 1.25rem;
+      border-radius: 50px;
+      font-size: 1rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .status-approved { background: #f4a261; color: white; }
+    .status-pending { background: #f4a261; color: white; }
+    .status-rejected { background: #f4a261; color: white; }
+    .status-available { background: #f4a261; color: white; }
+
+    .event-detail-body {
+      padding: 2.5rem;
+    }
+
+    .detail-section {
+      margin-bottom: 2.5rem;
+    }
+
+    .detail-section:last-child {
+      margin-bottom: 0;
+    }
+
+    .detail-section h2 {
+      font-size: 1.4rem;
+      color: #1e293b;
+      margin: 0 0 1.25rem 0;
+      padding-bottom: 0.75rem;
+      border-bottom: 3px solid #f4a261;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .detail-section h2 i {
+      color: #f4a261;
+      font-size: 1.2rem;
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.25rem;
+    }
+
+    .info-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+      padding: 1.25rem;
+      background: #f8fafc;
+      border-radius: 12px;
+      border: 1px solid #e2e8f0;
+    }
+
+    .info-item i {
+      font-size: 1.5rem;
+      color: #f4a261;
+      min-width: 32px;
+      text-align: center;
+      margin-top: 0.25rem;
+    }
+
+    .info-item-content {
+      flex: 1;
+    }
+
+    .info-item-label {
+      font-size: 0.95rem;
+      color: #64748b;
+      font-weight: 500;
+      margin-bottom: 0.25rem;
+    }
+
+    .info-item-value {
+      font-size: 1.15rem;
+      color: #1e293b;
+      font-weight: 600;
+      word-break: break-word;
+    }
+
+    .description-text {
+      font-size: 1.1rem;
+      line-height: 1.8;
+      color: #475569;
+      background: #f8fafc;
+      padding: 1.5rem;
+      border-radius: 12px;
+      border-left: 4px solid #f4a261;
+    }
+
+    /* Event Head Section */
+    .event-head-section {
+      background: #ffffff;
+      border: 2px solid #e2e8f0;
+      border-radius: 16px;
+      padding: 2rem;
+    }
+
+    .event-head-section h2 {
+      color: #1e293b;
+      border-bottom-color: #f4a261;
+    }
+
+    .event-head-section h2 i {
+      color: #f4a261;
+    }
+
+    .event-head-card {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      padding: 1.5rem;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+
+    .event-head-avatar {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #f4a261, #e76f51);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      color: white;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .event-head-info {
+      flex: 1;
+    }
+
+    .event-head-name {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #1e293b;
+      margin-bottom: 0.75rem;
+    }
+
+    .event-head-contact {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .event-head-contact-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 1.05rem;
+      color: #475569;
+    }
+
+    .event-head-contact-item i {
+      color: #f4a261;
+      font-size: 1.1rem;
+      min-width: 24px;
+    }
+
+    .event-head-contact-item a {
+      color: #f4a261;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .event-head-contact-item a:hover {
+      text-decoration: underline;
+    }
+
+    /* No Event Head - Assign Section */
+    .no-event-head {
+      text-align: center;
+      padding: 2rem;
+      background: #fff7ed;
+      border: 2px dashed #f4a261;
+      border-radius: 12px;
+    }
+
+    .no-event-head p {
+      font-size: 1.1rem;
+      color: #92400e;
+      margin-bottom: 1.5rem;
+    }
+
+    .no-event-head i {
+      font-size: 3rem;
+      color: #f4a261;
+      margin-bottom: 1rem;
+    }
+
+    /* Action Buttons */
+    .action-section {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-top: 2rem;
+      padding-top: 2rem;
+      border-top: 2px solid #e2e8f0;
+    }
+
+    .btn-action {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      padding: 1rem 2rem;
+      font-size: 1.1rem;
+      font-weight: 600;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.3s;
+      min-height: 56px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #f4a261, #e76f51);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(244, 162, 97, 0.35);
+    }
+
+    .btn-secondary {
+      background: #f1f5f9;
+      color: #475569;
+      border: 2px solid #e2e8f0;
+    }
+
+    .btn-secondary:hover {
+      background: #e2e8f0;
+      color: #334155;
+    }
+
+    .btn-orange {
+      background: linear-gradient(135deg, #f4a261, #e76f51);
+      color: white;
+    }
+
+    .btn-orange:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(244, 162, 97, 0.35);
+    }
+
+    /* Status Messages */
+    .status-message {
+      padding: 1.25rem 1.5rem;
+      border-radius: 12px;
+      font-size: 1.1rem;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .status-message i {
+      font-size: 1.3rem;
+    }
+
+    .status-pending-msg {
+      background: #fff7ed;
+      color: #92400e;
+      border: 2px solid #f4a261;
+    }
+
+    .status-rejected-msg {
+      background: #fff7ed;
+      color: #92400e;
+      border: 2px solid #f4a261;
+    }
+
+    .status-success-msg {
+      background: #fffbeb;
+      color: #92400e;
+      border: 2px solid #fcd34d;
+    }
+
+    /* Event Image */
+    .event-image-container {
+      width: 100%;
+      max-height: 350px;
+      overflow: hidden;
+      border-radius: 12px;
+      margin-bottom: 1.5rem;
+      background: #f1f5f9;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .event-image-container img {
+      width: 100%;
+      height: auto;
+      object-fit: cover;
+      max-height: 350px;
+    }
+
+    .event-image-placeholder {
+      padding: 3rem;
+      text-align: center;
+      color: #94a3b8;
+    }
+
+    .event-image-placeholder i {
+      font-size: 4rem;
+      margin-bottom: 1rem;
+    }
+
+    /* Stats Grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .stat-card {
+      background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+      border-radius: 12px;
+      padding: 1.25rem;
+      text-align: center;
+      border: 2px solid #e2e8f0;
+    }
+
+    .stat-card.participants {
+      border-color: #f4a261;
+      background: linear-gradient(135deg, #fff7ed, #fffbeb);
+    }
+
+    .stat-card.volunteers {
+      border-color: #f4a261;
+      background: linear-gradient(135deg, #fff7ed, #fffbeb);
+    }
+
+    .stat-icon {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .stat-card.participants .stat-icon { color: #f4a261; }
+    .stat-card.volunteers .stat-icon { color: #f4a261; }
+
+    .stat-label {
+      font-size: 0.95rem;
+      color: #64748b;
+      font-weight: 500;
+      margin-bottom: 0.25rem;
+    }
+
+    .stat-value {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #1e293b;
+    }
+
+    .stat-value .current { color: #f4a261; }
+    .stat-value .max { color: #64748b; }
+
+    /* Success Animation Overlay */
+    .success-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s;
+    }
+
+    .success-overlay.show {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .success-content {
+      background: white;
+      border-radius: 20px;
+      padding: 3rem;
+      text-align: center;
+      max-width: 400px;
+      transform: scale(0.8);
+      transition: transform 0.4s ease;
+    }
+
+    .success-overlay.show .success-content {
+      transform: scale(1);
+    }
+
+    .success-icon {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #f4a261, #e76f51);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1.5rem;
+      animation: successPulse 0.6s ease;
+    }
+
+    .success-icon i {
+      font-size: 3rem;
+      color: white;
+    }
+
+    @keyframes successPulse {
+      0% { transform: scale(0); }
+      50% { transform: scale(1.2); }
+      100% { transform: scale(1); }
+    }
+
+    .success-title {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: #92400e;
+      margin-bottom: 0.75rem;
+    }
+
+    .success-message {
+      font-size: 1.1rem;
+      color: #475569;
+      margin-bottom: 2rem;
+      line-height: 1.6;
+    }
+
+    .success-btn {
+      background: linear-gradient(135deg, #f4a261, #e76f51);
+      color: white;
+      border: none;
+      padding: 1rem 2.5rem;
+      font-size: 1.1rem;
+      font-weight: 600;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .success-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(244, 162, 97, 0.35);
+    }
+
+    /* Modal (Assign Event Head) */
+    .booking-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.55);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      z-index: 9999;
+    }
+
+    .booking-modal[style*="display: flex"] {
+      animation: hvModalFadeIn 160ms ease-out;
+    }
+
+    @keyframes hvModalFadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .booking-modal .modal-content {
+      width: 100%;
+      max-width: 560px;
+      background: #ffffff;
+      border-radius: 16px;
+      border: 2px solid #e2e8f0;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.18);
+      max-height: 90vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .booking-modal .booking-modal-content {
+      width: 100%;
+      max-width: 560px;
+      background: #ffffff;
+      border-radius: 16px;
+      border: 2px solid #e2e8f0;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.18);
+      max-height: 90vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      transform: translateY(10px);
+      animation: hvModalPop 180ms ease-out forwards;
+    }
+
+    @keyframes hvModalPop {
+      to { transform: translateY(0); }
+    }
+
+    .booking-modal .booking-modal-content > h3 {
+      padding: 1.25rem 1.5rem;
+      background: linear-gradient(135deg, #fff7ed, #fffbeb);
+      border-bottom: 2px solid #e2e8f0;
+      margin: 0;
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: #1e293b;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .booking-modal .booking-modal-content > h3 i {
+      color: #f4a261;
+    }
+
+    .booking-modal .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 1.25rem 1.5rem;
+      background: linear-gradient(135deg, #fff7ed, #fffbeb);
+      border-bottom: 2px solid #e2e8f0;
+    }
+
+    .booking-modal .modal-title {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: #1e293b;
+      margin: 0;
+    }
+
+    .booking-modal .modal-title i {
+      color: #f4a261;
+    }
+
+    .booking-modal .close-modal {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      border: 2px solid #e2e8f0;
+      background: #ffffff;
+      color: #475569;
+      font-size: 1.5rem;
+      line-height: 1;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .booking-modal .close-modal:hover {
+      background: #f8fafc;
+      color: #1e293b;
+    }
+
+    .booking-modal .modal-body {
+      padding: 1.5rem;
+      overflow-y: auto;
+    }
+
+    .booking-modal .booking-modal-body {
+      padding: 1.5rem;
+      overflow-y: auto;
+    }
+
+    .booking-modal .form-group {
+      margin-bottom: 1rem;
+    }
+
+    .booking-modal label {
+      display: block;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #334155;
+      margin-bottom: 0.5rem;
+    }
+
+    .booking-modal input,
+    .booking-modal textarea {
+      width: 100%;
+      padding: 0.9rem 1rem;
+      border-radius: 12px;
+      border: 2px solid #e2e8f0;
+      font-size: 1rem;
+      outline: none;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+      background: #ffffff;
+      color: #1e293b;
+    }
+
+    .booking-modal select {
+      width: 100%;
+      padding: 0.9rem 1rem;
+      border-radius: 12px;
+      border: 2px solid #e2e8f0;
+      font-size: 1rem;
+      outline: none;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+      background: #ffffff;
+      color: #1e293b;
+      appearance: none;
+      background-image:
+        linear-gradient(45deg, transparent 50%, #64748b 50%),
+        linear-gradient(135deg, #64748b 50%, transparent 50%);
+      background-position:
+        calc(100% - 22px) calc(50% - 3px),
+        calc(100% - 16px) calc(50% - 3px);
+      background-size: 6px 6px, 6px 6px;
+      background-repeat: no-repeat;
+    }
+
+    .booking-modal select:focus {
+      border-color: #f4a261;
+      box-shadow: 0 0 0 4px rgba(244, 162, 97, 0.18);
+    }
+
+    .booking-modal input:focus,
+    .booking-modal textarea:focus {
+      border-color: #f4a261;
+      box-shadow: 0 0 0 4px rgba(244, 162, 97, 0.18);
+    }
+
+    .booking-modal .form-hint {
+      font-size: 0.9rem;
+      color: #64748b;
+      margin-top: 0.35rem;
+    }
+
+    .booking-modal .form-actions {
+      display: flex;
+      gap: 0.75rem;
+      justify-content: flex-end;
+      margin-top: 1.25rem;
+      padding-top: 1.25rem;
+      border-top: 2px solid #e2e8f0;
+      position: sticky;
+      bottom: 0;
+      background: #ffffff;
+    }
+
+    .booking-modal .btn-submit {
+      background: linear-gradient(135deg, #f4a261, #e76f51);
+      color: #ffffff;
+      border: none;
+      padding: 0.9rem 1.25rem;
+      border-radius: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .booking-modal .btn-primary {
+      background: linear-gradient(135deg, #f4a261, #e76f51);
+      color: #ffffff;
+      border: none;
+      padding: 0.9rem 1.25rem;
+      border-radius: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .booking-modal .btn-submit:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 10px 18px rgba(244, 162, 97, 0.25);
+    }
+
+    .booking-modal .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 10px 18px rgba(244, 162, 97, 0.25);
+    }
+
+    .booking-modal .btn-cancel {
+      background: #f1f5f9;
+      color: #334155;
+      border: 2px solid #e2e8f0;
+      padding: 0.9rem 1.25rem;
+      border-radius: 12px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .booking-modal .btn-secondary {
+      background: #f1f5f9;
+      color: #334155;
+      border: 2px solid #e2e8f0;
+      padding: 0.9rem 1.25rem;
+      border-radius: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+
+    .booking-modal .btn-cancel:hover {
+      background: #e2e8f0;
+    }
+
+    .booking-modal .btn-secondary:hover {
+      background: #e2e8f0;
+    }
+
+    .booking-modal button:focus-visible {
+      outline: 4px solid rgba(244, 162, 97, 0.35);
+      outline-offset: 2px;
+    }
+
+    .event-head-card[role="button"] {
+      cursor: pointer;
+      transition: transform 0.16s ease, box-shadow 0.16s ease, border-color 0.16s ease;
+      border: 1px solid transparent;
+    }
+
+    .event-head-card[role="button"]:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 24px rgba(0,0,0,0.10);
+      border-color: rgba(244, 162, 97, 0.45);
+    }
+
+    .event-head-card[role="button"]:focus-visible {
+      outline: 4px solid rgba(244, 162, 97, 0.35);
+      outline-offset: 3px;
+    }
+
+    @media (max-width: 768px) {
+      .booking-modal {
+        padding: 1rem;
+      }
+
+      .booking-modal .form-actions {
+        flex-direction: column;
+      }
+
+      .booking-modal .btn-submit,
+      .booking-modal .btn-cancel {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+
+    .hv-congrats{
+      position:fixed;
+      inset:0;
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding:18px;
+      z-index:2500;
+    }
+
+    .hv-congrats.is-open{display:flex;}
+
+    .hv-congrats__backdrop{
+      position:absolute;
+      inset:0;
+      background:rgba(15, 23, 42, 0.58);
+    }
+
+    .hv-congrats__dialog{
+      position:relative;
+      width:min(520px, 100%);
+      background:#fff;
+      border-radius:18px;
+      box-shadow:0 16px 44px rgba(0,0,0,.25);
+      overflow:hidden;
+      transform:translateY(8px) scale(.98);
+      opacity:0;
+      animation:hvCongratsPop 220ms ease forwards;
+    }
+
+    .hv-congrats.is-open .hv-congrats__dialog{
+      animation:hvCongratsPop 240ms ease forwards;
+    }
+
+    @keyframes hvCongratsPop{
+      to{transform:translateY(0) scale(1); opacity:1;}
+    }
+
+    .hv-congrats__body{
+      padding:24px 22px 18px;
+      text-align:center;
+    }
+
+    .hv-congrats__icon{
+      width:76px;
+      height:76px;
+      border-radius:999px;
+      margin:0 auto 14px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background:linear-gradient(135deg, #f4a261, #e76f51);
+      color:#fff;
+      font-size:2.2rem;
+      font-weight:900;
+    }
+
+    .hv-congrats__title{
+      margin:0;
+      font-size:1.6rem;
+      color:#0f172a;
+      font-weight:900;
+    }
+
+    .hv-congrats__msg{
+      margin:10px 0 0;
+      color:#475569;
+      font-weight:700;
+      line-height:1.5;
+    }
+
+    .hv-congrats__footer{
+      padding:14px 18px 18px;
+      display:flex;
+    }
+
+    .hv-congrats__btn{
+      width:100%;
+      min-height:48px;
+      border:none;
+      border-radius:12px;
+      font-weight:900;
+      cursor:pointer;
+      background:linear-gradient(135deg, #f4a261, #e76f51);
+      color:#fff;
+      transition:transform 180ms ease, box-shadow 180ms ease;
+    }
+
+    .hv-congrats__btn:hover{
+      transform:translateY(-1px);
+      box-shadow:0 12px 22px rgba(244, 162, 97, 0.28);
+    }
+
+    .hv-confetti{
+      position:absolute;
+      inset:0;
+      pointer-events:none;
+      overflow:hidden;
+    }
+
+    .hv-confetti i{
+      position:absolute;
+      top:-12px;
+      border-radius:3px;
+      animation:hvConfettiFall 1.2s ease forwards;
+    }
+
+    @keyframes hvConfettiFall{
+      0%{transform:translateY(-10px) rotate(0deg); opacity:1;}
+      100%{transform:translateY(480px) rotate(280deg); opacity:0;}
+    }
+
+    /* Loading State */
+    .loading-spinner {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 4rem;
+      color: #64748b;
+    }
+
+    .loading-spinner i {
+      font-size: 3rem;
+      color: #ea8d2a;
+      animation: spin 1s linear infinite;
+      margin-bottom: 1rem;
+    }
+
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    /* ======================================================
+       Check In Tab Styles
+    ====================================================== */
+    .tabs-container {
+      margin-top: 2rem;
+      border-top: 2px solid #e5e7eb;
+      padding-top: 1.5rem;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      border-bottom: 2px solid #e5e7eb;
+    }
+
+    .tab-button {
+      padding: 0.75rem 1.5rem;
+      background: none;
+      border: none;
+      border-bottom: 3px solid transparent;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 600;
+      color: #6b7280;
+      transition: all 0.2s ease;
+    }
+
+    .tab-button:hover {
+      color: #f4a261;
+    }
+
+    .tab-button.active {
+      color: #f4a261;
+      border-bottom-color: #f4a261;
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    .checkin-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .signups-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+
+    .signups-table thead {
+      background: #f4a261;
+      color: white;
+    }
+
+    .signups-table th {
+      padding: 1rem;
+      text-align: left;
+      font-weight: 600;
+      font-size: 0.875rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .signups-table td {
+      padding: 1rem;
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    .signups-table tbody tr:hover {
+      background: #f9fafb;
+    }
+
+    .signups-table tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 3rem;
+      color: #6b7280;
+    }
+
+    .empty-state i {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      color: #d1d5db;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .event-detail-wrapper {
+        margin-top: 180px;
+        padding: 0 1rem;
+      }
+
+      .event-detail-header {
+        padding: 1.5rem;
+      }
+
+      .event-detail-header h1 {
+        font-size: 1.5rem;
+      }
+
+      .event-detail-body {
+        padding: 1.5rem;
+      }
+
+      .info-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .event-head-card {
+        flex-direction: column;
+        text-align: center;
+      }
+
+      .event-head-contact {
+        align-items: center;
+      }
+
+      .action-section {
+        flex-direction: column;
+      }
+
+      .btn-action {
+        width: 100%;
+      }
+    }
+  </style>
 </head>
 <body>
-   
-<header class="hv-header">
-  <div class="container">
-    <div class="header-content">
 
-      <a href="./homepage_login_instituition.html" id="logoRedirect" class="logo">Cycling Without Age</a>
-
-      <button class="nav-toggle" id="navToggle">
-        <i class="fas fa-bars"></i>
-      </button>
+  <header class="hv-header">
+    <div class="container hv-header-content">
+      <div class="hv-logo">
+        <a href="./homepage_login_instituition.html" style="text-decoration: none; color: inherit;">
+          Happy Volunteer
+        </a>
+      </div>
 
       <nav id="mainNav">
-         <ul>
-          <li><a href="./organization_apply_event.html">Apply Event</a></li>
+        <ul>
+          <li><a href="./homepage_login_instituition.html">Home</a></li>
           <li><a href="institutions-community.html">Community</a></li>
-          <li><a href="./institutions-notifications.html">Notification</a></li>
-          <li><a href="./institutions-signed-events.html">History</a></li>
+          <li><a href="./institution_notifications.html">Notification</a></li>
           <li><a href="../Profile/profilepage.html">Profile</a></li>
         </ul>
       </nav>
-
     </div>
-  </div>
-</header>
-   
-<section class="hero">
-    <div class="hero-slider">
+  </header>
 
-        <div class="hero-slide active" style="background-image: url('../images/img4.jpg');">
-            <div class="hero-content">
-                <h1>Welcome to HappyVolunteer</h1>
-                <p>Empowering communities through compassion and collaboration.</p>
+  <main class="event-detail-wrapper">
+    <a href="javascript:history.back()" class="back-link">
+      <i class="fas fa-arrow-left"></i> Back to Events
+    </a>
 
+    <div class="event-detail-card">
+      <div class="event-detail-header">
+        <h1 id="event-name">Loading Event...</h1>
+        <span id="event-status-badge" class="event-status-badge status-available">Loading</span>
+      </div>
 
-                <a href="./organization_apply_event.html" class="hero-btn" >Apply Event</a>
- 
-
-            </div>
-        </div>
-
-        <div class="hero-slide" style="background-image: url('../images/IMG3.webp');">
-            <div class="hero-content">
-                <h1>Make a Difference Today</h1>
-                <p>Create meaningful change across the community.</p>
-                <a href="#" class="hero-btn">Explore Events</a>
-            </div>
-        </div>
-
-        <div class="hero-slide" style="background-image: url('../images/img5.jpg');">
-            <div class="hero-content">
-                <h1>Together We Grow Stronger</h1>
-                <p>Be part of a movement that inspires hope.</p>
-                <a href="#" class="hero-btn">Get Started</a>
-            </div>
-        </div>
-
-    </div>
-
-    <div>
-        
-    </div>
-
-    <!-- dots -->
-    <div class="hero-dots">
-        <span class="hero-dot active"></span>
-        <span class="hero-dot"></span>
-        <span class="hero-dot"></span>
-    </div>
-</section>
-
- 
-    <section class="section section-light">
-  <div class="container">
-    <!-- Dashboard Tabs -->
-    <section class="dashboard">
-      <section class="dashboard_title">
-        <a class="dashboard_title_selected" id="title1">All Events</a>
-        <a class="dashboard_title_not_selected" id="title2">My Applications</a>
-        <a class="dashboard_title_not_selected" id="title3">Approved Applications</a>
-      </section>
-
-      <!-- Dashboard 1: All Events -->
-      <section id="dashboard1">
-        <div class="section-header" id="events-section-header" onclick="toggleSection('events')">
-          <h2>
-            <i class="fas fa-calendar-alt"></i>
-            Available Events
-            <span class="event-count-badge" id="events-count">0</span>
-          </h2>
-          <span class="collapse-icon"><i class="fas fa-chevron-up"></i></span>
-        </div>
-        <div class="collapsible-content" id="events-content">
-          <div class="filter-group" id="filter-group1">
-            <button class="filter-btn active" id="filter_all"><i class="fas fa-th-large"></i> All</button>
-            <button class="filter-btn" id="filter_assigned"><i class="fas fa-check-circle"></i> Assigned</button>
-            <button class="filter-btn" id="filter_not_assigned"><i class="fas fa-clock"></i> Available</button>
-            <button class="filter-btn" id="filter_expired"><i class="fas fa-history"></i> Past</button>
-          </div>
-          <div class="event-grid" id="eventGrid"></div>
-          <div class="load-more-wrap" id="events-load-more-wrap" style="display: none;">
-            <button class="load-more-btn" id="events-load-more" type="button">
-              <i class="fas fa-plus"></i>
-              Load more
-            </button>
+      <div class="event-detail-body">
+        <!-- Event Image -->
+        <div class="event-image-container" id="event-image-container">
+          <div class="event-image-placeholder">
+            <i class="fas fa-image"></i>
+            <p>No image available</p>
           </div>
         </div>
-      </section>
 
-      <!-- Dashboard 2: My Applications -->
-      <section id="dashboard2" style="display:none;">
-        <div class="section-header" id="applications-section-header" onclick="toggleSection('applications')">
-          <h2>
-            <i class="fas fa-file-alt"></i>
-            My Pending Applications
-            <span class="event-count-badge" id="applications-count">0</span>
-          </h2>
-          <span class="collapse-icon"><i class="fas fa-chevron-up"></i></span>
+        <!-- Stats Grid - Participants & Volunteers -->
+        <div class="stats-grid">
+          <div class="stat-card participants">
+            <i class="fas fa-user-friends stat-icon"></i>
+            <div class="stat-label">Participants</div>
+            <div class="stat-value">
+              <span class="current" id="participant-current">0</span>
+              <span class="max">/ <span id="participant-max">0</span></span>
+            </div>
+          </div>
+          <div class="stat-card volunteers">
+            <i class="fas fa-hand-holding-heart stat-icon"></i>
+            <div class="stat-label">Volunteers</div>
+            <div class="stat-value">
+              <span class="current" id="volunteer-current">0</span>
+              <span class="max">/ <span id="volunteer-max">0</span></span>
+            </div>
+          </div>
         </div>
-        <div class="collapsible-content" id="applications-content">
-          <div class="event-grid" id="applicationsGrid"></div>
+
+        <!-- Event Information Section -->
+        <section class="detail-section">
+          <h2><i class="fas fa-info-circle"></i> Event Information</h2>
+          <div class="info-grid">
+            <div class="info-item">
+              <i class="fas fa-calendar-alt"></i>
+              <div class="info-item-content">
+                <div class="info-item-label">Date & Time</div>
+                <div class="info-item-value" id="event-date">-</div>
+              </div>
+            </div>
+            <div class="info-item">
+              <i class="fas fa-map-marker-alt"></i>
+              <div class="info-item-content">
+                <div class="info-item-label">Location</div>
+                <div class="info-item-value" id="event-location">-</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Description Section -->
+        <section class="detail-section">
+          <h2><i class="fas fa-align-left"></i> Description</h2>
+          <p class="description-text" id="event-description">No description available.</p>
+        </section>
+
+        <!-- Event Head Section -->
+        <section class="detail-section event-head-section" id="event-head-section" style="display: none;">
+          <h2><i class="fas fa-user-tie"></i> Event Head</h2>
+          <div id="event-head-content">
+            <!-- Dynamically populated -->
+          </div>
+        </section>
+
+        <!-- Check In Tab Section -->
+        <div class="tabs-container" id="checkin-tabs-container" style="display: none;">
+          <div class="tabs">
+            <button class="tab-button active" data-tab="details">Event Details</button>
+            <button class="tab-button" data-tab="checkin">Check In</button>
+          </div>
+
+          <div id="tab-details" class="tab-content active">
+            <!-- Event details are shown above -->
+          </div>
+
+          <div id="tab-checkin" class="tab-content">
+            <div class="checkin-stats">
+              <div class="stat-card">
+                <h3>Volunteers Signed Up</h3>
+                <p class="stat-value" id="stat-total">0</p>
+              </div>
+              <div class="stat-card">
+                <h3>Volunteers Needed</h3>
+                <p class="stat-value" id="stat-needed">-</p>
+              </div>
+            </div>
+
+            <div class="qr-section" style="margin-bottom: 2rem; text-align: center;">
+              <button id="generate-qr" class="btn-action btn-orange">Generate Attendance QR Code</button>
+            </div>
+
+            <div id="signups-container">
+              <div class="loading-spinner" id="signups-loading">
+                <i class="fas fa-spinner fa-spin"></i>
+                <p>Loading volunteer information...</p>
+              </div>
+              <div id="signups-content" style="display: none;">
+                <table class="signups-table">
+                  <thead>
+                    <tr>
+                      <th style="width: 60px;">#</th>
+                      <th>Volunteer</th>
+                      <th>Contact Information</th>
+                      <th>Check In</th>
+                      <th>Check Out</th>
+                    </tr>
+                  </thead>
+                  <tbody id="signups-tbody">
+                  </tbody>
+                </table>
+              </div>
+              <div class="empty-state" id="signups-empty" style="display: none;">
+                <i class="fas fa-users"></i>
+                <p>No volunteers have signed up for this event yet.</p>
+              </div>
+            </div>
+          </div>
         </div>
-      </section>
 
-      <!-- Dashboard 3: Approved Applications -->
-      <section id="dashboard3" style="display:none;">
-        <div class="section-header" id="approved-section-header" onclick="toggleSection('approved')">
-          <h2>
-            <i class="fas fa-check-double"></i>
-            Approved Events
-            <span class="event-count-badge" id="approved-count">0</span>
-          </h2>
-          <span class="collapse-icon"><i class="fas fa-chevron-up"></i></span>
+        <!-- Action Buttons -->
+        <div class="action-section" id="action-buttons">
+          <!-- Dynamically populated -->
         </div>
-        <div class="collapsible-content" id="approved-content">
-          <div class="event-grid" id="approvedGrid"></div>
-        </div>
-      </section>
-    </section>
-
-    <section class="members" id="members-section">
-      <div class="section-header" id="members-section-header" onclick="toggleSection('members')">
-        <h2>
-          <i class="fas fa-users"></i>
-          Institution Members
-          <span class="event-count-badge" id="members-count">0</span>
-        </h2>
-        <span class="collapse-icon"><i class="fas fa-chevron-up"></i></span>
       </div>
-      <div class="collapsible-content" id="members-content">
-        <div class="members-grid" id="membersGrid"></div>
-      </div>
-    </section>
-  </div>
-</section>
-
-
-
-<!-- ===============================
-    COMMUNITY SECTION
-================================= -->
-<section class="section section-yellow">
-  <div class="container">
-    <div class="section-title">
-      <h2>Your Community</h2>
-      <p>People who joined or interacted with your created events.</p>
     </div>
-
-    <div class="community-feed" id="communityFeed">
-      <div class="community-feed__header">
-        <h3><i class="fas fa-comments"></i> Latest Posts</h3>
-        <a class="community-feed__link" href="institutions-community.html">Open Community</a>
-      </div>
-      <div class="community-feed__list" id="communityFeedList"></div>
-    </div>
-  </div>
-</section>
-
-
-
-<!-- ===============================
-    STATISTICS / ANALYTICS
-================================= -->
-<section class="section section-light">
-  <div class="container">
-    <div class="section-title">
-      <h2>Organisation Overview</h2>
-      <p>Summary of your recent activity and statistics.</p>
-    </div>
-
-    <div class="stats-grid">
-
-      <div class="stat-box">
-        <h3>12</h3>
-        <p>Total Events Created</p>
-      </div>
-
-      <div class="stat-box">
-        <h3>345</h3>
-        <p>Total Sign-ups</p>
-      </div>
-
-      <div class="stat-box">
-        <h3>4.8 ★</h3>
-        <p>Volunteer Rating</p>
-      </div>
-
-      <div class="stat-box">
-        <h3>5</h3>
-        <p>Active Collaborations</p>
-      </div>
-
-    </div>
-  </div>
-</section>
-
-
+  </main>
 
     <footer>
         <div class="container">
@@ -278,9 +1298,39 @@
         </div>
     </footer>
 
-    
 
-    <script src="./homepage_login_instituition.js"></script>
-     <script src="../Translation.js"></script>
+  <!-- Success Animation Overlay -->
+  <div class="success-overlay" id="success-overlay">
+    <div class="success-content">
+      <div class="success-icon">
+        <i class="fas fa-check"></i>
+      </div>
+      <h2 class="success-title">Request Sent!</h2>
+      <p class="success-message">Your booking request has been sent to the admin for approval. You can track your application on the homepage.</p>
+      <button class="success-btn" onclick="window.location.href='./homepage_login_instituition.html'">
+        <i class="fas fa-home"></i> Go to Homepage
+      </button>
+    </div>
+  </div>
+
+  <div class="hv-congrats" id="hvCongrats">
+    <div class="hv-congrats__backdrop" data-close="true"></div>
+    <div class="hv-congrats__dialog" role="dialog" aria-modal="true" aria-label="Success">
+      <div class="hv-confetti" aria-hidden="true"></div>
+      <div class="hv-congrats__body">
+        <div class="hv-congrats__icon" aria-hidden="true">✓</div>
+        <h3 class="hv-congrats__title" id="hvCongratsTitle">Success!</h3>
+        <p class="hv-congrats__msg" id="hvCongratsMsg"></p>
+      </div>
+      <div class="hv-congrats__footer">
+        <button class="hv-congrats__btn" type="button" id="hvCongratsOk">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+  <script src="./institution_event_detail.js"></script>
+  <script src="../Translation.js"></script>
+  <script src="../homepage.js"></script>
 </body>
 </html>
