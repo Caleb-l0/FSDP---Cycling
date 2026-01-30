@@ -951,6 +951,106 @@
       to { transform: rotate(360deg); }
     }
 
+    /* ======================================================
+       Check In Tab Styles
+    ====================================================== */
+    .tabs-container {
+      margin-top: 2rem;
+      border-top: 2px solid #e5e7eb;
+      padding-top: 1.5rem;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      border-bottom: 2px solid #e5e7eb;
+    }
+
+    .tab-button {
+      padding: 0.75rem 1.5rem;
+      background: none;
+      border: none;
+      border-bottom: 3px solid transparent;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 600;
+      color: #6b7280;
+      transition: all 0.2s ease;
+    }
+
+    .tab-button:hover {
+      color: #f4a261;
+    }
+
+    .tab-button.active {
+      color: #f4a261;
+      border-bottom-color: #f4a261;
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    .checkin-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .signups-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+
+    .signups-table thead {
+      background: #f4a261;
+      color: white;
+    }
+
+    .signups-table th {
+      padding: 1rem;
+      text-align: left;
+      font-weight: 600;
+      font-size: 0.875rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .signups-table td {
+      padding: 1rem;
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    .signups-table tbody tr:hover {
+      background: #f9fafb;
+    }
+
+    .signups-table tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 3rem;
+      color: #6b7280;
+    }
+
+    .empty-state i {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      color: #d1d5db;
+    }
+
     /* Responsive */
     @media (max-width: 768px) {
       .event-detail-wrapper {
@@ -1089,6 +1189,61 @@
           </div>
         </section>
 
+        <!-- Check In Tab Section -->
+        <div class="tabs-container" id="checkin-tabs-container" style="display: none;">
+          <div class="tabs">
+            <button class="tab-button active" data-tab="details">Event Details</button>
+            <button class="tab-button" data-tab="checkin">Check In</button>
+          </div>
+
+          <div id="tab-details" class="tab-content active">
+            <!-- Event details are shown above -->
+          </div>
+
+          <div id="tab-checkin" class="tab-content">
+            <div class="checkin-stats">
+              <div class="stat-card">
+                <h3>Volunteers Signed Up</h3>
+                <p class="stat-value" id="stat-total">0</p>
+              </div>
+              <div class="stat-card">
+                <h3>Volunteers Needed</h3>
+                <p class="stat-value" id="stat-needed">-</p>
+              </div>
+            </div>
+
+            <div class="qr-section" style="margin-bottom: 2rem; text-align: center;">
+              <button id="generate-qr" class="btn-action btn-orange">Generate Attendance QR Code</button>
+            </div>
+
+            <div id="signups-container">
+              <div class="loading-spinner" id="signups-loading">
+                <i class="fas fa-spinner fa-spin"></i>
+                <p>Loading volunteer information...</p>
+              </div>
+              <div id="signups-content" style="display: none;">
+                <table class="signups-table">
+                  <thead>
+                    <tr>
+                      <th style="width: 60px;">#</th>
+                      <th>Volunteer</th>
+                      <th>Contact Information</th>
+                      <th>Check In</th>
+                      <th>Check Out</th>
+                    </tr>
+                  </thead>
+                  <tbody id="signups-tbody">
+                  </tbody>
+                </table>
+              </div>
+              <div class="empty-state" id="signups-empty" style="display: none;">
+                <i class="fas fa-users"></i>
+                <p>No volunteers have signed up for this event yet.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <!-- Action Buttons -->
         <div class="action-section" id="action-buttons">
           <!-- Dynamically populated -->
@@ -1173,8 +1328,9 @@
     </div>
   </div>
 
+  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
   <script src="./institution_event_detail.js"></script>
   <script src="../Translation.js"></script>
+  <script src="../homepage.js"></script>
 </body>
 </html>
-
