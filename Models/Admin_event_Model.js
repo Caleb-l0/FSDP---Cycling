@@ -74,7 +74,11 @@ async function createEvent(eventData) {
     if (eventImage) {
       try {
         const result = await pool.query(queryWithImage, valuesWithImage);
-        return result.rows[0];
+        const row = result.rows[0];
+        if (row && row.eventimage) {
+          console.log("Event created with image, length:", row.eventimage.length);
+        }
+        return row;
       } catch (imgErr) {
         const msg = (imgErr.message || "").toLowerCase();
         if (
@@ -83,7 +87,7 @@ async function createEvent(eventData) {
           msg.includes("value too long") ||
           msg.includes("character varying")
         ) {
-          console.warn("Event image column missing or too small, creating event without image:", imgErr.message);
+          console.warn("Event image column missing or too small, creating event without image. Run MIGRATION_eventimage_to_TEXT.sql so volunteers can see event pictures:", imgErr.message);
           const result = await pool.query(queryWithoutImage, valuesWithoutImage);
           return result.rows[0];
         }

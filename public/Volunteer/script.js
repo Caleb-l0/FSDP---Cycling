@@ -306,7 +306,7 @@ function renderEvents(events) {
     const eventId = event.eventid;
     const isSignedUp = signedEventIds.has(String(eventId));
     const distanceText = event._distanceKm != null ? `<p><strong>Distance:</strong> ${event._distanceKm.toFixed(1)} km</p>` : '';
-    const eventImage = event.eventimage || event.EventImage || event.eventImage;
+    const eventImage = event.eventImage || event.eventimage || event.EventImage;
     const defaultImg = 'https://images.unsplash.com/photo-1509099836639-18ba1795216d?w=400&h=250&fit=crop';
     const eventImageHtml = eventImage && eventImage.trim() !== ''
       ? `<div class="event-card-image"><img src="${eventImage.replace(/"/g, '&quot;')}" alt="${(title || 'Event').replace(/"/g, '&quot;')}" onerror="this.onerror=null;this.src='${defaultImg}'"></div>`

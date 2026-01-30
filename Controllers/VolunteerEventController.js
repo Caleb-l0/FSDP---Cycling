@@ -64,7 +64,11 @@ async function getEventDetails(req, res) {
     if (!event) {
       return res.status(404).json({ message: 'Event not found' });
     }
-    res.json(event);
+    const normalized = {
+      ...event,
+      eventImage: event.eventimage != null ? event.eventimage : (event.eventImage != null ? event.eventImage : (event.EventImage != null ? event.EventImage : null))
+    };
+    res.json(normalized);
   }
   catch (err) {
     console.error('Error fetching event details:', err);

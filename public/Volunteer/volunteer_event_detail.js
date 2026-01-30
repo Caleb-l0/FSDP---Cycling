@@ -67,7 +67,7 @@ async function loadEventDetails(id) {
       : "-";
     document.getElementById("req-desc").textContent = data.description || "-";
 
-    const eventImage = data.eventimage || data.EventImage || data.eventImage;
+    const eventImage = data.eventImage || data.eventimage || data.EventImage;
     const defaultEventImg = "https://images.unsplash.com/photo-1509099836639-18ba1795216d?w=900&h=500&fit=crop";
     const reqImg = document.getElementById("req-img");
     if (reqImg) {

@@ -12,7 +12,11 @@ const NotificationModel = require("../Models/notification_model");
 async function getAllEvents(req, res) {
     try {
         const events = await AdminEventModel.getAllEvents();
-        res.status(200).json(events);
+        const normalized = events.map((e) => ({
+            ...e,
+            eventImage: e.eventimage != null ? e.eventimage : (e.eventImage != null ? e.eventImage : (e.EventImage != null ? e.EventImage : null))
+        }));
+        res.status(200).json(normalized);
     } catch (error) {
         res.status(500).json({ message: "Server Error", error: error.message });
     }
