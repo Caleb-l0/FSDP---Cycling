@@ -24,6 +24,7 @@
                 <li><a href="./volunteer_community_page.html">Community</a></li>
                 <li><a href="./volunteer_rewards.html">Reward</a></li>
                 <li><a href="./Volunteer_friend.html">Friends</a></li>
+                <li><a href="./notification.html" class="noti-nav-link">Notification<span class="noti-nav-badge" id="notiBadge" style="display:none;"></span></a></li>
                 <li><a href="../Profile/profilepage.html">Profile</a></li>
             </ul>
         </nav>
@@ -32,12 +33,34 @@
             <i class="fas fa-bars"></i>
         </button>
 
+        <!-- RIGHT SIDE -->
+        <div class="hv-header-right">
+
+            <!-- Language -->
+            <div class="hv-lang-dropdown">
+                <button id="langButton">Language</button>
+                <div class="hv-lang-dropdown-content">
+                    <button onclick="changeLanguage('en')">English</button>
+                    <button onclick="changeLanguage('zh')">Chinese</button>
+                    <button onclick="changeLanguage('ms')">Malay</button>
+                    <button onclick="changeLanguage('ta')">Tamil</button>
+                </div>
+            </div>
+
+            <!-- Logged In Badge -->
+            <div class="hv-user-status" id="userStatus">
+                Logged in as Guest
+            </div>
+
+        </div>
+
         <nav class="hv-nav" id="hvNav">
             <ul>
                 <li><a href="./volunteer-events.html">Booking</a></li>
                 <li><a href="./volunteer_community_page.html">Community</a></li>
                 <li><a href="./volunteer_rewards.html">Reward</a></li>
                 <li><a href="./Volunteer_friend.html">Friends</a></li>
+                <li><a href="./notification.html" class="noti-nav-link">Notification<span class="noti-nav-badge" id="notiBadgeMobile" style="display:none;"></span></a></li>
                 <li><a href="../Profile/profilepage.html">Profile</a></li>
             </ul>
         </nav>
@@ -127,6 +150,42 @@
 <script src="volunteer-calendar.js"></script>
 <script src="../Translation.js"></script>
 <script src="../homepage.js"></script>
+
+<script>
+// Check for new event notifications and show badge
+(async function checkNotiBadge() {
+  const LAST_SEEN_KEY = 'hv_last_seen_eventid';
+  const badge = document.getElementById('notiBadge');
+  const badgeMobile = document.getElementById('notiBadgeMobile');
+  
+  try {
+    const res = await fetch('https://fsdp-cycling-ltey.onrender.com/volunteer/events');
+    if (!res.ok) return;
+    const events = await res.json();
+    
+    const ids = (events || [])
+      .map(e => Number(e.eventid ?? e.EventID ?? e.id))
+      .filter(n => Number.isFinite(n));
+    if (ids.length === 0) return;
+    
+    const latestId = Math.max(...ids);
+    let lastSeen = Number(localStorage.getItem(LAST_SEEN_KEY));
+    
+    if (!Number.isFinite(lastSeen) || lastSeen <= 0) {
+      localStorage.setItem(LAST_SEEN_KEY, String(latestId));
+      return;
+    }
+    
+    if (latestId > lastSeen) {
+      if (badge) badge.style.display = 'inline-block';
+      if (badgeMobile) badgeMobile.style.display = 'inline-block';
+    }
+  } catch (e) {
+    console.error('[NotiBadge]', e);
+  }
+})();
+</script>
+
  <script src="https://cdn.botpress.cloud/webchat/v3.5/inject.js"></script>
 <script src="https://files.bpcontent.cloud/2025/11/22/14/20251122142820-IG7UQ29V.js" defer></script>
 </body>

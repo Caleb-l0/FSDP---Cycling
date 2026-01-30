@@ -316,7 +316,8 @@ textarea {
   display: none;
   position: absolute;
   right: 0;
-  top: 120%;
+  top: 100%;
+  margin-top: 8px;
   background: #ffffff;
   min-width: 160px;
   border-radius: 14px;
