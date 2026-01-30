@@ -5,11 +5,22 @@ const pool = require("../Postgres_config");
 const transporter = require("../mailer");
 
 // ----------------------------
-// 1. Get All Events
+// 1. Get All Events (include eventimage for volunteer/institution list & detail)
 // ----------------------------
 async function getAllEvents() {
-  const result = await pool.query(`SELECT * FROM events ORDER BY eventid ASC`);
-  return result.rows;
+  try {
+    const result = await pool.query(
+      `SELECT eventid, location, maximumparticipant, organizationid, eventname, eventdate, description, requiredvolunteers, status, createdat, updatedat, peoplesignup, latitude, longitude, participantsignup, eventimage FROM events ORDER BY eventid ASC`
+    );
+    return result.rows;
+  } catch (err) {
+    const msg = (err.message || "").toLowerCase();
+    if (msg.includes("eventimage") && (msg.includes("column") || msg.includes("does not exist"))) {
+      const result = await pool.query(`SELECT * FROM events ORDER BY eventid ASC`);
+      return result.rows.map(row => ({ ...row, eventimage: null }));
+    }
+    throw err;
+  }
 }
 
 // ----------------------------

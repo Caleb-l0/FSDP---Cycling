@@ -68,12 +68,17 @@ async function loadEventDetails(id) {
     document.getElementById("req-desc").textContent = data.description || "-";
 
     const eventImage = data.eventimage || data.EventImage || data.eventImage;
+    const defaultEventImg = "https://images.unsplash.com/photo-1509099836639-18ba1795216d?w=900&h=500&fit=crop";
     const reqImg = document.getElementById("req-img");
     if (reqImg) {
       reqImg.src = eventImage && eventImage.trim() !== ""
         ? eventImage
-        : "https://images.unsplash.com/photo-1509099836639-18ba1795216d?w=900&h=500&fit=crop";
+        : defaultEventImg;
       reqImg.alt = (data.eventname || "Event") + " image";
+      reqImg.onerror = function () {
+        this.onerror = null;
+        this.src = defaultEventImg;
+      };
     }
 
     const headWrap = document.getElementById('event-head');
