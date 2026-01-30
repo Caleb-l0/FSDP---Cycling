@@ -282,6 +282,9 @@ function displayEventDetails() {
 
   // Action Buttons
   setupActionButtons();
+
+  // Setup check-in tabs if event is approved and belongs to this organization
+  setupCheckInTabs();
 }
 
 // Display Event Head Section
@@ -750,6 +753,184 @@ async function assignEventHead(modal) {
       submitBtn.disabled = false;
       submitBtn.innerHTML = '<i class="fas fa-check"></i> Confirm Assignment';
     }
+  }
+}
+
+// Setup check-in tabs for approved events
+function setupCheckInTabs() {
+  const appStatus = currentApplication?.status || currentApplication?.Status;
+  const eventOrgId = currentEvent?.organizationid || currentEvent?.OrganizationID;
+  const appOrgId = currentApplication?.organizationid || currentApplication?.OrganizationID;
+  const isMyOrg = organizationId && ((eventOrgId && (Number(organizationId) === Number(eventOrgId))) || (appOrgId && (Number(organizationId) === Number(appOrgId))));
+  const isApproved = (appStatus?.toLowerCase() === 'approved');
+
+  // Show check-in tabs only for approved events that belong to this organization
+  if (isApproved && isMyOrg) {
+    const tabsContainer = document.getElementById('checkin-tabs-container');
+    if (tabsContainer) {
+      tabsContainer.style.display = 'block';
+      initTabs();
+      setupQRButton();
+    }
+  }
+}
+
+// Tab switching functionality
+function initTabs() {
+  const tabButtons = document.querySelectorAll('.tab-button');
+  const tabContents = document.querySelectorAll('.tab-content');
+
+  tabButtons.forEach(button => {
+    button.addEventListener('click', () => {
+      const targetTab = button.getAttribute('data-tab');
+
+      // Remove active class from all buttons and contents
+      tabButtons.forEach(btn => btn.classList.remove('active'));
+      tabContents.forEach(content => content.classList.remove('active'));
+
+      // Add active class to clicked button and corresponding content
+      button.classList.add('active');
+      const targetContent = document.getElementById(`tab-${targetTab}`);
+      if (targetContent) {
+        targetContent.classList.add('active');
+      }
+
+      // If switching to check-in tab, fetch signups
+      if (targetTab === 'checkin') {
+        fetchEventSignups();
+      }
+    });
+  });
+}
+
+// Setup QR button
+function setupQRButton() {
+  const generateQRBtn = document.getElementById('generate-qr');
+  if (generateQRBtn) {
+    generateQRBtn.addEventListener('click', () => {
+      const eventId = currentEvent.eventid || currentEvent.EventID;
+      if (eventId) {
+        window.location.href = `../Admin/attendance.html?eventId=${eventId}`;
+      }
+    });
+  }
+}
+
+// Fetch event signups for attendance tracking
+async function fetchEventSignups() {
+  const loadingEl = document.getElementById('signups-loading');
+  const contentEl = document.getElementById('signups-content');
+  const emptyEl = document.getElementById('signups-empty');
+  const tbodyEl = document.getElementById('signups-tbody');
+  const statTotalEl = document.getElementById('stat-total');
+  const statNeededEl = document.getElementById('stat-needed');
+
+  try {
+    // Show loading state
+    loadingEl.style.display = 'flex';
+    contentEl.style.display = 'none';
+    emptyEl.style.display = 'none';
+
+    const eventId = currentEvent.eventid || currentEvent.EventID;
+    const response = await fetch(
+      `${API_BASE}/organisations/events/${eventId}/people-signups`,
+      {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch signups: ${response.status}`);
+    }
+
+    const data = await response.json();
+    
+    // Hide loading
+    loadingEl.style.display = 'none';
+
+    // Handle response structure
+    let volunteerList = [];
+    let volunteerCount = 0;
+    
+    if (Array.isArray(data)) {
+      volunteerList = data;
+      volunteerCount = data.length;
+    } else {
+      volunteerList = data.volunteers || data.signups || [];
+      volunteerCount = data.count || volunteerList.length;
+    }
+
+    // Update statistics
+    statTotalEl.textContent = volunteerCount;
+    statNeededEl.textContent = currentEvent?.requiredvolunteers || currentEvent?.RequiredVolunteers || '-';
+    
+    // Check if we have volunteers
+    if (volunteerList.length > 0) {
+      tbodyEl.innerHTML = '';
+
+      volunteerList.forEach((volunteer, index) => {
+        // Handle attendance data
+        const checkInTime = volunteer.checkin_time ? new Date(volunteer.checkin_time) : null;
+        const checkOutTime = volunteer.checkout_time ? new Date(volunteer.checkout_time) : null;
+
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${index + 1}</td>
+          <td>
+            <div style="font-weight: 600; color: #1f2937;">${volunteer.name}</div>
+            <div style="font-size: 0.75rem; color: #6b7280;">${volunteer.role}</div>
+          </td>
+          <td>
+            <div style="color: #374151;">${volunteer.email}</div>
+            <div style="font-size: 0.75rem; color: #6b7280;">${volunteer.phone || 'No phone'}</div>
+          </td>
+          <td>
+            ${checkInTime ? `
+              <div style="color: #374151;">${checkInTime.toLocaleDateString()}</div>
+              <div style="font-size: 0.75rem; color: #6b7280;">${checkInTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}</div>
+            ` : '<div style="color: #9ca3af; font-style: italic;">Not checked in</div>'}
+          </td>
+          <td>
+            ${checkOutTime ? `
+              <div style="color: #374151;">${checkOutTime.toLocaleDateString()}</div>
+              <div style="font-size: 0.75rem; color: #6b7280;">${checkOutTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}</div>
+            ` : '<div style="color: #9ca3af; font-style: italic;">Not checked out</div>'}
+          </td>
+        `;
+
+        tbodyEl.appendChild(row);
+      });
+
+      contentEl.style.display = 'block';
+      emptyEl.style.display = 'none';
+    } else {
+      // No volunteers found
+      contentEl.style.display = 'none';
+      emptyEl.style.display = 'block';
+      emptyEl.innerHTML = `
+        <i class="fas fa-users" style="font-size: 3rem; color: #d1d5db; margin-bottom: 1rem;"></i>
+        <p style="color: #6b7280; font-size: 1.1rem; margin-bottom: 0.5rem;">No volunteers have signed up for this event yet.</p>
+        <p style="color: #9ca3af; font-size: 0.875rem;">Volunteers will appear here once they sign up for this event</p>
+      `;
+    }
+
+  } catch (error) {
+    console.error('Error fetching volunteer signups:', error);
+    loadingEl.style.display = 'none';
+    contentEl.style.display = 'none';
+    emptyEl.style.display = 'block';
+    emptyEl.innerHTML = `
+      <i class="fas fa-exclamation-triangle" style="font-size: 3rem; color: #ef4444; margin-bottom: 1rem;"></i>
+      <p style="color: #ef4444; font-size: 1.1rem; margin-bottom: 0.5rem;">Error Loading Volunteers</p>
+      <p style="color: #9ca3af; font-size: 0.875rem;">Unable to fetch volunteer information. Please try again.</p>
+      <button onclick="fetchEventSignups()" style="margin-top: 1rem; padding: 0.5rem 1rem; background: #f4a261; color: white; border: none; border-radius: 6px; cursor: pointer;">
+        Retry
+      </button>
+    `;
   }
 }
 
