@@ -795,6 +795,18 @@ iframe.goog-te-banner-frame,
     padding: 100px 12px 80px;
     min-height: auto;
   }
+
+  /* On mobile: show profile content first, then sidebar (Basic Profile buttons + Logout) below */
+  .profile-hero .row {
+    display: flex;
+    flex-direction: column;
+  }
+  .profile-hero .row .col-lg-9 {
+    order: 1;
+  }
+  .profile-hero .row .col-lg-3 {
+    order: 2;
+  }
   
   .profile-container {
     max-width: 100%;
@@ -805,46 +817,31 @@ iframe.goog-te-banner-frame,
   }
   
   .profile-sidebar {
-    order: -1; /* Move sidebar to top on mobile */
     padding: 16px;
     height: auto;
   }
   
   .profile-nav {
-    flex-direction: row;
-    overflow-x: auto;
-    gap: 8px;
-    padding-bottom: 8px;
-    -webkit-overflow-scrolling: touch;
+    flex-direction: column;
+    gap: 12px;
     margin-bottom: 16px;
-    scrollbar-width: thin;
-  }
-  
-  .profile-nav::-webkit-scrollbar {
-    height: 6px;
-  }
-  
-  .profile-nav::-webkit-scrollbar-thumb {
-    background: #cbd5e1;
-    border-radius: 3px;
   }
   
   .profile-nav-btn {
-    min-width: 124px;
-    flex-shrink: 0;
-    justify-content: center;
-    padding: 10px 12px;
-    font-size: 0.85rem;
-    min-height: 44px;
+    width: 100%;
+    justify-content: flex-start;
+    padding: 12px 16px;
+    font-size: 0.9rem;
+    min-height: 48px;
   }
   
   .profile-nav-btn span {
-    display: inline; /* Show text on mobile */
+    display: inline;
   }
   
   .profile-nav-btn i {
-    font-size: 0.95rem;
-    margin-right: 6px;
+    font-size: 1rem;
+    margin-right: 8px;
   }
   
   .sidebar-title {
