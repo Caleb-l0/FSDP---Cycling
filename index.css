@@ -32,13 +32,10 @@ body.large-text-mode nav a {
   font-size: 1.1em;
 }
 
-/* 字体大小：叠在 hero 轮播右上角，与图片协调 */
+/* Text size: in header; on mobile sits at bottom of header so it follows the white bar */
 .text-size-toggle {
-  position: absolute;
-  top: 16px;
-  right: 20px;
-  z-index: 10;
   margin: 0;
+  margin-left: auto;
   display: flex;
   gap: 6px;
   padding: 6px 10px;
@@ -371,6 +368,19 @@ footer p {
 
 /* ====== Responsive ====== */
 @media (max-width: 768px) {
+  .header-content {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .text-size-toggle {
+    margin-left: 0;
+    margin-top: 4px;
+    order: 10;
+    width: 100%;
+    justify-content: flex-end;
+  }
+
   .hero-content h1 {
     font-size: 2em;
   }
