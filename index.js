@@ -166,17 +166,15 @@ async function showOtpSignup() {
       }catch(err){ console.error(err); createWowToast('❌ Error connecting to server','error'); }
     }
 
-    // Text size toggle (senior-friendly control)
-   
-    const normalTextBtn = document.getElementById('normalTextBtn');
-    const largeTextBtn = document.getElementById('largeTextBtn');
-
+    // Text size toggle (senior-friendly control) - run after DOM ready so login etc. are never broken
     function applyTextSize(mode) {
       const useLarge = mode === 'large';
       const normalized = useLarge ? 'large' : 'normal';
       document.body.classList.toggle('large-text-mode', useLarge);
-      normalTextBtn.setAttribute('aria-pressed', String(!useLarge));
-      largeTextBtn.setAttribute('aria-pressed', String(useLarge));
+      const normalTextBtn = document.getElementById('normalTextBtn');
+      const largeTextBtn = document.getElementById('largeTextBtn');
+      if (normalTextBtn) normalTextBtn.setAttribute('aria-pressed', String(!useLarge));
+      if (largeTextBtn) largeTextBtn.setAttribute('aria-pressed', String(useLarge));
       if (window.setTextSizePreference) {
         window.setTextSizePreference(normalized);
       } else {
@@ -184,10 +182,13 @@ async function showOtpSignup() {
       }
     }
 
-    normalTextBtn.addEventListener('click', () => applyTextSize('normal'));
-    largeTextBtn.addEventListener('click', () => applyTextSize('large'));
-
-    applyTextSize(localStorage.getItem(TEXT_SIZE_KEY) || 'normal');
+    document.addEventListener('DOMContentLoaded', function() {
+      const normalTextBtn = document.getElementById('normalTextBtn');
+      const largeTextBtn = document.getElementById('largeTextBtn');
+      if (normalTextBtn) normalTextBtn.addEventListener('click', () => applyTextSize('normal'));
+      if (largeTextBtn) largeTextBtn.addEventListener('click', () => applyTextSize('large'));
+      applyTextSize(localStorage.getItem(TEXT_SIZE_KEY) || 'normal');
+    });
 
 
 
