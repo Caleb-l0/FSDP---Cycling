@@ -134,12 +134,20 @@ async function createEvent(req, res) {
     console.error("Error details:", {
       message: error.message,
       stack: error.stack,
-      eventData: eventData || "Not available"
+      eventData: eventData ? { ...eventData, EventImage: eventData.EventImage ? "[base64]" : null } : "Not available"
     });
-    res.status(500).json({ 
-      message: "Server error", 
-      error: error.message || String(error),
-      details: process.env.NODE_ENV === 'development' ? error.stack : undefined
+    const errMsg = error.message || "";
+    const userMessage = (
+      errMsg.includes("eventimage") ||
+      errMsg.includes("column") && errMsg.includes("does not exist") ||
+      errMsg.includes("value too long")
+    )
+      ? "Database may need migration. Run MIGRATION_eventimage_to_TEXT.sql to enable event pictures, or create the event without an image."
+      : errMsg || "Server error";
+    res.status(500).json({
+      message: userMessage,
+      error: error.message || "Server error",
+      details: process.env.NODE_ENV === "development" ? error.stack : undefined
     });
   }
 }

@@ -124,7 +124,7 @@ async function createEvent() {
     }
 
     if (!response.ok) {
-      const errorData = await response.json();
+      const errorData = await response.json().catch(() => ({}));
       throw new Error(errorData.message || errorData.error || 'Failed to create event');
     }
 

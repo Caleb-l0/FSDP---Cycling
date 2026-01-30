@@ -16,31 +16,72 @@ async function getAllEvents() {
 // 2. Create Event
 // ----------------------------
 async function createEvent(eventData) {
+  const eventImage = eventData.EventImage || eventData.eventimage || null;
+
+  const queryWithImage = `
+    INSERT INTO events (
+      location, organizationid, eventname, eventdate, description,
+      requiredvolunteers, maximumparticipant, status, eventimage
+    )
+    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+    RETURNING *
+  `;
+
+  const queryWithoutImage = `
+    INSERT INTO events (
+      location, organizationid, eventname, eventdate, description,
+      requiredvolunteers, maximumparticipant, status
+    )
+    VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+    RETURNING *
+  `;
+
+  const valuesWithImage = [
+    eventData.Location || null,
+    eventData.OrganizationID || null,
+    eventData.EventName,
+    eventData.EventDate,
+    eventData.Description || "",
+    eventData.RequiredVolunteers,
+    eventData.MaximumParticipant,
+    eventData.Status || "Upcoming",
+    eventImage,
+  ];
+
+  const valuesWithoutImage = [
+    eventData.Location || null,
+    eventData.OrganizationID || null,
+    eventData.EventName,
+    eventData.EventDate,
+    eventData.Description || "",
+    eventData.RequiredVolunteers,
+    eventData.MaximumParticipant,
+    eventData.Status || "Upcoming",
+  ];
+
   try {
-    const query = `
-      INSERT INTO events (
-        location, organizationid, eventname, eventdate, description,
-        requiredvolunteers, maximumparticipant, status, eventimage
-      )
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
-      RETURNING *
-    `;
+    if (eventImage) {
+      try {
+        const result = await pool.query(queryWithImage, valuesWithImage);
+        return result.rows[0];
+      } catch (imgErr) {
+        const msg = (imgErr.message || "").toLowerCase();
+        if (
+          msg.includes("column") && msg.includes("eventimage") ||
+          msg.includes("does not exist") ||
+          msg.includes("value too long") ||
+          msg.includes("character varying")
+        ) {
+          console.warn("Event image column missing or too small, creating event without image:", imgErr.message);
+          const result = await pool.query(queryWithoutImage, valuesWithoutImage);
+          return result.rows[0];
+        }
+        throw imgErr;
+      }
+    }
 
-    const values = [
-      eventData.Location || null,
-      eventData.OrganizationID || null,
-      eventData.EventName,
-      eventData.EventDate,
-      eventData.Description || "",
-      eventData.RequiredVolunteers,
-      eventData.MaximumParticipant,
-      eventData.Status || "Upcoming",
-      eventData.EventImage || eventData.eventimage || null,
-    ];
-
-    const result = await pool.query(query, values);
+    const result = await pool.query(queryWithoutImage, valuesWithoutImage);
     return result.rows[0];
-
   } catch (err) {
     console.error("Error creating event model:", err);
     throw err;
