@@ -309,9 +309,9 @@ async function fetchEventSignups() {
       tbodyEl.innerHTML = '';
 
       volunteerList.forEach((volunteer, index) => {
-        // Handle different possible date field names
-        const signupDate = new Date(volunteer.signupDate || volunteer.signupdate || new Date());
-        const checkedIn = volunteer.checkedIn === true;
+        // Handle attendance data
+        const checkInTime = volunteer.checkin_time ? new Date(volunteer.checkin_time) : null;
+        const checkOutTime = volunteer.checkout_time ? new Date(volunteer.checkout_time) : null;
 
         const row = document.createElement('tr');
         row.innerHTML = `
@@ -325,16 +325,16 @@ async function fetchEventSignups() {
             <div style="font-size: 0.75rem; color: #6b7280;">${volunteer.phone}</div>
           </td>
           <td>
-            <div style="color: #374151;">${signupDate.toLocaleDateString()}</div>
-            <div style="font-size: 0.75rem; color: #6b7280;">${signupDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}</div>
+            ${checkInTime ? `
+              <div style="color: #374151;">${checkInTime.toLocaleDateString()}</div>
+              <div style="font-size: 0.75rem; color: #6b7280;">${checkInTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}</div>
+            ` : '<div style="color: #9ca3af; font-style: italic;">Not checked in</div>'}
           </td>
-          <td style="text-align:center;">
-            <input 
-              type="checkbox"
-              ${checkedIn ? 'checked' : ''}
-              disabled
-              style="transform: scale(1.2);"
-            />
+          <td>
+            ${checkOutTime ? `
+              <div style="color: #374151;">${checkOutTime.toLocaleDateString()}</div>
+              <div style="font-size: 0.75rem; color: #6b7280;">${checkOutTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}</div>
+            ` : '<div style="color: #9ca3af; font-style: italic;">Not checked out</div>'}
           </td>
         `;
 
