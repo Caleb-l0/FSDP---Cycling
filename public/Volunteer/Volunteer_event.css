@@ -262,6 +262,25 @@ h2 {
   background-position: center;
 }
 
+/* When card has custom event image, hide default ::before */
+.event-card:has(.event-card-image)::before {
+  display: none;
+}
+
+.event-card-image {
+  display: block;
+  width: 100%;
+  height: 180px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.event-card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
 /* ======================================================
    EVENT DETAILS – Flex for proper button placement
 ====================================================== */

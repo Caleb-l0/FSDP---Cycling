@@ -306,8 +306,13 @@ function renderEvents(events) {
     const eventId = event.eventid;
     const isSignedUp = signedEventIds.has(String(eventId));
     const distanceText = event._distanceKm != null ? `<p><strong>Distance:</strong> ${event._distanceKm.toFixed(1)} km</p>` : '';
+    const eventImage = event.eventimage || event.EventImage || event.eventImage;
+    const eventImageHtml = eventImage && eventImage.trim() !== ''
+      ? `<div class="event-card-image"><img src="${eventImage.replace(/"/g, '&quot;')}" alt="${(title || 'Event').replace(/"/g, '&quot;')}"></div>`
+      : '';
 
     card.innerHTML = `
+      ${eventImageHtml}
       <div class="event-details" role="button" tabindex="0" data-event-id="${eventId}">
         <button class="event-collapse-btn" type="button" aria-label="Hide this event">×</button>
 
