@@ -67,7 +67,7 @@
 
 /* Calendar Container */
 .calendar-container {
-  background: #ffffff; /* 恢复纯白背景 */
+  background: #ffffff;
   border-radius: 20px;
   padding: 32px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
@@ -281,10 +281,25 @@
   line-height: 1.6;
 }
 
-/* Responsive Design */
+/* Responsive Design – mobile: fixed cell size + horizontal scroll */
 @media (max-width: 768px) {
   .calendar-container {
     padding: 20px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .calendar-container .calendar-grid {
+    min-width: 560px;
+    width: max-content;
+  }
+
+  .calendar-weekdays {
+    min-width: 560px;
+  }
+
+  .calendar-days {
+    min-width: 560px;
   }
 
   .calendar-header {
@@ -298,7 +313,16 @@
 
   .calendar-day {
     min-height: 100px;
+    height: 100px;
+    max-height: 100px;
     padding: 8px;
+    overflow: hidden;
+  }
+
+  .calendar-day .day-events {
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
   }
 
   .day-number {
@@ -306,8 +330,9 @@
   }
 
   .event-item {
-    font-size: 0.75rem;
-    padding: 4px 8px;
+    font-size: 0.7rem;
+    padding: 4px 6px;
+    line-height: 1.2;
   }
 
   .weekday {
@@ -321,14 +346,28 @@
     padding: 16px;
   }
 
+  .calendar-container .calendar-grid {
+    min-width: 400px;
+  }
+
+  .calendar-weekdays {
+    min-width: 400px;
+  }
+
+  .calendar-days {
+    min-width: 400px;
+  }
+
   .calendar-day {
-    min-height: 80px;
+    min-height: 88px;
+    height: 88px;
+    max-height: 88px;
     padding: 6px;
   }
 
   .event-item {
-    font-size: 0.7rem;
-    padding: 4px 6px;
+    font-size: 0.65rem;
+    padding: 3px 5px;
   }
 }
 

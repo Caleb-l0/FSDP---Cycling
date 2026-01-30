@@ -493,15 +493,24 @@ body {
 
   .svc-calendar-container {
     padding: 24px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
   }
 
   .svc-calendar-grid {
     gap: 8px;
+    min-width: 560px;
+    width: max-content;
   }
 
   .svc-day {
     min-height: 70px;
+    height: 70px;
+    max-height: 70px;
     padding: 8px;
+    overflow: hidden;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
   }
 
   .svc-header {
@@ -550,12 +559,19 @@ body {
 
   .svc-calendar-grid {
     gap: 6px;
+    min-width: 400px;
+    width: max-content;
   }
 
   .svc-day {
-    min-height: 60px;
+    min-height: 64px;
+    height: 64px;
+    max-height: 64px;
     padding: 6px;
     font-size: 0.875rem;
+    overflow: hidden;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
   }
 
   .svc-event-box {

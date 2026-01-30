@@ -237,6 +237,7 @@ textarea {
   font-weight: 700;
   color: #e69a2a;
   letter-spacing: 0.4px;
+  white-space: nowrap;
 }
 
 /* =========================
@@ -449,7 +450,7 @@ textarea {
   }
 
   .hv-logo {
-    font-size: 1.35rem;
+    font-size: 1.15rem;
   }
 
   .hv-nav ul {
@@ -865,7 +866,7 @@ footer .copyright {
     padding-top: 64px;
   }
   .hv-logo {
-    font-size: 1.25rem;
+    font-size: 1rem;
   }
 }
 
