@@ -1054,7 +1054,17 @@ function renderProfile(p) {
 
   const tierProgress = p.total_events;
 
+  const safeLevel = Math.min(4, Math.max(1, Number(p.level) || 1));
 
+  const root = document.getElementById('hvop-root');
+
+  if (root) {
+
+    root.classList.remove('hvop-tier-1', 'hvop-tier-2', 'hvop-tier-3', 'hvop-tier-4');
+
+    root.classList.add(`hvop-tier-${safeLevel}`);
+
+  }
 
   const avatarImg = document.querySelector('.hvop-avatar');
 
@@ -1074,19 +1084,15 @@ function renderProfile(p) {
 
   }
 
-
-
   // ================= HERO =================
 
   document.querySelector(".hvop-name").textContent = p.name;
-
-
 
   document.querySelector(".hvop-title").textContent = getTitle(tierProgress);
 
   document.querySelector(".hvop-level").textContent =
 
-    `Level ${tierProgress} · ${getTier(tierProgress)}`;
+    `Level ${safeLevel} · ${getTier(tierProgress)}`;
 
   document.querySelector(".hvop-followers").textContent =
 

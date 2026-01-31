@@ -45,6 +45,30 @@ async function getUserExperience(id) {
   return result.rows[0] || null;
 }
 
+function computeLevelFromTotalEvents(totalEvents) {
+  const t = Number(totalEvents) || 0;
+  if (t >= 20) return 4;
+  if (t >= 10) return 3;
+  if (t >= 5) return 2;
+  return 1;
+}
+
+async function updateUserLevel(userId, level) {
+  const uid = Number(userId);
+  if (!uid) return;
+  const lvl = Number(level);
+  if (!Number.isFinite(lvl)) return;
+
+  await pool.query(
+    `
+    UPDATE users
+    SET level = $2
+    WHERE id = $1
+    `,
+    [uid, lvl]
+  );
+}
+
 /**
  * Get events joined by user
  */
@@ -151,5 +175,7 @@ module.exports = {
   getUserBadges,
   getFollowersCount,
   searchVolunteers,
+  computeLevelFromTotalEvents,
+  updateUserLevel,
   
 };
