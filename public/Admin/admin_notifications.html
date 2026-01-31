@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Notifications</title>
+  <link rel="stylesheet" href="../homepage.css" />
+  <link rel="stylesheet" href="./admin_notifications.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+</head>
+<body>
+  <header class="hv-header">
+    <div class="container hv-header-content">
+      <div class="hv-logo">
+        <a href="./homepage_login_Admin.html" style="text-decoration: none; color: inherit;">Happy Volunteer</a>
+      </div>
+
+      <nav id="mainNav">
+        <ul>
+          <li><a href="./createEvent.html">Create Event</a></li>
+          <li><a href="#" id="checkin-link">Check In</a></li>
+          <li><a href="./admin_notifications.html" class="is-active">Notification</a></li>
+          <li><a href="../Profile/profilepage.html">Profile</a></li>
+        </ul>
+      </nav>
+
+      <button class="hv-nav-toggle" id="hvNavToggle"><i class="fas fa-bars"></i></button>
+
+      <nav class="hv-nav" id="hvNav">
+        <ul>
+          <li><a href="./createEvent.html">Create Event</a></li>
+          <li><a href="#" id="checkin-link-mobile">Check In</a></li>
+          <li><a href="./admin_notifications.html" class="is-active">Notification</a></li>
+          <li><a href="../Profile/profilepage.html">Profile</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main class="an-wrapper container">
+    <div class="an-header">
+      <h1>Institution Requests</h1>
+      <div class="an-actions">
+        <button class="an-btn" id="anRefreshBtn"><i class="fas fa-rotate"></i> Refresh</button>
+      </div>
+    </div>
+
+    <div class="an-meta" id="anMeta"></div>
+
+    <div class="an-grid" id="anGrid"></div>
+
+    <div class="an-empty" id="anEmpty" style="display:none;">
+      <div class="an-empty-title">No requests</div>
+      <div class="an-empty-sub">No institution booking requests found.</div>
+    </div>
+  </main>
+
+  <script src="./admin_notifications.js"></script>
+</body>
+</html>
