@@ -41,6 +41,27 @@ async function createRequest(requestData) {
     console.error("createRequest SQL error:", err);
     throw err;
   }
+
+}
+
+async function hasApprovedBookingForEventAndOrg(eventId, organizationId) {
+  const eid = Number(eventId);
+  const orgId = Number(organizationId);
+  if (!eid || !orgId) return false;
+
+  const res = await pool.query(
+    `
+    SELECT 1
+    FROM eventbookings
+    WHERE eventid = $1
+      AND organizationid = $2
+      AND status = 'Approved'
+    LIMIT 1
+    `,
+    [eid, orgId]
+  );
+
+  return res.rows.length > 0;
 }
 
 async function getInstitutionSignedEvents(organizationId) {
@@ -87,6 +108,12 @@ async function assignEventHeadToRequest({
   eventHeadProfile
 }) {
   try {
+    const eid = Number(eventId);
+    const orgId = Number(organizationId);
+    if (!eid || !orgId) {
+      throw new Error('Invalid eventId or organizationId');
+    }
+
     const updateSql = `
       UPDATE eventbookings
       SET
@@ -101,8 +128,8 @@ async function assignEventHeadToRequest({
     `;
 
     const params = [
-      eventId,
-      organizationId,
+      eid,
+      orgId,
       eventHeadName,
       eventHeadContact,
       eventHeadEmail,
@@ -112,41 +139,22 @@ async function assignEventHeadToRequest({
     const result = await pool.query(updateSql, params);
     if (result.rows.length > 0) return result.rows[0];
 
-    const eventCheck = await pool.query(
-      `SELECT eventid FROM events WHERE eventid = $1 AND organizationid = $2`,
-      [eventId, organizationId]
-    );
-
-    if (eventCheck.rows.length === 0) {
-      throw new Error('Approved event booking not found for this event and organization');
-    }
-
-    const fallback = await pool.query(
+    const bookingExists = await pool.query(
       `
-      UPDATE eventbookings
-      SET
-        session_head_name = $2,
-        session_head_contact = $3,
-        session_head_email = $4,
-        session_head_profile = $5
+      SELECT 1
+      FROM eventbookings
       WHERE eventid = $1
-        AND status = 'Approved'
-      RETURNING *
+        AND organizationid = $2
+      LIMIT 1
       `,
-      [
-        eventId,
-        eventHeadName,
-        eventHeadContact,
-        eventHeadEmail,
-        eventHeadProfile || null
-      ]
+      [eid, orgId]
     );
 
-    if (fallback.rows.length === 0) {
-      throw new Error('Approved event booking not found for this event and organization');
+    if (bookingExists.rows.length === 0) {
+      throw new Error('Event booking not found for this event and organization');
     }
 
-    return fallback.rows[0];
+    throw new Error('Approved event booking not found for this event and organization');
   } catch (err) {
     console.error("assignEventHeadToRequest SQL error:", err);
     throw err;
@@ -308,7 +316,9 @@ async function getEventPeopleSignups(eventID) {
         u.phone,
         u.role,
         es.signupdate,
-        es.signupid
+        es.signupid,
+        es.checkin_time,
+        es.checkout_time
       FROM eventsignups es
       JOIN users u ON es.userid = u.id
       WHERE es.eventid = $1 
@@ -329,7 +339,8 @@ async function getEventPeopleSignups(eventID) {
       role: row.role || 'volunteer',
       signupDate: row.signupdate,
       signupId: row.signupid,
-      checkedIn: false // Default to false since column doesn't exist
+      checkin_time: row.checkin_time || null,
+      checkout_time: row.checkout_time || null
     }));
     
     const response = {
@@ -576,7 +587,8 @@ module.exports = {
   assignEventHeadToRequest,
   getOrganizationMembers,
   getOrganizationMembersExperience,
-  getInstitutionSignedEvents
+  getInstitutionSignedEvents,
+  hasApprovedBookingForEventAndOrg
 };
 
 

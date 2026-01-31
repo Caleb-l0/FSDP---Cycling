@@ -1033,85 +1033,46 @@ fetch(`${UserEndPoint}/volunteer/user/profile/${userId}`, {
 
 
 function renderProfile(p) {
-
   // Normalize API shape to avoid runtime crashes when fields are missing
-
   p = p || {};
-
   p.badges = Array.isArray(p.badges) ? p.badges : [];
-
   p.events = Array.isArray(p.events) ? p.events : [];
-
-
-
   p.followers = Number(p.followers) || 0;
-
   p.total_events = Number(p.total_events) || 0;
-
   p.level = Number(p.level) || 0;
-
-
-
   const tierProgress = p.total_events;
-
   const safeLevel = Math.min(4, Math.max(1, Number(p.level) || 1));
-
   const root = document.getElementById('hvop-root');
-
   if (root) {
-
     root.classList.remove('hvop-tier-1', 'hvop-tier-2', 'hvop-tier-3', 'hvop-tier-4');
-
     root.classList.add(`hvop-tier-${safeLevel}`);
-
   }
-
   const avatarImg = document.querySelector('.hvop-avatar');
-
   const profilePic = (p.profilePicture || p.profilepicture || '').toString().trim();
-
   if (avatarImg) {
-
     avatarImg.src = profilePic || '../assets/elderly.jpg';
-
     avatarImg.onerror = () => {
-
       avatarImg.onerror = null;
-
       avatarImg.src = '../Bali.jpg';
-
     };
 
   }
-
   // ================= HERO =================
 
   document.querySelector(".hvop-name").textContent = p.name;
-
   document.querySelector(".hvop-title").textContent = getTitle(tierProgress);
-
   document.querySelector(".hvop-level").textContent =
-
     `Level ${safeLevel} · ${getTier(tierProgress)}`;
-
   document.querySelector(".hvop-followers").textContent =
-
     `👥 ${p.followers} Followers`;
 
 
 
   // ================= OVERVIEW =================
-
   setOverview(0, p.followers);
-
   setOverview(1, p.total_events);
-
-  setOverview(2, calcYears(p.first_event_date));
-
-
-
-  // ================= BADGES =================
-
+  setOverview(2, calcYears(p.first_event_date))
+  // ================ BADGES =================
   renderBadges(p.badges);
 
 

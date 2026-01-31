@@ -203,6 +203,55 @@ async function isSignedUp(userID, eventID) {
   return result.rows.length > 0;
 }
 
+async function checkIn(userId, eventId) {
+  const uid = Number(userId);
+  const eid = Number(eventId);
+  if (!uid || !eid) throw new Error("Invalid userId/eventId");
+
+  const res = await pool.query(
+    `
+    UPDATE eventsignups
+    SET checkin_time = COALESCE(checkin_time, NOW())
+    WHERE userid = $1
+      AND eventid = $2
+      AND status = 'Active'
+    RETURNING signupid, eventid, userid, checkin_time, checkout_time
+    `,
+    [uid, eid]
+  );
+
+  if (res.rows.length === 0) {
+    throw new Error("No active signup found for this user and event");
+  }
+
+  return res.rows[0];
+}
+
+async function checkOut(userId, eventId) {
+  const uid = Number(userId);
+  const eid = Number(eventId);
+  if (!uid || !eid) throw new Error("Invalid userId/eventId");
+
+  const res = await pool.query(
+    `
+    UPDATE eventsignups
+    SET checkout_time = COALESCE(checkout_time, NOW())
+    WHERE userid = $1
+      AND eventid = $2
+      AND status = 'Active'
+      AND checkin_time IS NOT NULL
+    RETURNING signupid, eventid, userid, checkin_time, checkout_time
+    `,
+    [uid, eid]
+  );
+
+  if (res.rows.length === 0) {
+    throw new Error("Cannot check out: no active signup with check-in found");
+  }
+
+  return res.rows[0];
+}
+
 
 // ======================================================
 // 4. Get All Signed-Up Events For A User
@@ -237,6 +286,8 @@ module.exports = {
   signUpForEvent,
   cancelSignup,
   isSignedUp,
-  getSignedUpEvents
+  getSignedUpEvents,
+  checkIn,
+  checkOut
 };
 
