@@ -28,22 +28,24 @@ async function getAllEvents() {
 // ----------------------------
 async function createEvent(eventData) {
   const eventImage = eventData.EventImage || eventData.eventimage || null;
+  const latitude = eventData.Latitude ?? eventData.latitude ?? null;
+  const longitude = eventData.Longitude ?? eventData.longitude ?? null;
 
   const queryWithImage = `
     INSERT INTO events (
       location, organizationid, eventname, eventdate, description,
-      requiredvolunteers, maximumparticipant, status, eventimage
+      requiredvolunteers, maximumparticipant, status, latitude, longitude, eventimage
     )
-    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
     RETURNING *
   `;
 
   const queryWithoutImage = `
     INSERT INTO events (
       location, organizationid, eventname, eventdate, description,
-      requiredvolunteers, maximumparticipant, status
+      requiredvolunteers, maximumparticipant, status, latitude, longitude
     )
-    VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
     RETURNING *
   `;
 
@@ -56,6 +58,8 @@ async function createEvent(eventData) {
     eventData.RequiredVolunteers,
     eventData.MaximumParticipant,
     eventData.Status || "Upcoming",
+    latitude,
+    longitude,
     eventImage,
   ];
 
@@ -68,6 +72,8 @@ async function createEvent(eventData) {
     eventData.RequiredVolunteers,
     eventData.MaximumParticipant,
     eventData.Status || "Upcoming",
+    latitude,
+    longitude,
   ];
 
   try {
