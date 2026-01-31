@@ -83,3 +83,7 @@
 .hvcp-chip{display:inline-flex;align-items:center;gap:8px;background:#f1f5f9;border:1px solid rgba(15,23,42,.10);border-radius:999px;padding:8px 12px;color:#0f172a;font-weight:800;}
 
 .hvcp-textarea{width:100%;min-height:90px;border-radius:12px;border:1px solid rgba(15,23,42,.14);padding:10px 12px;font-weight:700;color:#0f172a;outline:none;}
+
+.hvcp-btn--map{background:#16a34a;display:inline-flex;align-items:center;justify-content:center;gap:8px;margin-top:10px;}
+.hvcp-btn--map:hover{background:#15803d;}
+.hvcp-btn--map i{font-size:1rem;}
