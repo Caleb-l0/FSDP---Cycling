@@ -362,10 +362,10 @@ async function assignEventHead(req, res) {
     }
 
     const requesterId = req.user.id;
-    const eventId = Number(req.params.eventId);
+    const requestId = Number(req.params.requestId);
 
-    if (!eventId || isNaN(eventId)) {
-      return res.status(400).json({ message: "Invalid eventId" });
+    if (!requestId) {
+      return res.status(400).json({ message: "Invalid requestId" });
     }
 
     const {
@@ -375,7 +375,7 @@ async function assignEventHead(req, res) {
       eventHeadProfile
     } = req.body;
 
-    if (!eventHeadName || !eventHeadContact || !eventHeadEmail ) {
+    if (!eventHeadName || !eventHeadContact || !eventHeadEmail) {
       return res.status(400).json({ message: "Missing required event head fields" });
     }
 
@@ -385,7 +385,7 @@ async function assignEventHead(req, res) {
     }
 
     const booking = await OrganizationRequestModel.assignEventHeadToRequest({
-      eventId,
+      requestId,
       organizationId,
       eventHeadName,
       eventHeadContact,
@@ -426,40 +426,6 @@ async function getOrganizationMembers(req, res) {
   }
 }
 
-
-async function getOrganizationMembersExperience(req, res) {
-  try {
-    if (!req.user?.id) {
-      return res.status(401).json({ message: "User not authenticated" });
-    }
-    const organizationID = await OrganizationRequestModel.getOrganisationIDByUserID(req.user.id);
-    if (!organizationID) {
-      return res.status(200).json([]);
-    }
-    const members = await OrganizationRequestModel.getOrganizationMembersExperience(organizationID);
-    res.status(200).json(members);
-  } catch (error) {
-    res.status(500).json({ message: "Server Error", error: error.message });
-  } 
-}
-
-async function getInstitutionSignedEvents(req, res) {
-  try {
-    if (!req.user?.id) {
-      return res.status(401).json({ message: "User not authenticated" });
-    }
-    const organizationID = await OrganizationRequestModel.getOrganisationIDByUserID(req.user.id);
-    if (!organizationID) {
-      return res.status(200).json([]);
-    }
-    const events = await OrganizationRequestModel.getInstitutionSignedEvents(organizationID);
-    res.status(200).json(events);
-  } catch (error) {
-    res.status(500).json({ message: "Server Error", error: error.message });
-  }
-}
-
-
 // ======================================================
 module.exports = {
 
@@ -473,7 +439,6 @@ module.exports = {
   getEventSignups,
   getEventPeopleSignups,
   getAllOrganizationRequests,
-  requestEventBooking, assignEventHead,getOrganizationMembers, getOrganizationMembersExperience
-  ,getInstitutionSignedEvents
+  requestEventBooking, assignEventHead,getOrganizationMembers
 };
 
