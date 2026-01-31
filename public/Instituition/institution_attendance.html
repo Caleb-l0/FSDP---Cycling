@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Event Attendance | Institution</title>
+  <link rel="stylesheet" href="../homepage.css" />
+  <link rel="stylesheet" href="homepage_instituition.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <style>
+    .attendance-container {
+      max-width: 800px;
+      margin: 120px auto 2rem;
+      padding: 0 1rem;
+    }
+
+    .attendance-card {
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+      padding: 2rem;
+      text-align: center;
+    }
+
+    .attendance-header {
+      margin-bottom: 2rem;
+    }
+
+    .attendance-header h1 {
+      color: #1f2937;
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .attendance-header p {
+      color: #6b7280;
+      font-size: 1.1rem;
+    }
+
+    .qr-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.5rem;
+      margin: 2rem 0;
+    }
+
+    #qr-code {
+      border: 3px solid #f4a261;
+      border-radius: 12px;
+      padding: 1rem;
+      background: white;
+    }
+
+    .event-code {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: #f4a261;
+      background: #fef3c7;
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      border: 2px solid #f59e0b;
+    }
+
+    .instructions {
+      background: #f0f9ff;
+      border: 2px solid #0ea5e9;
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin: 2rem 0;
+    }
+
+    .instructions h3 {
+      color: #0c4a6e;
+      margin-bottom: 1rem;
+    }
+
+    .instructions ul {
+      text-align: left;
+      color: #0c4a6e;
+    }
+
+    .instructions li {
+      margin-bottom: 0.5rem;
+    }
+
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: #f4a261;
+      color: white;
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 600;
+      transition: background-color 0.2s;
+    }
+
+    .back-btn:hover {
+      background: #e76f51;
+    }
+
+    .loading {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+      padding: 3rem;
+    }
+
+    .loading i {
+      font-size: 3rem;
+      color: #f4a261;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    .error {
+      background: #fef2f2;
+      border: 2px solid #ef4444;
+      border-radius: 12px;
+      padding: 1.5rem;
+      color: #991b1b;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <header class="hv-header">
+    <div class="container">
+      <div class="header-content">
+        <a href="homepage_login_instituition.html" class="logo">Cycling Without Age</a>
+        <nav id="mainNav">
+          <ul>
+            <li><a href="homepage_login_instituition.html">Home</a></li>
+            <li><a href="institutions-community.html">Community</a></li>
+            <li><a href="institutions-notifications.html">Notifications</a></li>
+            <li><a href="../Profile/profilepage.html">Profile</a></li>
+          </ul>
+        </nav>
+      </div>
+    </div>
+  </header>
+
+  <main class="attendance-container">
+    <div class="attendance-card">
+      <div class="attendance-header">
+        <h1>Event Attendance</h1>
+        <p>Show this QR code to volunteers for check-in and check-out</p>
+      </div>
+
+      <div id="loading" class="loading">
+        <i class="fas fa-spinner fa-spin"></i>
+        <p>Loading event information...</p>
+      </div>
+
+      <div id="error" class="error" style="display: none;">
+        <i class="fas fa-exclamation-triangle"></i>
+        <h3>Error Loading Event</h3>
+        <p id="error-message">Unable to load event information. Please try again.</p>
+      </div>
+
+      <div id="attendance-content" style="display: none;">
+        <div class="qr-container">
+          <div id="qr-code"></div>
+          <div class="event-code">
+            Event Code: <strong id="event-code-display"></strong>
+          </div>
+        </div>
+
+        <div class="instructions">
+          <h3><i class="fas fa-info-circle"></i> How it works:</h3>
+          <ul>
+            <li>Volunteers scan this QR code using their camera</li>
+            <li>All attendance data is recorded in real-time</li>
+          </ul>
+        </div>
+
+        <a href="javascript:history.back()" class="back-btn">
+          <i class="fas fa-arrow-left"></i> Back to Event
+        </a>
+      </div>
+    </div>
+  </main>
+
+  <!-- QR generator that works without globals/modules (same as admin) -->
+  <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js"></script>
+  <script>
+    const token = localStorage.getItem('token');
+    const API_BASE = 'https://fsdp-cycling-ltey.onrender.com';
+
+    if (!token) {
+      window.location.href = '../../index.html';
+    }
+
+    // Get event ID from URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const eventId = urlParams.get('eventId');
+
+    if (!eventId) {
+      showError('No event ID provided. Please go back and try again.');
+    }
+
+    async function loadEventAndGenerateQR() {
+      try {
+        // First get event details
+        const eventResponse = await fetch(`${API_BASE}/events/${eventId}`, {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+
+        if (!eventResponse.ok) {
+          throw new Error(`Failed to load event: ${eventResponse.status}`);
+        }
+
+        const event = await eventResponse.json();
+        const eventName = event.eventname || event.EventName || 'Unknown Event';
+
+        // Generate QR code URL
+        const qrUrl = `${API_BASE}/events/${eventId}/attendance`;
+        const eventCode = `EVT-${eventId.toString().padStart(6, '0')}`;
+
+        // Generate QR code using same method as admin
+        const qr = qrcode(0, "L");
+        qr.addData(qrUrl);
+        qr.make();
+
+        document.getElementById("qr-code").innerHTML = qr.createSvgTag(6);
+
+        // Update UI
+        document.getElementById('event-code-display').textContent = eventCode;
+        document.querySelector('.attendance-header h1').textContent = `Attendance: ${eventName}`;
+        
+        // Show content, hide loading
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('attendance-content').style.display = 'block';
+
+      } catch (error) {
+        console.error('Error loading event:', error);
+        showError(error.message || 'Failed to load event information');
+      }
+    }
+
+    function showError(message) {
+      document.getElementById('loading').style.display = 'none';
+      document.getElementById('error-message').textContent = message;
+      document.getElementById('error').style.display = 'block';
+    }
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', () => {
+      if (eventId) {
+        loadEventAndGenerateQR();
+      }
+    });
+  </script>
+</body>
+</html>
