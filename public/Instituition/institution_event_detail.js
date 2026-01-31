@@ -706,10 +706,10 @@ async function assignEventHead(modal) {
     const eventOrgId = currentEvent?.organizationid || currentEvent?.OrganizationID;
     const appOrgId = currentApplication?.organizationid || currentApplication?.OrganizationID;
     const isMyOrg = organizationId && ((eventOrgId && (Number(organizationId) === Number(eventOrgId))) || (appOrgId && (Number(organizationId) === Number(appOrgId))));
-    const isApproved = (appStatus.toLowerCase() === 'approved') || Boolean(bookingId);
+    const isApproved = Boolean(bookingId);
 
     if (!isApproved || !isMyOrg) {
-      alert('You can only assign an Event Head for an approved event that belongs to your organization.');
+      alert('You can only assign an Event Head after the event booking is approved for your organization.');
       return;
     }
 
