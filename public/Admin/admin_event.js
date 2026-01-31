@@ -253,6 +253,8 @@ async function fetchEventSignups() {
 
     console.log('Fetching signups for event ID:', currentEventId);
     console.log('Current event:', currentEvent);
+    console.log('Token being used:', token ? 'Token exists' : 'No token');
+    console.log('Token length:', token ? token.length : 0);
 
     const response = await fetch(
       `https://fsdp-cycling-ltey.onrender.com/organisations/events/${currentEventId}/people-signups`,
@@ -309,9 +311,9 @@ async function fetchEventSignups() {
       tbodyEl.innerHTML = '';
 
       volunteerList.forEach((volunteer, index) => {
-        // Handle attendance data
-        const checkInTime = volunteer.checkin_time ? new Date(volunteer.checkin_time) : null;
-        const checkOutTime = volunteer.checkout_time ? new Date(volunteer.checkout_time) : null;
+        // Handle different possible date field names
+        const signupDate = new Date(volunteer.signupDate || volunteer.signupdate || new Date());
+        const checkedIn = volunteer.checkedIn === true;
 
         const row = document.createElement('tr');
         row.innerHTML = `
@@ -325,16 +327,16 @@ async function fetchEventSignups() {
             <div style="font-size: 0.75rem; color: #6b7280;">${volunteer.phone}</div>
           </td>
           <td>
-            ${checkInTime ? `
-              <div style="color: #374151;">${checkInTime.toLocaleDateString()}</div>
-              <div style="font-size: 0.75rem; color: #6b7280;">${checkInTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}</div>
-            ` : '<div style="color: #9ca3af; font-style: italic;">Not checked in</div>'}
+            <div style="color: #374151;">${signupDate.toLocaleDateString()}</div>
+            <div style="font-size: 0.75rem; color: #6b7280;">${signupDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}</div>
           </td>
-          <td>
-            ${checkOutTime ? `
-              <div style="color: #374151;">${checkOutTime.toLocaleDateString()}</div>
-              <div style="font-size: 0.75rem; color: #6b7280;">${checkOutTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}</div>
-            ` : '<div style="color: #9ca3af; font-style: italic;">Not checked out</div>'}
+          <td style="text-align:center;">
+            <input 
+              type="checkbox"
+              ${checkedIn ? 'checked' : ''}
+              disabled
+              style="transform: scale(1.2);"
+            />
           </td>
         `;
 
@@ -359,15 +361,36 @@ async function fetchEventSignups() {
     loadingEl.style.display = 'none';
     contentEl.style.display = 'none';
     emptyEl.style.display = 'block';
-    emptyEl.innerHTML = `
-      <i class="fas fa-exclamation-triangle" style="font-size: 3rem; color: #ef4444; margin-bottom: 1rem;"></i>
-      <p style="color: #ef4444; font-size: 1.1rem; margin-bottom: 0.5rem;">Error Loading Volunteers</p>
-      <p style="color: #9ca3af; font-size: 0.875rem;">Unable to fetch volunteer information. Please try again.</p>
-      <button onclick="fetchEventSignups()" style="margin-top: 1rem; padding: 0.5rem 1rem; background: #ea8d2a; color: white; border: none; border-radius: 6px; cursor: pointer;">
-        Retry
-      </button>
-    `;
+    
+    // Check if it's an authentication error
+    if (error.message.includes('403') || error.message.includes('Invalid token')) {
+      emptyEl.innerHTML = `
+        <i class="fas fa-exclamation-triangle" style="font-size: 3rem; color: #ef4444; margin-bottom: 1rem;"></i>
+        <p style="color: #ef4444; font-size: 1.1rem; margin-bottom: 0.5rem;">Session Expired</p>
+        <p style="color: #9ca3af; font-size: 0.875rem; margin-bottom: 1rem;">Your login session has expired. Please log in again.</p>
+        <button onclick="handleExpiredSession()" style="margin-top: 1rem; padding: 0.5rem 1rem; background: #dc2626; color: white; border: none; border-radius: 6px; cursor: pointer;">
+          Go to Login
+        </button>
+      `;
+    } else {
+      emptyEl.innerHTML = `
+        <i class="fas fa-exclamation-triangle" style="font-size: 3rem; color: #ef4444; margin-bottom: 1rem;"></i>
+        <p style="color: #ef4444; font-size: 1.1rem; margin-bottom: 0.5rem;">Error Loading Volunteers</p>
+        <p style="color: #9ca3af; font-size: 0.875rem;">Unable to fetch volunteer information. Please try again.</p>
+        <button onclick="fetchEventSignups()" style="margin-top: 1rem; padding: 0.5rem 1rem; background: #ea8d2a; color: white; border: none; border-radius: 6px; cursor: pointer;">
+          Retry
+        </button>
+      `;
+    }
   }
+}
+
+// Handle expired session
+function handleExpiredSession() {
+  localStorage.removeItem('token');
+  localStorage.removeItem('currentEvent');
+  localStorage.removeItem('openCheckInTab');
+  window.location.href = '../../index.html';
 }
 
 
@@ -392,5 +415,4 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 500);
   }
 });
-
 
