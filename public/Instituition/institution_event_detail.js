@@ -1001,8 +1001,8 @@ async function fetchEventSignups() {
 document.addEventListener('DOMContentLoaded', async () => {
   setupCongratsOverlay();
 
-  // clear previous event state before loading new one
-  resetEventDetailPage();
+  // clear previous event state before loading new one resetEventDetailPage();
+  
 
   // Get organization ID first
   organizationId = await getOrganizationId();
