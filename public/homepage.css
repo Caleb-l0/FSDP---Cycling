@@ -313,7 +313,6 @@ textarea {
 
 /* Dropdown */
 .hv-lang-dropdown-content {
-  display: none;
   position: absolute;
   right: 0;
   top: 100%;
@@ -323,10 +322,31 @@ textarea {
   border-radius: 14px;
   box-shadow: 0 8px 24px rgba(0,0,0,0.18);
   overflow: hidden;
+  opacity: 0;
+  transform: translateY(-10px);
+  visibility: hidden;
+  transition: opacity 1s ease, transform 0.5s ease, visibility 0.5s ease;
+  pointer-events: none;
+  z-index: 1000;
 }
 
-.hv-lang-dropdown:hover .hv-lang-dropdown-content {
-  display: block;
+/* More specific rules for volunteer pages */
+.hv-lang-dropdown:hover .hv-lang-dropdown-content,
+.hv-lang-dropdown-content:hover,
+body .hv-lang-dropdown:hover .hv-lang-dropdown-content,
+body .hv-lang-dropdown-content:hover {
+  opacity: 1 !important;
+  transform: translateY(0) !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
+}
+
+/* Ensure dropdown stays visible when hovering over content */
+.hv-lang-dropdown-content:hover {
+  opacity: 1 !important;
+  transform: translateY(0) !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
 }
 
 .hv-lang-dropdown-content button {
