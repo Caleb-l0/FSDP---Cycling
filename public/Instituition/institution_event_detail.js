@@ -190,16 +190,21 @@ function showError(message) {
 
 /* Reset dynamic page content to prevent event bleed */
 function resetEventDetailPage() {
-  document.getElementById('event-name')?.textContent = '';
-  document.getElementById('event-status-badge')?.textContent = '';
-  document.getElementById('event-date')?.textContent = '-';
-  document.getElementById('event-location')?.textContent = '-';
-  document.getElementById('event-description')?.textContent = 'No description available.';
+  const setText = (id, value) => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = value;
+  };
 
-  document.getElementById('participant-current')?.textContent = '0';
-  document.getElementById('participant-max')?.textContent = '0';
-  document.getElementById('volunteer-current')?.textContent = '0';
-  document.getElementById('volunteer-max')?.textContent = '0';
+  setText('event-name', '');
+  setText('event-status-badge', '');
+  setText('event-date', '-');
+  setText('event-location', '-');
+  setText('event-description', 'No description available.');
+
+  setText('participant-current', '0');
+  setText('participant-max', '0');
+  setText('volunteer-current', '0');
+  setText('volunteer-max', '0');
 
   const imageContainer = document.getElementById('event-image-container');
   if (imageContainer) {
@@ -213,6 +218,7 @@ function resetEventDetailPage() {
 
   const headContent = document.getElementById('event-head-content');
   if (headContent) headContent.innerHTML = '';
+
   const headSection = document.getElementById('event-head-section');
   if (headSection) headSection.style.display = 'none';
 
@@ -222,9 +228,13 @@ function resetEventDetailPage() {
   const tbody = document.getElementById('signups-tbody');
   if (tbody) tbody.innerHTML = '';
 
-  document.getElementById('signups-content') && (document.getElementById('signups-content').style.display = 'none');
-  document.getElementById('signups-empty') && (document.getElementById('signups-empty').style.display = 'none');
+  const signupsContent = document.getElementById('signups-content');
+  if (signupsContent) signupsContent.style.display = 'none';
+
+  const signupsEmpty = document.getElementById('signups-empty');
+  if (signupsEmpty) signupsEmpty.style.display = 'none';
 }
+
 
 // Display event details
 function displayEventDetails() {
@@ -993,7 +1003,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // clear previous event state before loading new one
   resetEventDetailPage();
-  
+
   // Get organization ID first
   organizationId = await getOrganizationId();
 
