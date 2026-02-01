@@ -873,7 +873,7 @@ function setupQRButton() {
     generateQRBtn.addEventListener('click', () => {
       const eventId = currentEvent.eventid || currentEvent.EventID;
       if (eventId) {
-        window.location.href = `../Admin/attendance.html?eventId=${eventId}`;
+        window.location.href = `./institution_attendance.html?eventId=${eventId}`;
       }
     });
   }
@@ -895,6 +895,9 @@ async function fetchEventSignups() {
     emptyEl.style.display = 'none';
 
     const eventId = currentEvent.eventid || currentEvent.EventID;
+    console.log('Fetching signups for eventId:', eventId);
+    console.log('Current event data:', currentEvent);
+    
     const response = await fetch(
       `${API_BASE}/organisations/events/${eventId}/people-signups`,
       {
@@ -906,11 +909,15 @@ async function fetchEventSignups() {
       }
     );
 
+    console.log('API response status:', response.status);
+    
     if (!response.ok) {
       throw new Error(`Failed to fetch signups: ${response.status}`);
     }
 
     const data = await response.json();
+    console.log('API response data:', data);
+    console.log('Full data structure:', JSON.stringify(data, null, 2));
     
     // Hide loading
     loadingEl.style.display = 'none';
@@ -919,12 +926,19 @@ async function fetchEventSignups() {
     let volunteerList = [];
     let volunteerCount = 0;
     
+    console.log('Processing data structure:');
+    console.log('Is data an array?', Array.isArray(data));
+    console.log('Data keys:', Object.keys(data));
+    
     if (Array.isArray(data)) {
       volunteerList = data;
       volunteerCount = data.length;
+      console.log('Data is array, using directly');
     } else {
       volunteerList = data.volunteers || data.signups || [];
       volunteerCount = data.count || volunteerList.length;
+      console.log('Data is object, extracted volunteers:', volunteerList);
+      console.log('Volunteer count:', volunteerCount);
     }
 
     // Update statistics
@@ -932,7 +946,9 @@ async function fetchEventSignups() {
     statNeededEl.textContent = currentEvent?.requiredvolunteers || currentEvent?.RequiredVolunteers || '-';
     
     // Check if we have volunteers
+    console.log('Checking volunteer list length:', volunteerList.length);
     if (volunteerList.length > 0) {
+      console.log('Displaying volunteers table');
       tbodyEl.innerHTML = '';
 
       volunteerList.forEach((volunteer, index) => {
@@ -972,6 +988,7 @@ async function fetchEventSignups() {
       emptyEl.style.display = 'none';
     } else {
       // No volunteers found
+      console.log('No volunteers found, showing empty state');
       contentEl.style.display = 'none';
       emptyEl.style.display = 'block';
       emptyEl.innerHTML = `
