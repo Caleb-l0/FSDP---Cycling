@@ -2,10 +2,10 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const AdminEventModel = require("../Models/Admin_event_Model");
 const OrganizationRequestModel = require('../Models/OrganizationRequestModel')
+const VolunteerSignupModel = require("../Models/VolunteerSignupModel");
 
 const transporter = require("../mailer");
 const NotificationModel = require("../Models/notification_model");
-
 
 
 
@@ -299,6 +299,26 @@ async function autoDeleteEvent(req, res) {
 
 
 
-module.exports = { getAllEvents,createEvent,assignEventToOrgan,getEventLocation,deleteEvent,autoDeleteEvent
+// Get all volunteers signed up for an event (for admin)
+async function getEventVolunteers(req, res) {
+  try {
+    const { eventID } = req.params;
+    const volunteers = await VolunteerSignupModel.getEventVolunteers(eventID);
+    
+    res.status(200).json({
+      success: true,
+      count: volunteers.length,
+      volunteers: volunteers
+    });
+  } catch (error) {
+    console.error('Error getting event volunteers:', error);
+    res.status(500).json({
+      success: false,
+      count: 0,
+      volunteers: [],
+      message: 'Failed to get volunteers: ' + error.message
+    });
+  }
+}
 
- };
+module.exports = { getAllEvents,createEvent,assignEventToOrgan,getEventLocation,deleteEvent,autoDeleteEvent,getEventVolunteers };
