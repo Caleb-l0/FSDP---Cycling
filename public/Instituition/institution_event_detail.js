@@ -188,6 +188,44 @@ function showError(message) {
   }
 }
 
+/* Reset dynamic page content to prevent event bleed */
+function resetEventDetailPage() {
+  document.getElementById('event-name')?.textContent = '';
+  document.getElementById('event-status-badge')?.textContent = '';
+  document.getElementById('event-date')?.textContent = '-';
+  document.getElementById('event-location')?.textContent = '-';
+  document.getElementById('event-description')?.textContent = 'No description available.';
+
+  document.getElementById('participant-current')?.textContent = '0';
+  document.getElementById('participant-max')?.textContent = '0';
+  document.getElementById('volunteer-current')?.textContent = '0';
+  document.getElementById('volunteer-max')?.textContent = '0';
+
+  const imageContainer = document.getElementById('event-image-container');
+  if (imageContainer) {
+    imageContainer.innerHTML = `
+      <div class="event-image-placeholder">
+        <i class="fas fa-image"></i>
+        <p>No image available</p>
+      </div>
+    `;
+  }
+
+  const headContent = document.getElementById('event-head-content');
+  if (headContent) headContent.innerHTML = '';
+  const headSection = document.getElementById('event-head-section');
+  if (headSection) headSection.style.display = 'none';
+
+  const actionBtns = document.getElementById('action-buttons');
+  if (actionBtns) actionBtns.innerHTML = '';
+
+  const tbody = document.getElementById('signups-tbody');
+  if (tbody) tbody.innerHTML = '';
+
+  document.getElementById('signups-content') && (document.getElementById('signups-content').style.display = 'none');
+  document.getElementById('signups-empty') && (document.getElementById('signups-empty').style.display = 'none');
+}
+
 // Display event details
 function displayEventDetails() {
   if (!currentEvent) return;
@@ -937,6 +975,10 @@ async function fetchEventSignups() {
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', async () => {
   setupCongratsOverlay();
+
+  // clear previous event state before loading new one
+  resetEventDetailPage();
+
   // Get organization ID first
   organizationId = await getOrganizationId();
 
