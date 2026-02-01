@@ -302,11 +302,21 @@ async function getAllOrganizationRequests(organizationID) {
   }
 }
 
-
+// For /organisations/events/:eventID/people - returns { count, volunteers: [{ id, name, email, phone, role, signupdate, signupid, checkin_time, checkout_time }] }
 async function getEventPeopleSignups(eventID) {
   try {
+    console.log('=== getEventPeopleSignups START ===');
     console.log('getEventPeopleSignups called with eventID:', eventID);
+    console.log('eventID type:', typeof eventID);
+    console.log('eventID value:', eventID);
     
+    // Test database connection
+    console.log('Testing database connection...');
+    const testResult = await pool.query('SELECT NOW()');
+    console.log('Database connection test successful:', testResult.rows[0]);
+    
+    // Direct query to get volunteers from eventsignups table (same table that maintains peoplesignup count)
+    console.log('Executing volunteer query...');
     const result = await pool.query(
       `
       SELECT 
@@ -318,7 +328,8 @@ async function getEventPeopleSignups(eventID) {
         es.signupdate,
         es.signupid,
         es.checkin_time,
-        es.checkout_time
+        es.checkout_time,
+        es.status
       FROM eventsignups es
       JOIN users u ON es.userid = u.id
       WHERE es.eventid = $1 
@@ -328,8 +339,17 @@ async function getEventPeopleSignups(eventID) {
       [eventID]
     );
     
-    console.log('SQL query result rows:', result.rows);
-    console.log('Number of rows returned:', result.rows.length);
+    console.log('Query executed successfully');
+    console.log('Direct SQL query result rows:', result.rows);
+    console.log('Number of volunteers found:', result.rows.length);
+    
+    // Update the peoplesignup count to match actual active signups
+    console.log('Updating peoplesignup count...');
+    await pool.query(
+      'UPDATE events SET peoplesignup = $1 WHERE eventid = $2',
+      [result.rows.length, eventID]
+    );
+    console.log('Updated peoplesignup count to:', result.rows.length);
     
     const volunteers = result.rows.map((row) => ({
       id: row.id,
@@ -337,33 +357,39 @@ async function getEventPeopleSignups(eventID) {
       email: row.email || 'No email',
       phone: row.phone || 'No phone',
       role: row.role || 'volunteer',
-      signupDate: row.signupdate,
-      signupId: row.signupid,
-      checkin_time: row.checkin_time || null,
-      checkout_time: row.checkout_time || null
+      signupdate: row.signupdate,
+      signupid: row.signupid,
+      checkin_time: row.checkin_time,
+      checkout_time: row.checkout_time
     }));
     
-    const response = {
+    console.log('Processed volunteers array:', volunteers);
+    console.log('=== getEventPeopleSignups END ===');
+    
+    return {
       success: true,
       count: volunteers.length,
-      volunteers: volunteers,
-      signups: volunteers, // Add both for compatibility
-      message: volunteers.length > 0 
-        ? `Found ${volunteers.length} volunteer(s) signed up for this event`
-        : 'No volunteers have signed up for this event yet'
+      volunteers: volunteers
     };
     
-    console.log('Final response being sent:', response);
-    return response;
-  }
-  catch (err) {
-    console.error("getEventPeopleSignups SQL error:", err);
+  } catch (err) {
+    console.error('=== ERROR IN getEventPeopleSignups ===');
+    console.error('Error in getEventPeopleSignups:', err);
+    console.error('Error details:', {
+      message: err.message,
+      code: err.code,
+      detail: err.detail,
+      hint: err.hint,
+      stack: err.stack
+    });
+    console.error('=== END ERROR ===');
+    
     return {
       success: false,
       count: 0,
       volunteers: [],
       signups: [], // Add both for compatibility
-      message: 'Error fetching volunteer signups'
+      message: `Database error: ${err.message}`
     };
   }
 }
