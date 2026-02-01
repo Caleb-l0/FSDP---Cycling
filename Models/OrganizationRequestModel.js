@@ -327,8 +327,6 @@ async function getEventPeopleSignups(eventID) {
         u.role,
         es.signupdate,
         es.signupid,
-        es.checkin_time,
-        es.checkout_time,
         es.status
       FROM eventsignups es
       JOIN users u ON es.userid = u.id
@@ -359,8 +357,8 @@ async function getEventPeopleSignups(eventID) {
       role: row.role || 'volunteer',
       signupdate: row.signupdate,
       signupid: row.signupid,
-      checkin_time: row.checkin_time,
-      checkout_time: row.checkout_time
+      checkin_time: null, // Leave as null - will be handled by check-in/out functionality
+      checkout_time: null // Leave as null - will be handled by check-in/out functionality
     }));
     
     console.log('Processed volunteers array:', volunteers);
