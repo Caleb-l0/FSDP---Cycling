@@ -180,6 +180,28 @@ async function cancelSignup(req, res) {
 
 
 
+// Get all volunteers signed up for an event (for admin)
+async function getEventVolunteers(req, res) {
+  try {
+    const { eventID } = req.params;
+    const volunteers = await VolunteerSignupModel.getEventVolunteers(eventID);
+    
+    res.status(200).json({
+      success: true,
+      count: volunteers.length,
+      volunteers: volunteers
+    });
+  } catch (error) {
+    console.error('Error getting event volunteers:', error);
+    res.status(500).json({
+      success: false,
+      count: 0,
+      volunteers: [],
+      message: 'Failed to get volunteers: ' + error.message
+    });
+  }
+}
+
 module.exports = {
   getEventById,
   deleteEvent,
@@ -192,5 +214,6 @@ module.exports = {
   cancelSignup,
   attendanceLanding,
   checkIn,
-  checkOut
+  checkOut,
+  getEventVolunteers
 };
