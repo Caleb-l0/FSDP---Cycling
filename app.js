@@ -256,6 +256,9 @@ app.get("/send-email",authenticate,EmailController.getMemberEmailsByOrganization
 app.get("/events/checkAssigned/:eventID", authenticate, EventController.checkAssigned);
 app.delete("/events/cancel/:eventID", authenticate, EventController.cancel);
 app.get("/events/by-location",authenticate, EventController.getEventsByLocation);
+app.get("/events/:eventID/attendance", EventController.attendanceLanding);
+app.post("/events/:eventId/checkin", authenticate, EventController.checkIn);
+app.post("/events/:eventId/checkout", authenticate, EventController.checkOut);
 app.get("/events/:eventID", authenticate, EventController.getEventById);
 app.put("/events/update/:eventID", authenticate, EventController.updateEvent);
 

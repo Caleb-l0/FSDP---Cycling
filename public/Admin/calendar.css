@@ -8,6 +8,7 @@
   border-radius: 20px;
   border: 1px solid #e2e8f0;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+  overflow: hidden;
 }
 
 .calendar-day {
@@ -34,6 +35,9 @@
   color: #065f46;
   font-size: 0.9375rem;
   font-weight: 500;
+  line-height: 1.35;
+  word-break: break-word;
+  overflow-wrap: anywhere;
 }
 
 .slot.unavailable {
@@ -71,5 +75,11 @@
 
   .calendar-day {
     padding: 12px;
+  }
+
+  .slot {
+    padding: 12px 14px;
+    margin-top: 10px;
+    font-size: 0.95rem;
   }
 }

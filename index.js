@@ -151,6 +151,8 @@ async function showOtpSignup() {
         localStorage.setItem("name",data.name);
         localStorage.setItem("email",data.email);
         localStorage.setItem("role",data.role);
+        // Clear companion welcome dismiss so it shows again after re-login
+        localStorage.removeItem("hvcpWelcomeDismissed");
       const preference = data.textSizePreference || localStorage.getItem(TEXT_SIZE_KEY) || 'normal';
       localStorage.setItem(TEXT_SIZE_KEY, preference);
       applyTextSize(preference);
@@ -356,6 +358,8 @@ async function handleGoogleCredential(response) {
     localStorage.setItem("name", data.name);
     localStorage.setItem("email", data.email);
     localStorage.setItem("role", data.role);
+    // Clear companion welcome dismiss so it shows again after re-login
+    localStorage.removeItem("hvcpWelcomeDismissed");
 
  
     setTimeout(() => {
@@ -549,6 +553,8 @@ async function verifyOtp() {
     localStorage.setItem("name", data.name);
     localStorage.setItem("email", data.email);
     localStorage.setItem("role", data.role);
+    // Clear companion welcome dismiss so it shows again after re-login
+    localStorage.removeItem("hvcpWelcomeDismissed");
 
     const preference = data.textSizePreference || localStorage.getItem(TEXT_SIZE_KEY) || "normal";
     localStorage.setItem(TEXT_SIZE_KEY, preference);

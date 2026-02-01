@@ -36,6 +36,16 @@ ADD COLUMN IF NOT EXISTS profilepicture TEXT;
 
 
 
+CREATE TABLE IF NOT EXISTS user_preferences (
+  userid INT PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
+  preferred_location TEXT NULL,
+  updatedat TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_user_preferences_preferred_location ON user_preferences(preferred_location);
+
+
+
 /* for institution user test */
 INSERT INTO userorganizations (userid, organizationid, orgemail, orgrole, joinedat)
 VALUES (
@@ -90,10 +100,9 @@ ADD COLUMN latitude DOUBLE PRECISION,
 ADD COLUMN longitude DOUBLE PRECISION;
 ADD COLUMN participantsignup INT DEFAULT 0;
 ADD COLUMN eventimage VARCHAR(255);
+CREATE INDEX IF NOT EXISTS idx_events_lat_lng ON events(latitude, longitude);
 
--- Event image for base64 uploads (use TEXT; run MIGRATION_eventimage_to_TEXT.sql if column already exists as VARCHAR)
--- ALTER TABLE events DROP COLUMN IF EXISTS eventimage;
--- ALTER TABLE events ADD COLUMN eventimage TEXT;
+
 
 
 CREATE TABLE volunterrequests (   /* supposed to be institution requests please ignore this error, because change make time */

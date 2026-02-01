@@ -43,6 +43,21 @@ window.addEventListener("DOMContentLoaded", () => {
 }
 );
 
+const LOCATION_COORDS = {
+  'Jurong Lake Gardens': { latitude: 1.3382, longitude: 103.7245 },
+  'Passion Wave Marina Bay': { latitude: 1.2908, longitude: 103.8630 },
+  'Gardens by the Bay': { latitude: 1.2816, longitude: 103.8636 },
+  'East Coast Park': { latitude: 1.3009, longitude: 103.9120 },
+  'West Coast Park': { latitude: 1.2897, longitude: 103.7648 },
+  'Punggol Waterway Park': { latitude: 1.4090, longitude: 103.9050 },
+  'Singapore Botanic Gardens': { latitude: 1.3138, longitude: 103.8159 },
+  'Bishan-Ang Mo Kio Park': { latitude: 1.3642, longitude: 103.8467 },
+  'Lower Seletar Reservoir Park': { latitude: 1.4102, longitude: 103.8345 },
+  'Bedok Reservoir Park': { latitude: 1.3396, longitude: 103.9340 },
+  'Sengkang Riverside Park': { latitude: 1.3840, longitude: 103.9003 },
+  'Changi Beach Park': { latitude: 1.3892, longitude: 103.9886 }
+};
+
 
 
 async function createEvent() {
@@ -81,6 +96,8 @@ async function createEvent() {
 
   const eventImageBase64 = window._eventImageBase64 || null;
 
+  const coords = LOCATION_COORDS[Location] || null;
+
   const eventData = {
     EventName: eventName,
     EventDate: eventDate,
@@ -90,6 +107,8 @@ async function createEvent() {
     MaximumParticipant:   MaximumParticipant,
     OrganizationID: organizerValue,
     Location: Location,
+    Latitude: coords ? coords.latitude : null,
+    Longitude: coords ? coords.longitude : null,
     EventImage: eventImageBase64,
   };
 

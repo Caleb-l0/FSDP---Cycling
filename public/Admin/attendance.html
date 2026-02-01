@@ -29,6 +29,13 @@
   <p>Or share this code: <strong id="event-code"></strong></p>
 </div>
 
+<div id="volunteer-section" style="display:none;">
+  <h3>Attendance</h3>
+  <p>Choose an action:</p>
+  <button id="btn-checkin" type="button">Check in</button>
+  <button id="btn-checkout" type="button">Check out</button>
+</div>
+
 <script>
   const token = localStorage.getItem("token");
 
@@ -76,7 +83,7 @@
     document.getElementById("event-code").textContent = eventId;
 
     const url =
-      `https://fsdp-cycling-ltey.onrender.com/public/Admin/attendance.html?eventId=${eventId}`;
+      `https://fsdp-cycling-ltey.onrender.com/events/${eventId}/attendance`;
 
     const qr = qrcode(0, "L");
     qr.addData(url);
@@ -89,8 +96,14 @@
      VOLUNTEER → CHECK IN
      ======================= */
   } else if (userRole === "volunteer") {
-    document.getElementById("title").textContent = "Checking you in...";
-    checkIn();
+    document.getElementById("title").textContent = "Event Attendance";
+    document.getElementById("volunteer-section").style.display = "block";
+
+    const btnCheckin = document.getElementById('btn-checkin');
+    const btnCheckout = document.getElementById('btn-checkout');
+
+    btnCheckin.addEventListener('click', () => checkIn());
+    btnCheckout.addEventListener('click', () => checkOut());
 
   } else {
     alert("Unauthorized");
@@ -121,6 +134,33 @@
     } catch (err) {
       console.error(err);
       alert("Error checking in");
+    }
+  }
+
+  async function checkOut() {
+    try {
+      const res = await fetch(
+        `https://fsdp-cycling-ltey.onrender.com/events/${eventId}/checkout`,
+        {
+          method: "POST",
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json"
+          }
+        }
+      );
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        alert(data.message || "Check-out failed");
+        return;
+      }
+
+      document.body.innerHTML = "<h2>✅ Check-out successful</h2>";
+    } catch (err) {
+      console.error(err);
+      alert("Error checking out");
     }
   }
 </script>

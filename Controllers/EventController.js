@@ -23,6 +23,53 @@ async function getEventsByLocation(req, res) {
   }
 }
 
+async function attendanceLanding(req, res) {
+  const eventId = req.params.eventID || req.params.eventId;
+  return res.redirect(`/public/Admin/attendance.html?eventId=${encodeURIComponent(String(eventId))}`);
+}
+
+async function checkIn(req, res) {
+  try {
+    const eventId = req.params.eventId;
+    const userId = req.user?.id;
+
+    if (!userId) {
+      return res.status(401).json({ message: "User not authenticated" });
+    }
+
+    const assigned = await EventModel.checkAssigned(eventId);
+    if (!assigned) {
+      return res.status(403).json({ message: "Event is not assigned to any institution" });
+    }
+
+    const row = await VolunteerSignupModel.checkIn(userId, eventId);
+    return res.status(200).json({ message: "Checked in", data: row });
+  } catch (error) {
+    return res.status(400).json({ message: error.message || "Check-in failed" });
+  }
+}
+
+async function checkOut(req, res) {
+  try {
+    const eventId = req.params.eventId;
+    const userId = req.user?.id;
+
+    if (!userId) {
+      return res.status(401).json({ message: "User not authenticated" });
+    }
+
+    const assigned = await EventModel.checkAssigned(eventId);
+    if (!assigned) {
+      return res.status(403).json({ message: "Event is not assigned to any institution" });
+    }
+
+    const row = await VolunteerSignupModel.checkOut(userId, eventId);
+    return res.status(200).json({ message: "Checked out", data: row });
+  } catch (error) {
+    return res.status(400).json({ message: error.message || "Check-out failed" });
+  }
+}
+
 
 
 
@@ -143,4 +190,7 @@ module.exports = {
   updateEvent,
   getEventsByLocation,
   cancelSignup,
+  attendanceLanding,
+  checkIn,
+  checkOut
 };

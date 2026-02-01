@@ -426,6 +426,45 @@ async function getOrganizationMembers(req, res) {
   }
 }
 
+async function getOrganizationMembersExperience(req, res) {
+  try {
+    if (!req.user?.id) {
+      return res.status(401).json({ message: "User not authenticated" });
+    }
+ 
+    const organizationID = await OrganizationRequestModel.getOrganisationIDByUserID(req.user.id);
+    if (!organizationID) {
+      return res.status(200).json([]);
+    }
+ 
+    const rows = await OrganizationRequestModel.getOrganizationMembersExperience(organizationID);
+    return res.status(200).json(rows);
+  } catch (error) {
+    return res.status(500).json({ message: "Server Error", error: error.message });
+  }
+}
+ 
+async function getInstitutionSignedEvents(req, res) {
+  try {
+    if (!req.user?.id) {
+      return res.status(401).json({ message: "User not authenticated" });
+    }
+ 
+    const organizationID = await OrganizationRequestModel.getOrganisationIDByUserID(req.user.id);
+    if (!organizationID) {
+      return res.status(200).json([]);
+    }
+ 
+    const events = await OrganizationRequestModel.getInstitutionSignedEvents(organizationID);
+    return res.status(200).json(events);
+  } catch (error) {
+    return res.status(500).json({ message: "Server Error", error: error.message });
+  }
+}
+ 
+
+
+
 // ======================================================
 module.exports = {
 
@@ -439,6 +478,6 @@ module.exports = {
   getEventSignups,
   getEventPeopleSignups,
   getAllOrganizationRequests,
-  requestEventBooking, assignEventHead,getOrganizationMembers
+  requestEventBooking, assignEventHead,getOrganizationMembers,getInstitutionSignedEvents,getOrganizationMembersExperience
 };
 

@@ -1,6 +1,6 @@
 (function () {
   const API_BASE = window.location.origin;
-  const HIDE_WELCOME_KEY = 'hvcpWelcomeHidden';
+  const HIDE_WELCOME_KEY = 'hvcpWelcomeDismissed'; // stored in localStorage, cleared on login
 
   function getToken() {
     return localStorage.getItem('token');
@@ -35,6 +35,7 @@
         <div class="hvcp-welcome-actions">
           <button class="hvcp-welcome-btn" id="hvcpWelcomeOpen" type="button">Open</button>
           <button class="hvcp-welcome-btn secondary" id="hvcpWelcomeClose" type="button">Close</button>
+          <button class="hvcp-welcome-btn secondary" id="hvcpWelcomeDismiss" type="button">Don't show again</button>
         </div>
       </div>
 
@@ -223,7 +224,7 @@
         <div class="hvcp-strong">${nextRide.eventName || 'Next ride'}</div>
         <div class="hvcp-muted">${new Date(nextRide.eventDate).toLocaleString()}</div>
         <div class="hvcp-muted">${nextRide.location || 'Location TBD'}</div>
-        ${nextRide.mapLink ? `<a class="hvcp-link" href="${nextRide.mapLink}" target="_blank" rel="noopener">Open map</a>` : ''}
+        ${nextRide.location ? `<button class="hvcp-btn hvcp-btn--map" id="hvcpMapBtn" type="button" data-location="${encodeURIComponent(nextRide.location)}"><i class="fas fa-map-marker-alt"></i> Open in Google Maps</button>` : ''}
         ${head ? `
           <div class="hvcp-divider"></div>
           <div class="hvcp-muted">Event Head</div>
@@ -232,6 +233,15 @@
           ${head.email ? `<div class="hvcp-muted">Email: ${head.email}</div>` : ''}
         ` : '<div class="hvcp-muted">Event head not assigned yet.</div>'}
       `;
+
+      // Attach Google Maps button handler
+      document.getElementById('hvcpMapBtn')?.addEventListener('click', () => {
+        const location = decodeURIComponent(document.getElementById('hvcpMapBtn')?.dataset.location || '');
+        if (location) {
+          const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(location)}`;
+          window.open(mapsUrl, '_blank', 'noopener');
+        }
+      });
     }
   }
 
@@ -281,9 +291,9 @@
     ensureRoot();
 
     const welcomeEl = document.getElementById('hvcpWelcome');
-    const hiddenThisSession = sessionStorage.getItem(HIDE_WELCOME_KEY) === '1';
+    const dismissed = localStorage.getItem(HIDE_WELCOME_KEY) === '1';
     if (welcomeEl) {
-      welcomeEl.classList.toggle('hidden', hiddenThisSession);
+      welcomeEl.classList.toggle('hidden', dismissed);
     }
 
     document.getElementById('hvcpFab')?.addEventListener('click', async () => {
@@ -304,7 +314,13 @@
     });
     document.getElementById('hvcpWelcomeClose')?.addEventListener('click', (e) => {
       e.stopPropagation();
-      sessionStorage.setItem(HIDE_WELCOME_KEY, '1');
+      // Just close for this time, will show again on next page load
+      document.getElementById('hvcpWelcome')?.classList.add('hidden');
+    });
+    document.getElementById('hvcpWelcomeDismiss')?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      // Store in localStorage - will persist until re-login clears it
+      localStorage.setItem(HIDE_WELCOME_KEY, '1');
       document.getElementById('hvcpWelcome')?.classList.add('hidden');
     });
 

@@ -9,6 +9,31 @@
   --hv-border:rgba(0,0,0,.05);
 }
 
+/* TIER THEMES (applied on #hvop-root via JS) */
+#hvop-root.hvop-tier-1{
+  --hv-primary:#b45309;
+  --hv-primary-soft:#fed7aa;
+  --hv-primary-fade:rgba(180,83,9,.16);
+}
+
+#hvop-root.hvop-tier-2{
+  --hv-primary:#64748b;
+  --hv-primary-soft:#e2e8f0;
+  --hv-primary-fade:rgba(100,116,139,.16);
+}
+
+#hvop-root.hvop-tier-3{
+  --hv-primary:#d97706;
+  --hv-primary-soft:#fde68a;
+  --hv-primary-fade:rgba(217,119,6,.16);
+}
+
+#hvop-root.hvop-tier-4{
+  --hv-primary:#7c3aed;
+  --hv-primary-soft:#ddd6fe;
+  --hv-primary-fade:rgba(124,58,237,.16);
+}
+
 /* ROOT */
 #hvop-root{
   max-width:1100px;
@@ -29,6 +54,11 @@
   border-top:4px solid var(--hv-primary);
   box-shadow:0 10px 30px rgba(0,0,0,.08);
   margin-bottom:24px;
+}
+
+#hvop-root.hvop-tier-2 .hvop-hero,
+#hvop-root.hvop-tier-4 .hvop-hero{
+  background:linear-gradient(180deg,#fff,#f8fafc);
 }
 
 .hvop-hero-left{

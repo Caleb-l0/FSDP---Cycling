@@ -730,9 +730,24 @@ async function assignEventHead(modal) {
       return;
     }
 
-    const eventId = currentApplication?.eventid 
+    const eventId = Number(
+      currentApplication?.eventid || currentApplication?.EventID ||
+      currentEvent?.eventid || currentEvent?.EventID
+    );
     if (!eventId) {
       alert('Event ID not found. Please refresh the page and try again.');
+      return;
+    }
+
+    const appStatus = (currentApplication?.status || currentApplication?.Status || '').toString();
+    const bookingId = currentEvent?.bookingid || currentEvent?.BookingID;
+    const eventOrgId = currentEvent?.organizationid || currentEvent?.OrganizationID;
+    const appOrgId = currentApplication?.organizationid || currentApplication?.OrganizationID;
+    const isMyOrg = organizationId && ((eventOrgId && (Number(organizationId) === Number(eventOrgId))) || (appOrgId && (Number(organizationId) === Number(appOrgId))));
+    const isApproved = Boolean(bookingId);
+
+    if (!isApproved || !isMyOrg) {
+      alert('You can only assign an Event Head after the event booking is approved for your organization.');
       return;
     }
 
