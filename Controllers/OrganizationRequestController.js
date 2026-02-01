@@ -58,6 +58,41 @@ async function getRequestById(req, res) {
 
 
 // ======================================================
+// Get volunteer signups for a specific event
+exports.getEventPeopleSignups = async (req, res) => {
+  console.log('=== CONTROLLER CALLED ===');
+  console.log('getEventPeopleSignups controller function called!');
+  
+  try {
+    const { eventID } = req.params;
+    console.log('Controller: getEventPeopleSignups called with eventID:', eventID);
+    
+    // Add debug info
+    console.log('Request user:', req.user);
+    console.log('Request headers:', req.headers);
+    
+    const result = await OrganizationRequestModel.getEventPeopleSignups(eventID);
+    console.log('Controller: Model returned result:', result);
+    
+    if (result.success) {
+      return res.status(200).json(result);
+    } else {
+      console.log('Controller: Model returned error:', result.message);
+      return res.status(500).json(result);
+    }
+  } catch (error) {
+    console.error('Controller: getEventPeopleSignups error:', error);
+    return res.status(500).json({
+      success: false,
+      count: 0,
+      volunteers: [],
+      message: 'Controller error: ' + error.message
+    });
+  }
+};
+
+
+// ======================================================
 // 4. Approve Request
 // ======================================================
 async function approveRequest(req, res) {
