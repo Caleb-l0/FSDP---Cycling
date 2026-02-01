@@ -737,7 +737,6 @@ function createApprovedApplicationCard(application) {
       <h3>${eventName}</h3>
       <p><i class="fas fa-calendar"></i> ${formattedDate}</p>
       <p><i class="fas fa-map-marker-alt"></i> ${location}</p>
-      ${typeof requiredVolunteers === 'number' ? `<p><i class="fas fa-users"></i> ${requiredVolunteers} volunteers needed</p>` : ''}
       <span class="status-tag status-approved">
         <i class="fas fa-check"></i> Approved
       </span>
@@ -754,6 +753,96 @@ function createApprovedApplicationCard(application) {
   return card;
 }
 
+// Load volunteers for a specific event
+async function loadVolunteersForEvent(eventId, card) {
+  const countEl = document.getElementById(`volunteer-count-${eventId}`);
+  const listEl = document.getElementById(`volunteer-list-${eventId}`);
+  
+  if (!countEl || !listEl) return;
+
+  try {
+    const response = await fetch(`${API_BASE}/organisations/events/${eventId}/people-signups`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch volunteers: ${response.status}`);
+    }
+
+    const data = await response.json();
+    
+    // Extract volunteer list from response
+    const volunteerList = data.volunteers || data.signups || [];
+    const volunteerCount = data.count || volunteerList.length;
+
+    // Update count
+    countEl.textContent = `${volunteerCount} volunteer${volunteerCount !== 1 ? 's' : ''}`;
+
+    // Display volunteers
+    if (volunteerList.length > 0) {
+      listEl.innerHTML = volunteerList.slice(0, 3).map((volunteer, index) => {
+        const checkInTime = volunteer.checkin_time ? new Date(volunteer.checkin_time) : null;
+        const checkOutTime = volunteer.checkout_time ? new Date(volunteer.checkout_time) : null;
+        
+        return `
+          <div class="volunteer-item" data-volunteer-id="${volunteer.id}">
+            <div class="volunteer-avatar">
+              ${volunteer.name ? volunteer.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) : 'V'}
+            </div>
+            <div class="volunteer-info">
+              <div class="volunteer-name">${volunteer.name || 'Unknown Volunteer'}</div>
+              <div class="volunteer-contact">
+                <i class="fas fa-envelope"></i> ${volunteer.email || 'No email'}
+                ${volunteer.phone ? `<br><i class="fas fa-phone"></i> ${volunteer.phone}` : ''}
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      // Add "show more" if there are more than 3 volunteers
+      if (volunteerList.length > 3) {
+        listEl.innerHTML += `
+          <div class="volunteer-more">
+            <button class="volunteer-more-btn" onclick="viewAllVolunteers(${eventId})">
+              <i class="fas fa-users"></i>
+              View all ${volunteerList.length} volunteers
+            </button>
+          </div>
+        `;
+      }
+    } else {
+      listEl.innerHTML = `
+        <div class="no-volunteers">
+          <i class="fas fa-user-slash"></i>
+          <span>No volunteers have signed up yet</span>
+        </div>
+      `;
+    }
+
+  } catch (error) {
+    console.error('Error loading volunteers:', error);
+    countEl.textContent = 'Error';
+    listEl.innerHTML = `
+      <div class="volunteer-error">
+        <i class="fas fa-exclamation-triangle"></i>
+        <span>Unable to load volunteers</span>
+      </div>
+    `;
+  }
+}
+
+// Function to view all volunteers (redirects to event detail page)
+function viewAllVolunteers(eventId) {
+  // This would ideally open the event detail page with the check-in tab active
+  // For now, we'll just redirect to the event detail page
+  window.location.href = `./institution_event_detail.html?eventId=${eventId}#checkin`;
+}
+
 // Toggle collapsible sections
 function toggleSection(sectionName) {
   const header = document.getElementById(`${sectionName}-section-header`);
@@ -765,8 +854,9 @@ function toggleSection(sectionName) {
   }
 }
 
-// Make toggleSection globally available
+// Make functions globally available
 window.toggleSection = toggleSection;
+window.viewAllVolunteers = viewAllVolunteers;
 
 // Initialize on page load
 document.addEventListener("DOMContentLoaded", async () => {
