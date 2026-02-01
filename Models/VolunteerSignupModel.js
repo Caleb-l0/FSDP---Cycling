@@ -1,4 +1,5 @@
 const pool = require("../Postgres_config");
+const rewardsModel = require("./reward_model");
 
 
 // ======================================================
@@ -224,6 +225,15 @@ async function checkIn(userId, eventId) {
     throw new Error("No active signup found for this user and event");
   }
 
+  // Add 25 points for checking in
+  try {
+    await rewardsModel.addPoints(uid, 25, `Check-in reward for event ${eid}`);
+    console.log(`Added 25 points to user ${uid} for checking in to event ${eid}`);
+  } catch (pointsError) {
+    console.error('Failed to add check-in points:', pointsError);
+    // Don't throw error - check-in should still work even if points fail
+  }
+
   return res.rows[0];
 }
 
@@ -247,6 +257,15 @@ async function checkOut(userId, eventId) {
 
   if (res.rows.length === 0) {
     throw new Error("Cannot check out: no active signup with check-in found");
+  }
+
+  // Add 25 points for checking out (completes the 50 points total)
+  try {
+    await rewardsModel.addPoints(uid, 25, `Check-out reward for event ${eid}`);
+    console.log(`Added 25 points to user ${uid} for checking out from event ${eid}`);
+  } catch (pointsError) {
+    console.error('Failed to add check-out points:', pointsError);
+    // Don't throw error - check-out should still work even if points fail
   }
 
   return res.rows[0];
@@ -282,11 +301,52 @@ async function getSignedUpEvents(userId) {
 
 
 // ======================================================
+// 5. Get All Volunteers Signed Up For An Event
+// ======================================================
+async function getEventVolunteers(eventID) {
+  const result = await pool.query(
+    `
+    SELECT 
+      u.id,
+      u.name,
+      u.email,
+      u.phone,
+      u.role,
+      es.signupdate,
+      es.signupid,
+      es.checkin_time,
+      es.checkout_time
+    FROM eventsignups es
+    JOIN users u ON es.userid = u.id
+    WHERE es.eventid = $1 
+      AND (es.status IS NULL OR es.status = 'Active' OR es.status = 'active')
+    ORDER BY es.signupdate ASC
+    `,
+    [eventID]
+  );
+  
+  return result.rows.map((row) => ({
+    id: row.id,
+    name: row.name || 'Unknown Volunteer',
+    email: row.email || 'No email',
+    phone: row.phone || 'No phone',
+    role: row.role || 'volunteer',
+    signupdate: row.signupdate,
+    signupid: row.signupid,
+    checkin_time: row.checkin_time,
+    checkout_time: row.checkout_time,
+    checkedIn: !!row.checkin_time
+  }));
+}
+
+
+// ======================================================
 module.exports = {
   signUpForEvent,
   cancelSignup,
   isSignedUp,
   getSignedUpEvents,
+  getEventVolunteers,
   checkIn,
   checkOut
 };
