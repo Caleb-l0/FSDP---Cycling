@@ -50,7 +50,6 @@ const btnEdit    = document.getElementById('btn-edit');
 const btnDelete  = document.getElementById('btn-delete');
 const btnSignup  = document.getElementById('btn-signup');
 const btnCancel  = document.getElementById('btn-cancel');
-const btnGenerateQR = document.getElementById('generate-qr');
 
 function hideAllButtons() {
   [
@@ -147,12 +146,6 @@ function initButtonHandlers() {
         console.error("Error deleting event:", error);
         alert("❌ Error: " + (error.message || "Failed to delete event"));
       }
-    });
-  }
-
-  if (btnGenerateQR) {
-    btnGenerateQR.addEventListener('click', () => {
-      window.location.href = `attendance.html?eventId=${currentEventId}`;
     });
   }
 
