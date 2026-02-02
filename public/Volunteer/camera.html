@@ -358,6 +358,41 @@
                   result.innerHTML += `<p class="success">🏆 ${checkInData.pointsAwarded} points awarded!</p>`;
                 }
                 
+                // Add reward points for check-in if not already awarded
+                if (!checkInData.pointsAwarded) {
+                  try {
+                    console.log('Adding 25 reward points for check-in...');
+                    const rewardsResponse = await fetch(
+                      `${API_BASE}/rewards/add-points`,
+                      {
+                        method: "POST",
+                        headers: {
+                          "Authorization": `Bearer ${token}`,
+                          "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({
+                          userId: userId,
+                          points: 25,
+                          description: `Check-in reward for event ${eventId}`
+                        })
+                      }
+                    );
+                    
+                    if (rewardsResponse.ok) {
+                      const rewardsData = await rewardsResponse.json();
+                      console.log('Reward points added successfully:', rewardsData);
+                      
+                      // Update the success message to include points
+                      result.innerHTML += `<p class="success">🏆 25 reward points awarded!</p>`;
+                    } else {
+                      console.log('Failed to add reward points, but check-in was successful');
+                    }
+                  } catch (rewardsError) {
+                    console.log('Error adding reward points:', rewardsError);
+                    console.log('Check-in was successful, but reward points failed');
+                  }
+                }
+                
                 // Return to previous page after 3 seconds
                 const returnTimer = setTimeout(() => {
                   console.log('Executing return to volunteer event page...');
@@ -485,6 +520,51 @@
               };
               localStorage.setItem(`checkin_${eventId}_${userId}`, JSON.stringify(checkInData));
               console.log('Saved check-in status to localStorage:', checkInData);
+              
+              // Add reward points for check-in
+              try {
+                console.log('Adding 25 reward points for check-in...');
+                const rewardsResponse = await fetch(
+                  `${API_BASE}/rewards/add-points`,
+                  {
+                    method: "POST",
+                    headers: {
+                      "Authorization": `Bearer ${token}`,
+                      "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                      userId: userId,
+                      points: 25,
+                      description: `Check-in reward for event ${eventId}`
+                    })
+                  }
+                );
+                
+                if (rewardsResponse.ok) {
+                  const rewardsData = await rewardsResponse.json();
+                  console.log('Reward points added successfully:', rewardsData);
+                  
+                  // Update the success message to include points
+                  result.innerHTML = `
+                    <div class="success">
+                      <h3>🎉 Successfully Checked In! (Testing Mode)</h3>
+                      <p><strong>Event ID:</strong> ${eventId}</p>
+                      <p><strong>User ID:</strong> ${userId}</p>
+                      <p><strong>Time:</strong> ${new Date().toLocaleString()}</p>
+                      <p><strong>Message:</strong> Check-in completed (database bypassed for testing)</p>
+                      <hr>
+                      <p>🏆 25 reward points awarded!</p>
+                      <p>📱 Returning to event page in 3 seconds...</p>
+                      <p><small>Note: Live database needs column update. This is temporary for testing QR functionality.</small></p>
+                    </div>
+                  `;
+                } else {
+                  console.log('Failed to add reward points, but check-in was successful');
+                }
+              } catch (rewardsError) {
+                console.log('Error adding reward points:', rewardsError);
+                console.log('Check-in was successful, but reward points failed');
+              }
               
               // Return to previous page after 3 seconds
               const returnTimer = setTimeout(() => {
