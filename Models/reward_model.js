@@ -119,12 +119,26 @@ async function getHistory(userId) {
   }));
 }
 
+// ===============================
+// 6. Add reward points
+// ===============================
+async function addPoints(userId, points, description) {
+  await pool.query(
+    `
+    INSERT INTO rewards (user_id, points, description)
+    VALUES ($1, $2, $3)
+    `,
+    [userId, points, description]
+  );
+}
+
 module.exports = {
   getUserPoints,
   getAllItems,
   getItemById,
   redeemItem,
-  getHistory
+  getHistory,
+  addPoints
 };
 
 /*const sql = require("mssql");
