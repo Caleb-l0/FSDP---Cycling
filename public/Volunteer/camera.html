@@ -359,27 +359,20 @@
                 }
                 
                 // Return to previous page after 3 seconds
-                setTimeout(() => {
-                  console.log('Returning to previous page after successful check-in...');
-                  // Try to notify parent page about successful check-in
-                  if (window.opener) {
-                    // If opened in popup, notify parent
-                    window.opener.postMessage({
-                      type: 'checkin-success',
-                      eventId: eventId,
-                      userId: userId,
-                      action: 'check-in'
-                    }, '*');
-                    window.close();
-                  } else {
-                    // If in same tab, go back and refresh
-                    window.history.back();
-                    // Refresh after a short delay to update the check-in status
-                    setTimeout(() => {
-                      window.location.reload();
-                    }, 500);
-                  }
+                const returnTimer = setTimeout(() => {
+                  console.log('Executing return to volunteer event page...');
+                  window.location.href = 'volunteer_event_detail.html';
                 }, 3000);
+                
+                // Add a manual return button as backup
+                setTimeout(() => {
+                  result.innerHTML += `
+                    <button onclick="window.location.href='volunteer_event_detail.html'" 
+                            style="margin-top: 15px; padding: 10px 20px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                      📱 Return to Event Page
+                    </button>
+                  `;
+                }, 1000);
               } else {
                 status.className = 'success';
                 status.textContent = '✅ Check-out successful!';
@@ -482,11 +475,32 @@
                 </div>
               `;
               
+              // TEMPORARY: Save check-in status to localStorage
+              const checkInData = {
+                isCheckedIn: true,
+                checkInTime: new Date().toISOString(),
+                checkOutTime: null,
+                eventId: eventId,
+                userId: userId
+              };
+              localStorage.setItem(`checkin_${eventId}_${userId}`, JSON.stringify(checkInData));
+              console.log('Saved check-in status to localStorage:', checkInData);
+              
               // Return to previous page after 3 seconds
-              setTimeout(() => {
-                console.log('Returning to previous page...');
-                window.history.back();
+              const returnTimer = setTimeout(() => {
+                console.log('Returning to previous page (bypass mode)...');
+                window.location.href = 'volunteer_event_detail.html?eventId=' + eventId;
               }, 3000);
+              
+              // Add a manual return button as backup
+              setTimeout(() => {
+                result.innerHTML += `
+                  <button onclick="window.location.href='volunteer_event_detail.html?eventId=${eventId}'" 
+                          style="margin-top: 15px; padding: 10px 20px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                    📱 Return to Event Page
+                  </button>
+                `;
+              }, 1000);
             } else {
               status.className = 'error';
               status.textContent = '❌ Check-in failed';
