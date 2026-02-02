@@ -142,6 +142,42 @@
     Cancel Signup
   </button>
 
+  <!-- Check-in Section -->
+  <div id="checkin-section" class="checkin-section" style="margin-top: 15px; padding: 15px; border: 1px solid #ddd; border-radius: 8px; background: #f9f9f9;">
+    <h4 style="margin-bottom: 10px; color: #333;">
+      <i class="fas fa-qrcode"></i> Event Check-in
+    </h4>
+    
+    <!-- Check-in Status -->
+    <div id="checkin-status" style="margin-bottom: 10px;">
+      <div class="checkin-info">
+        <i class="fas fa-clock" style="color: orange;"></i>
+        <span>Loading check-in status...</span>
+      </div>
+    </div>
+    
+    <!-- Check-in Buttons -->
+    <div class="checkin-buttons">
+      <button id="btn-checkin"
+              class="btn-action btn-success"
+              style="display:none">
+        <i class="fas fa-sign-in-alt"></i> Check In
+      </button>
+      
+      <button id="btn-checkout"
+              class="btn-action btn-warning"
+              style="display:none">
+        <i class="fas fa-sign-out-alt"></i> Check Out
+      </button>
+      
+      <button id="btn-scan-qr"
+              class="btn-action btn-primary"
+              onclick="window.location.href='camera.html'">
+        <i class="fas fa-camera"></i> Scan QR Code
+      </button>
+    </div>
+  </div>
+
   <button id="btn-share-event" class="btn-action btn-success" type="button" data-tooltip="Share this event">
     <i class="fas fa-paper-plane" aria-hidden="true"></i>
     <span>Share Event</span>
