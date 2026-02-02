@@ -30,6 +30,7 @@ if (!eventId) {
 document.addEventListener("DOMContentLoaded", () => {
   loadEventDetails(eventId);
   checkIsSignedUp(eventId);
+  checkCheckInStatus(eventId); // Add check-in status check
 });
 
 // ===========================
@@ -465,5 +466,132 @@ function setEventStatus(eventDate) {
             statusText.textContent = "Event Ended";
         }
     }
+}
+
+// ===========================
+// CHECK CHECK-IN STATUS
+// ===========================
+async function checkCheckInStatus(eventId) {
+  try {
+    console.log('Checking check-in status for event:', eventId);
+    
+    // Try to get attendance status from the eventsignups table
+    const res = await fetch(
+      `${API_BASE}/volunteer/events/attendance-status/${eventId}`,
+      {
+        headers: { Authorization: `Bearer ${token}` }
+      }
+    );
+
+    if (!res.ok) {
+      console.log('Attendance status endpoint not available, trying alternative...');
+      // If endpoint doesn't exist, try to get from event details
+      await checkCheckInFromEventDetails(eventId);
+      return;
+    }
+
+    const data = await res.json();
+    console.log('Attendance status data:', data);
+    
+    updateCheckInUI(data);
+    
+  } catch (err) {
+    console.error("checkCheckInStatus failed", err);
+    // Fallback to checking event details
+    await checkCheckInFromEventDetails(eventId);
+  }
+}
+
+// ===========================
+// CHECK CHECK-IN FROM EVENT DETAILS
+// ===========================
+async function checkCheckInFromEventDetails(eventId) {
+  try {
+    console.log('Checking check-in status from event details for event:', eventId);
+    
+    // TEMPORARY: Use localStorage to track check-in status until backend is fixed
+    const checkInKey = `checkin_${eventId}_${getUserIdFromToken()}`;
+    const checkInData = localStorage.getItem(checkInKey);
+    
+    if (checkInData) {
+      const parsed = JSON.parse(checkInData);
+      console.log('Found local check-in data:', parsed);
+      updateCheckInUI(parsed);
+    } else {
+      // No check-in data found
+      const defaultData = {
+        isCheckedIn: false,
+        checkInTime: null,
+        checkOutTime: null,
+        message: 'Not checked in'
+      };
+      console.log('No check-in data found, using default');
+      updateCheckInUI(defaultData);
+    }
+    
+  } catch (err) {
+    console.error("checkCheckInFromEventDetails failed", err);
+  }
+}
+
+// ===========================
+// GET USER ID FROM TOKEN
+// ===========================
+function getUserIdFromToken() {
+  try {
+    const token = localStorage.getItem('token');
+    if (!token) return null;
+    
+    const payloadBase64 = token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
+    const payloadJson = atob(payloadBase64);
+    const payload = JSON.parse(payloadJson);
+    return payload.id;
+  } catch (err) {
+    console.error('Failed to get user ID from token', err);
+    return null;
+  }
+}
+
+// ===========================
+// UPDATE CHECK-IN UI
+// ===========================
+function updateCheckInUI(checkInData) {
+  const checkInSection = document.getElementById('checkin-section');
+  const checkInBtn = document.getElementById('btn-checkin');
+  const checkOutBtn = document.getElementById('btn-checkout');
+  const checkInStatus = document.getElementById('checkin-status');
+  
+  if (!checkInSection) {
+    console.log('Check-in section not found in DOM');
+    return;
+  }
+  
+  console.log('Updating check-in UI with data:', checkInData);
+  
+  if (checkInData.isCheckedIn) {
+    // User is checked in
+    if (checkInBtn) checkInBtn.style.display = 'none';
+    if (checkOutBtn) checkOutBtn.style.display = 'inline-block';
+    if (checkInStatus) {
+      checkInStatus.innerHTML = `
+        <div class="checkin-info">
+          <i class="fas fa-check-circle" style="color: green;"></i>
+          <span>Checked in at ${checkInData.checkInTime || 'Unknown time'}</span>
+        </div>
+      `;
+    }
+  } else {
+    // User is not checked in
+    if (checkInBtn) checkInBtn.style.display = 'inline-block';
+    if (checkOutBtn) checkOutBtn.style.display = 'none';
+    if (checkInStatus) {
+      checkInStatus.innerHTML = `
+        <div class="checkin-info">
+          <i class="fas fa-clock" style="color: orange;"></i>
+          <span>Not checked in</span>
+        </div>
+      `;
+    }
+  }
 }
 
